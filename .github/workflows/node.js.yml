@@ -21,14 +21,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        working-directory: ./server
+      - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
       - name: npm install, and test
         run: |
-          cd server/
           npm install
           nest build
           npm run test
         env:
           CI: true
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
