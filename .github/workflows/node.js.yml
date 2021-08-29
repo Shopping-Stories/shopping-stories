@@ -26,10 +26,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: npm install, and test
-        run: |
+      - run: |
           npm install
           nest build
           npm run test
-        env:
+      - env:
           CI: true
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
