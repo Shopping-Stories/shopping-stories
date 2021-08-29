@@ -29,7 +29,6 @@ jobs:
         working-directory: ./server
         run: |
           npm install
-          nest build
           npm run test
         env:
           CI: true
