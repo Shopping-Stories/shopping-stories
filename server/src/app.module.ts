@@ -26,7 +26,7 @@ import { __prod__ } from './util/constants';
 			inject: [ConfigService],
 		}),
 		GraphQLModule.forRoot({
-			autoSchemaFile: true
+			autoSchemaFile: true,
 		}),
 		CatsModule,
 	],
