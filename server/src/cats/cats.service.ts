@@ -16,4 +16,8 @@ export class CatsService {
 	async findAll(): Promise<Cat[]> {
 		return this.catModel.find().exec();
 	}
+
+	async findOne(id: string): Promise<Cat> {
+		return this.catModel.findById(id).exec();
+	}
 }
