@@ -8,21 +8,23 @@ import { AppService } from './app.service';
 import { CatsModule } from './cats/cats.module';
 import { __prod__ } from './util/constants';
 import { AuthModule } from './auth/auth.module';
+import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core/dist/plugin/landingPage/default';
+import { PersonModule } from './person/person.module';
+import { EntryModule } from './entry/entry.module';
 
 @Module({
 	// corss-env
 	imports: [
+		AuthModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
 			envFilePath: `config/.env.${__prod__ ? 'production' : 'development'}`,
 		}),
 		MongooseModule.forRootAsync({
 			imports: [ConfigModule],
-			connectionName: 'cats',
 			useFactory: async (configService: ConfigService) => {
 				return {
 					uri: configService.get<string>('MONGODB_URI2'),
-					connectionName: 'cats',
 				};
 			},
 			inject: [ConfigService],
@@ -30,10 +32,14 @@ import { AuthModule } from './auth/auth.module';
 		GraphQLModule.forRoot({
 			// autoSchemaFile: true,
 			autoSchemaFile: './src/schema.gql', // join(process.cwd(), 'src/schema.gql')
-			sortSchema: true,
+			// playground: false,
+			// plugins: [ApolloServerPluginLandingPageLocalDefault()],
+			// sortSchema: true,
 		}),
 		CatsModule,
+		EntryModule,
 		AuthModule,
+		PersonModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

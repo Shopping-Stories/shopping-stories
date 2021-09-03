@@ -5,23 +5,25 @@ import { Document, ObjectId } from 'mongoose';
 export type CatDocument = Cat & Document;
 
 @Schema()
-@ObjectType('Cat')
+@ObjectType('Cat', { description: 'Cat Object' })
 export class Cat {
-	@Field()
-	id: string;
+	@Field({ description: 'String of MongoDB ObjectId' })
+	public get id(): string {
+		return `${this._id}`; // Converts type ObjectId of _id to String
+	}
 
 	_id: ObjectId;
 
 	@Prop({ required: true })
-	@Field()
+	@Field({ description: 'Name of the Cat' })
 	name: string;
 
 	@Prop({ required: true })
-	@Field((type) => Int)
+	@Field((type) => Int, { description: 'Age of the Cat' })
 	age: number;
 
 	@Prop({ required: true })
-	@Field()
+	@Field({ description: 'Breed of the Cat' })
 	breed: string;
 }
 
