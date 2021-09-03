@@ -19,7 +19,7 @@ export class CatResolver {
 		return this.catsService.findAll();
 	}
 
-	@Query(returns => Cat)
+	@Query((returns) => Cat)
 	async findCat(@Args('id') id: string) {
 		return this.catsService.findOne(id);
 	}

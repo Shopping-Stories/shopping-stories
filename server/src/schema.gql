@@ -1,0 +1,40 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Cat {
+  age: Int!
+  breed: String!
+  id: String!
+  name: String!
+}
+
+input CreateCatDto {
+  age: Float!
+  breed: String!
+  name: String!
+}
+
+input LoginDto {
+  password: String!
+  username: String!
+}
+
+type Mutation {
+  createCat(createCatDto: CreateCatDto!): Cat!
+  register(registerDto: RegisterDto!): String
+}
+
+type Query {
+  findCat(id: String!): Cat!
+  findCats: [Cat!]
+  login(loginDto: LoginDto!): String
+}
+
+input RegisterDto {
+  email: String!
+  family_name: String!
+  given_name: String!
+  name: String!
+  password: String!
+}
