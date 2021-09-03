@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import {
 	Resolver,
 	Query,
@@ -5,21 +6,31 @@ import {
 	Args,
 	Parent,
 	ResolveField,
+	Context,
 } from '@nestjs/graphql';
+import { CurrentUser } from 'src/current-user';
+import { GqlAuthGuard } from '../gqlAuthGuard';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
-import { Cat } from './schemas/cat.schema';
+import { Cat, CatSchema } from './cat.schema';
 
 @Resolver((of) => Cat)
 export class CatResolver {
 	constructor(private catsService: CatsService) {}
 
-	@Query((returns) => [Cat], { nullable: true })
-	async findCats() {
+	@Query((returns) => [Cat], {
+		nullable: true,
+		description: 'Find all Cats in the database',
+	})
+	// @UseGuards(GqlAuthGuard)
+	async findCats(@CurrentUser() user: any) {
 		return this.catsService.findAll();
 	}
 
-	@Query((returns) => Cat)
+	@Query((returns) => Cat, {
+		nullable: true,
+		description: 'Find a Cat by their ID',
+	})
 	async findCat(@Args('id') id: string) {
 		return this.catsService.findOne(id);
 	}
@@ -29,8 +40,8 @@ export class CatResolver {
 		return this.catsService.create(createCatDto);
 	}
 
-	@ResolveField()
-	async id(@Parent() cat: Cat) {
-		return cat._id + '';
-	}
+	// @ResolveField()
+	// async id(@Parent() cat: Cat) {
+	// 	return cat._id + '';
+	// }
 }
