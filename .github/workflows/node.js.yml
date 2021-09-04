@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-2016]
-        node-version: [14.x] # [14.x, 16.x]
+        node-version: [14.x, 16.x]
     steps:
       - name: Set working directory
         uses: actions/checkout@v2
