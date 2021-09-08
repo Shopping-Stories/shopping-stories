@@ -17,6 +17,86 @@ type Cat {
   breed: String!
 }
 
+type AccessToken {
+  accessToken: String!
+}
+
+type MoneyObject {
+  """Number of pounds"""
+  L: Float!
+
+  """Number of shillings"""
+  S: Float!
+
+  """Number of Pence"""
+  D: Float!
+}
+
+type ItemEntry {
+  """Quantity of item"""
+  ItemQuantity: Float!
+
+  """Item descriptors"""
+  Qualifier: String!
+
+  """Item name"""
+  Item: String!
+
+  """Price per unit"""
+  UnitPrice: String!
+
+  """"""
+  TransactionCost: String!
+
+  """Money used in transaction"""
+  Money: MoneyObject!
+}
+
+type NoteObject {
+  """"""
+  NoteNum: Float!
+
+  """"""
+  TotalWeight: Float!
+
+  """"""
+  BarrelWeight: Float!
+
+  """"""
+  TobaccoWeight: Float!
+}
+
+type TobaccoRateObject {
+  """"""
+  MoneyType: String!
+
+  """"""
+  TobaccoAmount: Float!
+
+  """"""
+  RateForTobacco: MoneyObject!
+
+  """"""
+  CaskInTransaction: Float!
+
+  """"""
+  CasksSoldFor: MoneyObject!
+}
+
+type TobaccoEntryObject {
+  """words"""
+  Entry: String!
+
+  """Signifies which person is represented in the exchange"""
+  Mark: String!
+
+  """"""
+  Notes: [NoteObject!]!
+
+  """"""
+  Money: [TobaccoRateObject!]!
+}
+
 """Single Date"""
 type DateObject {
   """day of date"""
@@ -40,7 +120,7 @@ scalar DateTime
 """Single Entry"""
 type Entry {
   """String of MongoDB ObjectId"""
-  id: String!
+  id: ID!
 
   """Reel of the Entry"""
   Reel: Int!
@@ -52,7 +132,7 @@ type Entry {
   Store: String!
 
   """Year the entry was made"""
-  Year: Int!
+  Year: [Int!]!
 
   """Folio the entry is contained in"""
   FolioPage: Int!
@@ -86,6 +166,8 @@ type Entry {
 
   """Date of entry"""
   Date: DateObject!
+  ItemEntry: [ItemEntry!]
+  TobaccoEntry: TobaccoEntryObject
 
   """People referenced in this entry"""
   People: [String!]!
@@ -140,7 +222,7 @@ type Entry {
 }
 
 type Query {
-  login(loginDto: LoginDto!): String
+  login(loginDto: LoginDto!): AccessToken
 
   """Find all Cats in the database"""
   findCats: [Cat!]
@@ -190,7 +272,7 @@ input CreateEntryDto {
   Store: String!
 
   """Year the entry was made"""
-  Year: Int!
+  Year: [Int!]!
 
   """Folio the entry is contained in"""
   FolioPage: Int!
@@ -224,6 +306,8 @@ input CreateEntryDto {
 
   """Date of entry"""
   Date: InputDate!
+  ItemEntry: [InputItem!]
+  TobaccoEntry: InputTobaccoEntry
 
   """People referenced in this entry"""
   People: [String!]!
@@ -289,4 +373,80 @@ input InputDate {
 
   """complete date"""
   date: DateTime!
+}
+
+input InputItem {
+  """Quantity of item"""
+  ItemQuantity: Float!
+
+  """Item descriptors"""
+  Qualifier: String!
+
+  """Item name"""
+  Item: String!
+
+  """Price per unit"""
+  UnitPrice: String!
+
+  """"""
+  TransactionCost: String!
+
+  """Money used in transaction"""
+  Money: InputMoney!
+}
+
+input InputMoney {
+  """Number of pounds"""
+  L: Float!
+
+  """Number of shillings"""
+  S: Float!
+
+  """Number of Pence"""
+  D: Float!
+}
+
+input InputTobaccoEntry {
+  """words"""
+  Entry: String!
+
+  """Signifies which person is represented in the exchange"""
+  Mark: String!
+
+  """"""
+  Notes: [InputNote!]!
+
+  """"""
+  Money: [InputTobaccoRate!]!
+}
+
+input InputNote {
+  """"""
+  NoteNum: Float!
+
+  """"""
+  TotalWeight: Float!
+
+  """"""
+  BarrelWeight: Float!
+
+  """"""
+  TobaccoWeight: Float!
+}
+
+input InputTobaccoRate {
+  """"""
+  MoneyType: String!
+
+  """"""
+  TobaccoAmount: Float!
+
+  """"""
+  RateForTobacco: InputMoney!
+
+  """"""
+  CaskInTransaction: Float!
+
+  """"""
+  CasksSoldFor: InputMoney!
 }

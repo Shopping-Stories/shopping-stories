@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { Headers, UseGuards } from '@nestjs/common';
 import {
 	Resolver,
 	Query,
@@ -13,6 +13,7 @@ import { GqlAuthGuard } from '../gqlAuthGuard';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { Cat, CatSchema } from './cat.schema';
+import { MyJWTAuthGuard } from 'src/auth/auth.guard';
 
 @Resolver((of) => Cat)
 export class CatResolver {
@@ -23,7 +24,10 @@ export class CatResolver {
 		description: 'Find all Cats in the database',
 	})
 	// @UseGuards(GqlAuthGuard)
-	async findCats(@CurrentUser() user: any) {
+	@UseGuards(MyJWTAuthGuard)
+	async findCats(@CurrentUser() user: any, @Context() ctx) {
+		console.log(ctx.req.cookies);
+		console.log(user);
 		return this.catsService.findAll();
 	}
 

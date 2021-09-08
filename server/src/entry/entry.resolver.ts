@@ -1,10 +1,16 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Cat } from 'src/cats/cat.schema';
+import {
+	Args,
+	Mutation,
+	Parent,
+	Query,
+	ResolveField,
+	Resolver,
+} from '@nestjs/graphql';
 import { CreateEntryDto } from './dto/create-entry.dto';
 import { Entry } from './entry.schema';
 import { EntryService } from './entry.service';
 
-@Resolver()
+@Resolver((of) => Entry)
 export class EntryResolver {
 	constructor(private entryService: EntryService) {}
 
@@ -29,4 +35,17 @@ export class EntryResolver {
 	async createEntry(@Args('createEntryDto') createEntryDto: CreateEntryDto) {
 		return this.entryService.createEntry(createEntryDto);
 	}
+
+	// @ResolveField()
+	// async Entry(@Parent() entry: Entry) {
+
+	// 	if (typeof entry.Entry.value === "number"){
+	// 		let val = new IntBox();
+	// 		val.value = entry.Entry.value;
+	// 		return val;
+	// 	}
+	// 	let val = new StringBox();
+	// 	val.value = entry.Entry.value;
+	// 	return val;
+	// }
 }

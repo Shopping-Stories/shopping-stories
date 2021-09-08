@@ -1,17 +1,99 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
+import { createUnionType, Field, InputType, Int } from '@nestjs/graphql';
 
+@InputType('InputMoney')
+export class InputMoney {
+	@Field({ description: 'Number of pounds' })
+	L: number;
+
+	@Field({ description: 'Number of shillings' })
+	S: number;
+
+	@Field({ description: 'Number of Pence' })
+	D: number;
+}
+
+@InputType('InputItem')
+export class InputItem {
+	@Field({ description: 'Quantity of item' })
+	ItemQuantity: number;
+
+	@Field({ description: 'Item descriptors' })
+	Qualifier: string;
+
+	@Field({ description: 'Item name' })
+	Item: string;
+
+	@Field({ description: 'Price per unit' })
+	UnitPrice: string;
+
+	@Field({ description: '' })
+	TransactionCost: string;
+
+	@Field((type) => InputMoney, { description: 'Money used in transaction' })
+	Money: InputMoney;
+}
+
+@InputType('InputNote')
+export class InputNote {
+	@Field({ description: '' })
+	NoteNum: number;
+
+	@Field({ description: '' })
+	TotalWeight: number;
+
+	@Field({ description: '' })
+	BarrelWeight: number;
+
+	@Field({ description: '' })
+	TobaccoWeight: number;
+}
+
+@InputType('InputTobaccoRate')
+export class InputTobaccoRate {
+	@Field({ description: '' })
+	MoneyType: string;
+
+	@Field({ description: '' })
+	TobaccoAmount: number;
+
+	@Field(type => InputMoney, { description: '' })
+	RateForTobacco: InputMoney;
+
+	@Field({ description: '' })
+	CaskInTransaction: number;
+
+	@Field({ description: '', })
+	CasksSoldFor: InputMoney;
+}
+
+@InputType('InputTobaccoEntry')
+export class InputTobaccoEntry {
+	@Field({ description: 'words' })
+	Entry: string;
+
+	@Field({
+		description: 'Signifies which person is represented in the exchange',
+	})
+	Mark: string;
+
+	@Field((type) => [InputNote], { description: '' })
+	Notes: InputNote[];
+
+	@Field(type => [InputTobaccoRate], { description: '' })
+	Money: InputTobaccoRate[];
+}
 @InputType()
 export class InputDate {
-	@Field((type) => Int, {description: "day of date"})
+	@Field((type) => Int, { description: 'day of date' })
 	day: number;
 
-	@Field((type) => Int, {description: "month of date"})
+	@Field((type) => Int, { description: 'month of date' })
 	month: number;
 
-	@Field((type) => Int, {description: "year of date"})
+	@Field((type) => Int, { description: 'year of date' })
 	year: number;
 
-	@Field((type) => Date, {description: "complete date"})
+	@Field((type) => Date, { description: 'complete date' })
 	date: Date;
 }
 
@@ -26,7 +108,7 @@ export class CreateEntryDto {
 	@Field((type) => String, { description: 'Name of Store' })
 	Store: string;
 
-	@Field((type) => Int, { description: 'Year the entry was made' })
+	@Field((type) => [Int], { description: 'Year the entry was made' })
 	Year: [number];
 
 	@Field((type) => Int, { description: 'Folio the entry is contained in' })
@@ -35,7 +117,7 @@ export class CreateEntryDto {
 	@Field((type) => String, { description: 'ID of entry within Folio' })
 	EntryID: string;
 
-	@Field((type) => String, { description: 'Prefix of account holder\'s name' })
+	@Field((type) => String, { description: "Prefix of account holder's name" })
 	Prefix: string;
 
 	@Field((type) => String, { description: 'First name of account holder' })
@@ -62,7 +144,11 @@ export class CreateEntryDto {
 	@Field((type) => InputDate, { description: 'Date of entry' })
 	Date: InputDate;
 
-	// Entry: Object;
+	@Field((type) => [InputItem], { nullable: true })
+	ItemEntry?: InputItem[]
+
+	@Field((type) => InputTobaccoEntry, {nullable: true})
+	TobaccoEntry?: InputTobaccoEntry;
 
 	@Field((type) => [String], { description: 'People referenced in this entry' })
 	People: [string];
@@ -83,12 +169,14 @@ export class CreateEntryDto {
 	Quantity: number;
 
 	@Field((type) => String, { description: 'Commodity being purchased' })
-	Commodity: string
+	Commodity: string;
 
 	@Field((type) => Int, { description: 'Sterling pounds used in transaction' })
 	L1: number;
 
-	@Field((type) => Int, { description: 'Sterling shillings used in transaction' })
+	@Field((type) => Int, {
+		description: 'Sterling shillings used in transaction',
+	})
 	S1: number;
 
 	@Field((type) => Int, { description: 'Sterling pence used in transaction' })
@@ -100,16 +188,22 @@ export class CreateEntryDto {
 	@Field((type) => Int, { description: 'Colonial pounds used in transaction' })
 	L2: number;
 
-	@Field((type) => Int, { description: 'Colonial shillings used in transaction' })
+	@Field((type) => Int, {
+		description: 'Colonial shillings used in transaction',
+	})
 	S2: number;
 
 	@Field((type) => Int, { description: 'Colonial pence used in transaction' })
 	D2: number;
 
-	@Field((type) => Int, { description: 'Indicates if item would survive till today' })
+	@Field((type) => Int, {
+		description: 'Indicates if item would survive till today',
+	})
 	ArchMat: number;
 
-	@Field((type) => Int, { description: 'Indicates if someone or someplace is mentioned in the entry' })
+	@Field((type) => Int, {
+		description: 'Indicates if someone or someplace is mentioned in the entry',
+	})
 	GenMat: number;
 
 	@Field((type) => String, { description: 'comments on the entry' })

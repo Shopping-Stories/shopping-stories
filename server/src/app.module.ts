@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { MongooseModule } from '@nestjs/mongoose';
-import { join } from 'path/posix';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CatsModule } from './cats/cats.module';
@@ -13,7 +12,6 @@ import { PersonModule } from './person/person.module';
 import { EntryModule } from './entry/entry.module';
 
 @Module({
-	// corss-env
 	imports: [
 		AuthModule,
 		ConfigModule.forRoot({
@@ -35,6 +33,11 @@ import { EntryModule } from './entry/entry.module';
 			// playground: false,
 			// plugins: [ApolloServerPluginLandingPageLocalDefault()],
 			// sortSchema: true,
+			context: ({ req, res }) => ({ req, res }),
+			// cors: {
+			// 	origin: 'http://localhost:3000',
+			// 	credentials: true,
+			// },
 		}),
 		CatsModule,
 		EntryModule,

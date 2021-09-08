@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
 	AuthenticationDetails,
+	CognitoRefreshToken,
 	CognitoUser,
 	CognitoUserAttribute,
 	CognitoUserPool,
+	CognitoUserSession,
 } from 'amazon-cognito-identity-js';
+import { request } from 'express';
 import { AuthConfig } from './auth.config';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -19,7 +22,7 @@ export class AuthService {
 		});
 	}
 
-	authenticateUser({ username, password }: LoginDto) {
+	loginUser({ username, password }: LoginDto): Promise<CognitoUserSession> {
 		const name = username;
 
 		const authenticationDetails = new AuthenticationDetails({
@@ -67,4 +70,31 @@ export class AuthService {
 			);
 		});
 	}
+
+	// refreshTokens(refresh: string, decodedAccessToken): Promise<CognitoUserSession> {
+	// 	const token = new CognitoRefreshToken({ RefreshToken: refresh })
+	// 	const user = this.userPool.getCurrentUser();
+
+	// 	this.userPool.
+	// 	.makeUnauthenticatedRequest('initiateAuth', {
+	// 	ClientId: this.authConfig.clientId,
+	// 	AuthFlow: 'REFRESH_TOKEN_AUTH',
+	// 	AuthParameters: {
+	// 		'REFRESH_TOKEN': token // client refresh JWT
+	// 	}
+	// 	}, (err, authResult) => {
+	// 	if (err) {
+	// 		console.error(err);
+	// 	}
+	// 		console.log(authResult); // contains new session
+	// 	})
+	// 	console.log(user);
+	// 	return new Promise((resolve, reject) => {
+	// 		user.refreshSession(token, (err, session) => {
+	// 			if (err) reject(err);
+	// 			console.log(typeof session)
+	// 			resolve(session);
+	// 		});
+	// 	});
+	// }
 }

@@ -6,7 +6,9 @@ import { Entry, EntryDocument } from './entry.schema';
 
 @Injectable()
 export class EntryService {
-	constructor(@InjectModel(Entry.name) private entryModel: Model<EntryDocument>) {}
+	constructor(
+		@InjectModel(Entry.name) private entryModel: Model<EntryDocument>,
+	) {}
 
 	async createEntry(createEntryDto: CreateEntryDto): Promise<Entry> {
 		const createdCat = new this.entryModel(createEntryDto);
