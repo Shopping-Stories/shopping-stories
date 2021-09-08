@@ -2,7 +2,13 @@ import 'reflect-metadata';
 import { Ctx, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Cat, CatModel } from './cat.schema';
 import { CatService } from './cat.service';
-import { AuthGuard, Auth, ResolveTime, ConnectDB, ConnectDB2 } from '../auth/AuthGuard';
+import {
+	AuthGuard,
+	Auth,
+	ResolveTime,
+	ConnectDB,
+	ConnectDB2,
+} from '../auth/AuthGuard';
 import { MyContext } from '../../pages/api/graphql';
 
 @Resolver((of) => Cat)

@@ -1,6 +1,8 @@
-import mongoose, { Document, ObjectId } from 'mongoose';
 import { getModelForClass, prop } from '@typegoose/typegoose';
+import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, ObjectType } from 'type-graphql';
+
+export type CatDocument = Cat & Document;
 
 @ObjectType({ description: 'Cat Object' })
 export class Cat {
@@ -25,4 +27,3 @@ export class Cat {
 }
 
 export const CatModel = mongoose.models.Cat || getModelForClass(Cat);
-export type CatDocument = Cat & Document;

@@ -1,7 +1,6 @@
-import { getClassForDocument } from '@typegoose/typegoose';
 import { Model } from 'mongoose';
 import { Cat, CatDocument } from './cat.schema';
-import { CreateCatDto } from './dto/create-cat.dto';
+import { CreateCatDto } from './input/create-cat.input';
 
 export class CatService {
 	constructor(private catModel: Model<CatDocument>) {

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"backend/**/*.ts\" \"components/**/*.ts\" \"tests/**/*.ts\" \"pages/**/*.ts\" \"pages/**/*.tsx\"",
+    "format": "prettier --write \"server/**/*.ts\" \"components/**/*.ts\" \"tests/**/*.ts\" \"pages/**/*.ts\" \"pages/**/*.tsx\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

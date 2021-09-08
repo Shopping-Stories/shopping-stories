@@ -1,7 +1,12 @@
 import * as Axios from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { JWK } from 'jwk-to-pem';
-import { MiddlewareFn, MiddlewareInterface, NextFn, ResolverData } from 'type-graphql';
+import {
+	MiddlewareFn,
+	MiddlewareInterface,
+	NextFn,
+	ResolverData,
+} from 'type-graphql';
 import { MyContext } from '../../pages/api/graphql';
 import dbConnect from '../config/dbConnect';
 import { logger } from '../config/logger';
@@ -138,7 +143,33 @@ export const ConnectDB: MiddlewareFn<MyContext> = async (_, next) => {
 
 export class ConnectDB2 implements MiddlewareInterface<MyContext> {
 	async use({ context, info }: ResolverData<MyContext>, next: NextFn) {
-	await dbConnect();
-	return next();
+		await dbConnect();
+		return next();
+	}
 }
+
+import { Model, Document } from 'mongoose';
+import { getClassForDocument } from '@typegoose/typegoose';
+
+export const TypegooseMiddleware: MiddlewareFn = async (_, next) => {
+	const result = await next();
+
+	if (Array.isArray(result)) {
+		return result.map((item) =>
+			item instanceof Model ? convertDocument(item) : item,
+		);
+	}
+
+	if (result instanceof Model) {
+		return convertDocument(result);
+	}
+
+	return result;
+};
+
+function convertDocument(doc: Document) {
+	const convertedDocument = doc.toObject();
+	const DocumentClass = getClassForDocument(doc)!;
+	Object.setPrototypeOf(convertedDocument, DocumentClass.prototype);
+	return convertedDocument;
 }

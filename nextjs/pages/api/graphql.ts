@@ -6,6 +6,7 @@ import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-co
 import HelloResolver from '../../server/resolvers/hello';
 import CatResolver from '../../server/cat/cat.resolver';
 import { logger } from '../../server/config/logger';
+import EntryResolver from '../../server/entry/entry.resolver';
 
 export interface MyContext {
 	req: NextApiRequest;
@@ -17,7 +18,7 @@ let apolloServerHandler: (req: any, res: any) => Promise<void>;
 const getApolloServerHandler = async () => {
 	if (!apolloServerHandler) {
 		const schema = await buildSchema({
-			resolvers: [HelloResolver, CatResolver],
+			resolvers: [HelloResolver, CatResolver, EntryResolver],
 		});
 		let apolloServer = new ApolloServer({
 			schema,
