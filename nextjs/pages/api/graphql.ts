@@ -1,12 +1,13 @@
-import 'reflect-metadata';
-import { ApolloServer } from 'apollo-server-micro';
-import { buildSchema } from 'type-graphql';
-import { NextApiRequest, NextApiResponse, PageConfig } from 'next';
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
-import HelloResolver from '../../server/resolvers/hello';
+import { ApolloServer } from 'apollo-server-micro';
+import { NextApiRequest, NextApiResponse, PageConfig } from 'next';
+import * as path from 'path';
+import 'reflect-metadata';
+import { buildSchema } from 'type-graphql';
 import CatResolver from '../../server/cat/cat.resolver';
-import { logger } from '../../server/config/logger';
 import EntryResolver from '../../server/entry/entry.resolver';
+import HelloResolver from '../../server/resolvers/hello';
+import { UserResolver } from '../../server/user/user.resolver';
 
 export interface MyContext {
 	req: NextApiRequest;
@@ -18,11 +19,16 @@ let apolloServerHandler: (req: any, res: any) => Promise<void>;
 const getApolloServerHandler = async () => {
 	if (!apolloServerHandler) {
 		const schema = await buildSchema({
-			resolvers: [HelloResolver, CatResolver, EntryResolver],
+			resolvers: [HelloResolver, CatResolver, EntryResolver, UserResolver],
+			emitSchemaFile: {
+				path: './server/schema.gql',
+				commentDescriptions: true,
+				sortedSchema: false,
+			},
 		});
 		let apolloServer = new ApolloServer({
 			schema,
-			// plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
+			plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
 			context: ({ req, res }) => ({ req, res }),
 		});
 		await apolloServer.start();

@@ -6,109 +6,135 @@ export type EntryDocument = Entry & Document;
 
 @ObjectType('MoneyObject')
 export class MoneyObject {
+	@prop()
 	@Field({ description: 'Number of pounds' })
 	L: number;
 
+	@prop()
 	@Field({ description: 'Number of shillings' })
 	S: number;
 
+	@prop()
 	@Field({ description: 'Number of Pence' })
 	D: number;
 }
 
 @ObjectType('ItemEntry')
 export class ItemEntry {
+	@prop()
 	@Field({ description: 'Quantity of item' })
 	ItemQuantity: number;
 
+	@prop()
 	@Field({ description: 'Item descriptors' })
 	Qualifier: string;
 
+	@prop()
 	@Field({ description: 'Item name' })
 	Item: string;
 
+	@prop()
 	@Field({ description: 'Price per unit' })
 	UnitPrice: string;
 
+	@prop()
 	@Field({ description: '' })
 	TransactionCost: string;
 
+	@prop({ type: () => MoneyObject })
 	@Field((type) => MoneyObject, { description: 'Money used in transaction' })
 	Money: MoneyObject;
 }
 
 @ObjectType('NoteObject')
 export class NoteObject {
+	@prop()
 	@Field({ description: '' })
 	NoteNum: number;
 
+	@prop()
 	@Field({ description: '' })
 	TotalWeight: number;
 
+	@prop()
 	@Field({ description: '' })
 	BarrelWeight: number;
 
+	@prop()
 	@Field({ description: '' })
 	TobaccoWeight: number;
 }
 
 @ObjectType('TobaccoRateObject')
 export class TobaccoRateObject {
+	@prop()
 	@Field({ description: '' })
 	MoneyType: string;
 
+	@prop()
 	@Field({ description: '' })
 	TobaccoAmount: number;
 
+	@prop({ type: () => MoneyObject })
 	@Field((type) => MoneyObject, { description: '' })
 	RateForTobacco: MoneyObject;
 
+	@prop()
 	@Field({ description: '' })
 	CaskInTransaction: number;
 
+	@prop({ type: () => MoneyObject })
 	@Field({ description: '' })
 	CasksSoldFor: MoneyObject;
 }
 
 @ObjectType('TobaccoEntryObject')
 export class TobaccoEntryObject {
+	@prop()
 	@Field({ description: 'words' })
 	Entry: string;
 
+	@prop()
 	@Field({
 		description: 'Signifies which person is represented in the exchange',
 	})
 	Mark: string;
 
+	@prop({ type: () => [NoteObject] })
 	@Field((type) => [NoteObject], { description: '' })
 	Notes: NoteObject[];
 
+	@prop({ type: () => [TobaccoRateObject] })
 	@Field((type) => [TobaccoRateObject], { description: '' })
 	Money: TobaccoRateObject[];
 }
 
-// export const entryUnion = createUnionType({
-// 	name: 'entryUnion',
-// 	types: () => [ItemEntry, TobaccoEntryObject],
-// 	resolveType(value) {
-// 		if (typeof value.Money !== undefined) {
-// 			return ItemEntry;
-// 		}
-// 		return TobaccoEntryObject;
-// 	},
-// });
+export const EntryUnion = createUnionType({
+	name: 'EntryUnion',
+	types: () => [ItemEntry, TobaccoEntryObject],
+	resolveType(value) {
+		if (typeof value.Money !== undefined) {
+			return ItemEntry;
+		}
+		return TobaccoEntryObject;
+	},
+});
 
 @ObjectType('DateObject', { description: 'Single Date' })
 export class DateObject {
+	@prop()
 	@Field((type) => Int, { description: 'day of date' })
 	day: number;
 
+	@prop()
 	@Field((type) => Int, { description: 'month of date' })
 	month: number;
 
+	@prop()
 	@Field((type) => Int, { description: 'year of date' })
 	year: number;
 
+	@prop()
 	@Field((type) => Date, { description: 'complete date' })
 	date: Date;
 }
@@ -134,9 +160,9 @@ export class Entry {
 	@Field((type) => String, { description: 'Name of Store' })
 	Store: string;
 
-	@prop({ required: true })
+	@prop({ type: () => [Number], required: true })
 	@Field((type) => [Int], { description: 'Year the entry was made' })
-	Year: [number];
+	Year: number[];
 
 	@prop({ required: true })
 	@Field((type) => Int, { description: 'Folio the entry is contained in' })
@@ -178,25 +204,25 @@ export class Entry {
 	@Field((type) => String, { description: 'Debt or Credit transaction' })
 	DrCr: string;
 
-	@prop({ required: true })
+	@prop({ type: () => DateObject, required: true })
 	@Field((type) => DateObject, { description: 'Date of entry' })
 	Date: DateObject;
 
-	@prop({ name: 'ItemEntry', type: Object, default: null })
+	@prop({ name: 'ItemEntry', type: () => [ItemEntry], default: null })
 	@Field((type) => [ItemEntry], { nullable: true })
 	ItemEntry?: ItemEntry[] | null;
 
-	@prop({ name: 'TobaccoEntry', type: Object, default: null })
+	@prop({ name: 'TobaccoEntry', type: () => TobaccoEntryObject, default: null })
 	@Field((type) => TobaccoEntryObject, { nullable: true })
 	TobaccoEntry?: TobaccoEntryObject | null;
 
-	@prop({ required: true })
+	@prop({ type: () => [String], required: true })
 	@Field((type) => [String], { description: 'People referenced in this entry' })
-	People: [string];
+	People: string[];
 
-	@prop({ required: true })
+	@prop({ type: () => [String], required: true })
 	@Field((type) => [String], { description: 'Places referenced in this entry' })
-	Places: [string];
+	Places: string[];
 
 	@prop({ required: true })
 	@Field((type) => Int, { description: 'Reference to another Folio page' })

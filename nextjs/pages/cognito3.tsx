@@ -1,7 +1,7 @@
 import { CognitoUser } from '@aws-amplify/auth';
 import Amplify, { Auth } from 'aws-amplify';
 import { useState } from 'react';
-import { CognitoConfig } from '../server/config/env.config';
+import { CognitoConfig } from '../server/config/constants.config';
 
 Amplify.configure({
 	Auth: {
