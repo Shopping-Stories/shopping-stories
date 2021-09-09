@@ -1,3 +1,5 @@
+export const __prod__ = process.env.NODE_ENV === 'production';
+
 export class CognitoConfig {
 	public static readonly UserPoolId = process.env
 		.NEXT_PUBLIC_COGNITO_USER_POOL_ID as string;

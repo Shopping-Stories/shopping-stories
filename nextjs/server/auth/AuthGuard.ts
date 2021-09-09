@@ -62,7 +62,7 @@ export class Claim {
 	client_id!: string;
 }
 
-export const cognitoIssuer = `https://cognito-idp.${process.env.COGNITO_REGION}.amazonaws.com/${process.env.COGNITO_USER_POOL_ID}`;
+export const cognitoIssuer = `https://cognito-idp.${CognitoConfig.Region}.amazonaws.com/${CognitoConfig.UserPoolId}`;
 
 export const getPublicKeys = async (): Promise<MapOfKidToPublicKey> => {
 	let cacheKeys: MapOfKidToPublicKey | undefined;
@@ -96,14 +96,13 @@ export const Auth: MiddlewareFn<MyContext> = async ({ context }, next) => {
 
 	let result: any;
 	try {
-		console.log(`user claim verify invoked for ${JSON.stringify(token)}`);
+		logger.info(`user claim verify invoked for ${JSON.stringify(token)}`);
 
 		const tokenSections = (token || '').split('.');
 		if (tokenSections.length < 2) {
 			throw new Error('requested token is invalid');
 		}
 
-		//
 		const headerJSON = Buffer.from(tokenSections[0], 'base64').toString('utf8');
 		const header = JSON.parse(headerJSON) as TokenHeader;
 
@@ -125,13 +124,13 @@ export const Auth: MiddlewareFn<MyContext> = async ({ context }, next) => {
 		if (claim.token_use !== 'access') {
 			throw new Error('claim use is not access');
 		}
-		console.log(JSON.stringify(result, undefined, 4));
-		console.log(`claim confirmed for ${claim.username}`);
+		// console.log(JSON.stringify(result, undefined, 4));
+		logger.info(`claim confirmed for ${claim.username}`);
 		(req as any).user = result;
 		return next();
-	} catch (error) {
+	} catch (error: any) {
 		// result = { userName: '', clientId: '', error, isValid: false };
-		console.error(error);
+		logger.error(error);
 		throw new Error('Unauthorized: invalid token');
 	}
 };
@@ -150,8 +149,9 @@ export class ConnectDB2 implements MiddlewareInterface<MyContext> {
 
 import { Model, Document } from 'mongoose';
 import { getClassForDocument } from '@typegoose/typegoose';
+import { CognitoConfig } from '../config/constants.config';
 
-export const TypegooseMiddleware: MiddlewareFn = async (_, next) => {
+export const DocToObject: MiddlewareFn = async (_, next) => {
 	const result = await next();
 
 	if (Array.isArray(result)) {
