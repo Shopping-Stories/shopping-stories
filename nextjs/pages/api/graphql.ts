@@ -1,12 +1,12 @@
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 import { ApolloServer } from 'apollo-server-micro';
 import { NextApiRequest, NextApiResponse, PageConfig } from 'next';
-import * as path from 'path';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
+import { JWTAuthChecker } from '../../server/middleware/auth.middleware';
 import CatResolver from '../../server/cat/cat.resolver';
 import EntryResolver from '../../server/entry/entry.resolver';
-import HelloResolver from '../../server/resolvers/hello';
+import HelloResolver from '../../server/hello.resolver';
 import { UserResolver } from '../../server/user/user.resolver';
 
 export interface MyContext {
@@ -25,6 +25,7 @@ const getApolloServerHandler = async () => {
 				commentDescriptions: true,
 				sortedSchema: false,
 			},
+			authChecker: JWTAuthChecker,
 		});
 		let apolloServer = new ApolloServer({
 			schema,

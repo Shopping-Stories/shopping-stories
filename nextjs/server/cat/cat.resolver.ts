@@ -1,15 +1,12 @@
 import 'reflect-metadata';
-import { Ctx, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { Authorized, Ctx, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Cat, CatModel } from './cat.schema';
 import { CatService } from './cat.service';
 import {
-	AuthGuard,
-	Auth,
-	ResolveTime,
-	ConnectDB,
-	ConnectDB2,
-} from '../auth/AuthGuard';
+	Roles
+} from '../middleware/auth.middleware';
 import { MyContext } from '../../pages/api/graphql';
+import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 
 @Resolver((of) => Cat)
 export default class CatResolver {
@@ -20,6 +17,7 @@ export default class CatResolver {
 	}
 
 	// @UseMiddleware(Auth, ResolveTime)
+	@Authorized([Roles.Admin, Roles.Moderator])
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Query((returns) => [Cat], { nullable: true })
 	async findCats(@Ctx() context: MyContext): Promise<Cat[]> {

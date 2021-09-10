@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Arg, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
-import { Auth, ConnectDB, DocToObject, ResolveTime } from '../auth/AuthGuard';
+import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 import { Entry, EntrySchema } from './entry.schema';
 import { EntryService } from './entry.service';
 import { CreateEntryInput } from './input/create-entry.input';
@@ -12,7 +12,7 @@ export default class EntryResolver {
 	}
 
 	// @UseMiddleware(Auth, ResolveTime)
-	@UseMiddleware(ResolveTime, ConnectDB, DocToObject)
+	@UseMiddleware(ResolveTime, ConnectDB)
 	@Query((returns) => [Entry], {
 		nullable: true,
 		description: 'Find all Cats in the database',
@@ -21,7 +21,7 @@ export default class EntryResolver {
 		return this.entryService.findAllEntries();
 	}
 
-	@UseMiddleware(ResolveTime, ConnectDB, DocToObject)
+	@UseMiddleware(ResolveTime, ConnectDB)
 	@Query((returns) => Entry, {
 		nullable: true,
 		description: 'Find an entry by id',
@@ -30,7 +30,7 @@ export default class EntryResolver {
 		return this.entryService.findOneEntry(id);
 	}
 
-	@UseMiddleware(ResolveTime, ConnectDB, DocToObject)
+	@UseMiddleware(ResolveTime, ConnectDB)
 	@Mutation((returns) => Entry)
 	async createEntry(
 		@Arg('createEntryInput') createEntryInput: CreateEntryInput,
