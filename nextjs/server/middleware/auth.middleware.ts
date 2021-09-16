@@ -2,9 +2,7 @@ import * as Axios from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { JWK } from 'jwk-to-pem';
 import { NextApiRequest } from 'next';
-import {
-	AuthChecker, ResolverData,
-} from 'type-graphql';
+import { AuthChecker, ResolverData } from 'type-graphql';
 import { MyContext } from '../../pages/api/graphql';
 import { CognitoConfig } from '../config/constants.config';
 import { logger } from '../config/logger';
@@ -90,8 +88,7 @@ export class Roles {
 export const JWTAuthChecker: AuthChecker<MyContext> = async (
 	{ context },
 	roles,
-	) => {
-
+) => {
 	// here we can read the user from context
 	// and check his permission in the db against the `roles` argument
 	// that comes from the `@Authorized` decorator, eg. ["ADMIN", "MODERATOR"]
@@ -141,15 +138,18 @@ export const JWTAuthChecker: AuthChecker<MyContext> = async (
 		(req as any).user = result;
 	} catch (error: any) {
 		logger.error(error);
+		if (error.name === 'TokenExpiredError') {
+			throw error;
+		}
 		throw new Error('Unauthorized: invalid token');
 	}
 	if (roles.length === 0) {
 		return true;
 	} else if (
 		roles
-		.map((role) =>
+			.map((role) =>
 				(req as RequestWithUser).user['cognito:groups'].includes(role),
-				)
+			)
 			.reduce((acc, cur) => acc || cur, false)
 	) {
 		return true;

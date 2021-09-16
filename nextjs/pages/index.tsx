@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
+import NextAuthTest from '../client/components/nextauth.component';
 import styles from '../styles/Home.module.css';
 
 const Home: NextPage = () => {
@@ -23,6 +24,8 @@ const Home: NextPage = () => {
 				</p>
 
 				<div className={styles.grid}>
+					<NextAuthTest />
+
 					<a href="https://nextjs.org/docs" className={styles.card}>
 						<h2>Documentation &rarr;</h2>
 						<p>Find in-depth information about Next.js features and API.</p>

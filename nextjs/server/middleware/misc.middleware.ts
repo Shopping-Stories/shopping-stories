@@ -1,9 +1,9 @@
-import { getClassForDocument } from "@typegoose/typegoose";
-import { Model, Document } from "mongoose";
-import { MiddlewareFn } from "type-graphql";
-import { MyContext } from "../../pages/api/graphql";
-import dbConnect from "../config/dbConnect";
-import { logger } from "../config/logger";
+import { getClassForDocument } from '@typegoose/typegoose';
+import { Model, Document } from 'mongoose';
+import { MiddlewareFn } from 'type-graphql';
+import { MyContext } from '../../pages/api/graphql';
+import dbConnect from '../config/dbConnect';
+import { logger } from '../config/logger';
 
 /**
  * This File is a collection of various middleware
@@ -41,7 +41,7 @@ export const DocToObject: MiddlewareFn = async (_, next) => {
 	if (Array.isArray(result)) {
 		return result.map((item) =>
 			item instanceof Model ? convertDocument(item) : item,
-			);
+		);
 	}
 
 	if (result instanceof Model) {
