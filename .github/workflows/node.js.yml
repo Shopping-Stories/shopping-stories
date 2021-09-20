@@ -32,7 +32,7 @@ jobs:
           echo MONGODB_URI =${{ secrets.MONGODB_URI }} >> .env.test
       
       - name: npm install # and test
-#         working-directory: ./nextjs
+        working-directory: ./nextjs
         run: |
           npm install
           npm run test
