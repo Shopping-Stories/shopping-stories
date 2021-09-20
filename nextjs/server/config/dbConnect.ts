@@ -46,4 +46,12 @@ async function dbConnect(uri?: string) {
 	return cached.conn;
 }
 
+export const dbClose = async () => {
+	let cached: any = (global as any).mongoose;
+
+	if (!cached) {
+		return await cached.conn.close();
+	}
+};
+
 export default dbConnect;

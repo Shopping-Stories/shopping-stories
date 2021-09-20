@@ -1,5 +1,6 @@
+import { mongoose } from '@typegoose/typegoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import dbConnect from '../config/dbConnect';
+import dbConnect, { dbClose } from '../config/dbConnect';
 import { CatModel } from './cat.schema';
 import CatService from './cat.service';
 
@@ -14,6 +15,8 @@ describe('Cat.Service', () => {
 
 	afterAll(async () => {
 		// The Server can be stopped again with
+		await dbClose();
+		await mongoose.connection.close();
 		await mongod.stop();
 	});
 
