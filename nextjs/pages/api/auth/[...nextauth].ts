@@ -26,7 +26,8 @@ export default NextAuth({
 		// 	return Promise.resolve(token);
 		// },
 		async jwt({ token, account, profile, user }) {
-			const isSignIn = !!user;
+			// @ts-ignore
+			const _isSignIn = !!user;
 
 			// Persist the OAuth access_token to the token right after signin
 			if (account) {
@@ -71,7 +72,7 @@ export default NextAuth({
 
 			return Promise.resolve(token);
 		},
-		async session({ session, token, user }) {
+		async session({ session, token }) {
 			(session!.user as any)!.family_name = token.family_name;
 			(session!.user as any)!.given_name = token.given_name;
 			// token.groups

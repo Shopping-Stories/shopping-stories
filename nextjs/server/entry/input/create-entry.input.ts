@@ -1,4 +1,4 @@
-import { createUnionType, Field, InputType, Int } from 'type-graphql';
+import { Field, InputType, Int } from 'type-graphql';
 
 @InputType('InputMoney')
 export class InputMoney {
@@ -29,7 +29,7 @@ export class InputItem {
 	@Field({ description: '' })
 	TransactionCost: string;
 
-	@Field((type) => InputMoney, { description: 'Money used in transaction' })
+	@Field((_type) => InputMoney, { description: 'Money used in transaction' })
 	Money: InputMoney;
 }
 
@@ -56,7 +56,7 @@ export class InputTobaccoRate {
 	@Field({ description: '' })
 	TobaccoAmount: number;
 
-	@Field((type) => InputMoney, { description: '' })
+	@Field((_type) => InputMoney, { description: '' })
 	RateForTobacco: InputMoney;
 
 	@Field({ description: '' })
@@ -76,136 +76,136 @@ export class InputTobaccoEntry {
 	})
 	Mark: string;
 
-	@Field((type) => [InputNote], { description: '' })
+	@Field((_type) => [InputNote], { description: '' })
 	Notes: InputNote[];
 
-	@Field((type) => [InputTobaccoRate], { description: '' })
+	@Field((_type) => [InputTobaccoRate], { description: '' })
 	Money: InputTobaccoRate[];
 }
 @InputType()
 export class InputDate {
-	@Field((type) => Int, { description: 'day of date' })
+	@Field((_type) => Int, { description: 'day of date' })
 	day: number;
 
-	@Field((type) => Int, { description: 'month of date' })
+	@Field((_type) => Int, { description: 'month of date' })
 	month: number;
 
-	@Field((type) => Int, { description: 'year of date' })
+	@Field((_type) => Int, { description: 'year of date' })
 	year: number;
 
-	@Field((type) => Date, { description: 'complete date' })
+	@Field((_type) => Date, { description: 'complete date' })
 	date: Date;
 }
 
 @InputType()
 export class CreateEntryInput {
-	@Field((type) => Int)
+	@Field((_type) => Int)
 	Reel: number;
 
-	@Field((type) => String, { description: 'Store Owner' })
+	@Field((_type) => String, { description: 'Store Owner' })
 	Owner: string;
 
-	@Field((type) => String, { description: 'Name of Store' })
+	@Field((_type) => String, { description: 'Name of Store' })
 	Store: string;
 
-	@Field((type) => [Int], { description: 'Year the entry was made' })
+	@Field((_type) => [Int], { description: 'Year the entry was made' })
 	Year: [number];
 
-	@Field((type) => Int, { description: 'Folio the entry is contained in' })
+	@Field((_type) => Int, { description: 'Folio the entry is contained in' })
 	FolioPage: number;
 
-	@Field((type) => String, { description: 'ID of entry within Folio' })
+	@Field((_type) => String, { description: 'ID of entry within Folio' })
 	EntryID: string;
 
-	@Field((type) => String, { description: "Prefix of account holder's name" })
+	@Field((_type) => String, { description: "Prefix of account holder's name" })
 	Prefix: string;
 
-	@Field((type) => String, { description: 'First name of account holder' })
+	@Field((_type) => String, { description: 'First name of account holder' })
 	AccountFirstName: string;
 
-	@Field((type) => String, { description: 'Last name of account holder' })
+	@Field((_type) => String, { description: 'Last name of account holder' })
 	AccountLastName: string;
 
-	@Field((type) => String, { description: 'Suffix of account holder' })
+	@Field((_type) => String, { description: 'Suffix of account holder' })
 	Suffix: string;
 
-	@Field((type) => String, { description: 'Profession of account holder' })
+	@Field((_type) => String, { description: 'Profession of account holder' })
 	Profession: string;
 
-	@Field((type) => String, { description: 'Location?' })
+	@Field((_type) => String, { description: 'Location?' })
 	Location: string;
 
-	@Field((type) => String, { description: 'Reference?' })
+	@Field((_type) => String, { description: 'Reference?' })
 	Reference: string;
 
-	@Field((type) => String, { description: 'Debt or Credit transaction' })
+	@Field((_type) => String, { description: 'Debt or Credit transaction' })
 	DrCr: string;
 
-	@Field((type) => InputDate, { description: 'Date of entry' })
+	@Field((_type) => InputDate, { description: 'Date of entry' })
 	Date: InputDate;
 
-	@Field((type) => [InputItem], { nullable: true })
+	@Field((_type) => [InputItem], { nullable: true })
 	ItemEntry?: InputItem[];
 
-	@Field((type) => InputTobaccoEntry, { nullable: true })
+	@Field((_type) => InputTobaccoEntry, { nullable: true })
 	TobaccoEntry?: InputTobaccoEntry;
 
-	@Field((type) => [String], { description: 'People referenced in this entry' })
+	@Field((_type) => [String], { description: 'People referenced in this entry' })
 	People: [string];
 
-	@Field((type) => [String], { description: 'Places referenced in this entry' })
+	@Field((_type) => [String], { description: 'Places referenced in this entry' })
 	Places: [string];
 
-	@Field((type) => Int, { description: 'Reference to another Folio page' })
+	@Field((_type) => Int, { description: 'Reference to another Folio page' })
 	FolioReference: number;
 
-	@Field((type) => Int, { description: 'Type of Entry' })
+	@Field((_type) => Int, { description: 'Type of Entry' })
 	EntryType: number;
 
-	@Field((type) => String, { description: 'Ledger containing this Entry' })
+	@Field((_type) => String, { description: 'Ledger containing this Entry' })
 	Ledger: string;
 
-	@Field((type) => Int, { description: 'Quantity of commodity purchased' })
+	@Field((_type) => Int, { description: 'Quantity of commodity purchased' })
 	Quantity: number;
 
-	@Field((type) => String, { description: 'Commodity being purchased' })
+	@Field((_type) => String, { description: 'Commodity being purchased' })
 	Commodity: string;
 
-	@Field((type) => Int, { description: 'Sterling pounds used in transaction' })
+	@Field((_type) => Int, { description: 'Sterling pounds used in transaction' })
 	L1: number;
 
-	@Field((type) => Int, {
+	@Field((_type) => Int, {
 		description: 'Sterling shillings used in transaction',
 	})
 	S1: number;
 
-	@Field((type) => Int, { description: 'Sterling pence used in transaction' })
+	@Field((_type) => Int, { description: 'Sterling pence used in transaction' })
 	D1: number;
 
-	@Field((type) => String, { description: 'Type of Colonial currency' })
+	@Field((_type) => String, { description: 'Type of Colonial currency' })
 	Colony: string;
 
-	@Field((type) => Int, { description: 'Colonial pounds used in transaction' })
+	@Field((_type) => Int, { description: 'Colonial pounds used in transaction' })
 	L2: number;
 
-	@Field((type) => Int, {
+	@Field((_type) => Int, {
 		description: 'Colonial shillings used in transaction',
 	})
 	S2: number;
 
-	@Field((type) => Int, { description: 'Colonial pence used in transaction' })
+	@Field((_type) => Int, { description: 'Colonial pence used in transaction' })
 	D2: number;
 
-	@Field((type) => Int, {
+	@Field((_type) => Int, {
 		description: 'Indicates if item would survive till today',
 	})
 	ArchMat: number;
 
-	@Field((type) => Int, {
+	@Field((_type) => Int, {
 		description: 'Indicates if someone or someplace is mentioned in the entry',
 	})
 	GenMat: number;
 
-	@Field((type) => String, { description: 'comments on the entry' })
+	@Field((_type) => String, { description: 'comments on the entry' })
 	Final: string;
 }

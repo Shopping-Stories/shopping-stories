@@ -6,7 +6,7 @@ export type CatDocument = Cat & Document;
 
 @ObjectType({ description: 'Cat Object' })
 export class Cat {
-	@Field((returns) => ID, { description: 'String of MongoDB ObjectId' })
+	@Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
 	public get id(): string {
 		return `${this._id}`; // Converts type ObjectId of _id to String
 	}

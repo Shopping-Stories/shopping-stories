@@ -12,7 +12,7 @@ export class UserResolver {
 		this.userService = new UserService();
 	}
 
-	@Mutation((returns) => String, { nullable: true })
+	@Mutation((_returns) => String, { nullable: true })
 	async register(
 		@Arg('registerInput')
 		registerInput: RegisterInput,
@@ -21,7 +21,7 @@ export class UserResolver {
 		return null;
 	}
 
-	@Query((returns) => AccessToken, { nullable: true })
+	@Query((_returns) => AccessToken, { nullable: true })
 	async login(@Arg('loginInput') loginInput: LoginInput) {
 		try {
 			let userSession: CognitoUserSession = await this.userService.loginUser(

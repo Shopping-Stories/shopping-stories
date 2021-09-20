@@ -5,7 +5,7 @@ import { Entry, EntrySchema } from './entry.schema';
 import { EntryService } from './entry.service';
 import { CreateEntryInput } from './input/create-entry.input';
 
-@Resolver((of) => Entry)
+@Resolver((_of) => Entry)
 export default class EntryResolver {
 	constructor(private entryService: EntryService) {
 		this.entryService = new EntryService(EntrySchema);
@@ -13,7 +13,7 @@ export default class EntryResolver {
 
 	// @UseMiddleware(Auth, ResolveTime)
 	@UseMiddleware(ResolveTime, ConnectDB)
-	@Query((returns) => [Entry], {
+	@Query((_returns) => [Entry], {
 		nullable: true,
 		description: 'Find all Cats in the database',
 	})
@@ -22,7 +22,7 @@ export default class EntryResolver {
 	}
 
 	@UseMiddleware(ResolveTime, ConnectDB)
-	@Query((returns) => Entry, {
+	@Query((_returns) => Entry, {
 		nullable: true,
 		description: 'Find an entry by id',
 	})
@@ -31,7 +31,7 @@ export default class EntryResolver {
 	}
 
 	@UseMiddleware(ResolveTime, ConnectDB)
-	@Mutation((returns) => Entry)
+	@Mutation((_returns) => Entry)
 	async createEntry(
 		@Arg('createEntryInput') createEntryInput: CreateEntryInput,
 	) {

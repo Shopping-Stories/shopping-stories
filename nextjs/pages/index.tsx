@@ -1,10 +1,11 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import NextAuthTest from '../client/components/nextauth.component';
 import styles from '../styles/Home.module.css';
+import { AmplifySignIn } from '@aws-amplify/ui-react';
 
 const Home: NextPage = () => {
+
 	return (
 		<div className={styles.container}>
 			<Head>
@@ -24,7 +25,7 @@ const Home: NextPage = () => {
 				</p>
 
 				<div className={styles.grid}>
-					<NextAuthTest />
+					<AmplifySignIn />
 
 					<a href="https://nextjs.org/docs" className={styles.card}>
 						<h2>Documentation &rarr;</h2>

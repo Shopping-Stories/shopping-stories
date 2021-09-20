@@ -2,7 +2,7 @@ import * as Axios from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { JWK } from 'jwk-to-pem';
 import { NextApiRequest } from 'next';
-import { AuthChecker, ResolverData } from 'type-graphql';
+import { AuthChecker } from 'type-graphql';
 import { MyContext } from '../../pages/api/graphql';
 import { CognitoConfig } from '../config/constants.config';
 import { logger } from '../config/logger';
@@ -69,10 +69,10 @@ interface RequestWithUser extends NextApiRequest {
 	user: { 'cognito:groups': string[]; username: string };
 }
 
-export class Roles {
-	static readonly Admin: string = 'Admin';
-	static readonly Moderator: string = 'Moderator';
-}
+export const Roles = {
+	Admin: 'Admin' as string,
+	Moderator: 'Moderator' as string,
+};
 
 /**
  * Decodes and Verifies a Cognito Access Token contained in an

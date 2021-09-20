@@ -2,7 +2,7 @@ import { Model } from 'mongoose';
 import { Cat, CatDocument } from './cat.schema';
 import { CreateCatDto } from './input/create-cat.input';
 
-export class CatService {
+export default class CatService {
 	constructor(private catModel: Model<CatDocument>) {
 		this.catModel = catModel;
 	}

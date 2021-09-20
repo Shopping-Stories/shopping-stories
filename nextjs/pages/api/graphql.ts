@@ -8,6 +8,9 @@ import CatResolver from '../../server/cat/cat.resolver';
 import EntryResolver from '../../server/entry/entry.resolver';
 import HelloResolver from '../../server/hello.resolver';
 import { UserResolver } from '../../server/user/user.resolver';
+import { DocToObject } from '../../server/middleware/misc.middleware';
+import AdminResolver from '../../server/admin/admin.resolver';
+import { GraphQLJSONObject } from 'graphql-type-json';
 
 export interface MyContext {
 	req: NextApiRequest;
@@ -19,13 +22,21 @@ let apolloServerHandler: (req: any, res: any) => Promise<void>;
 const getApolloServerHandler = async () => {
 	if (!apolloServerHandler) {
 		const schema = await buildSchema({
-			resolvers: [HelloResolver, CatResolver, EntryResolver, UserResolver],
+			resolvers: [
+				HelloResolver,
+				CatResolver,
+				EntryResolver,
+				UserResolver,
+				AdminResolver,
+			],
+			scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],
 			emitSchemaFile: {
 				path: './server/schema.gql',
 				commentDescriptions: true,
 				sortedSchema: false,
 			},
 			authChecker: JWTAuthChecker,
+			globalMiddlewares: [DocToObject],
 		});
 		let apolloServer = new ApolloServer({
 			schema,
@@ -40,7 +51,10 @@ const getApolloServerHandler = async () => {
 	return apolloServerHandler;
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async function handleGraphQLServer(
+	req: NextApiRequest,
+	res: NextApiResponse,
+): Promise<Boolean | void> {
 	res.setHeader('Access-Control-Allow-Credentials', 'true');
 	res.setHeader(
 		'Access-Control-Allow-Origin',
@@ -60,6 +74,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 	}
 	const apolloServerHandler = await getApolloServerHandler();
 	return apolloServerHandler(req, res);
-};
+}
 
 export const config: PageConfig = { api: { bodyParser: false } };

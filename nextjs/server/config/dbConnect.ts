@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { logger } from './logger';
 
-const MONGODB_URI = process.env.MONGODB_URI2 as string;
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 if (!MONGODB_URI) {
 	throw new Error(
