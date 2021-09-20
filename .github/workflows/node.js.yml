@@ -30,8 +30,8 @@ jobs:
       - name: npm install and test
         working-directory: ./nextjs
         run: |
-          env | grep "MONGODB"
           npm install
+          npm install micro
           npm run test
         env:
           CI: true
