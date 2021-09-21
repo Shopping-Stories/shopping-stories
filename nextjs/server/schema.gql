@@ -5,6 +5,7 @@
 
 type Query {
   findCats: [Cat!]
+  findCat(id: String!): Cat
 
   # Find all Cats in the database
   findEntries: [Entry!]
@@ -246,6 +247,7 @@ input LoginInput {
 scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
 
 type Mutation {
+  createCat(newCat: CreateCatDto!): Cat!
   createEntry(createEntryInput: CreateEntryInput!): Entry!
   register(registerInput: RegisterInput!): String
   signUserOut(username: String!): JSONObject
@@ -254,6 +256,12 @@ type Mutation {
   enableUser(username: String!): JSONObject
   addUserToGroup(groupname: String!, username: String!): JSONObject
   removeUserFromGroup(groupname: String!, username: String!): JSONObject
+}
+
+input CreateCatDto {
+  name: String!
+  age: Float!
+  breed: String!
 }
 
 input CreateEntryInput {

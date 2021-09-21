@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
+import { __test__ } from './constants.config'
 import { logger } from './logger';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
-if (!MONGODB_URI) {
+if (!__test__ && !MONGODB_URI) {
 	throw new Error(
 		'Please define the MONGODB_URI environment variable inside .env.local',
 	);

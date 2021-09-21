@@ -55,7 +55,7 @@ describe('Cat.Resolver', () => {
 		let res = await server.executeOperation({
 			query: gql`
 				{
-					findCats {
+					findCatsAuth {
 						id
 						name
 					}
@@ -63,8 +63,8 @@ describe('Cat.Resolver', () => {
 			`,
 		});
 
-		expect((res as any).data.findCats[0].name).toEqual('Meow');
-		expect((res as any).data.findCats.length).toEqual(1);
+		expect((res as any).data.findCatsAuth[0].name).toEqual('Meow');
+		expect((res as any).data.findCatsAuth.length).toEqual(1);
 		expect(JWTAuthChecker).toBeCalledTimes(1);
 		expect(CatService.findAll).toBeCalledTimes(1);
 	});
