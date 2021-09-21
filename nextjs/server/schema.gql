@@ -4,6 +4,7 @@
 # -----------------------------------------------
 
 type Query {
+  findCatsAuth: [Cat!]
   findCats: [Cat!]
   findCat(id: String!): Cat
 
