@@ -1,3 +1,4 @@
+import { withAuthenticator } from '@aws-amplify/ui-react';
 import gql from 'graphql-tag';
 import { useCallback } from 'react';
 import { useQuery } from 'urql';
@@ -35,4 +36,4 @@ const Cats = () => {
 	);
 };
 
-export default Cats;
+export default withAuthenticator(Cats);

@@ -145,6 +145,8 @@ export const JWTAuthChecker: AuthChecker<MyContext> = async (
 	}
 	if (roles.length === 0) {
 		return true;
+	} else if (!((req as any).user['cognito:groups'])) {
+		return false;
 	} else if (
 		roles
 			.map((role) =>
