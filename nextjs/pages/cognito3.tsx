@@ -17,6 +17,7 @@ const Congito3 = () => {
 					console.log(err);
 				} else {
 					console.log(session.getAccessToken().getJwtToken());
+					console.log(session);
 				}
 			});
 		} catch (error) {

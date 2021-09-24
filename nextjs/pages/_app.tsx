@@ -1,8 +1,73 @@
-import '../styles/globals.css';
-import type { AppProps } from 'next/app';
-import { Auth } from 'aws-amplify/';
 import { withAuthenticator } from '@aws-amplify/ui-react';
+import { authExchange } from '@urql/exchange-auth';
+import { cacheExchange } from '@urql/exchange-graphcache';
+import { Auth } from 'aws-amplify/';
+import type { AppProps } from 'next/app';
+import {
+	Client,
+	dedupExchange,
+	fetchExchange,
+	makeOperation,
+	Provider
+} from 'urql';
+import { handlePromise } from '../client/components/util';
 import { CognitoConfig } from '../server/config/constants.config';
+import '../styles/globals.css';
+
+const cache = cacheExchange({});
+
+const addAuthToOperation = ({ authState, operation }: any) => {
+	if (!authState || !authState.token) {
+		return operation;
+	}
+
+	const fetchOptions =
+		typeof operation.context.fetchOptions === 'function'
+			? operation.context.fetchOptions()
+			: operation.context.fetchOptions || {};
+
+	return makeOperation(operation.kind, operation, {
+		...operation.context,
+		fetchOptions: {
+			...fetchOptions,
+			headers: {
+				...fetchOptions.headers,
+				Authorization: `Bearer ${authState.token}`,
+			},
+		},
+	});
+};
+
+const didAuthError = ({ error }: any) => {
+	return error.graphQLErrors.some((e: any) => e.extensions?.code === 'FORBIDDEN');
+};
+
+const getAuth = async ({ authState }: any) => {
+	if (!authState) {
+		const [session, err] = await handlePromise(Auth.currentSession());
+		if (!err) {
+			const token = session.getAccessToken().getJwtToken();
+			return { token };
+		}
+		return null;
+	}
+	return null;
+};
+
+const client = new Client({
+	url: '/api/graphql',
+	exchanges: [
+		dedupExchange,
+		cache,
+		authExchange({
+			/* config */
+			getAuth: getAuth,
+			addAuthToOperation: addAuthToOperation,
+			didAuthError: didAuthError,
+		}),
+		fetchExchange,
+	],
+});
 
 Auth.configure({
 	// REQUIRED only for Federated Authentication - Amazon Cognito Identity Pool ID
@@ -33,6 +98,11 @@ Auth.configure({
 });
 
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-	return <Component {...pageProps} />;
+	return (
+		<Provider value={client}>
+			<Component {...pageProps} />
+		</Provider>
+	);
 }
+
 export default withAuthenticator(App);
