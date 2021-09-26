@@ -2,7 +2,7 @@ import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-co
 import { ApolloServer } from 'apollo-server-micro';
 import { NextApiRequest, NextApiResponse, PageConfig } from 'next';
 import 'reflect-metadata';
-import { buildSchema } from 'type-graphql';
+import { buildSchema, BuildSchemaOptions } from 'type-graphql';
 import { JWTAuthChecker } from '../../server/middleware/auth.middleware';
 import CatResolver from '../../server/cat/cat.resolver';
 import EntryResolver from '../../server/entry/entry.resolver';
@@ -11,6 +11,7 @@ import { UserResolver } from '../../server/user/user.resolver';
 import { DocToObject } from '../../server/middleware/misc.middleware';
 import AdminResolver from '../../server/admin/admin.resolver';
 import { GraphQLJSONObject } from 'graphql-type-json';
+import { __dev__ } from '../../server/config/constants.config';
 
 export interface MyContext {
 	req: NextApiRequest;
@@ -21,7 +22,7 @@ let apolloServerHandler: (req: any, res: any) => Promise<void>;
 
 const getApolloServerHandler = async () => {
 	if (!apolloServerHandler) {
-		const schema = await buildSchema({
+		const buildSchemaOpts: BuildSchemaOptions = {
 			resolvers: [
 				HelloResolver,
 				CatResolver,
@@ -30,14 +31,19 @@ const getApolloServerHandler = async () => {
 				AdminResolver,
 			],
 			scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],
-			// emitSchemaFile: {
-				// path: './server/schema.gql',
-				// commentDescriptions: true,
-				// sortedSchema: false,
-			// },
 			authChecker: JWTAuthChecker,
 			globalMiddlewares: [DocToObject],
-		});
+		};
+
+		if (__dev__) {
+			buildSchemaOpts.emitSchemaFile = {
+				path: './server/schema.gql',
+				commentDescriptions: true,
+				sortedSchema: false,
+			};
+		}
+
+		const schema = await buildSchema(buildSchemaOpts);
 		let apolloServer = new ApolloServer({
 			schema,
 			plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
