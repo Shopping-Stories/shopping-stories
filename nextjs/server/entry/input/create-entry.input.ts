@@ -150,10 +150,14 @@ export class CreateEntryInput {
 	@Field((_type) => InputTobaccoEntry, { nullable: true })
 	TobaccoEntry?: InputTobaccoEntry;
 
-	@Field((_type) => [String], { description: 'People referenced in this entry' })
+	@Field((_type) => [String], {
+		description: 'People referenced in this entry',
+	})
 	People: [string];
 
-	@Field((_type) => [String], { description: 'Places referenced in this entry' })
+	@Field((_type) => [String], {
+		description: 'Places referenced in this entry',
+	})
 	Places: [string];
 
 	@Field((_type) => Int, { description: 'Reference to another Folio page' })

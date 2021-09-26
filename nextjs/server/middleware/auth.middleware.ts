@@ -70,8 +70,8 @@ interface RequestWithUser extends NextApiRequest {
 }
 
 export const Roles = {
-	Admin: 'Admin' as string,
-	Moderator: 'Moderator' as string,
+	Admin: 'Admin',
+	Moderator: 'Moderator',
 };
 
 /**
@@ -145,7 +145,7 @@ export const JWTAuthChecker: AuthChecker<MyContext> = async (
 	}
 	if (roles.length === 0) {
 		return true;
-	} else if (!((req as any).user['cognito:groups'])) {
+	} else if (!(req as any).user['cognito:groups']) {
 		return false;
 	} else if (
 		roles
@@ -159,62 +159,3 @@ export const JWTAuthChecker: AuthChecker<MyContext> = async (
 
 	return false;
 };
-
-/**
- * Auth is a middleware to verify and decode a cognito jwt token
- * // commented out due to use of superior @Authorized decorator
- * // that allows for easier and more readable role based access control
- */
-// export const Auth: MiddlewareFn<MyContext> = async ({ context }, next) => {
-// 	let req = context.req;
-
-// 	const authHeader = req.headers['authorization'];
-// 	const token = authHeader && authHeader.split(' ')[1];
-
-// 	if (token == null) {
-// 		throw new Error('No Access Token Detected');
-// 	}
-
-// 	let result: any;
-// 	try {
-// 		logger.info(
-// 			`user claim verify invoked for ${JSON.stringify(token.substring(0, 10))}`,
-// 		);
-
-// 		const tokenSections = (token || '').split('.');
-// 		if (tokenSections.length < 2) {
-// 			throw new Error('requested token is invalid');
-// 		}
-
-// 		const headerJSON = Buffer.from(tokenSections[0], 'base64').toString('utf8');
-// 		const header = JSON.parse(headerJSON) as TokenHeader;
-
-// 		const keys = await getPublicKeys();
-// 		const key = keys[header.kid];
-// 		if (key === undefined) {
-// 			throw new Error('claim made for unknown kid');
-// 		}
-
-// 		result = await jwt.verify(token, key.pem);
-// 		const claim = result as Claim;
-// 		const currentSeconds = Math.floor(new Date().valueOf() / 1000);
-// 		if (currentSeconds > claim.exp || currentSeconds < claim.auth_time) {
-// 			throw new Error('claim is expired or invalid');
-// 		}
-// 		if (claim.iss !== cognitoIssuer) {
-// 			throw new Error('claim issuer is invalid');
-// 		}
-// 		if (claim.token_use !== 'access') {
-// 			throw new Error('claim use is not access');
-// 		}
-// 		// logger.info(JSON.stringify(result, undefined, 4));
-// 		logger.info(`claim confirmed for ${claim.username}`);
-// 		(req as any).user = result;
-// 		return next();
-// 	} catch (error: any) {
-// 		// result = { userName: '', clientId: '', error, isValid: false };
-// 		logger.error(error);
-// 		context.res.status(403);
-// 		throw new Error('Unauthorized: invalid token');
-// 	}
-// };

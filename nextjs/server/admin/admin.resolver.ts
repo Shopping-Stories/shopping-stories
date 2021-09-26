@@ -1,11 +1,5 @@
 import 'reflect-metadata';
-import {
-    Arg,
-    Authorized,
-    Mutation,
-    Query,
-    Resolver
-} from 'type-graphql';
+import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
 import { Roles } from '../middleware/auth.middleware';
 import AdminService from './admin.service';
 

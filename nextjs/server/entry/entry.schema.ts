@@ -217,11 +217,15 @@ export class Entry {
 	TobaccoEntry?: TobaccoEntryObject | null;
 
 	@prop({ type: () => [String], required: true })
-	@Field((_type) => [String], { description: 'People referenced in this entry' })
+	@Field((_type) => [String], {
+		description: 'People referenced in this entry',
+	})
 	People: string[];
 
 	@prop({ type: () => [String], required: true })
-	@Field((_type) => [String], { description: 'Places referenced in this entry' })
+	@Field((_type) => [String], {
+		description: 'Places referenced in this entry',
+	})
 	Places: string[];
 
 	@prop({ required: true })
@@ -293,4 +297,4 @@ export class Entry {
 	Final: string;
 }
 
-export const EntrySchema = mongoose.models.Entry || getModelForClass(Entry);
+export const EntryModel = mongoose.models.Entry || getModelForClass(Entry);

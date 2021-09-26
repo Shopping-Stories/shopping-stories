@@ -1,6 +1,8 @@
 import AuthClass from '@aws-amplify/auth';
 
-export const handlePromise = async (promise: Promise<any>): Promise<[any, any]> => {
+export const handlePromise = async <T>(
+	promise: Promise<T>,
+): Promise<[T | null, unknown | null]> => {
 	try {
 		return [await promise, null];
 	} catch (err) {

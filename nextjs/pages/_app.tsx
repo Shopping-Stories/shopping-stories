@@ -8,7 +8,7 @@ import {
 	dedupExchange,
 	fetchExchange,
 	makeOperation,
-	Provider
+	Provider,
 } from 'urql';
 import { handlePromise } from '../client/components/util';
 import { CognitoConfig } from '../server/config/constants.config';
@@ -39,14 +39,16 @@ const addAuthToOperation = ({ authState, operation }: any) => {
 };
 
 const didAuthError = ({ error }: any) => {
-	return error.graphQLErrors.some((e: any) => e.extensions?.code === 'FORBIDDEN');
+	return error.graphQLErrors.some(
+		(e: any) => e.extensions?.code === 'FORBIDDEN',
+	);
 };
 
 const getAuth = async ({ authState }: any) => {
 	if (!authState) {
 		const [session, err] = await handlePromise(Auth.currentSession());
 		if (!err) {
-			const token = session.getAccessToken().getJwtToken();
+			const token = session!.getAccessToken().getJwtToken();
 			return { token };
 		}
 		return null;

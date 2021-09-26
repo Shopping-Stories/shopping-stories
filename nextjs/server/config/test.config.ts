@@ -20,11 +20,6 @@ const getGraphQLServer = async () => {
 			AdminResolver,
 		],
 		scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],
-		emitSchemaFile: {
-			path: './server/schema.gql',
-			commentDescriptions: true,
-			sortedSchema: false,
-		},
 		authChecker: JWTAuthChecker,
 		globalMiddlewares: [DocToObject],
 	});

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { __test__ } from './constants.config'
+import { __test__ } from './constants.config';
 import { logger } from './logger';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
@@ -48,7 +48,7 @@ async function dbConnect(uri?: string) {
 }
 
 export const dbClose = async () => {
-	let cached: any = (global as any).mongoose;
+	let cached = (global as any).mongoose;
 
 	if (!cached) {
 		return await cached.conn.close();

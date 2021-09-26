@@ -2,15 +2,8 @@
 module.exports = {
   reactStrictMode: true,
   webpack: function (config, options) {
-    config.experiments = { topLevelAwait: true }
+    // config.experiments = { topLevelAwait: true }
     return config;
   },
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: '/about',
-  //       destination: '/',
-  //     },
-  //   ]
-  // },
+  webpack5: false,
 }

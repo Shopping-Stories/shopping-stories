@@ -5,7 +5,6 @@ import styles from '../styles/Home.module.css';
 import { AmplifySignIn } from '@aws-amplify/ui-react';
 
 const Home: NextPage = () => {
-
 	return (
 		<div className={styles.container}>
 			<Head>
