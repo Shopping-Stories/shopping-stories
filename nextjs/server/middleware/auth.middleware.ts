@@ -47,6 +47,7 @@ export const cognitoIssuer = `https://cognito-idp.${CognitoConfig.Region}.amazon
 
 export const getPublicKeys = async (): Promise<MapOfKidToPublicKey> => {
 	let cacheKeys: MapOfKidToPublicKey | undefined;
+
 	if (!cacheKeys) {
 		// download public keys from Amazon
 		const url = `${cognitoIssuer}/.well-known/jwks.json`;

@@ -10,7 +10,7 @@ export const handlePromise = async <T>(
 	}
 };
 
-export const isLoggedIn = async (Auth: typeof AuthClass): Promise<Boolean> => {
+export const isLoggedIn = async (Auth: typeof AuthClass): Promise<boolean> => {
 	const [_res, err] = await handlePromise(Auth.currentAuthenticatedUser());
 	if (err) {
 		return false;

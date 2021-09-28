@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env FORCE_COLOR=true next dev | pino-pretty --colorize",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production next start",
     "lint": "next lint",
     "format": "prettier --write \"server/**/*.ts\" \"client/**/*.ts\" \"tests/**/*.ts\" \"pages/**/*.ts\" \"pages/**/*.tsx\"",
     "test": "cross-env NODE_ENV=test jest --passWithNoTests --detectOpenHandles --runInBand",

@@ -1,4 +1,3 @@
-import { withAuthenticator } from '@aws-amplify/ui-react';
 import { authExchange } from '@urql/exchange-auth';
 import { cacheExchange } from '@urql/exchange-graphcache';
 import { Auth } from 'aws-amplify/';
@@ -107,4 +106,4 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	);
 }
 
-export default withAuthenticator(App);
+export default App;

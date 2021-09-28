@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { __test__ } from './constants.config';
+import { __prod__, __test__ } from './constants.config';
 import { logger } from './logger';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
@@ -38,8 +38,10 @@ async function dbConnect(uri?: string) {
 		cached.promise = mongoose
 			.connect(uri ? uri : MONGODB_URI, opts)
 			.then((mongoose) => {
-				logger.info(uri ? uri : MONGODB_URI);
-				logger.info('db connected');
+				logger.info(`Database successfully connected`);
+				if (!__prod__) {
+					logger.info(`Connection URI: ${uri ? uri : MONGODB_URI}`);
+				}
 				return mongoose;
 			});
 	}
