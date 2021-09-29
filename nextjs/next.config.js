@@ -2,6 +2,7 @@ const withAntdLess = require('next-plugin-antd-less');
 
 /** @type {import('next').NextConfig} */
 module.exports = withAntdLess({
+  lessVarsFilePath: './styles/variables.less',
   reactStrictMode: true,
   webpack: function (config, options) {
     // config.experiments = { topLevelAwait: true }
