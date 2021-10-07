@@ -44,16 +44,17 @@ class FileSelector extends React.Component {
 				}
 
 				const data = xlsx.utils.sheet_to_json(
-					delete_row(workbook.Sheets[sheet], 0),
+					// delete_row(workbook.Sheets[sheet], 0),
 					{ defval: null },
 				);
 				sheets[sheet] = data;
 			});
-			// let data = JSON.stringify(sheets, undefined, 4);
-			const fileName = 'result';
-			const exportType = 'json';
+			let data = JSON.stringify(sheets, undefined, 4);
+			console.log(data);
+			// const fileName = 'result';
+			// const exportType = 'json';
 
-			exportFromJSON({ data: sheets, fileName, exportType });
+			// exportFromJSON({ data: sheets, fileName, exportType });
 		};
 	}
 
