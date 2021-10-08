@@ -47,7 +47,6 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 			//throw err;
 		}
 	}
-	console.log(money, res, accHold, people, meta, dates)
 
 	let ret: any = [];
 	for (let i = 0; i < res.length; i++) {
