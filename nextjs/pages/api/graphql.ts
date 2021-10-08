@@ -12,6 +12,7 @@ import { DocToObject } from '../../server/middleware/misc.middleware';
 import AdminResolver from '../../server/admin/admin.resolver';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { __dev__ } from '../../server/config/constants.config';
+import SpreadsheetResolver from '../../server/spreadsheet/spreadsheet.resolver';
 
 export interface MyContext {
 	req: NextApiRequest;
@@ -29,6 +30,7 @@ const getApolloServerHandler = async () => {
 				EntryResolver,
 				UserResolver,
 				AdminResolver,
+				SpreadsheetResolver
 			],
 			scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],
 			authChecker: JWTAuthChecker,

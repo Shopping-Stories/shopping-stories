@@ -3,16 +3,20 @@ import Head from 'next/head';
 import Image from 'next/image';
 import React from 'react';
 import styles from '../styles/Home.module.css';
-import exportFromJSON from 'export-from-json';
+// import exportFromJSON from 'export-from-json';
 import xlsx from 'xlsx';
+import { useMutation } from 'urql';
 
-class FileSelector extends React.Component {
-	constructor(props: any) {
-		super(props);
-		this.handleChange = this.handleChange.bind(this);
-	}
+const parseSheetDef = `
+mutation ($spreadsheet: JSONObject!) {
+    importSpreadsheet(spreadsheetObj: $spreadsheet)
+  }
+`;
 
-	handleChange(selectorFiles: FileList | null) {
+const FileSelector = () => {
+	const [parseSheetResult, parseSheet] = useMutation(parseSheetDef);
+
+	async function handleChange(selectorFiles: FileList | null) {
 		if (selectorFiles === null) {
 			return;
 		}
@@ -43,32 +47,39 @@ class FileSelector extends React.Component {
 					return ws;
 				}
 
-				const data = xlsx.utils.sheet_to_json(
-					workbook.Sheets[sheet],
-					{ defval: null, raw: true },
-				);
+				const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet], {
+					defval: '',
+					raw: true,
+				});
 				sheets[sheet] = data;
 			});
 			// let data = JSON.stringify(sheets, undefined, 4);
 			// console.log(data);
-			const fileName = 'result';
-			const exportType = 'json';
+			// const fileName = 'result';
+			// const exportType = 'json';
 
-			exportFromJSON({ data: sheets, fileName, exportType });
+			console.log(JSON.stringify(sheets, undefined, 4))
+			parseSheet({spreadsheet: sheets})
+			// exportFromJSON({ data: sheets, fileName, exportType });
 		};
 	}
 
-	render() {
-		return (
-			<div>
-				<input
-					type="file"
-					onChange={(e) => this.handleChange(e.target.files)}
-				/>
-			</div>
-		);
-	}
-}
+	const entries = parseSheetResult.data ? parseSheetResult.data.importSpreadsheet : [];
+	console.log(parseSheetResult)
+
+
+	return (
+		<div>
+			<input type="file" onChange={(e) => handleChange(e.target.files)} />
+			{entries && entries.map((entry: any) => (
+				<div key={entry.EntryID}>{JSON.stringify(entry, undefined, 4)}</div>
+			))}
+			{
+				parseSheetResult.error ? (<div>{JSON.stringify(parseSheetResult.error, undefined, 4)}</div>) : ""
+			}
+		</div>
+	);
+};
 
 const Home: NextPage = () => {
 	return (

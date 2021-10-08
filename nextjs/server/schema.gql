@@ -13,6 +13,8 @@ type Query {
 
   # Find an entry by id
   findEntry(id: String!): Entry
+
+  # Return the greeting "hello"
   hello: String!
   login(loginInput: LoginInput!): AccessToken
   getUser(username: String!): JSONObject
@@ -257,6 +259,7 @@ type Mutation {
   enableUser(username: String!): JSONObject
   addUserToGroup(groupname: String!, username: String!): JSONObject
   removeUserFromGroup(groupname: String!, username: String!): JSONObject
+  importSpreadsheet(spreadsheetObj: JSONObject!): [JSONObject!]
 }
 
 input CreateCatDto {
