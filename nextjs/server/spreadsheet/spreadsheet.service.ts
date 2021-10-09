@@ -85,7 +85,7 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 async function formatMoney(entry: any) {
 		
 	try {
-
+ 
 		let SL : any = (entry.SL !== (null || '')) ? entry.SL.toString().replace(/[^0-9.]/g, '') : 0;
 		let SS : any = (entry.SS !== (null || '')) ? entry.SS.toString().replace(/[^0-9.]/g, '') : 0;
 		let SD : any = (entry.SD !== (null || '')) ? entry.SD.toString().replace(/[^0-9.]/g, '') : 0;

@@ -75,7 +75,7 @@ const FileSelector = () => {
 				<div key={entry.EntryID}>{JSON.stringify(entry, undefined, 4)}</div>
 			))}
 			{
-				parseSheetResult.error ? (<div>{JSON.stringify(parseSheetResult.error, undefined, 4)}</div>) : ""
+				parseSheetResult.error ? (<pre>{JSON.stringify(parseSheetResult.error, undefined, 4)}</pre>) : ""
 			}
 		</div>
 	);
