@@ -1,6 +1,6 @@
 import { authExchange } from '@urql/exchange-auth';
 import { cacheExchange } from '@urql/exchange-graphcache';
-import { Auth } from 'aws-amplify/';
+import Amplify, { Auth, Storage } from 'aws-amplify';
 import type { AppProps } from 'next/app';
 import {
 	Client,
@@ -69,7 +69,6 @@ const client = new Client({
 		fetchExchange,
 	],
 });
-
 Auth.configure({
 	// REQUIRED only for Federated Authentication - Amazon Cognito Identity Pool ID
 	identityPoolId: CognitoConfig.IdentityPoolId,
@@ -96,6 +95,13 @@ Auth.configure({
 	// OPTIONAL - Cookie secure flag
 	// Either true or false, indicating if the cookie transmission requires a secure protocol (https).
 	secure: true,
+});
+
+Storage.configure({
+	AWSS3: {
+		bucket: CognitoConfig.Bucket, //REQUIRED -  Amazon S3 bucket
+		region: CognitoConfig.Region, //OPTIONAL -  Amazon service region
+	},
 });
 
 function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {

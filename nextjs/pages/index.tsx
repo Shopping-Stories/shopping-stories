@@ -1,3 +1,4 @@
+import { Storage } from 'aws-amplify';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -5,6 +6,17 @@ import styles from '../styles/Home.module.css';
 import { Button } from 'antd';
 
 const Home: NextPage = () => {
+	const get = () => {
+		Storage.get('test.txt')
+			.then((result) => console.log(result))
+			.catch((err) => console.log(err));
+	};
+	const submit = () => {
+		Storage.put('test2.txt', 'Hello')
+			.then((result) => console.log(result))
+			.catch((err) => console.log(err));
+	};
+
 	return (
 		<div className={styles.container}>
 			<Head>
@@ -22,7 +34,8 @@ const Home: NextPage = () => {
 					<code className={styles.code}>pages/index.js</code>
 				</p>
 
-				<Button>hello</Button>
+				<Button onClick={submit}>hello</Button>
+				<Button onClick={get}>get</Button>
 				<div className={styles.grid}>
 					<a href="https://nextjs.org/docs" className={styles.card}>
 						<h2>Documentation &rarr;</h2>

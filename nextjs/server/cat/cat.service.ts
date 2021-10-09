@@ -7,11 +7,11 @@ export default class CatService {
 		return (await createdCat.save()).toObject();
 	}
 
-	static async findAll(): Promise<Cat[]> {
-		return CatModel.find().lean<Cat[]>().exec();
+	static async findAll(selectedFields: Object): Promise<Cat[]> {
+		return CatModel.find().select(selectedFields).lean<Cat[]>().exec();
 	}
 
-	static async findOne(id: string): Promise<Cat | null> {
-		return CatModel.findById(id).lean<Cat>().exec();
+	static async findOne(id: string, selectedFields: Object): Promise<Cat | null> {
+		return CatModel.findById(id).select(selectedFields).lean<Cat>().exec();
 	}
 }

@@ -10,6 +10,7 @@ export const CognitoConfig = {
 	Region: process.env.NEXT_PUBLIC_COGNITO_REGION as string,
 	IdentityPoolId: process.env.NEXT_PUBLIC_COGNITO_IDENTITY_POOL_ID as string,
 	Domain: process.env.NEXT_PUBLIC_COGNITO_DOMAIN as string,
+	Bucket: process.env.NEXT_PUBLIC_COGNITO_BUCKET as string,
 };
 
 if (!__test__) {
@@ -28,6 +29,9 @@ if (!__test__) {
 	}
 	if (!CognitoConfig.Domain) {
 		errorVars.push('NEXT_PUBLIC_COGNITO_DOMAIN');
+	}
+	if (!CognitoConfig.Bucket) {
+		errorVars.push('NEXT_PUBLIC_COGNITO_BUCKET');
 	}
 	if (errorVars.length > 0) {
 		throw new Error(

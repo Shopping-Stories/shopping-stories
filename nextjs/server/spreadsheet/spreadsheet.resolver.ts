@@ -18,6 +18,7 @@ export default class SpreadsheetResolver {
 	async importSpreadsheet(
 		@Arg('spreadsheetObj', (_returns) => Object) sheetObj: any,
 	): Promise<Object[]> {
+		console.log(sheetObj);
         // let obj = JSON.parse(sheetObj);
 		return parseSpreadsheetObj(sheetObj.Sheet1);
 	}
