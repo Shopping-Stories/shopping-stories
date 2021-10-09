@@ -17,7 +17,7 @@ const FileSelector = () => {
 	const [parseSheetResult, parseSheet] = useMutation(parseSheetDef);
 
 	async function handleChange(selectorFiles: FileList | null) {
-		if (selectorFiles === null) {
+		if (selectorFiles === null || !selectorFiles) {
 			return;
 		}
 		let sheets: { [name: string]: any } = {};
@@ -58,25 +58,33 @@ const FileSelector = () => {
 			// const fileName = 'result';
 			// const exportType = 'json';
 
-			console.log(JSON.stringify(sheets, undefined, 4))
-			parseSheet({spreadsheet: sheets})
+			console.log(JSON.stringify(sheets, undefined, 4));
+			parseSheet({ spreadsheet: sheets });
 			// exportFromJSON({ data: sheets, fileName, exportType });
 		};
 	}
 
-	const entries = parseSheetResult.data ? parseSheetResult.data.importSpreadsheet : [];
-	console.log(parseSheetResult)
-
+	const entries = parseSheetResult.data
+		? parseSheetResult.data.importSpreadsheet
+		: [];
 
 	return (
-		<div>
+		<div style={{ textAlign: 'center' }}>
 			<input type="file" onChange={(e) => handleChange(e.target.files)} />
-			{entries && entries.map((entry: any) => (
-				<div key={entry.EntryID}>{JSON.stringify(entry, undefined, 4)}</div>
-			))}
-			{
-				parseSheetResult.error ? (<pre>{JSON.stringify(parseSheetResult.error, undefined, 4)}</pre>) : ""
-			}
+			{entries &&
+				entries.map((entry: any, index: number) => (
+					<div>
+						<pre style={{ display: 'inline-block', textAlign: 'left' }} key={index}>
+							{JSON.stringify(entry, undefined, 4)}
+						</pre>
+						<br />
+					</div>
+				))}
+			{parseSheetResult.error ? (
+				<pre>{JSON.stringify(parseSheetResult.error, undefined, 4)}</pre>
+			) : (
+				''
+			)}
 		</div>
 	);
 };
