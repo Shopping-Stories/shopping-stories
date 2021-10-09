@@ -8,9 +8,9 @@ import xlsx from 'xlsx';
 import { useMutation } from 'urql';
 
 const parseSheetDef = `
-mutation ($spreadsheet: JSONObject!) {
-    importSpreadsheet(spreadsheetObj: $spreadsheet)
-  }
+	mutation ($spreadsheet: JSONObject!) {
+		importSpreadsheet(spreadsheetObj: $spreadsheet)
+	}
 `;
 
 const FileSelector = () => {
@@ -29,23 +29,23 @@ const FileSelector = () => {
 			let workbook = xlsx.read(binaryData, { type: 'binary' });
 			workbook.SheetNames.forEach((sheet: string) => {
 				// delete a specific row
-				function ec(r: number, c: number) {
-					return xlsx.utils.encode_cell({ r: r, c: c });
-				}
-				function delete_row(
-					ws: xlsx.WorkSheet,
-					row_index: number,
-				): xlsx.WorkSheet {
-					let variable = xlsx.utils.decode_range(ws['!ref' as string]);
-					for (let R = row_index; R < variable.e.r; ++R) {
-						for (let C = variable.s.c; C <= variable.e.c; ++C) {
-							ws[ec(R, C)] = ws[ec(R + 1, C)];
-						}
-					}
-					variable.e.r--;
-					ws['!ref'] = xlsx.utils.encode_range(variable.s, variable.e);
-					return ws;
-				}
+				// function ec(r: number, c: number) {
+				// 	return xlsx.utils.encode_cell({ r: r, c: c });
+				// }
+				// function delete_row(
+				// 	ws: xlsx.WorkSheet,
+				// 	row_index: number,
+				// ): xlsx.WorkSheet {
+				// 	let variable = xlsx.utils.decode_range(ws['!ref' as string]);
+				// 	for (let R = row_index; R < variable.e.r; ++R) {
+				// 		for (let C = variable.s.c; C <= variable.e.c; ++C) {
+				// 			ws[ec(R, C)] = ws[ec(R + 1, C)];
+				// 		}
+				// 	}
+				// 	variable.e.r--;
+				// 	ws['!ref'] = xlsx.utils.encode_range(variable.s, variable.e);
+				// 	return ws;
+				// }
 
 				const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet], {
 					defval: '',
@@ -74,7 +74,10 @@ const FileSelector = () => {
 			{entries &&
 				entries.map((entry: any, index: number) => (
 					<div>
-						<pre style={{ display: 'inline-block', textAlign: 'left' }} key={index}>
+						<pre
+							style={{ display: 'inline-block', textAlign: 'left' }}
+							key={index}
+						>
 							{JSON.stringify(entry, undefined, 4)}
 						</pre>
 						<br />

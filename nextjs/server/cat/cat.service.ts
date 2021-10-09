@@ -11,7 +11,10 @@ export default class CatService {
 		return CatModel.find().select(selectedFields).lean<Cat[]>().exec();
 	}
 
-	static async findOne(id: string, selectedFields: Object): Promise<Cat | null> {
+	static async findOne(
+		id: string,
+		selectedFields: Object,
+	): Promise<Cat | null> {
 		return CatModel.findById(id).select(selectedFields).lean<Cat>().exec();
 	}
 }

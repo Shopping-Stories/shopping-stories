@@ -7,7 +7,7 @@ import {
 	Mutation,
 	Query,
 	Resolver,
-	UseMiddleware
+	UseMiddleware,
 } from 'type-graphql';
 import { Roles } from '../middleware/auth.middleware';
 import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
@@ -28,7 +28,9 @@ export default class CatResolver {
 	@Authorized([Roles.Admin, Roles.Moderator])
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Query((_returns) => [Cat], { nullable: true })
-	async findCatsAuth(@Info() info: any /* @Ctx() context: MyContext */): Promise<Cat[]> {
+	async findCatsAuth(
+		@Info() info: any /* @Ctx() context: MyContext */,
+	): Promise<Cat[]> {
 		return CatService.findAll(getMongooseFromFields(info));
 	}
 

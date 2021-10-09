@@ -2,7 +2,7 @@ import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, ObjectType } from 'type-graphql';
 
-export type peopleDocument = Person & Document;
+export type PersonDocument = Person & Document;
 
 @ObjectType({ description: 'People Object' })
 @modelOptions({

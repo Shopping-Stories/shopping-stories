@@ -1,6 +1,6 @@
 import { authExchange } from '@urql/exchange-auth';
 import { cacheExchange } from '@urql/exchange-graphcache';
-import Amplify, { Auth, Storage } from 'aws-amplify';
+import { Auth, Storage } from 'aws-amplify';
 import type { AppProps } from 'next/app';
 import {
 	Client,

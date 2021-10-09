@@ -2,10 +2,12 @@ import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, ObjectType } from 'type-graphql';
 
-export type itemDocument = Item & Document;
+export type ItemDocument = Item & Document;
 
 @ObjectType({ description: 'Item Object' })
-@modelOptions({ schemaOptions: { timestamps: true, collection: "ItemMasterList" } })
+@modelOptions({
+	schemaOptions: { timestamps: true, collection: 'ItemMasterList' },
+})
 export class Item {
 	@Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
 	public get id(): string {
@@ -17,7 +19,6 @@ export class Item {
 	@prop({ required: true })
 	@Field({ description: 'Type of item' })
 	Item: string;
-
 
 	@prop({ required: true })
 	@Field({ description: 'Variations of given item' })

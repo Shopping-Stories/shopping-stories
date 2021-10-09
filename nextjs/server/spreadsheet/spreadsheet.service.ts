@@ -83,20 +83,44 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 	// }
 }
 async function formatMoney(entry: any) {
-		
 	try {
- 
-		let SL : any = (entry.SL !== (null || '')) ? entry.SL.toString().replace(/[^0-9.]/g, '') : 0;
-		let SS : any = (entry.SS !== (null || '')) ? entry.SS.toString().replace(/[^0-9.]/g, '') : 0;
-		let SD : any = (entry.SD !== (null || '')) ? entry.SD.toString().replace(/[^0-9.]/g, '') : 0;
-		let CL : any = (entry.CL !== (null || '')) ? entry.CL.toString().replace(/[^0-9.]/g, '') : 0;
-		let CS : any = (entry.CS !== (null || '')) ? entry.CS.toString().replace(/[^0-9.]/g, '') : 0;
-		let CD : any = (entry.CD !== (null || '')) ? entry.CD.toString().replace(/[^0-9.]/g, '') : 0;
+		let SL: any =
+			entry.SL !== (null || '')
+				? entry.SL.toString().replace(/[^0-9.]/g, '')
+				: 0;
+		let SS: any =
+			entry.SS !== (null || '')
+				? entry.SS.toString().replace(/[^0-9.]/g, '')
+				: 0;
+		let SD: any =
+			entry.SD !== (null || '')
+				? entry.SD.toString().replace(/[^0-9.]/g, '')
+				: 0;
+		let CL: any =
+			entry.CL !== (null || '')
+				? entry.CL.toString().replace(/[^0-9.]/g, '')
+				: 0;
+		let CS: any =
+			entry.CS !== (null || '')
+				? entry.CS.toString().replace(/[^0-9.]/g, '')
+				: 0;
+		let CD: any =
+			entry.CD !== (null || '')
+				? entry.CD.toString().replace(/[^0-9.]/g, '')
+				: 0;
 
-
-		let colony = (entry.Colony !== (null || '' || '-')) ? entry.Colony.toString().replace(/[^a-zA-z\s]/g, '') : null;
-		let commodity = (entry.Commodity !== (null || '' || '-')) ? entry.Commodity.toString().replace(/[^a-zA-z\s]/g, '') : null;
-		let quantity = (entry.Quantity !== (null || '' || '-')) ? entry.Quantity.toString().replace(/[^0-9.]/g, '') : null;
+		let colony =
+			entry.Colony !== (null || '' || '-')
+				? entry.Colony.toString().replace(/[^a-zA-z\s]/g, '')
+				: null;
+		let commodity =
+			entry.Commodity !== (null || '' || '-')
+				? entry.Commodity.toString().replace(/[^a-zA-z\s]/g, '')
+				: null;
+		let quantity =
+			entry.Quantity !== (null || '' || '-')
+				? entry.Quantity.toString().replace(/[^0-9.]/g, '')
+				: null;
 
 		let sterling = {
 			Pounds: Number(SL),
@@ -180,11 +204,23 @@ async function makeAccountHolderObject(entryObj: any) {
 			: cursor.Prefix;
 	let fName = cursor.AccountFirstName.replace(/[^a-zA-z\s]/g, '');
 	let lName = cursor.AccountLastName.replace(/[^a-zA-z\s]/g, '');
-	let suffix = (cursor.Suffix !== null) ? cursor.Suffix.toString().replace(/[^a-zA-z\s]/g, '') : "";
-	let profession = (cursor.Profession !== (null || '-' || '')) ? cursor.Profession.toString().replace(/[^a-zA-z\s]/g, '') : "";
-	let location = (cursor.Location !== (null || '-' || '')) ? cursor.Location.toString().replace(/[^a-zA-z\s]/g, '') : "";
-	let reference = (cursor.Reference !== (null || '-' || '')) ? cursor.Reference.toString().replace(/[^a-zA-z\s]/g, '') : "";
-	let debitOrCredit = (cursor.DrCr !== (null || '-' || '')) ? cursor.DrCr : 'Dr';
+	let suffix =
+		cursor.Suffix !== null
+			? cursor.Suffix.toString().replace(/[^a-zA-z\s]/g, '')
+			: '';
+	let profession =
+		cursor.Profession !== (null || '-' || '')
+			? cursor.Profession.toString().replace(/[^a-zA-z\s]/g, '')
+			: '';
+	let location =
+		cursor.Location !== (null || '-' || '')
+			? cursor.Location.toString().replace(/[^a-zA-z\s]/g, '')
+			: '';
+	let reference =
+		cursor.Reference !== (null || '-' || '')
+			? cursor.Reference.toString().replace(/[^a-zA-z\s]/g, '')
+			: '';
+	let debitOrCredit = cursor.DrCr !== (null || '-' || '') ? cursor.DrCr : 'Dr';
 	if (debitOrCredit.toUpperCase() === 'DR') {
 		debitOrCredit = 1;
 	} else {

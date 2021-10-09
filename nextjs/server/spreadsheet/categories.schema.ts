@@ -2,10 +2,10 @@ import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, ObjectType } from 'type-graphql';
 
-export type categoriesDocument = Category & Document;
+export type CategoriesDocument = Category & Document;
 
 @ObjectType({ description: 'Category Object' })
-@modelOptions({ schemaOptions: { timestamps: true, collection: "Categories" } })
+@modelOptions({ schemaOptions: { timestamps: true, collection: 'Categories' } })
 export class Category {
 	@Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
 	public get id(): string {
@@ -27,4 +27,5 @@ export class Category {
 	Subcategory: string;
 }
 
-export const CategoryModel = mongoose.models.Category || getModelForClass(Category);
+export const CategoryModel =
+	mongoose.models.Category || getModelForClass(Category);
