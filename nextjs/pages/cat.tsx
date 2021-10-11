@@ -1,9 +1,8 @@
 import Auth from '@aws-amplify/auth';
 import { AmplifySignOut } from '@aws-amplify/ui-react';
-import gql from 'graphql-tag';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
-import { useQuery } from 'urql';
+import { gql, useQuery } from 'urql';
 import { isLoggedIn } from '../client/components/util';
 
 const FIND_CATS_QUERY = gql`

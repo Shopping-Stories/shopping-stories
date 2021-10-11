@@ -73,10 +73,9 @@ const FileSelector = () => {
 			<input type="file" onChange={(e) => handleChange(e.target.files)} />
 			{entries &&
 				entries.map((entry: any, index: number) => (
-					<div>
+					<div key={index} >
 						<pre
 							style={{ display: 'inline-block', textAlign: 'left' }}
-							key={index}
 						>
 							{JSON.stringify(entry, undefined, 4)}
 						</pre>
