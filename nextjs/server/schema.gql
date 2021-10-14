@@ -301,7 +301,7 @@ type Mutation {
   removeUserFromGroup(groupname: String!, username: String!): JSONObject
   importSpreadsheet(spreadsheetObj: JSONObject!): [JSONObject!]
   createGlossaryItem(newGlossaryItem: CreateGlossaryItemInput!): GlossaryItem!
-  updateGlossaryItem(updatedFields: UpdateGlossaryItemInput!, id: String!): GlossaryItem!
+  updateGlossaryItem(updatedFields: UpdateGlossaryItemInput!, id: String!): GlossaryItem
   deleteGlossaryItem(id: String!): GlossaryItem
 }
 
