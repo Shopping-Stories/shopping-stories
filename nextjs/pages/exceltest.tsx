@@ -1,11 +1,12 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 import styles from '../styles/Home.module.css';
-// import exportFromJSON from 'export-from-json';
+import exportFromJSON from 'export-from-json';
 import xlsx from 'xlsx';
 import { useMutation } from 'urql';
+import { Button, Switch } from 'antd';
 
 const parseSheetDef = `
 	mutation ($spreadsheet: JSONObject!) {
@@ -15,6 +16,7 @@ const parseSheetDef = `
 
 const FileSelector = () => {
 	const [parseSheetResult, parseSheet] = useMutation(parseSheetDef);
+	const [printState, setPrintState] = useState(false);
 
 	async function handleChange(selectorFiles: FileList | null) {
 		if (selectorFiles === null || !selectorFiles) {
@@ -71,22 +73,29 @@ const FileSelector = () => {
 	return (
 		<div style={{ textAlign: 'center' }}>
 			<input type="file" onChange={(e) => handleChange(e.target.files)} />
-			{entries &&
+			{printState && entries &&
 				entries.map((entry: any, index: number) => (
-					<div key={index} >
-						<pre
-							style={{ display: 'inline-block', textAlign: 'left' }}
-						>
+					<div key={index}>
+						<pre style={{ display: 'inline-block', textAlign: 'left' }}>
 							{JSON.stringify(entry, undefined, 4)}
 						</pre>
 						<br />
 					</div>
 				))}
-			{parseSheetResult.error ? (
+			{printState && parseSheetResult.error ? (
 				<pre>{JSON.stringify(parseSheetResult.error, undefined, 4)}</pre>
-			) : (
-				''
-			)}
+				) : (
+					''
+					)}
+			<Switch checked={printState} onChange={() => setPrintState(!printState)} />
+			<Button
+				onClick={() => {
+					const fileName = 'result';
+					const exportType = 'json';
+
+					exportFromJSON({ data: entries, fileName, exportType });
+				}}
+			>Download JSON File</Button>
 		</div>
 	);
 };
