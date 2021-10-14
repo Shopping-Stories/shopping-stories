@@ -14,27 +14,33 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 		const entry = spreadsheetObj[i];
 		errorCode[i] = 0;
 		let type = Number(entry.EntryType);
-		console.log(type);
+		//console.log(type);
 		try {
 			if (entry.Entry) {
 				if (type === 1) {
-					console.log('Id: ' + entry._id + ' is a tobacco');
-					res[i] = await updatedTobaccoEntry(entry);
+					//console.log('Id: ' + entry._id + ' is a tobacco');
+					try{
+						res[i] = await updatedTobaccoEntry(entry);
+					}catch(err){
+						console.log("error with entry type 1   " + err);
+					}
+					
 				} else if (type === 2) {
-					console.log('Id: ' + entry._id + ' is a item');
+					//console.log('Id: ' + entry._id + ' is a item');
 					res[i] = await updatedItemEntry(entry);
 				} else {
-					console.log('Id: ' + entry._id + ' is a regular');
+					//console.log('Id: ' + entry._id + ' is a regular');
 					res[i] = await updatedRegEntry(entry);
 				}
 			}
 			people[i] = await peopleIDs(entry);
-			console.log(people[i]);
+			// console.log(people[i]);
 			money[i] = await formatMoney(entry);
 			dates[i] = await newDateObject(entry.Day, entry.Month, entry.Year);
 			meta[i] = await makeMetaDataObject(entry, 'C_1760');
 			accHold[i] = await makeAccountHolderObject(entry);
 		} catch (err) {
+			console.log('EntryID:' + entry.EntryID + "   " + err);
 			meta[i] = await makeMetaDataObject(entry, 'C_1760');
 			accHold[i] = await makeAccountHolderObject(entry);
 			if (err) {
@@ -44,22 +50,25 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 			}
 
 			errorCode[i] = 1;
-			//throw err;
+			throw err;
 		}
 	}
 
 	let ret: any = [];
 	for (let i = 0; i < res.length; i++) {
-		ret.push({
-			Entry: spreadsheetObj[i].Entry,
-			NewEntry: res[i],
-			AccHolder: accHold[i],
-			People: people[i],
-			Meta: meta[i],
-			DateInfo: dates[i],
-			Money: money[i],
-			ErrorCode: errorCode[i],
-		});
+		
+			ret.push({
+				Entry: spreadsheetObj[i].Entry,
+				NewEntry: res[i],
+				AccHolder: accHold[i],
+				People: people[i],
+				Meta: meta[i],
+				DateInfo: dates[i],
+				Money: money[i],
+				ErrorCode: errorCode[i],
+			});
+		
+		
 	}
 
 	return ret;
@@ -148,7 +157,9 @@ async function formatMoney(entry: any) {
 	}
 }
 async function peopleIDs(entry: any) {
-	let people = entry.People;
+	let people = entry.People !== (null || '' || '-')
+	? entry.People.toString()
+	: null;
 	//console.log(people);
 	if (people === '') {
 		return [];
@@ -161,14 +172,14 @@ async function peopleIDs(entry: any) {
 		split[0] = people;
 	}
 	for (let i = 0; i < split.length; i++) {
-		let temp = split[i].trim();
+		let temp : any = split[i].trim().toString();
 
-		console.log('looking for ' + temp);
+		//console.log('looking for ' + temp);
 		let object = {
 			Name: null,
 			ID: null,
 		};
-		if (temp.toUpperCase.includes('FNU' || 'LNU' || 'CASH')) {
+		if (temp.toUpperCase().includes('FNU') || temp.toUpperCase().includes('LNU') || temp.toUpperCase().includes('CASH') ) {
 			object = {
 				Name: temp,
 				ID: null,
@@ -176,7 +187,7 @@ async function peopleIDs(entry: any) {
 		} else {
 			let personID: any = '';
 			try {
-				console.log('trying to find');
+				//console.log('trying to find');
 				personID = await PersonModel.findOne({ $text: { $search: temp } }, {
 					score: { $meta: 'textScore' },
 				} as any);
@@ -193,78 +204,91 @@ async function peopleIDs(entry: any) {
 		res[i] = object;
 		//console.log(res[i]);
 	}
-	console.log(res);
+	//console.log(res);
 	return res;
 }
 async function makeAccountHolderObject(entryObj: any) {
-	const cursor = entryObj;
-	let prefix =
-		typeof cursor.Prefix === 'string'
-			? cursor.Prefix.replace(/[^a-zA-z\s]/g, '')
-			: cursor.Prefix;
-	let fName = cursor.AccountFirstName.replace(/[^a-zA-z\s]/g, '');
-	let lName = cursor.AccountLastName.replace(/[^a-zA-z\s]/g, '');
-	let suffix =
-		cursor.Suffix !== null
-			? cursor.Suffix.toString().replace(/[^a-zA-z\s]/g, '')
-			: '';
-	let profession =
-		cursor.Profession !== (null || '-' || '')
-			? cursor.Profession.toString().replace(/[^a-zA-z\s]/g, '')
-			: '';
-	let location =
-		cursor.Location !== (null || '-' || '')
-			? cursor.Location.toString().replace(/[^a-zA-z\s]/g, '')
-			: '';
-	let reference =
-		cursor.Reference !== (null || '-' || '')
-			? cursor.Reference.toString().replace(/[^a-zA-z\s]/g, '')
-			: '';
-	let debitOrCredit = cursor.DrCr !== (null || '-' || '') ? cursor.DrCr : 'Dr';
-	if (debitOrCredit.toUpperCase() === 'DR') {
-		debitOrCredit = 1;
-	} else {
-		debitOrCredit = 0;
+	try{
+
+	
+		const cursor = entryObj;
+		let prefix =
+			typeof cursor.Prefix === 'string'
+				? cursor.Prefix.replace(/[^a-zA-z\s]/g, '')
+				: "";
+		let fName = cursor.AccountFirstName.replace(/[^a-zA-z\s]/g, '');
+		let lName = cursor.AccountLastName.replace(/[^a-zA-z\s]/g, '');
+		let suffix =
+			cursor.Suffix !== null
+				? cursor.Suffix.toString().replace(/[^a-zA-z\s]/g, '')
+				: '';
+		let profession =
+			cursor.Profession !== (null || '-' || '')
+				? cursor.Profession.toString().replace(/[^a-zA-z\s]/g, '')
+				: '';
+		let location =
+			cursor.Location !== (null || '-' || '')
+				? cursor.Location.toString().replace(/[^a-zA-z\s]/g, '')
+				: '';
+		let reference =
+			cursor.Reference !== (null || '-' || '')
+				? cursor.Reference.toString().replace(/[^a-zA-z\s]/g, '')
+				: '';
+		let debitOrCredit = cursor.DrCr !== (null || '-' || '') ? cursor.DrCr : 'Dr';
+		if (debitOrCredit.toUpperCase() === 'DR') {
+			debitOrCredit = 1;
+		} else {
+			debitOrCredit = 0;
+		}
+		let accID = null;
+		let search = (prefix + ' ' + fName + ' ' + lName + ' ' + suffix).trim();
+		//console.log(search);
+		try {
+			accID = await PersonModel.findOne(
+				{ $text: { $search: search } },
+				{ score: { $meta: 'textScore' } },
+			);
+			accID = accID._id;
+		} catch {
+			accID = null;
+		}
+		//console.log(accID);
+		let res = {
+			Prefix: prefix,
+			AccountFirstName: fName,
+			AccountLastName: lName,
+			Suffix: suffix,
+			Profession: profession,
+			Location: location,
+			Reference: reference,
+			DrCr: debitOrCredit,
+			accHolderID: accID,
+		};
+		return res;
+	}catch(err){
+		throw 'error making acc holder data';
 	}
-	let accID = null;
-	let search = (prefix + ' ' + fName + ' ' + lName + ' ' + suffix).trim();
-	//console.log(search);
-	try {
-		accID = await PersonModel.findOne(
-			{ $text: { $search: search } },
-			{ score: { $meta: 'textScore' } },
-		);
-		accID = accID._id;
-	} catch {
-		accID = null;
-	}
-	//console.log(accID);
-	let res = {
-		Prefix: prefix,
-		AccountFirstName: fName,
-		AccountLastName: lName,
-		Suffix: suffix,
-		Profession: profession,
-		Location: location,
-		Reference: reference,
-		DrCr: debitOrCredit,
-		accHolderID: accID,
-	};
-	return res;
 }
 async function makeMetaDataObject(entryObj: any, ledger: any) {
-	const cursor = entryObj;
-	//console.log(cursor);
-	let res = {
-		Ledger: ledger,
-		Reel: cursor.Reel,
-		FolioPage: cursor.FolioPage,
-		Year: cursor.Year,
-		Owner: cursor.Owner,
-		Store: cursor.Store,
-		EntryID: cursor.EntryID.toString(),
-	};
-	return res;
+	try{
+
+	
+		const cursor = entryObj;
+		//console.log(cursor);
+		let res = {
+			Ledger: ledger,
+			Reel: cursor.Reel,
+			FolioPage: cursor.FolioPage,
+			Year: cursor.Year,
+			Owner: cursor.Owner,
+			Store: cursor.Store,
+			EntryID: cursor.EntryID.toString(),
+		};
+		return res;
+	}catch(err)
+	{
+		throw 'cant make meta data object';
+	}
 }
 
 async function newDateObject(day: any, month: any, year: any) {
@@ -297,137 +321,153 @@ async function newDateObject(day: any, month: any, year: any) {
 }
 
 async function calculateUnitCost(money: any, quantity: any) {
-	let L = money.Pounds; //Pounds
-	let S = money.Shilling; //Shilling
-	let D = money.Shilling; //Pence
-	let res: any = '';
+	try{
+		let L = money.Pounds; //Pounds
+		let S = money.Shilling; //Shilling
+		let D = money.Shilling; //Pence
+		let res: any = '';
+	
+		let unitPound = Math.floor(L / quantity);
+		let poundLeftOver = L % quantity;
+		let convertedPounds = poundLeftOver * 20 + S;
+	
+		let unitShilling = Math.floor(convertedPounds / quantity);
+		let shillingLeftOver = convertedPounds % quantity;
+	
+		let unitPence = (shillingLeftOver * 12 + D) / quantity;
+		res = {
+			Pounds: unitPound,
+			Shilling: unitShilling,
+			Pence: unitPence,
+		};
+		return res;
+	}catch(err){
+		throw 'error calculating unit cost';
+	}
 
-	let unitPound = Math.floor(L / quantity);
-	let poundLeftOver = L % quantity;
-	let convertedPounds = poundLeftOver * 20 + S;
-
-	let unitShilling = Math.floor(convertedPounds / quantity);
-	let shillingLeftOver = convertedPounds % quantity;
-
-	let unitPence = (shillingLeftOver * 12 + D) / quantity;
-	res = {
-		Pounds: unitPound,
-		Shilling: unitShilling,
-		Pence: unitPence,
-	};
-	return res;
 }
 async function moneyConversion(money: any) {
-	let L = 0;
-	let S = 0;
-	let D = 0;
-	//console.log(money);
-	if (!money) {
+	try{
+
+	
+		let L = 0;
+		let S = 0;
+		let D = 0;
+		//console.log(money);
+		if (!money) {
+			let res2 = {
+				Pounds: 0,
+				Shilling: 0,
+				Pence: 0,
+			};
+			return res2;
+		}
+		//money = money.toString();
+		if (money.includes('d')) {
+			//console.log(`just pence\n`);
+			let splitCost = money.split('d');
+			let currentItemCost = parseInt(splitCost[0]);
+			while (currentItemCost >= 12) {
+				S++;
+				currentItemCost = currentItemCost - 12;
+			}
+			D = currentItemCost;
+		} else if (money.includes('/:')) {
+			//console.log(`contains just shilling\n`);
+			let splitCost = money.split('/:');
+			let currentItemCost = parseInt(splitCost[0]);
+			while (currentItemCost >= 20) {
+				L++;
+				currentItemCost = currentItemCost - 20;
+			}
+			S = currentItemCost;
+		} else if (money.includes('/')) {
+			//console.log(`contains both shilling and pence\n`);
+			let splitCost = money.split('/');
+			let tempPence = parseInt(splitCost[1]);
+			let tempShill = parseInt(splitCost[0]);
+			while (tempPence >= 12) {
+				tempShill++;
+				tempPence = tempPence - 12;
+			}
+			while (tempShill >= 20) {
+				L++;
+				tempShill = tempShill - 20;
+			}
+			S = tempShill;
+			D = tempPence;
+		} else if (money.includes('..')) {
+			//putting pounds, shilling, and pence into an array
+			let splitCost = money.split('..');
+
+			let tempPounds = parseInt(splitCost[0].trim()); //holds pounds
+			let tempShill = parseInt(splitCost[1].trim()); //holds shillings
+			let tempPence = parseInt(splitCost[2].trim()); //holds pence
+
+			let tempShill2 = 0;
+			let tempPence2 = 0;
+
+			//using 1 pound, 21 shillings, and 13 pence
+			tempPence2 = Math.floor(tempPence / 12); // (13 / 12) = 1
+			tempPence = tempPence % 12; // (12%12) = 1 D
+
+			tempShill2 = Math.floor((tempShill + tempPence2) / 20); //(21 + 1) / 20 = 1
+			tempShill = (tempShill + tempPence2) % 20; //(21 + 1) % 20 = 2 S
+
+			tempPounds = tempPounds + tempShill2; // 1 + 1 = 1
+
+			L = tempPounds; // "global" variable for Pounds is set
+			S = tempShill; // "global" variable for Shillings are set
+			D = tempPence; // "global" variable for Pence is set
+		}
+		if (!L) {
+			L = 0;
+		}
+		if (!S) {
+			S = 0;
+		}
+		if (!D) {
+			D = 0;
+		}
 		let res2 = {
-			Pounds: 0,
-			Shilling: 0,
-			Pence: 0,
+			Pounds: L,
+			Shilling: S,
+			Pence: D,
 		};
 		return res2;
+	}catch(err){
+		throw 'cant convert money';
 	}
-	//money = money.toString();
-	if (money.includes('d')) {
-		//console.log(`just pence\n`);
-		let splitCost = money.split('d');
-		let currentItemCost = parseInt(splitCost[0]);
-		while (currentItemCost >= 12) {
-			S++;
-			currentItemCost = currentItemCost - 12;
-		}
-		D = currentItemCost;
-	} else if (money.includes('/:')) {
-		//console.log(`contains just shilling\n`);
-		let splitCost = money.split('/:');
-		let currentItemCost = parseInt(splitCost[0]);
-		while (currentItemCost >= 20) {
-			L++;
-			currentItemCost = currentItemCost - 20;
-		}
-		S = currentItemCost;
-	} else if (money.includes('/')) {
-		//console.log(`contains both shilling and pence\n`);
-		let splitCost = money.split('/');
-		let tempPence = parseInt(splitCost[1]);
-		let tempShill = parseInt(splitCost[0]);
-		while (tempPence >= 12) {
-			tempShill++;
-			tempPence = tempPence - 12;
-		}
-		while (tempShill >= 20) {
-			L++;
-			tempShill = tempShill - 20;
-		}
-		S = tempShill;
-		D = tempPence;
-	} else if (money.includes('..')) {
-		//putting pounds, shilling, and pence into an array
-		let splitCost = money.split('..');
-
-		let tempPounds = parseInt(splitCost[0].trim()); //holds pounds
-		let tempShill = parseInt(splitCost[1].trim()); //holds shillings
-		let tempPence = parseInt(splitCost[2].trim()); //holds pence
-
-		let tempShill2 = 0;
-		let tempPence2 = 0;
-
-		//using 1 pound, 21 shillings, and 13 pence
-		tempPence2 = Math.floor(tempPence / 12); // (13 / 12) = 1
-		tempPence = tempPence % 12; // (12%12) = 1 D
-
-		tempShill2 = Math.floor((tempShill + tempPence2) / 20); //(21 + 1) / 20 = 1
-		tempShill = (tempShill + tempPence2) % 20; //(21 + 1) % 20 = 2 S
-
-		tempPounds = tempPounds + tempShill2; // 1 + 1 = 1
-
-		L = tempPounds; // "global" variable for Pounds is set
-		S = tempShill; // "global" variable for Shillings are set
-		D = tempPence; // "global" variable for Pence is set
-	}
-	if (!L) {
-		L = 0;
-	}
-	if (!S) {
-		S = 0;
-	}
-	if (!D) {
-		D = 0;
-	}
-	let res2 = {
-		Pounds: L,
-		Shilling: S,
-		Pence: D,
-	};
-	return res2;
 }
 
 async function calculateTotalCostTobacco(quantity: any, money: any) {
 	//will get the total currency each tobacco is sold for in tobacco transactions, finalized?
+	try{
 
-	let tobaccodivided = quantity / 100;
-	let L = money.Pounds;
-	let S = money.Shilling;
-	let D = money.Pence;
+	
+		let tobaccodivided = quantity / 100;
+		let L = money.Pounds;
+		let S = money.Shilling;
+		let D = money.Pence;
 
-	L = L * tobaccodivided + Math.floor((S * tobaccodivided) / 20);
-	S = ((S * tobaccodivided) % 20) + Math.floor((D * tobaccodivided) / 12);
-	D = (D * tobaccodivided) % 12;
-	//simplify
-	S = S + Math.round((L % 1) * 20);
-	L = Math.floor(L);
-	D = D + Math.round((S % 1) * 12);
-	S = Math.floor(S);
+		L = L * tobaccodivided + Math.floor((S * tobaccodivided) / 20);
+		S = ((S * tobaccodivided) % 20) + Math.floor((D * tobaccodivided) / 12);
+		D = (D * tobaccodivided) % 12;
+		//simplify
+		S = S + Math.round((L % 1) * 20);
+		L = Math.floor(L);
+		D = D + Math.round((S % 1) * 12);
+		S = Math.floor(S);
 
-	let res = {
-		Pounds: L,
-		Shilling: S,
-		Pence: D,
-	};
-	return res;
+		let res = {
+			Pounds: L,
+			Shilling: S,
+			Pence: D,
+		};
+		return res;
+	}catch(err){
+		throw 'cant calculate total cost of tobacco';
+	}
 }
 
 async function calculateTobaccoMoney(MoneyEntry: any) {
@@ -607,7 +647,7 @@ async function tobaccoNote(string: any) {
 async function updatedTobaccoEntry(entryObj: any) {
 	//nearly finalized
 	const cursor = entryObj;
-	let entry = await cursor.Entry;
+	let entry = await cursor.Entry.toString();
 	let brokenEntry = await entry.split('//');
 	let moneyInfo: any = [];
 	let NoteInfor = [];
@@ -670,7 +710,7 @@ async function updatedTobaccoEntry(entryObj: any) {
 async function updatedItemEntry(entryObj: any) {
 	//not finished
 	const cursor = entryObj;
-	let entry = cursor.Entry;
+	let entry = cursor.Entry.toString();
 	let brokenEntry = entry.split('//');
 	let transactions = [];
 
