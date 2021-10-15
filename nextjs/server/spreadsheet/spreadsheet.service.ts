@@ -19,11 +19,9 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 			if (entry.Entry) {
 				if (type === 1) {
 					//console.log('Id: ' + entry._id + ' is a tobacco');
-					try{
-						res[i] = await updatedTobaccoEntry(entry);
-					}catch(err){
-						console.log("error with entry type 1   " + err);
-					}
+					
+					res[i] = await updatedTobaccoEntry(entry);
+					
 					
 				} else if (type === 2) {
 					//console.log('Id: ' + entry._id + ' is a item');
@@ -479,11 +477,13 @@ async function calculateTobaccoMoney(MoneyEntry: any) {
 	} else {
 		brokenMoney = [MoneyEntry];
 	}
+	
 	let res = [];
 	let moneyCount = 0;
 	let tobaccoSoldFor: any = [0, 0, 0];
 
 	for (let i = 0; i < brokenMoney.length; i++) {
+		console.log(brokenMoney[i]);
 		let caskQuantity = 0;
 		let caskCost = { Pounds: 0, Shilling: 0, Pence: 0 };
 		let poundsOfTobacco = 0;
@@ -499,7 +499,7 @@ async function calculateTobaccoMoney(MoneyEntry: any) {
 		} else if (brokenMoney[i].includes('STERLING')) {
 			moneyName = 'Sterling';
 			workingString = workingString.replace('[STERLING]', '').trim();
-		} else if (workingString != '') {
+		} else if (workingString != '' && workingString.includes(']')) {
 			let tempTradeItem = workingString.split('[');
 			tempTradeItem = tempTradeItem[1].split(']');
 			moneyName = tempTradeItem[0];
@@ -553,13 +553,16 @@ async function calculateTobaccoMoney(MoneyEntry: any) {
 			}
 		} else {
 			if (workingString.includes('AT')) {
+				console.log('here');
 				let tempArray = workingString.split('AT');
+				console.log(tempArray);
 				poundsOfTobacco = Number(tempArray[0]);
 				tobaccoRate = await moneyConversion(tempArray[1].trim());
 				tobaccoSoldFor = await calculateTotalCostTobacco(
 					poundsOfTobacco,
 					tobaccoRate,
 				);
+				console.log(tobaccoSoldFor);
 			} else if (workingString.includes(',')) {
 				let tempArray = workingString.split(',');
 				poundsOfTobacco = Number(tempArray[0]);
@@ -659,6 +662,7 @@ async function updatedTobaccoEntry(entryObj: any) {
 	let tobaccoShavedOff = 0;
 	let noteCount = 0;
 	for (let i = 0; i < brokenEntry.length; i++) {
+		console.log(brokenEntry[i]);
 		if (brokenEntry[i].toUpperCase().includes('[MONEY]')) {
 			let tempMoneyInfo: any = brokenEntry[i]
 				.trim()
@@ -710,6 +714,8 @@ async function updatedTobaccoEntry(entryObj: any) {
 async function updatedItemEntry(entryObj: any) {
 	//not finished
 	const cursor = entryObj;
+	console.log(cursor.EntryID);
+	console.log(cursor.Entry);
 	let entry = cursor.Entry.toString();
 	let brokenEntry = entry.split('//');
 	let transactions = [];
