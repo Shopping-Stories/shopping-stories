@@ -13,8 +13,15 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 	for (let i = 0; i < spreadsheetObj.length; i++) {
 		const entry = spreadsheetObj[i];
 		errorCode[i] = 0;
+		
+
 		let type = Number(entry.EntryType);
-		//console.log(type);
+		if(entry.EntryType === null ){
+			type = 0
+		}
+		
+		console.log(type);
+		
 		try {
 			if (entry.Entry) {
 				if (type === 1) {
@@ -48,26 +55,52 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 			}
 
 			errorCode[i] = 1;
-			throw err;
+			
 		}
 	}
 
 	let ret: any = [];
-	for (let i = 0; i < res.length; i++) {
-		
-			ret.push({
-				Entry: spreadsheetObj[i].Entry,
-				NewEntry: res[i],
-				AccHolder: accHold[i],
-				People: people[i],
-				Meta: meta[i],
-				DateInfo: dates[i],
-				Money: money[i],
-				ErrorCode: errorCode[i],
-			});
-		
-		
+
+	let testFlag = 1;
+	if(testFlag === 0){
+		for (let i = 0; i < res.length; i++) {
+			
+	
+			
+				ret.push({
+					Entry: spreadsheetObj[i].Entry,
+					NewEntry: res[i],
+					//AccHolder: accHold[i],
+					//People: people[i],
+					Meta: meta[i],
+					//DateInfo: dates[i],
+					Money: money[i],
+					ErrorCode: errorCode[i],
+				});
+			
+			
+		}
+	}else{
+		for (let i = 0; i < res.length; i++) {
+			if(errorCode[i] === 1){
+	
+			
+				ret.push({
+					Entry: spreadsheetObj[i].Entry,
+					NewEntry: res[i],
+					//AccHolder: accHold[i],
+					//People: people[i],
+					Meta: meta[i],
+					//DateInfo: dates[i],
+					Money: money[i],
+					ErrorCode: errorCode[i],
+				});
+			}
+			
+		}
 	}
+
+
 
 	return ret;
 	// await client.db('shoppingstories').collection('test2f').drop();
@@ -553,16 +586,16 @@ async function calculateTobaccoMoney(MoneyEntry: any) {
 			}
 		} else {
 			if (workingString.includes('AT')) {
-				console.log('here');
+				//console.log('here');
 				let tempArray = workingString.split('AT');
-				console.log(tempArray);
+				//console.log(tempArray);
 				poundsOfTobacco = Number(tempArray[0]);
 				tobaccoRate = await moneyConversion(tempArray[1].trim());
 				tobaccoSoldFor = await calculateTotalCostTobacco(
 					poundsOfTobacco,
 					tobaccoRate,
 				);
-				console.log(tobaccoSoldFor);
+				//console.log(tobaccoSoldFor);
 			} else if (workingString.includes(',')) {
 				let tempArray = workingString.split(',');
 				poundsOfTobacco = Number(tempArray[0]);
@@ -713,9 +746,10 @@ async function updatedTobaccoEntry(entryObj: any) {
 
 async function updatedItemEntry(entryObj: any) {
 	//not finished
+	console.log(updatedItemEntry);
 	const cursor = entryObj;
-	console.log(cursor.EntryID);
-	console.log(cursor.Entry);
+	//console.log(cursor.EntryID);
+	//console.log(cursor.Entry);
 	let entry = cursor.Entry.toString();
 	let brokenEntry = entry.split('//');
 	let transactions = [];
@@ -763,8 +797,8 @@ async function updatedItemEntry(entryObj: any) {
 		if (mainItemString.length > 6) {
 			let itemCosts: any = await moneyConversion(mainItemString[9]);
 			itemCosts = await calculateUnitCost(itemCosts, 2);
-			let categories = await findCategories(mainItemString[3]);
-			let categories2 = await findCategories(mainItemString[7]);
+			let categories = await findCategories(mainItemString[3], workingString);
+			let categories2 = await findCategories(mainItemString[7], workingString);
 			item2 = {
 				Quantity: Number(mainItemString[4].replace('&', '')),
 				Qualifier: mainItemString[5],
@@ -791,20 +825,25 @@ async function updatedItemEntry(entryObj: any) {
 				ItemCost: itemCosts,
 			};
 		} else {
-			let categories = await findCategories(mainItemString[3]);
-			item = {
-				perOrder: 0,
-				Percentage: 0,
-				Quantity: null,
-				Qualifier: mainItemString[1],
-				Variant: mainItemString[2].split('*'),
-				Item: mainItemString[3],
-				Category: categories.Category,
-				Subcategory: categories.Subcategory,
-				UnitCost: await moneyConversion(mainItemString[4]),
-				ItemCost: await moneyConversion(mainItemString[5]),
-			};
-			item2 = null;
+			try{
+				let categories = await findCategories(mainItemString[3], workingString);
+				item = {
+					perOrder: 0,
+					Percentage: 0,
+					Quantity: null,
+					Qualifier: mainItemString[1],
+					Variant: mainItemString[2].split('*'),
+					Item: mainItemString[3],
+					Category: categories.Category,
+					Subcategory: categories.Subcategory,
+					UnitCost: await moneyConversion(mainItemString[4]),
+					ItemCost: await moneyConversion(mainItemString[5]),
+				};
+				item2 = null;
+			}catch(err){
+				throw(mainItemString +" has error: " + err);
+			}
+
 		}
 
 		if (mainItemString[0].toUpperCase().includes('PER')) {
@@ -824,6 +863,7 @@ async function updatedItemEntry(entryObj: any) {
 
 		transactions[i] = itemFormat;
 	}
+	//console.log(transactions);
 	return transactions;
 }
 
@@ -834,14 +874,14 @@ async function removeWhiteSpaceFromArray(array: any) {
 async function updatedRegEntry(entryObj: any) {
 	const cursor = entryObj;
 	let entry = cursor.Entry;
-	console.log(entry);
+	//console.log(entry);
 	let tmCount = 0;
-	let tmObject = [
+	let tmObject =
 		{
-			MarkName: '',
+			MarkName: null,
 			MarkID: null,
-		},
-	];
+		}
+	let tmArray = [tmObject];
 	let res = {
 		Entry: '',
 		TM: tmObject,
@@ -854,21 +894,26 @@ async function updatedRegEntry(entryObj: any) {
 		for (let i = 1; i < entry.length; i++) {
 			if (entry[i].replace(/\s+/g, '').includes('TM:')) {
 				let TMstring = entry[i];
+				console.log(TMstring);
 				TMstring = entry[i].split(']');
 				finalEntry += TMstring[1];
 				TMstring = TMstring[0];
 				TMstring = TMstring.split(':').pop().trim();
-				tmObject[tmCount].MarkName = TMstring;
+				console.log(`TM NAME: ${TMstring}`);
+				tmObject.MarkName = TMstring;
+				console.log(tmObject);
 				TMstring = TMstring.trim().split(' ')[0];
 				TMstring = TMstring.replace(/^0+/, '');
+				console.log(TMstring);
 				let tempID = null;
 				try {
 					tempID = await findTMid(TMstring);
 				} catch (exception_var) {
 					tempID = null;
 				} finally {
-					tmObject[tmCount].MarkID = tempID;
+					tmObject.MarkID = tempID;
 				}
+				tmArray.push(tmObject);
 				tmCount++;
 			} else {
 				let itemString = entry[i];
@@ -898,9 +943,10 @@ async function findTMid(id: any) {
 		return null;
 	}
 }
-async function findCategories(item: any) {
+async function findCategories(item: any, inputString: string) {
 	if (!item) {
-		throw 'no item in entry or entry inproperly formatted';
+		let resMessage = `${inputString}  :no item in entry or entry inproperly formatted`;
+		throw resMessage;
 	}
 	let res = {
 		Category: null,
