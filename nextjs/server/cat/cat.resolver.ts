@@ -9,7 +9,7 @@ import {
 	Resolver,
 	UseMiddleware,
 } from 'type-graphql';
-import { Roles } from '../middleware/auth.middleware';
+import { Roles } from '../../config/constants.config';
 import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 import { Cat } from './cat.schema';
 import CatService from './cat.service';

@@ -8,6 +8,7 @@ import { useState } from 'react';
 const Congito3 = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+	const [errors, setErrors] = useState('');
 	const onSubmit = async (event: any) => {
 		event.preventDefault();
 		try {
@@ -16,12 +17,11 @@ const Congito3 = () => {
 				if (err) {
 					console.log(err);
 				} else {
-					console.log(session.getAccessToken().getJwtToken());
-					console.log(session);
+					setErrors(session.getAccessToken().getJwtToken());
 				}
 			});
-		} catch (error) {
-			console.log('error signing in', error);
+		} catch (error: any) {
+			setErrors(error.message);
 		}
 	};
 
@@ -38,6 +38,7 @@ const Congito3 = () => {
 					value={password}
 					onChange={(event) => setPassword(event.target.value)}
 				></input>
+				<div>{errors}</div>
 
 				<button type="submit">Login</button>
 			</form>

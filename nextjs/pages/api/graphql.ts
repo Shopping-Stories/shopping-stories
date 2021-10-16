@@ -11,7 +11,7 @@ import { UserResolver } from '../../server/user/user.resolver';
 import { DocToObject } from '../../server/middleware/misc.middleware';
 import AdminResolver from '../../server/admin/admin.resolver';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { __dev__ } from '../../server/config/constants.config';
+import { __dev__ } from '../../config/constants.config';
 import SpreadsheetResolver from '../../server/spreadsheet/spreadsheet.resolver';
 import GlossaryItemResolver from '../../server/glossaryItem/glossaryItem.resolver';
 

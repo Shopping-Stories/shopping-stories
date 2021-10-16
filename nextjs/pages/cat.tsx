@@ -1,9 +1,8 @@
-import Auth from '@aws-amplify/auth';
 import { AmplifySignOut } from '@aws-amplify/ui-react';
-import { useRouter } from 'next/router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { gql, useQuery } from 'urql';
-import { isLoggedIn } from '../client/components/util';
+import useAuth from '../client/useAuth.hook';
+import { Roles } from '../config/constants.config';
 
 const FIND_CATS_QUERY = gql`
 	{
@@ -15,34 +14,18 @@ const FIND_CATS_QUERY = gql`
 `;
 
 const Cats = () => {
-	const router = useRouter();
-	const [loginStatus, setLoginStatus] = useState(false);
-	const [loadStatus, setLoadStatus] = useState(true);
-
 	const [result, executeQuery] = useQuery({
 		query: FIND_CATS_QUERY,
 		pause: true,
 	});
 
-	const checkLogin = async () => {
-		const res = await isLoggedIn(Auth);
-		setLoginStatus(res);
-		setLoadStatus(false);
-	};
+	const { loading } = useAuth('/', [Roles.Admin]);
 
 	const getCats = useCallback(() => {
 		executeQuery();
 	}, [executeQuery]);
 
-	useEffect(() => {
-		checkLogin();
-	}, []); // All the magic is here
-
-	if (!loginStatus && !loadStatus) {
-		router.push('/');
-	}
-
-	if (loadStatus || !loginStatus) {
+	if (loading) {
 		return <div>Loading...</div>;
 	}
 

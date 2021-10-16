@@ -9,8 +9,8 @@ import {
 	makeOperation,
 	Provider,
 } from 'urql';
-import { handlePromise } from '../client/components/util';
-import { CognitoConfig } from '../server/config/constants.config';
+import { handlePromise } from '../client/util';
+import { CognitoConfig } from '../config/constants.config';
 import '../styles/globals.css';
 
 const cache = cacheExchange({});

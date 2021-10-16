@@ -3,7 +3,7 @@ import { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { UserService } from './user.service';
 import { AccessToken, LoginInput } from './input/login.input';
 import { RegisterInput } from './input/register.input';
-import { __prod__ } from '../config/constants.config';
+import { __prod__ } from '../../config/constants.config';
 import { logger } from '@typegoose/typegoose/lib/logSettings';
 
 @Resolver()

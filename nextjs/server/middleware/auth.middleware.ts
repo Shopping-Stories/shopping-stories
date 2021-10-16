@@ -4,7 +4,7 @@ import { JWK } from 'jwk-to-pem';
 import { NextApiRequest } from 'next';
 import { AuthChecker } from 'type-graphql';
 import { MyContext } from '../../pages/api/graphql';
-import { CognitoConfig } from '../config/constants.config';
+import { CognitoConfig } from '../../config/constants.config';
 import { logger } from '../config/logger';
 
 export interface TokenHeader {
@@ -69,11 +69,6 @@ export const getPublicKeys = async (): Promise<MapOfKidToPublicKey> => {
 interface RequestWithUser extends NextApiRequest {
 	user: { 'cognito:groups': string[]; username: string };
 }
-
-export const Roles = {
-	Admin: 'Admin',
-	Moderator: 'Moderator',
-};
 
 /**
  * Decodes and Verifies a Cognito Access Token contained in an

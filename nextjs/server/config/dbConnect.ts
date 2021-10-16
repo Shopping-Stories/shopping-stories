@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { __prod__, __test__ } from './constants.config';
+import { __prod__, __test__ } from '../../config/constants.config';
 import { logger } from './logger';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;

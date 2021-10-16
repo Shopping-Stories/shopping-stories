@@ -5,7 +5,7 @@ import {
 	CognitoUserPool,
 	CognitoUserSession,
 } from 'amazon-cognito-identity-js';
-import { CognitoConfig } from '../config/constants.config';
+import { CognitoConfig } from '../../config/constants.config';
 import { LoginInput } from './input/login.input';
 import { RegisterInput } from './input/register.input';
 
