@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { gql, useQuery } from 'urql';
 import useAuth from '../client/useAuth.hook';
 import { Roles } from '../config/constants.config';
+import { Spin, Button } from 'antd';
 
 const FIND_CATS_QUERY = gql`
 	{
@@ -26,7 +27,7 @@ const Cats = () => {
 	}, [executeQuery]);
 
 	if (loading) {
-		return <div>Loading...</div>;
+		return <Spin tip="Loading..." size='large' />;
 	}
 
 	console.log(result);
@@ -36,10 +37,12 @@ const Cats = () => {
 	return (
 		<div>
 			<AmplifySignOut />
-			<button onClick={getCats}>get Cats</button>
-			{cats.map((cat: any) => (
-				<div key={cat.id}>{cat.name}</div>
-			))}
+			<Button onClick={getCats}>get Cats</Button>
+			<Spin spinning={result.fetching} tip='Loading...'>
+				{cats.map((cat: any) => (
+					<div key={cat.id}>{cat.name}</div>
+				))}
+			</Spin>
 		</div>
 	);
 };

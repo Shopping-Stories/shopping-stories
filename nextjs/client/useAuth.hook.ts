@@ -21,14 +21,16 @@ const useAuth = (redirectURL: string, authorizedGroups: string[] = []) => {
 		setError(null);
 
 		const checkUser = async () => {
-			const [res, err] = await handlePromise(Auth.currentAuthenticatedUser());
+			const [res, err] = await handlePromise(Auth.currentSession());
+			// const [res, err] = await handlePromise(Auth.currentAuthenticatedUser());
 			if (err) {
 				err && setError(err);
 				router.push(redirectURL);
 				return;
 			}
 			const groupsUserIsIn =
-				res?.signInUserSession?.accessToken?.payload['cognito:groups'] ?? null;
+				res?.getAccessToken().payload['cognito:groups'] ?? null;
+				// res?.signInUserSession?.accessToken?.payload['cognito:groups'] ?? null;
 			setGroups(groupsUserIsIn);
 			if (authorizedGroups.length !== 0) {
 				const isAuthorized = authorizedGroups

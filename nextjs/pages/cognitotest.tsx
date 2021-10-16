@@ -5,7 +5,7 @@ import { useState } from 'react';
 // You can get the current config object
 // const currentConfig = Auth.configure();
 
-const Congito3 = () => {
+const CongitoTest = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [errors, setErrors] = useState('');
@@ -46,4 +46,4 @@ const Congito3 = () => {
 	);
 };
 
-export default Congito3;
+export default CongitoTest;

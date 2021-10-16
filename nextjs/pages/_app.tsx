@@ -43,15 +43,22 @@ const didAuthError = ({ error }: any) => {
 	);
 };
 
+// initial load, fetch from storage and
+// triggered after an auth error has occurred
 const getAuth = async ({ authState }: any) => {
+	const [session, err] = await handlePromise(Auth.currentSession());
+	if (!err && session) {
+		const token = session.getAccessToken().getJwtToken();
+		return { token };
+	}
+
 	if (!authState) {
-		const [session, err] = await handlePromise(Auth.currentSession());
-		if (!err) {
-			const token = session!.getAccessToken().getJwtToken();
-			return { token };
-		}
 		return null;
 	}
+
+	// This is where auth has gone wrong and we need to clean up.
+	// Also, you could redirect to a login page
+	Auth.signOut();
 	return null;
 };
 
@@ -69,6 +76,7 @@ const client = new Client({
 		fetchExchange,
 	],
 });
+
 Auth.configure({
 	// REQUIRED only for Federated Authentication - Amazon Cognito Identity Pool ID
 	identityPoolId: CognitoConfig.IdentityPoolId,
@@ -84,17 +92,19 @@ Auth.configure({
 	userPoolId: CognitoConfig.UserPoolId,
 	userPoolWebClientId: CognitoConfig.ClientId,
 
-	// REQUIRED - Cookie domain (only required if cookieStorage is provided)
-	domain: 'localhost:3000',
-	// OPTIONAL - Cookie path
-	path: '/',
-	// OPTIONAL - Cookie expiration in days
-	expires: 365,
-	// OPTIONAL - See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
-	sameSite: 'lax',
-	// OPTIONAL - Cookie secure flag
-	// Either true or false, indicating if the cookie transmission requires a secure protocol (https).
-	secure: true,
+	// cookieStorage: {
+	// 	// REQUIRED - Cookie domain (only required if cookieStorage is provided)
+	// 	domain: 'localhost',
+	// 	// OPTIONAL - Cookie path
+	// 	path: '/',
+	// 	// OPTIONAL - Cookie expiration in days
+	// 	expires: 365,
+	// 	// OPTIONAL - See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
+	// 	sameSite: 'lax',
+	// 	// OPTIONAL - Cookie secure flag
+	// 	// Either true or false, indicating if the cookie transmission requires a secure protocol (https).
+	// 	secure: false,
+	// },
 });
 
 Storage.configure({
