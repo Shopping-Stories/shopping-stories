@@ -1,7 +1,7 @@
 import { Auth } from 'aws-amplify';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { handlePromise } from './util';
+import { handlePromise } from '../util';
 
 export const isInGroup = (groupName: string, groups: null | string[]) => {
 	if (!groups) {

@@ -1,3 +1,8 @@
+import Head from 'next/head';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { CacheProvider } from '@emotion/react';
+import createEmotionCache from '../styles/createEmotionCache';
 import { authExchange } from '@urql/exchange-auth';
 import { cacheExchange } from '@urql/exchange-graphcache';
 import { Auth, Storage } from 'aws-amplify';
@@ -12,6 +17,10 @@ import {
 import { handlePromise } from '../client/util';
 import { CognitoConfig } from '../config/constants.config';
 import '../styles/globals.css';
+import theme from '../styles/theme';
+
+// Client-side cache, shared for the whole session of the user in the browser.
+const clientSideEmotionCache = createEmotionCache();
 
 const cache = cacheExchange({});
 
@@ -114,11 +123,24 @@ Storage.configure({
 	},
 });
 
-function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+function App({
+	Component,
+	emotionCache = clientSideEmotionCache,
+	pageProps: { session, ...pageProps },
+}: AppProps & { emotionCache: any }) {
 	return (
-		<Provider value={client}>
-			<Component {...pageProps} />
-		</Provider>
+		<CacheProvider value={emotionCache}>
+			<Head>
+				<title>Shopping Stories</title>
+				<meta name="viewport" content="initial-scale=1, width=device-width" />
+			</Head>
+			<Provider value={client}>
+				<ThemeProvider theme={theme}>
+					<CssBaseline />
+					<Component {...pageProps} />
+				</ThemeProvider>
+			</Provider>
+		</CacheProvider>
 	);
 }
 

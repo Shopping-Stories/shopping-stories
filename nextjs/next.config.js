@@ -1,8 +1,5 @@
-const withAntdLess = require('next-plugin-antd-less');
-
 /** @type {import('next').NextConfig} */
-module.exports = withAntdLess({
-  lessVarsFilePath: './styles/variables.less',
+module.exports = {
   reactStrictMode: true,
   webpack: function (config, options) {
     // config.experiments = { topLevelAwait: true }
@@ -17,4 +14,4 @@ module.exports = withAntdLess({
     NEXT_PUBLIC_IDENTITY_POOL_ID: process.env.NEXT_PUBLIC_IDENTITY_POOL_ID,
     NEXT_PUBLIC_COGNITO_DOMAIN: process.env.NEXT_PUBLIC_COGNITO_DOMAIN,
   },
-});
+}

@@ -22,8 +22,13 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["client/components/*"],
+      "@hooks/*": ["client/hooks/*"]
+    }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_document.tsz"],
   "exclude": ["node_modules"]
 }

@@ -6,7 +6,8 @@ import styles from '../styles/Home.module.css';
 import exportFromJSON from 'export-from-json';
 import xlsx from 'xlsx';
 import { useMutation } from 'urql';
-import { Button, Switch } from 'antd';
+import Button from '@mui/material/Button';
+import Switch from '@mui/material/Switch';
 
 const parseSheetDef = `
 	mutation ($spreadsheet: JSONObject!) {
