@@ -17,7 +17,11 @@ import {
 import { handlePromise } from '../client/util';
 import { CognitoConfig } from '../config/constants.config';
 import '../styles/globals.css';
-import theme from '../styles/theme';
+// import theme from '../styles/theme';
+import '../styles/amplifyTheme.css'
+import { createTheme, PaletteMode, useMediaQuery } from '@mui/material';
+import { amber, deepOrange, grey } from '@mui/material/colors';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -123,11 +127,80 @@ Storage.configure({
 	},
 });
 
+const getDesignTokens = (mode: PaletteMode) => ({
+	palette: {
+		mode,
+		...(mode === 'light'
+			? {
+					// palette values for light mode
+					primary: amber,
+					divider: amber[200],
+					text: {
+						primary: grey[900],
+						secondary: grey[800],
+					},
+			  }
+			: {
+					// palette values for dark mode
+					primary: deepOrange,
+					divider: deepOrange[700],
+					background: {
+						default: deepOrange[900],
+						paper: deepOrange[900],
+					},
+					text: {
+						primary: '#fff',
+						secondary: grey[500],
+					},
+			  }),
+	},
+});
+
+const ColorModeContext = createContext<{ toggleColorMode: () => void }>({
+	toggleColorMode: () => undefined,
+});
+
+export const useColorMode = () => {
+	return useContext(ColorModeContext);
+};
+
 function App({
 	Component,
 	emotionCache = clientSideEmotionCache,
 	pageProps: { session, ...pageProps },
 }: AppProps & { emotionCache: any }) {
+	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+	const [mode, setMode] = useState<PaletteMode>(
+		prefersDarkMode ? 'dark' : 'light',
+	);
+
+	useEffect(() => {
+		// @ts-ignore
+		setMode(document.querySelector(':root')!.dataset.theme);
+	}, []);
+
+	useEffect(() => {
+		// @ts-ignore
+		document.querySelector(':root')!.dataset.theme = mode;
+		window.localStorage.setItem('mode', mode);
+	}, [mode]);
+
+	const colorMode = useMemo(
+		() => ({
+			// The dark mode switch would invoke this method
+			toggleColorMode: () => {
+				setMode((prevMode: PaletteMode) =>
+					prevMode === 'light' ? 'dark' : 'light',
+				);
+			},
+		}),
+		[],
+	);
+
+	// Update the theme only if the mode changes
+	const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
+
 	return (
 		<CacheProvider value={emotionCache}>
 			<Head>
@@ -135,10 +208,12 @@ function App({
 				<meta name="viewport" content="initial-scale=1, width=device-width" />
 			</Head>
 			<Provider value={client}>
-				<ThemeProvider theme={theme}>
-					<CssBaseline />
-					<Component {...pageProps} />
-				</ThemeProvider>
+				<ColorModeContext.Provider value={colorMode}>
+					<ThemeProvider theme={theme}>
+						<CssBaseline />
+						<Component {...pageProps} />
+					</ThemeProvider>
+				</ColorModeContext.Provider>
 			</Provider>
 		</CacheProvider>
 	);

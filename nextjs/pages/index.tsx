@@ -5,6 +5,9 @@ import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import Button from '@mui/material/Button';
 import Link from '@components/MuiNextLink';
+import { Switch } from '@mui/material';
+import { useColorMode } from './_app';
+import { useState } from 'react';
 
 const Home: NextPage = () => {
 	const get = () => {
@@ -17,6 +20,8 @@ const Home: NextPage = () => {
 		// 	.then((result) => console.log(result))
 		// 	.catch((err) => console.log(err));
 	};
+	const [toggleOn, setToggle] = useState<boolean>(false);
+	const { toggleColorMode } = useColorMode();
 
 	return (
 		<div className={styles.container}>
@@ -35,9 +40,22 @@ const Home: NextPage = () => {
 					<code className={styles.code}>pages/index.js</code>
 				</p>
 
-				<Button variant='outlined' onClick={submit}>hello</Button>
-				<Button variant='outlined' onClick={get}>get</Button>
-				<Link aria-label="Link to Sign In page" href='/signup' >Login</Link>
+				<Button variant="outlined" onClick={submit}>
+					hello
+				</Button>
+				<Switch
+					checked={toggleOn}
+					onChange={() => {
+						setToggle(!toggleOn);
+						toggleColorMode();
+					}}
+				/>
+				<Button variant="outlined" onClick={get}>
+					get
+				</Button>
+				<Link aria-label="Link to Sign In page" href="/signup">
+					Login
+				</Link>
 				<div className={styles.grid}>
 					<a href="https://nextjs.org/docs" className={styles.card}>
 						<h2>Documentation &rarr;</h2>

@@ -7,6 +7,16 @@ import theme from '../styles/theme';
 
 class MyDocument extends Document {
 	render() {
+		const setInitialTheme = `
+		function getUserPreference() {
+			if(window.localStorage.getItem('mode')) {
+				return window.localStorage.getItem('mode')
+			}
+			return window.matchMedia('(prefers-color-scheme: dark)').matches
+			? 'dark' : 'light'
+		}
+		document.querySelector(':root').dataset.theme = getUserPreference();
+		`;
 		return (
 			<Html lang="en">
 				<Head>
@@ -18,6 +28,7 @@ class MyDocument extends Document {
 					/>
 				</Head>
 				<body>
+					<script dangerouslySetInnerHTML={{ __html: setInitialTheme }} />
 					<Main />
 					<NextScript />
 				</body>
@@ -60,8 +71,11 @@ MyDocument.getInitialProps = async (ctx) => {
 
 	ctx.renderPage = () =>
 		originalRenderPage({
-			// @ts-ignore
-			enhanceApp: (App) => function betterApp(props) { return <App emotionCache={cache} {...props} /> },
+			enhanceApp: (App) =>
+			function betterApp(props) {
+					// @ts-ignore
+					return <App emotionCache={cache} {...props} />;
+				},
 		});
 
 	const initialProps = await Document.getInitialProps(ctx);
