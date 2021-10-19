@@ -18,9 +18,9 @@ import { handlePromise } from '../client/util';
 import { CognitoConfig } from '../config/constants.config';
 import '../styles/globals.css';
 // import theme from '../styles/theme';
-import '../styles/amplifyTheme.css'
+import '../styles/amplifyTheme.css';
 import { createTheme, PaletteMode, useMediaQuery } from '@mui/material';
-import { amber, deepOrange, grey } from '@mui/material/colors';
+// import { amber, deepOrange, grey } from '@mui/material/colors';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -130,29 +130,29 @@ Storage.configure({
 const getDesignTokens = (mode: PaletteMode) => ({
 	palette: {
 		mode,
-		...(mode === 'light'
-			? {
-					// palette values for light mode
-					primary: amber,
-					divider: amber[200],
-					text: {
-						primary: grey[900],
-						secondary: grey[800],
-					},
-			  }
-			: {
-					// palette values for dark mode
-					primary: deepOrange,
-					divider: deepOrange[700],
-					background: {
-						default: deepOrange[900],
-						paper: deepOrange[900],
-					},
-					text: {
-						primary: '#fff',
-						secondary: grey[500],
-					},
-			  }),
+		// ...(mode === 'light'
+		// 	? {
+		// 			// palette values for light mode
+		// 			primary: amber,
+		// 			divider: amber[200],
+		// 			text: {
+		// 				primary: grey[900],
+		// 				secondary: grey[800],
+		// 			},
+		// 	  }
+		// 	: {
+		// 			// palette values for dark mode
+		// 			primary: deepOrange,
+		// 			divider: deepOrange[700],
+		// 			background: {
+		// 				default: deepOrange[900],
+		// 				paper: deepOrange[900],
+		// 			},
+		// 			text: {
+		// 				primary: '#fff',
+		// 				secondary: grey[500],
+		// 			},
+		// 	  }),
 	},
 });
 
