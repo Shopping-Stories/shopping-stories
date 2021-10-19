@@ -1,5 +1,6 @@
 import { CategoryModel } from './categories.schema';
 import { PersonModel } from './person.schema';
+import { PlaceModel } from './place.schema';
 import { TobaccoMarkModel } from './tobaccoMarks.schema';
 
 export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
@@ -10,10 +11,15 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 	let dates = [];
 	let money = [];
 	let people = [];
+	let places = [];
 	for (let i = 0; i < spreadsheetObj.length; i++) {
 		const entry = spreadsheetObj[i];
 		errorCode[i] = 0;
-		
+		res[i] = {
+			tobaccoEntry : null,
+			itemEntry : null,
+			regEntry : null
+		};
 
 		let type = Number(entry.EntryType);
 		if(entry.EntryType === null ){
@@ -27,18 +33,19 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 				if (type === 1) {
 					//console.log('Id: ' + entry._id + ' is a tobacco');
 					
-					res[i] = await updatedTobaccoEntry(entry);
+					res[i].tobaccoEntry = await updatedTobaccoEntry(entry);
 					
 					
 				} else if (type === 2) {
 					//console.log('Id: ' + entry._id + ' is a item');
-					res[i] = await updatedItemEntry(entry);
+					res[i].itemEntry = await updatedItemEntry(entry);
 				} else {
 					//console.log('Id: ' + entry._id + ' is a regular');
-					res[i] = await updatedRegEntry(entry);
+					res[i].regEntry = await updatedRegEntry(entry);
 				}
 			}
 			people[i] = await peopleIDs(entry);
+			places[i] = await placesIDs(entry);
 			// console.log(people[i]);
 			money[i] = await formatMoney(entry);
 			dates[i] = await newDateObject(entry.Day, entry.Month, entry.Year);
@@ -61,7 +68,7 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 
 	let ret: any = [];
 
-	let testFlag = 1;
+	let testFlag = 0;
 	if(testFlag === 0){
 		for (let i = 0; i < res.length; i++) {
 			
@@ -71,7 +78,8 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 					Entry: spreadsheetObj[i].Entry,
 					NewEntry: res[i],
 					//AccHolder: accHold[i],
-					//People: people[i],
+					People: people[i],
+					Places : places[i],
 					Meta: meta[i],
 					//DateInfo: dates[i],
 					Money: money[i],
@@ -89,7 +97,7 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 					Entry: spreadsheetObj[i].Entry,
 					NewEntry: res[i],
 					//AccHolder: accHold[i],
-					//People: people[i],
+					People: people[i],
 					Meta: meta[i],
 					//DateInfo: dates[i],
 					Money: money[i],
@@ -187,6 +195,45 @@ async function formatMoney(entry: any) {
 		throw 'Sterling or Currency coloumns are not formatted properly';
 	}
 }
+
+async function placesIDs(entry: any){
+	let places = entry.Places !== (null || '' || '-')
+	? entry.Places.toString()
+	: null;
+	if(places === ''){
+		return [];
+	}
+	let split = [];
+	let res = [];
+	if(places.includes('//')){
+		split = places.split('//');
+	}else{
+		split[0] = places;
+	}
+	for(let i = 0; i < split.length; i++){
+		let temp : any = split[i].trim().toString();
+		let object = {
+			Name: null,
+			ID : null
+		}
+		let placeID = null;
+		try {
+			
+			console.log(temp);
+			placeID = await PlaceModel.findOne({ $text: { $search: temp } }, {
+				score: { $meta: 'textScore' },
+			} as any).sort({score : {$meta : 'textScore'}});
+			placeID = placeID._id;
+			console.log('found id: ' + placeID);
+		} catch {
+			placeID = null;
+		}
+		object.Name = temp;
+		object.ID = placeID;
+		res[i] = object;
+	}
+	return res;
+}
 async function peopleIDs(entry: any) {
 	let people = entry.People !== (null || '' || '-')
 	? entry.People.toString()
@@ -218,10 +265,10 @@ async function peopleIDs(entry: any) {
 		} else {
 			let personID: any = '';
 			try {
-				//console.log('trying to find');
+				console.log(temp);
 				personID = await PersonModel.findOne({ $text: { $search: temp } }, {
 					score: { $meta: 'textScore' },
-				} as any);
+				} as any).sort({score : {$meta : 'textScore'}});
 				personID = personID._id;
 				console.log('found id: ' + personID);
 			} catch {
@@ -278,7 +325,7 @@ async function makeAccountHolderObject(entryObj: any) {
 			accID = await PersonModel.findOne(
 				{ $text: { $search: search } },
 				{ score: { $meta: 'textScore' } },
-			);
+			).sort({score : {$meta : 'textScore'}});
 			accID = accID._id;
 		} catch {
 			accID = null;
