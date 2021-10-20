@@ -71,11 +71,11 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 			ret.push({
 				Entry: spreadsheetObj[i].Entry,
 				NewEntry: res[i],
-				//AccHolder: accHold[i],
+				AccHolder: accHold[i],
 				People: people[i],
 				Places: places[i],
 				Meta: meta[i],
-				//DateInfo: dates[i],
+				DateInfo: dates[i],
 				Money: money[i],
 				ErrorCode: errorCode[i],
 			});
@@ -731,6 +731,7 @@ async function updatedTobaccoEntry(entryObj: any) {
 		} else if (brokenEntry[i].includes('[TM') || brokenEntry[i].includes('{')) {
 			//brokenEntry[i] = brokenEntry[i].replace("N","");
 			if (brokenEntry[i].includes('TM')) {
+				console.log('found TM');
 				let tempMarkInfo = await brokenEntry[i].split(']');
 				let tempNoteInfo = tempMarkInfo[1].trim();
 				tempMarkInfo = await tempMarkInfo[0].split(':');
@@ -746,6 +747,7 @@ async function updatedTobaccoEntry(entryObj: any) {
 			} else {
 				let tempNoteInfo = await brokenEntry[i].split('{');
 				for (let j = 1; j < tempNoteInfo.length; j++) {
+					console.log('here');
 					NoteInfor[noteCount] = await tobaccoNote(tempNoteInfo[j]);
 					noteCount++;
 				}
@@ -787,6 +789,8 @@ async function updatedItemEntry(entryObj: any) {
 		let miniItems: any = [];
 		let mainItems = [];
 		let itemFormat = {
+			perOrder: 0,
+			Percentage : 0,
 			itemsOrServices: [] as any[],
 			itemsMentioned: [] as any[],
 		};
@@ -839,8 +843,6 @@ async function updatedItemEntry(entryObj: any) {
 				ItemCost: itemCosts,
 			};
 			item = {
-				perOrder: 0,
-				Percentage: 0,
 				Quantity: Number(mainItemString[0]),
 				Qualifier: mainItemString[1],
 				Variant: mainItemString[2].split('*'),
@@ -854,8 +856,6 @@ async function updatedItemEntry(entryObj: any) {
 			try {
 				let categories = await findCategories(mainItemString[3], workingString);
 				item = {
-					perOrder: 0,
-					Percentage: 0,
 					Quantity: null,
 					Qualifier: mainItemString[1],
 					Variant: mainItemString[2].split('*'),
@@ -870,17 +870,18 @@ async function updatedItemEntry(entryObj: any) {
 				throw mainItemString + ' has error: ' + err;
 			}
 		}
-
-		if (mainItemString[0].toUpperCase().includes('PER')) {
-			item.perOrder = 1;
-			mainItemString[0] = mainItemString[0].replace(/[^0-9\.]+/g, '');
-		}
 		if (mainItemString[0].includes('%')) {
-			item.Percentage = 1;
+			itemFormat.Percentage = 1;
 			item.Quantity = Number(mainItemString[0].replace('%', ''));
 		} else {
 			item.Quantity = Number(mainItemString[0]);
 		}
+
+		if (mainItemString[0].toUpperCase().includes('PER')) {
+			itemFormat.perOrder = 1;
+			mainItemString[0] = mainItemString[0].replace(/[^0-9\.]+/g, '');
+		}
+
 		mainItems.push(item);
 		mainItems.push(item2);
 		itemFormat.itemsOrServices = mainItems;
@@ -900,7 +901,7 @@ async function updatedRegEntry(entryObj: any) {
 	const cursor = entryObj;
 	let entry = cursor.Entry;
 	//console.log(entry);
-	let tmCount = 0;
+	
 	let tmObject = {
 		MarkName: null,
 		MarkID: null,
@@ -938,7 +939,7 @@ async function updatedRegEntry(entryObj: any) {
 					tmObject.MarkID = tempID;
 				}
 				tmArray.push(tmObject);
-				tmCount++;
+				
 			} else {
 				let itemString = entry[i];
 				itemString = itemString.split(']').shift();

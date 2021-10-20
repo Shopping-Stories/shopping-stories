@@ -46,24 +46,45 @@ type Entry {
   # String of MongoDB ObjectId
   id: ID!
 
-  # Reel of the Entry
-  Reel: Int!
+  # Information on the account holder in the transaction
+  AccHolder: AccHolderObject!
 
-  # Store Owner
-  Owner: String!
+  # Meta information of the entry
+  Meta: MetaObject!
 
-  # Name of Store
-  Store: String!
+  # Date of entry
+  Date: DateObject!
+  itemEntry: [ItemEntryObject!]
+  tobaccoEntry: TobaccoEntryObject
+  regEntry: RegularEntryObject
 
-  # Year the entry was made
-  Year: [Int!]!
+  # People referenced in this entry
+  People: [PeoplePlacesObject!]!
 
-  # Folio the entry is contained in
-  FolioPage: Int!
+  # Places referenced in this entry
+  Places: [PeoplePlacesObject!]!
 
-  # ID of entry within Folio
-  EntryID: String!
+  # Reference to another Folio page
+  FolioReference: Int!
 
+  # Type of Entry
+  EntryType: Int!
+
+  # general money information for the entry
+  Money: MoneyObject!
+
+  # Indicates if item would survive till today
+  ArchMat: Int!
+
+  # Indicates if someone or someplace is mentioned in the entry
+  GenMat: Int!
+
+  # comments on the entry
+  Final: String!
+}
+
+#
+type AccHolderObject {
   # Prefix of account holder's name
   Prefix: String!
 
@@ -86,63 +107,33 @@ type Entry {
   Reference: String!
 
   # Debt or Credit transaction
-  DrCr: String!
+  DrCr: Float!
 
-  # Date of entry
-  Date: DateObject!
-  ItemEntry: [ItemEntry!]
-  TobaccoEntry: TobaccoEntryObject
+  # ID of the accountholder to reference in peoples master list
+  accHolderID: ID!
+}
 
-  # People referenced in this entry
-  People: [String!]!
-
-  # Places referenced in this entry
-  Places: [String!]!
-
-  # Reference to another Folio page
-  FolioReference: Int!
-
-  # Type of Entry
-  EntryType: Int!
-
+type MetaObject {
   # Ledger containing this Entry
   Ledger: String!
 
-  # Quantity of commodity purchased
-  Quantity: Int!
+  # Reel of the Entry
+  Reel: Int!
 
-  # Commodity being purchased
-  Commodity: String!
+  # Store Owner
+  Owner: String!
 
-  # Sterling pounds used in transaction
-  L1: Int!
+  # Name of Store
+  Store: String!
 
-  # Sterling shillings used in transaction
-  S1: Int!
+  # Year the entry was made
+  Year: [Int!]!
 
-  # Sterling pence used in transaction
-  D1: Int!
+  # Folio the entry is contained in
+  FolioPage: Int!
 
-  # Type of Colonial currency
-  Colony: String!
-
-  # Colonial pounds used in transaction
-  L2: Int!
-
-  # Colonial shillings used in transaction
-  S2: Int!
-
-  # Colonial pence used in transaction
-  D2: Int!
-
-  # Indicates if item would survive till today
-  ArchMat: Int!
-
-  # Indicates if someone or someplace is mentioned in the entry
-  GenMat: Int!
-
-  # comments on the entry
-  Final: String!
+  # ID of entry within Folio
+  EntryID: String!
 }
 
 # Single Date
@@ -163,49 +154,91 @@ type DateObject {
 # The javascript `Date` as string. Type represents date and time as the ISO Date string.
 scalar DateTime
 
-type ItemEntry {
-  # Quantity of item
-  ItemQuantity: Float!
-
-  # Item descriptors
-  Qualifier: String!
-
-  # Item name
-  Item: String!
-
-  # Price per unit
-  UnitPrice: String!
+type ItemEntryObject {
+  #
+  perOrder: Float!
 
   #
-  TransactionCost: String!
+  percentage: Float!
 
-  # Money used in transaction
-  Money: MoneyObject!
+  #
+  itemsOrServices: [ItemsOrServicesObject!]!
+
+  #
+  itemsMentioned: [MentionedItemsObject!]!
 }
 
-type MoneyObject {
+type ItemsOrServicesObject {
+  #
+  Quantity: Float!
+
+  #
+  Qualifier: String!
+
+  #
+  Variant: String!
+
+  #
+  Item: String!
+
+  #
+  Category: String!
+
+  #
+  Subcategory: String!
+
+  #
+  UnitCost: PoundsShillingsPence!
+
+  #
+  ItemCost: PoundsShillingsPence!
+}
+
+type PoundsShillingsPence {
   # Number of pounds
-  L: Float!
+  Pounds: Float!
 
   # Number of shillings
-  S: Float!
+  Shilling: Float!
 
   # Number of Pence
-  D: Float!
+  Pence: Float!
+}
+
+type MentionedItemsObject {
+  #
+  Quantity: Float!
+
+  #
+  Qualifier: String!
+
+  #
+  Item: String!
 }
 
 type TobaccoEntryObject {
   # words
   Entry: String!
 
-  # Signifies which person is represented in the exchange
-  Mark: String!
+  #
+  Mark: [TobaccoMarkObject!]!
 
   #
   Notes: [NoteObject!]!
 
   #
   Money: [TobaccoRateObject!]!
+
+  # words
+  tobaccoShaved: Float!
+}
+
+type TobaccoMarkObject {
+  # words
+  markID: ID!
+
+  #
+  markString: String!
 }
 
 type NoteObject {
@@ -230,13 +263,49 @@ type TobaccoRateObject {
   TobaccoAmount: Float!
 
   #
-  RateForTobacco: MoneyObject!
+  RateForTobacco: PoundsShillingsPence!
 
   #
   CaskInTransaction: Float!
 
   #
-  CasksSoldFor: MoneyObject!
+  CasksSoldFor: PoundsShillingsPence!
+}
+
+type RegularEntryObject {
+  # words
+  Entry: String!
+
+  #
+  TM: [TobaccoMarkObject!]!
+
+  #
+  Items: [MentionedItemsObject!]!
+}
+
+type PeoplePlacesObject {
+  # Persons name
+  Name: String!
+
+  # words
+  ID: ID!
+}
+
+type MoneyObject {
+  #
+  Quantity: String!
+
+  #
+  Commodity: String!
+
+  #
+  Colony: String!
+
+  #
+  Sterling: PoundsShillingsPence!
+
+  #
+  Currency: PoundsShillingsPence!
 }
 
 type AccessToken {
