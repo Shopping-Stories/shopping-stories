@@ -10,7 +10,7 @@ export const isInGroup = (groupName: string, groups: null | string[]) => {
 	return groups.includes(groupName);
 };
 
-const useAuth = (redirectURL: string, authorizedGroups: string[] = []) => {
+const useAuth = (redirectURL?: string, authorizedGroups: string[] = []) => {
 	const router = useRouter();
 	const [groups, setGroups] = useState<any>(null);
 	const [loading, setLoading] = useState<null | string>('idle');
@@ -23,7 +23,8 @@ const useAuth = (redirectURL: string, authorizedGroups: string[] = []) => {
 		const checkUser = async () => {
 			const [res, err] = await handlePromise(Auth.currentSession());
 			// const [res, err] = await handlePromise(Auth.currentAuthenticatedUser());
-			if (err) {
+
+			if (err && redirectURL) {
 				err && setError(err);
 				router.push(redirectURL);
 				return;
@@ -32,7 +33,7 @@ const useAuth = (redirectURL: string, authorizedGroups: string[] = []) => {
 				res?.getAccessToken().payload['cognito:groups'] ?? null;
 				// res?.signInUserSession?.accessToken?.payload['cognito:groups'] ?? null;
 			setGroups(groupsUserIsIn);
-			if (authorizedGroups.length !== 0) {
+			if (authorizedGroups.length !== 0 && redirectURL) {
 				const isAuthorized = authorizedGroups
 					.map((group: string) => isInGroup(group, groupsUserIsIn))
 					.reduce((acc, cur) => acc || cur, false);

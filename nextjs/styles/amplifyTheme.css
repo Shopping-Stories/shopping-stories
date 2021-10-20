@@ -1,7 +1,4 @@
 :root[data-theme="light"] {
-  /* --amplify-primary-color: #ff6347;
-  --amplify-primary-tint: #ff7359;
-  --amplify-primary-shade: #e0573e; */
   --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
   --amplify-primary-color: #ff9900;
   --amplify-primary-contrast: var(--amplify-white);
@@ -23,9 +20,6 @@
 
 /* currently the same as light */
 :root[data-theme="dark"] {
-  /* --amplify-primary-color: #ff6347;
-  --amplify-primary-tint: #ff7359;
-  --amplify-primary-shade: #e0573e; */
   --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
   --amplify-primary-color: #272118;
   --amplify-primary-contrast: var(--amplify-white);

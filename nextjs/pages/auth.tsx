@@ -7,8 +7,9 @@ import {
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { NextPage } from 'next';
 
-const SignUp = () => {
+const AuthPage: NextPage = () => {
 	const router = useRouter();
 	const [authState, setAuthState] = useState<any>();
 	const [user, setUser] = useState<any>();
@@ -72,4 +73,4 @@ const SignUp = () => {
 		</AmplifyAuthContainer>
 	);
 };
-export default SignUp;
+export default AuthPage;
