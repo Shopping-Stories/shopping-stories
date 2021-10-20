@@ -56,10 +56,14 @@ const Home: NextPage = () => {
 					<Typography variant="h2" component="h1">
 						Welcome to
 					</Typography>
-					<Typography alignContent={'center'} variant="h1" component="h2" gutterBottom>
+					<Typography
+						alignContent={'center'}
+						variant="h1"
+						component="h2"
+						gutterBottom
+					>
 						Shopping Stories
 					</Typography>
-
 				</Box>
 				<Button variant="outlined" onClick={submit}>
 					hello

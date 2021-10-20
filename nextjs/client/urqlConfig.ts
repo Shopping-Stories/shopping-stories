@@ -1,6 +1,6 @@
-import { makeOperation } from "@urql/core";
-import { Auth } from "aws-amplify";
-import { handlePromise } from "./util";
+import { makeOperation } from '@urql/core';
+import { Auth } from 'aws-amplify';
+import { handlePromise } from './util';
 
 export const addAuthToOperation = ({ authState, operation }: any) => {
 	if (!authState || !authState.token) {

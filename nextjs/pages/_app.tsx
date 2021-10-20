@@ -7,19 +7,18 @@ import { authExchange } from '@urql/exchange-auth';
 import { cacheExchange } from '@urql/exchange-graphcache';
 import { Auth, Storage } from 'aws-amplify';
 import type { AppProps } from 'next/app';
-import {
-	Client,
-	dedupExchange,
-	fetchExchange,
-	Provider,
-} from 'urql';
+import { Client, dedupExchange, fetchExchange, Provider } from 'urql';
 import { AmplifyOptions, S3Options } from '../client/util';
 import '../styles/globals.css';
 import '../styles/amplifyTheme.css';
 import { createTheme, PaletteMode, useMediaQuery } from '@mui/material';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { getDesignTokens } from 'styles/theme';
-import { addAuthToOperation, didAuthError, getAuth } from '../client/urqlConfig';
+import {
+	addAuthToOperation,
+	didAuthError,
+	getAuth,
+} from '../client/urqlConfig';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -44,7 +43,6 @@ const client = new Client({
 Auth.configure(AmplifyOptions);
 
 Storage.configure(S3Options);
-
 
 const ColorModeContext = createContext<{ toggleColorMode: () => void }>({
 	toggleColorMode: () => undefined,

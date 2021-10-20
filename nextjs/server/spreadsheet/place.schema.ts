@@ -24,7 +24,7 @@ export class Place {
 	@Field({ description: 'Variations of given item' })
 	Alias: string;
 
-    @prop({ required: true })
+	@prop({ required: true })
 	@Field({ description: 'Variations of given item' })
 	Descriptor: string;
 }

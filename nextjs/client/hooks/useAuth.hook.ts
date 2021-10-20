@@ -31,7 +31,7 @@ const useAuth = (redirectURL?: string, authorizedGroups: string[] = []) => {
 			}
 			const groupsUserIsIn =
 				res?.getAccessToken().payload['cognito:groups'] ?? null;
-				// res?.signInUserSession?.accessToken?.payload['cognito:groups'] ?? null;
+			// res?.signInUserSession?.accessToken?.payload['cognito:groups'] ?? null;
 			setGroups(groupsUserIsIn);
 			if (authorizedGroups.length !== 0 && redirectURL) {
 				const isAuthorized = authorizedGroups

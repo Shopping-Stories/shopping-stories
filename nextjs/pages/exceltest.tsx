@@ -74,7 +74,8 @@ const FileSelector = () => {
 	return (
 		<div style={{ textAlign: 'center' }}>
 			<input type="file" onChange={(e) => handleChange(e.target.files)} />
-			{printState && entries &&
+			{printState &&
+				entries &&
 				entries.map((entry: any, index: number) => (
 					<div key={index}>
 						<pre style={{ display: 'inline-block', textAlign: 'left' }}>
@@ -85,10 +86,13 @@ const FileSelector = () => {
 				))}
 			{printState && parseSheetResult.error ? (
 				<pre>{JSON.stringify(parseSheetResult.error, undefined, 4)}</pre>
-				) : (
-					''
-					)}
-			<Switch checked={printState} onChange={() => setPrintState(!printState)} />
+			) : (
+				''
+			)}
+			<Switch
+				checked={printState}
+				onChange={() => setPrintState(!printState)}
+			/>
 			<Button
 				onClick={() => {
 					const fileName = 'result';
@@ -96,7 +100,9 @@ const FileSelector = () => {
 
 					exportFromJSON({ data: entries, fileName, exportType });
 				}}
-			>Download JSON File</Button>
+			>
+				Download JSON File
+			</Button>
 		</div>
 	);
 };

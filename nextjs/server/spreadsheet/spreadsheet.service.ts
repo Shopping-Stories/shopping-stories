@@ -16,26 +16,24 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 		const entry = spreadsheetObj[i];
 		errorCode[i] = 0;
 		res[i] = {
-			tobaccoEntry : null,
-			itemEntry : null,
-			regEntry : null
+			tobaccoEntry: null,
+			itemEntry: null,
+			regEntry: null,
 		};
 
 		let type = Number(entry.EntryType);
-		if(entry.EntryType === null ){
-			type = 0
+		if (entry.EntryType === null) {
+			type = 0;
 		}
-		
+
 		console.log(type);
-		
+
 		try {
 			if (entry.Entry) {
 				if (type === 1) {
 					//console.log('Id: ' + entry._id + ' is a tobacco');
-					
+
 					res[i].tobaccoEntry = await updatedTobaccoEntry(entry);
-					
-					
 				} else if (type === 2) {
 					//console.log('Id: ' + entry._id + ' is a item');
 					res[i].itemEntry = await updatedItemEntry(entry);
@@ -52,7 +50,7 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 			meta[i] = await makeMetaDataObject(entry, 'C_1760');
 			accHold[i] = await makeAccountHolderObject(entry);
 		} catch (err) {
-			console.log('EntryID:' + entry.EntryID + "   " + err);
+			console.log('EntryID:' + entry.EntryID + '   ' + err);
 			meta[i] = await makeMetaDataObject(entry, 'C_1760');
 			accHold[i] = await makeAccountHolderObject(entry);
 			if (err) {
@@ -62,37 +60,29 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 			}
 
 			errorCode[i] = 1;
-			
 		}
 	}
 
 	let ret: any = [];
 
 	let testFlag = 0;
-	if(testFlag === 0){
+	if (testFlag === 0) {
 		for (let i = 0; i < res.length; i++) {
-			
-	
-			
-				ret.push({
-					Entry: spreadsheetObj[i].Entry,
-					NewEntry: res[i],
-					//AccHolder: accHold[i],
-					People: people[i],
-					Places : places[i],
-					Meta: meta[i],
-					//DateInfo: dates[i],
-					Money: money[i],
-					ErrorCode: errorCode[i],
-				});
-			
-			
+			ret.push({
+				Entry: spreadsheetObj[i].Entry,
+				NewEntry: res[i],
+				//AccHolder: accHold[i],
+				People: people[i],
+				Places: places[i],
+				Meta: meta[i],
+				//DateInfo: dates[i],
+				Money: money[i],
+				ErrorCode: errorCode[i],
+			});
 		}
-	}else{
+	} else {
 		for (let i = 0; i < res.length; i++) {
-			if(errorCode[i] === 1){
-	
-			
+			if (errorCode[i] === 1) {
 				ret.push({
 					Entry: spreadsheetObj[i].Entry,
 					NewEntry: res[i],
@@ -104,11 +94,8 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 					ErrorCode: errorCode[i],
 				});
 			}
-			
 		}
 	}
-
-
 
 	return ret;
 	// await client.db('shoppingstories').collection('test2f').drop();
@@ -196,33 +183,31 @@ async function formatMoney(entry: any) {
 	}
 }
 
-async function placesIDs(entry: any){
-	let places = entry.Places !== (null || '' || '-')
-	? entry.Places.toString()
-	: null;
-	if(places === ''){
+async function placesIDs(entry: any) {
+	let places =
+		entry.Places !== (null || '' || '-') ? entry.Places.toString() : null;
+	if (places === '') {
 		return [];
 	}
 	let split = [];
 	let res = [];
-	if(places.includes('//')){
+	if (places.includes('//')) {
 		split = places.split('//');
-	}else{
+	} else {
 		split[0] = places;
 	}
-	for(let i = 0; i < split.length; i++){
-		let temp : any = split[i].trim().toString();
+	for (let i = 0; i < split.length; i++) {
+		let temp: any = split[i].trim().toString();
 		let object = {
 			Name: null,
-			ID : null
-		}
+			ID: null,
+		};
 		let placeID = null;
 		try {
-			
 			console.log(temp);
 			placeID = await PlaceModel.findOne({ $text: { $search: temp } }, {
 				score: { $meta: 'textScore' },
-			} as any).sort({score : {$meta : 'textScore'}});
+			} as any).sort({ score: { $meta: 'textScore' } });
 			placeID = placeID._id;
 			console.log('found id: ' + placeID);
 		} catch {
@@ -235,9 +220,8 @@ async function placesIDs(entry: any){
 	return res;
 }
 async function peopleIDs(entry: any) {
-	let people = entry.People !== (null || '' || '-')
-	? entry.People.toString()
-	: null;
+	let people =
+		entry.People !== (null || '' || '-') ? entry.People.toString() : null;
 	//console.log(people);
 	if (people === '') {
 		return [];
@@ -250,14 +234,18 @@ async function peopleIDs(entry: any) {
 		split[0] = people;
 	}
 	for (let i = 0; i < split.length; i++) {
-		let temp : any = split[i].trim().toString();
+		let temp: any = split[i].trim().toString();
 
 		//console.log('looking for ' + temp);
 		let object = {
 			Name: null,
 			ID: null,
 		};
-		if (temp.toUpperCase().includes('FNU') || temp.toUpperCase().includes('LNU') || temp.toUpperCase().includes('CASH') ) {
+		if (
+			temp.toUpperCase().includes('FNU') ||
+			temp.toUpperCase().includes('LNU') ||
+			temp.toUpperCase().includes('CASH')
+		) {
 			object = {
 				Name: temp,
 				ID: null,
@@ -268,7 +256,7 @@ async function peopleIDs(entry: any) {
 				console.log(temp);
 				personID = await PersonModel.findOne({ $text: { $search: temp } }, {
 					score: { $meta: 'textScore' },
-				} as any).sort({score : {$meta : 'textScore'}});
+				} as any).sort({ score: { $meta: 'textScore' } });
 				personID = personID._id;
 				console.log('found id: ' + personID);
 			} catch {
@@ -286,14 +274,12 @@ async function peopleIDs(entry: any) {
 	return res;
 }
 async function makeAccountHolderObject(entryObj: any) {
-	try{
-
-	
+	try {
 		const cursor = entryObj;
 		let prefix =
 			typeof cursor.Prefix === 'string'
 				? cursor.Prefix.replace(/[^a-zA-z\s]/g, '')
-				: "";
+				: '';
 		let fName = cursor.AccountFirstName.replace(/[^a-zA-z\s]/g, '');
 		let lName = cursor.AccountLastName.replace(/[^a-zA-z\s]/g, '');
 		let suffix =
@@ -312,7 +298,8 @@ async function makeAccountHolderObject(entryObj: any) {
 			cursor.Reference !== (null || '-' || '')
 				? cursor.Reference.toString().replace(/[^a-zA-z\s]/g, '')
 				: '';
-		let debitOrCredit = cursor.DrCr !== (null || '-' || '') ? cursor.DrCr : 'Dr';
+		let debitOrCredit =
+			cursor.DrCr !== (null || '-' || '') ? cursor.DrCr : 'Dr';
 		if (debitOrCredit.toUpperCase() === 'DR') {
 			debitOrCredit = 1;
 		} else {
@@ -325,7 +312,7 @@ async function makeAccountHolderObject(entryObj: any) {
 			accID = await PersonModel.findOne(
 				{ $text: { $search: search } },
 				{ score: { $meta: 'textScore' } },
-			).sort({score : {$meta : 'textScore'}});
+			).sort({ score: { $meta: 'textScore' } });
 			accID = accID._id;
 		} catch {
 			accID = null;
@@ -343,14 +330,12 @@ async function makeAccountHolderObject(entryObj: any) {
 			accHolderID: accID,
 		};
 		return res;
-	}catch(err){
+	} catch (err) {
 		throw 'error making acc holder data';
 	}
 }
 async function makeMetaDataObject(entryObj: any, ledger: any) {
-	try{
-
-	
+	try {
 		const cursor = entryObj;
 		//console.log(cursor);
 		let res = {
@@ -363,8 +348,7 @@ async function makeMetaDataObject(entryObj: any, ledger: any) {
 			EntryID: cursor.EntryID.toString(),
 		};
 		return res;
-	}catch(err)
-	{
+	} catch (err) {
 		throw 'cant make meta data object';
 	}
 }
@@ -399,19 +383,19 @@ async function newDateObject(day: any, month: any, year: any) {
 }
 
 async function calculateUnitCost(money: any, quantity: any) {
-	try{
+	try {
 		let L = money.Pounds; //Pounds
 		let S = money.Shilling; //Shilling
 		let D = money.Shilling; //Pence
 		let res: any = '';
-	
+
 		let unitPound = Math.floor(L / quantity);
 		let poundLeftOver = L % quantity;
 		let convertedPounds = poundLeftOver * 20 + S;
-	
+
 		let unitShilling = Math.floor(convertedPounds / quantity);
 		let shillingLeftOver = convertedPounds % quantity;
-	
+
 		let unitPence = (shillingLeftOver * 12 + D) / quantity;
 		res = {
 			Pounds: unitPound,
@@ -419,15 +403,12 @@ async function calculateUnitCost(money: any, quantity: any) {
 			Pence: unitPence,
 		};
 		return res;
-	}catch(err){
+	} catch (err) {
 		throw 'error calculating unit cost';
 	}
-
 }
 async function moneyConversion(money: any) {
-	try{
-
-	
+	try {
 		let L = 0;
 		let S = 0;
 		let D = 0;
@@ -513,16 +494,14 @@ async function moneyConversion(money: any) {
 			Pence: D,
 		};
 		return res2;
-	}catch(err){
+	} catch (err) {
 		throw 'cant convert money';
 	}
 }
 
 async function calculateTotalCostTobacco(quantity: any, money: any) {
 	//will get the total currency each tobacco is sold for in tobacco transactions, finalized?
-	try{
-
-	
+	try {
 		let tobaccodivided = quantity / 100;
 		let L = money.Pounds;
 		let S = money.Shilling;
@@ -543,7 +522,7 @@ async function calculateTotalCostTobacco(quantity: any, money: any) {
 			Pence: D,
 		};
 		return res;
-	}catch(err){
+	} catch (err) {
 		throw 'cant calculate total cost of tobacco';
 	}
 }
@@ -557,7 +536,7 @@ async function calculateTobaccoMoney(MoneyEntry: any) {
 	} else {
 		brokenMoney = [MoneyEntry];
 	}
-	
+
 	let res = [];
 	let moneyCount = 0;
 	let tobaccoSoldFor: any = [0, 0, 0];
@@ -872,7 +851,7 @@ async function updatedItemEntry(entryObj: any) {
 				ItemCost: itemCosts,
 			};
 		} else {
-			try{
+			try {
 				let categories = await findCategories(mainItemString[3], workingString);
 				item = {
 					perOrder: 0,
@@ -887,10 +866,9 @@ async function updatedItemEntry(entryObj: any) {
 					ItemCost: await moneyConversion(mainItemString[5]),
 				};
 				item2 = null;
-			}catch(err){
-				throw(mainItemString +" has error: " + err);
+			} catch (err) {
+				throw mainItemString + ' has error: ' + err;
 			}
-
 		}
 
 		if (mainItemString[0].toUpperCase().includes('PER')) {
@@ -923,11 +901,10 @@ async function updatedRegEntry(entryObj: any) {
 	let entry = cursor.Entry;
 	//console.log(entry);
 	let tmCount = 0;
-	let tmObject =
-		{
-			MarkName: null,
-			MarkID: null,
-		}
+	let tmObject = {
+		MarkName: null,
+		MarkID: null,
+	};
 	let tmArray = [tmObject];
 	let res = {
 		Entry: '',

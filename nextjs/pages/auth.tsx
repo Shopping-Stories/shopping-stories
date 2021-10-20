@@ -24,6 +24,7 @@ const AuthPage: NextPage = () => {
 	const _thing = authState === AuthState.SignedIn && user;
 
 	const handleAuthStateChange = (state: string) => {
+		console.log(_thing);
 		if (state === 'signedin') {
 			/* Do something when the user has signed-in */
 			router.push('/cats');
