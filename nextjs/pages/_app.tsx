@@ -11,69 +11,20 @@ import {
 	Client,
 	dedupExchange,
 	fetchExchange,
-	makeOperation,
 	Provider,
 } from 'urql';
-import { handlePromise } from '../client/util';
-import { CognitoConfig } from '../config/constants.config';
+import { AmplifyOptions, S3Options } from '../client/util';
 import '../styles/globals.css';
-// import theme from '../styles/theme';
 import '../styles/amplifyTheme.css';
 import { createTheme, PaletteMode, useMediaQuery } from '@mui/material';
-// import { amber, deepOrange, grey } from '@mui/material/colors';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { getDesignTokens } from 'styles/theme';
+import { addAuthToOperation, didAuthError, getAuth } from '../client/urqlConfig';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 const cache = cacheExchange({});
-
-const addAuthToOperation = ({ authState, operation }: any) => {
-	if (!authState || !authState.token) {
-		return operation;
-	}
-
-	const fetchOptions =
-		typeof operation.context.fetchOptions === 'function'
-			? operation.context.fetchOptions()
-			: operation.context.fetchOptions || {};
-
-	return makeOperation(operation.kind, operation, {
-		...operation.context,
-		fetchOptions: {
-			...fetchOptions,
-			headers: {
-				...fetchOptions.headers,
-				Authorization: `Bearer ${authState.token}`,
-			},
-		},
-	});
-};
-
-const didAuthError = ({ error }: any) => {
-	return error.graphQLErrors.some(
-		(e: any) => e.extensions?.code === 'FORBIDDEN',
-	);
-};
-
-// initial load, fetch from storage and
-// triggered after an auth error has occurred
-const getAuth = async ({ authState }: any) => {
-	const [session, err] = await handlePromise(Auth.currentSession());
-	if (!err && session) {
-		const token = session.getAccessToken().getJwtToken();
-		return { token };
-	}
-
-	if (!authState) {
-		return null;
-	}
-
-	// This is where auth has gone wrong and we need to clean up.
-	// Also, you could redirect to a login page
-	Auth.signOut();
-	return null;
-};
 
 const client = new Client({
 	url: '/api/graphql',
@@ -90,71 +41,10 @@ const client = new Client({
 	],
 });
 
-Auth.configure({
-	// REQUIRED only for Federated Authentication - Amazon Cognito Identity Pool ID
-	identityPoolId: CognitoConfig.IdentityPoolId,
+Auth.configure(AmplifyOptions);
 
-	// REQUIRED - Amazon Cognito Region
-	region: CognitoConfig.Region,
+Storage.configure(S3Options);
 
-	// OPTIONAL - Amazon Cognito Federated Identity Pool Region
-	// Required only if it's different from Amazon Cognito Region
-	identityPoolRegion: CognitoConfig.Region,
-
-	// OPTIONAL - Amazon Cognito User Pool ID
-	userPoolId: CognitoConfig.UserPoolId,
-	userPoolWebClientId: CognitoConfig.ClientId,
-
-	// cookieStorage: {
-	// 	// REQUIRED - Cookie domain (only required if cookieStorage is provided)
-	// 	domain: 'localhost',
-	// 	// OPTIONAL - Cookie path
-	// 	path: '/',
-	// 	// OPTIONAL - Cookie expiration in days
-	// 	expires: 365,
-	// 	// OPTIONAL - See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite
-	// 	sameSite: 'lax',
-	// 	// OPTIONAL - Cookie secure flag
-	// 	// Either true or false, indicating if the cookie transmission requires a secure protocol (https).
-	// 	secure: false,
-	// },
-});
-
-Storage.configure({
-	AWSS3: {
-		bucket: CognitoConfig.Bucket, //REQUIRED -  Amazon S3 bucket
-		region: CognitoConfig.Region, //OPTIONAL -  Amazon service region
-	},
-});
-
-const getDesignTokens = (mode: PaletteMode) => ({
-	palette: {
-		mode,
-		// ...(mode === 'light'
-		// 	? {
-		// 			// palette values for light mode
-		// 			primary: amber,
-		// 			divider: amber[200],
-		// 			text: {
-		// 				primary: grey[900],
-		// 				secondary: grey[800],
-		// 			},
-		// 	  }
-		// 	: {
-		// 			// palette values for dark mode
-		// 			primary: deepOrange,
-		// 			divider: deepOrange[700],
-		// 			background: {
-		// 				default: deepOrange[900],
-		// 				paper: deepOrange[900],
-		// 			},
-		// 			text: {
-		// 				primary: '#fff',
-		// 				secondary: grey[500],
-		// 			},
-		// 	  }),
-	},
-});
 
 const ColorModeContext = createContext<{ toggleColorMode: () => void }>({
 	toggleColorMode: () => undefined,

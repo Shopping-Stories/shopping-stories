@@ -20,7 +20,7 @@ export interface NavLink {
 const defaultNavLinks: NavLink[] = [
 	{ title: `sign in`, path: `/auth` },
 	{ title: `home`, path: `/` },
-	{ title: `about us`, path: `/about-us` },
+	{ title: `about`, path: `/about` },
 	{ title: `menu`, path: `/menu` },
 ];
 
