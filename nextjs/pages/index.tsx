@@ -1,6 +1,5 @@
 import Header from '@components/Header';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Switch from '@mui/material/Switch';
 import type { NextPage } from 'next';
 import Head from 'next/head';
@@ -10,16 +9,6 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
 const Home: NextPage = () => {
-	const get = () => {
-		// Storage.get('test.txt')
-		// 	.then((result) => console.log(result))
-		// 	.catch((err) => console.log(err));
-	};
-	const submit = () => {
-		// Storage.put('test2.txt', 'Hello')
-		// 	.then((result) => console.log(result))
-		// 	.catch((err) => console.log(err));
-	};
 	const [toggleOn, setToggle] = useState<boolean>(false);
 	const { toggleColorMode } = useColorMode();
 
@@ -65,9 +54,6 @@ const Home: NextPage = () => {
 						Shopping Stories
 					</Typography>
 				</Box>
-				<Button variant="outlined" onClick={submit}>
-					hello
-				</Button>
 				<Switch
 					checked={toggleOn}
 					onChange={() => {
@@ -75,9 +61,6 @@ const Home: NextPage = () => {
 						toggleColorMode();
 					}}
 				/>
-				<Button variant="outlined" onClick={get}>
-					get
-				</Button>
 			</Grid>
 		</Fragment>
 	);

@@ -27,7 +27,7 @@ const AuthPage: NextPage = () => {
 		console.log(_thing);
 		if (state === 'signedin') {
 			/* Do something when the user has signed-in */
-			router.push('/cats');
+			router.push('/');
 		}
 	};
 

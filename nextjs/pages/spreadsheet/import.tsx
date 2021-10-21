@@ -1,3 +1,4 @@
+// import DataGrid from '@components/DataGrid';
 import FileInput from '@components/FileInput';
 import Header from '@components/Header';
 import SideMenu from '@components/SideMenu';
@@ -141,6 +142,7 @@ const ImportPage: NextPage = () => {
 							</Table>
 						</TableContainer>
 					)}
+					{/* <DataGrid /> */}
 				</Grid>
 			</Grid>
 		</>
