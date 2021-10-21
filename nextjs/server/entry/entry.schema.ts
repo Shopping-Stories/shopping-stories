@@ -5,13 +5,13 @@ import { Field, ID, Int, ObjectType } from 'type-graphql';
 export type EntryDocument = Entry & Document;
 
 @ObjectType('TobaccoMarkObject')
-export class TobaccoMarkObject{
+export class TobaccoMarkObject {
 	@prop()
-	@Field((_type) => ID,{ description: 'words' })
+	@Field((_type) => ID, { description: 'words' })
 	markID: ObjectId;
 
 	@prop()
-	@Field({ description: ''})
+	@Field({ description: '' })
 	markString: string;
 }
 
@@ -31,25 +31,25 @@ export class PoundsShillingsPence {
 }
 
 @ObjectType('MoneyObject')
-export class MoneyObject{
+export class MoneyObject {
 	@prop()
-	@Field({ description: ''})
+	@Field({ description: '' })
 	Quantity: string;
 
 	@prop()
-	@Field({ description: ''})
+	@Field({ description: '' })
 	Commodity: string;
 
 	@prop()
-	@Field({ description: ''})
+	@Field({ description: '' })
 	Colony: string;
 
 	@prop()
-	@Field((_type) => PoundsShillingsPence, { description: ''})
+	@Field((_type) => PoundsShillingsPence, { description: '' })
 	Sterling: PoundsShillingsPence;
 
 	@prop()
-	@Field((_type) => PoundsShillingsPence, { description: ''})
+	@Field((_type) => PoundsShillingsPence, { description: '' })
 	Currency: PoundsShillingsPence;
 }
 /*
@@ -100,7 +100,7 @@ export class NoteObject {
 }
 
 @ObjectType('MetaObject')
-export class MetaObject{
+export class MetaObject {
 	@prop()
 	@Field((_type) => String, { description: 'Ledger containing this Entry' })
 	Ledger: string;
@@ -117,7 +117,7 @@ export class MetaObject{
 	@Field((_type) => String, { description: 'Name of Store' })
 	Store: string;
 
-	@prop()
+	@prop({ type: () => [Number] })
 	@Field((_type) => [Int], { description: 'Year the entry was made' })
 	Year: number[];
 
@@ -131,7 +131,7 @@ export class MetaObject{
 }
 
 @ObjectType('MentionedItemsObject')
-export class MentionedItemsObject{
+export class MentionedItemsObject {
 	@prop()
 	@Field({ description: '' })
 	Quantity: number;
@@ -146,8 +146,7 @@ export class MentionedItemsObject{
 }
 
 @ObjectType('ItemsOrServicesObject')
-export class ItemOrServiceObject{
-
+export class ItemOrServiceObject {
 	@prop()
 	@Field({ description: '' })
 	Quantity: number;
@@ -156,8 +155,8 @@ export class ItemOrServiceObject{
 	@Field({ description: '' })
 	Qualifier: string;
 
-	@prop({type: () => String})
-	@Field((_type) =>String,{ description: '' })
+	@prop({ type: () => String })
+	@Field((_type) => String, { description: '' })
 	Variant: string[];
 
 	@prop()
@@ -172,18 +171,16 @@ export class ItemOrServiceObject{
 	@Field({ description: '' })
 	Subcategory: string;
 
-	@prop({type: () => PoundsShillingsPence})
-	@Field((_type) => PoundsShillingsPence,{ description: '' })
+	@prop({ type: () => PoundsShillingsPence })
+	@Field((_type) => PoundsShillingsPence, { description: '' })
 	UnitCost: PoundsShillingsPence;
 
-	@prop({type: () => PoundsShillingsPence})
-	@Field((_type) => PoundsShillingsPence,{ description: '' })
+	@prop({ type: () => PoundsShillingsPence })
+	@Field((_type) => PoundsShillingsPence, { description: '' })
 	ItemCost: PoundsShillingsPence;
-
-
 }
 @ObjectType('ItemEntryObject')
-export class ItemEntryObject{
+export class ItemEntryObject {
 	@prop()
 	@Field({ description: '' })
 	perOrder: number;
@@ -192,12 +189,12 @@ export class ItemEntryObject{
 	@Field({ description: '' })
 	percentage: number;
 
-	@prop({type: () => [ItemOrServiceObject]})
-	@Field((_type) => [ItemOrServiceObject],{ description: '' })
+	@prop({ type: () => [ItemOrServiceObject] })
+	@Field((_type) => [ItemOrServiceObject], { description: '' })
 	itemsOrServices: ItemOrServiceObject[];
 
-	@prop({type: () => [MentionedItemsObject]})
-	@Field((_type) => [MentionedItemsObject],{ description: '' })
+	@prop({ type: () => [MentionedItemsObject] })
+	@Field((_type) => [MentionedItemsObject], { description: '' })
 	itemsMentioned: MentionedItemsObject[];
 }
 
@@ -225,7 +222,7 @@ export class TobaccoRateObject {
 }
 
 @ObjectType('TobaccoMoneyObject')
-export class TobaccoMoneyObject{
+export class TobaccoMoneyObject {
 	@prop()
 	@Field({ description: 'words' })
 	moneyType: string;
@@ -275,7 +272,7 @@ export class TobaccoEntryObject {
 }
 
 @ObjectType('RegularEntryObject')
-export class RegularEntryObject{
+export class RegularEntryObject {
 	@prop()
 	@Field({ description: 'words' })
 	Entry: string;
@@ -290,13 +287,13 @@ export class RegularEntryObject{
 }
 
 @ObjectType('PeoplePlacesObject')
-export class PeoplePlacesObject{
+export class PeoplePlacesObject {
 	@prop()
 	@Field({ description: 'Persons name' })
 	Name: string;
 
 	@prop()
-	@Field((_type) => ID,{ description: 'words' })
+	@Field((_type) => ID, { description: 'words' })
 	ID: ObjectId;
 }
 /*
@@ -330,8 +327,8 @@ export class DateObject {
 	date: Date;
 }
 
-@ObjectType('AccHolderObject', {description: ''})
-export class AccHolderObject{
+@ObjectType('AccHolderObject', { description: '' })
+export class AccHolderObject {
 	@prop()
 	@Field((_type) => String, { description: "Prefix of account holder's name" })
 	Prefix: string;
@@ -365,7 +362,9 @@ export class AccHolderObject{
 	DrCr: number;
 
 	@prop()
-	@Field((_type) => ID, { description: 'ID of the accountholder to reference in peoples master list' })
+	@Field((_type) => ID, {
+		description: 'ID of the accountholder to reference in peoples master list',
+	})
 	accHolderID: ObjectId;
 }
 
@@ -378,13 +377,16 @@ export class Entry {
 
 	_id: ObjectId;
 
-
 	@prop({ type: () => AccHolderObject, required: true })
-	@Field((_type) => AccHolderObject, { description: 'Information on the account holder in the transaction' })
+	@Field((_type) => AccHolderObject, {
+		description: 'Information on the account holder in the transaction',
+	})
 	AccHolder: AccHolderObject;
 
 	@prop({ type: () => MetaObject, required: true })
-	@Field((_type) => MetaObject, { description: 'Meta information of the entry' })
+	@Field((_type) => MetaObject, {
+		description: 'Meta information of the entry',
+	})
 	Meta: MetaObject;
 
 	@prop({ type: () => DateObject, required: true })
@@ -428,7 +430,6 @@ export class Entry {
 		description: 'general money information for the entry',
 	})
 	Money: MoneyObject;
-
 
 	@prop({ required: true })
 	@Field((_type) => Int, {
