@@ -3,8 +3,8 @@ html,
 body {
   background-image: url("../public/HighLifeBelowStairs.08fa79f2.jpg");
   background-size:     cover;                      /* <------ */
-  background-repeat:   no-repeat;
-  background-position: center center;
+  /* background-repeat:   no-repeat; */
+  background-position: center 10%;
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,

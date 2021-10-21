@@ -44,8 +44,9 @@ Auth.configure(AmplifyOptions);
 
 Storage.configure(S3Options);
 
-const ColorModeContext = createContext<{ toggleColorMode: () => void }>({
+const ColorModeContext = createContext<{ toggleColorMode: () => void, mode: PaletteMode }>({
 	toggleColorMode: () => undefined,
+	mode: 'light'
 });
 
 export const useColorMode = () => {
@@ -82,8 +83,9 @@ function App({
 					prevMode === 'light' ? 'dark' : 'light',
 				);
 			},
+			mode: mode,
 		}),
-		[],
+		[mode],
 	);
 
 	// Update the theme only if the mode changes

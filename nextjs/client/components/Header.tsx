@@ -21,11 +21,10 @@ const defaultNavLinks: NavLink[] = [
 	{ title: `sign in`, path: `/auth` },
 	{ title: `home`, path: `/` },
 	{ title: `about`, path: `/about` },
-	{ title: `menu`, path: `/menu` },
 ];
 
 const adminNavLinks: NavLink[] = [
-	{ title: `import spreadsheet`, path: `/spreadsheet/import` },
+	{ title: `admin page`, path: `/dashboard/admin` },
 ];
 
 const Offset = styled('div')(

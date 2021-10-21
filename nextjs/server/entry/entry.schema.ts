@@ -1,7 +1,6 @@
 import { getModelForClass, prop } from '@typegoose/typegoose';
-import { createUnionType, Field, ID, Int, ObjectType } from 'type-graphql';
 import mongoose, { Document, ObjectId } from 'mongoose';
-import { People } from '@mui/icons-material';
+import { Field, ID, Int, ObjectType } from 'type-graphql';
 
 export type EntryDocument = Entry & Document;
 

@@ -5,20 +5,37 @@ import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 const lightTheme: any = {
 	// palette values for light mode
 	primary: {
-		main: '#606c38',
+		main: '#283618', // kombu
+		// main: '#606c38', // dark olive
 	},
 	secondary: {
-		main: '#BB9457',
+		main: '#606C38', // kombu
+	},
+	camel: {
+		main: '#BB9457', // camel
+	},
+	banana: {
+		main: '#FFE6A7', // banana
+	},
+	deepSpace: {
+		main: '#335C67', // deep space
 	},
 };
 
-const darkTheme: any = {
-};
+// const darkTheme: any = {
+// 	primary: {
+// 		main: '#606c38',
+// 	},
+// 	secondary: {
+// 		main: '#BB9457',
+// 	},
+// 	contrastThreshold: 3,
+// };
 
 export const getDesignTokens = (mode: PaletteMode) => ({
 	palette: {
 		mode,
-		...(mode === 'light' ? lightTheme : darkTheme),
+		...(mode === 'light' ? lightTheme : lightTheme),
 	},
 });
 

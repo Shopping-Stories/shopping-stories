@@ -6,6 +6,7 @@ import Menu from '@mui/icons-material/Menu';
 import MuiNextLink from './MuiNextLink';
 import { useState } from 'react';
 import { NavLink } from './Header';
+import Stack from '@mui/material/Stack';
 
 const SideDrawer = ({ navLinks }: { navLinks: NavLink[] }) => {
 	const [state, setState] = useState({
@@ -25,26 +26,27 @@ const SideDrawer = ({ navLinks }: { navLinks: NavLink[] }) => {
 
 	const list = (anchor: any) => (
 		<Box
-			sx={{ width: 250, marginTop: `auto`, marginBottom: `auto` }}
+			sx={{ minWidth: '10rem', marginTop: `auto`, marginBottom: `auto` }}
 			role="presentation"
 			onClick={toggleDrawer(anchor, false)}
 			onKeyDown={toggleDrawer(anchor, false)}
 		>
-			{navLinks.map(({ title, path }, i) => (
-				<Typography
-					variant="button"
-					key={`${title}${i}`}
-					sx={{
-						ml: 5,
-						my: 2,
-						textTransform: `uppercase`,
-					}}
-				>
-					<MuiNextLink sx={{ color: 'common.white' }} href={path}>
-						{title}
-					</MuiNextLink>
-				</Typography>
-			))}
+			<Stack alignItems="center" spacing={2}>
+				{navLinks.map(({ title, path }, i) => (
+					<Typography
+						variant="button"
+						key={`${title}${i}`}
+						sx={{
+							padding: '1%',
+							textTransform: `uppercase`,
+						}}
+					>
+						<MuiNextLink sx={{ color: 'common.white' }} href={path}>
+							{title}
+						</MuiNextLink>
+					</Typography>
+				))}
+			</Stack>
 		</Box>
 	);
 

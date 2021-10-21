@@ -774,7 +774,6 @@ async function updatedTobaccoEntry(entryObj: any) {
 
 async function updatedItemEntry(entryObj: any) {
 	//not finished
-	console.log(updatedItemEntry);
 	const cursor = entryObj;
 	//console.log(cursor.EntryID);
 	//console.log(cursor.Entry);
@@ -901,7 +900,7 @@ async function updatedRegEntry(entryObj: any) {
 	const cursor = entryObj;
 	let entry = cursor.Entry;
 	//console.log(entry);
-	
+
 	let tmObject = {
 		MarkName: null,
 		MarkID: null,
@@ -939,7 +938,7 @@ async function updatedRegEntry(entryObj: any) {
 					tmObject.MarkID = tempID;
 				}
 				tmArray.push(tmObject);
-				
+
 			} else {
 				let itemString = entry[i];
 				itemString = itemString.split(']').shift();
