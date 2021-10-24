@@ -1,0 +1,17 @@
+.imageBackground {
+  background-image: url("../public/HighLifeBelowStairs.08fa79f2.jpg");
+  background-size:     100%;                      /* <------ */
+  background-repeat:   no-repeat;
+  background-position: center 10% fixed;
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+.colorBackground {
+  background-color: var(--background-color);
+  background-position: center center;
+  padding: 0;
+  margin: 0;
+}

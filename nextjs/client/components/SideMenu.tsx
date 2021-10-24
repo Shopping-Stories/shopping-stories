@@ -1,4 +1,3 @@
-import { useColorMode } from 'pages/_app';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import MenuList from '@mui/material/MenuList';
@@ -23,7 +22,6 @@ const sideLinks: NavLink[] = [
 ];
 
 const SideMenu = ({ groups }: any) => {
-	const { mode } = useColorMode();
 	const isAdmin = isInGroup(Roles.Admin, groups);
 
 	const links = [
@@ -33,7 +31,7 @@ const SideMenu = ({ groups }: any) => {
 	return (
 		<Paper
 			sx={{
-				backgroundColor: `secondary.${mode}`,
+				backgroundColor: `var(--secondary)`,
 			}}
 		>
 			<MenuList>

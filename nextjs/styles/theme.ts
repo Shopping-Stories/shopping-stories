@@ -11,31 +11,18 @@ const lightTheme: any = {
 	secondary: {
 		main: '#606C38', // kombu
 	},
-	camel: {
-		main: '#BB9457', // camel
-	},
-	banana: {
-		main: '#FFE6A7', // banana
-	},
-	deepSpace: {
-		main: '#335C67', // deep space
-	},
 };
 
-// const darkTheme: any = {
-// 	primary: {
-// 		main: '#606c38',
-// 	},
-// 	secondary: {
-// 		main: '#BB9457',
-// 	},
-// 	contrastThreshold: 3,
-// };
+const darkTheme: any = {
+	primary: {
+		main: '#606c38',
+	},
+};
 
 export const getDesignTokens = (mode: PaletteMode) => ({
 	palette: {
 		mode,
-		...(mode === 'light' ? lightTheme : lightTheme),
+		...(mode === 'light' ? lightTheme : darkTheme),
 	},
 });
 
