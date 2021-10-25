@@ -693,10 +693,7 @@ async function updatedTobaccoEntry(entryObj: any) {
 	let brokenEntry = await entry.split('//');
 	let moneyInfo: any = [];
 	let NoteInfor = [];
-	let markInfo = {
-		markID: null,
-		markString: null,
-	};
+	let markArray = [];
 	let entryInfo = '';
 	let tobaccoShavedOff = 0;
 	let noteCount = 0;
@@ -712,11 +709,18 @@ async function updatedTobaccoEntry(entryObj: any) {
 			//brokenEntry[i] = brokenEntry[i].replace("N","");
 			if (brokenEntry[i].includes('TM')) {
 				console.log('found TM');
+				let markInfo = {
+					markID: null,
+					markString: null,
+				};
 				let tempMarkInfo = await brokenEntry[i].split(']');
 				let tempNoteInfo = tempMarkInfo[1].trim();
 				tempMarkInfo = await tempMarkInfo[0].split(':');
 				markInfo.markString = tempMarkInfo[1].trim();
+				markInfo.markID = await findTMid(tempMarkInfo[1].trim());
+				markArray.push(markInfo);
 				tempNoteInfo = tempNoteInfo.split('{');
+
 				for (let j = 1; j < tempNoteInfo.length; j++) {
 					tempNoteInfo[j];
 					NoteInfor[noteCount] = await tobaccoNote(
@@ -744,7 +748,7 @@ async function updatedTobaccoEntry(entryObj: any) {
 	}
 	let finishedRes = {
 		entry: entryInfo.trim(),
-		mark: markInfo,
+		mark: markArray,
 		notes: NoteInfor,
 		money: moneyInfo,
 		tobaccoShaved: tobaccoShavedOff,
@@ -880,16 +884,11 @@ async function updatedRegEntry(entryObj: any) {
 	const cursor = entryObj;
 	let entry = cursor.Entry;
 	//console.log(entry);
-
-	let tmObject = {
-		markName: null,
-		markID: null,
-	};
-	let tmArray = [tmObject];
+	let tmArray :any = [];
 	let res = {
 		entry: '',
-		tobaccoMark: tmObject,
-		items: [] as any[],
+		tobaccoMark: [] as any[],
+		itemsMentioned: [] as any[],
 	};
 	let finalEntry = '';
 	if (entry.includes('[')) {
@@ -897,27 +896,32 @@ async function updatedRegEntry(entryObj: any) {
 		finalEntry += entry[0];
 		for (let i = 1; i < entry.length; i++) {
 			if (entry[i].replace(/\s+/g, '').includes('TM:')) {
+				let tempObject = {
+					markName: null,
+					markID: null,
+				}
 				let TMstring = entry[i];
-				console.log(TMstring);
+				
 				TMstring = entry[i].split(']');
 				finalEntry += TMstring[1];
 				TMstring = TMstring[0];
 				TMstring = TMstring.split(':').pop().trim();
 				console.log(`TM NAME: ${TMstring}`);
-				tmObject.markName = TMstring;
-				console.log(tmObject);
+				tempObject.markName = TMstring;
+				
 				TMstring = TMstring.trim().split(' ')[0];
 				TMstring = TMstring.replace(/^0+/, '');
-				console.log(TMstring);
+				
 				let tempID = null;
 				try {
 					tempID = await findTMid(TMstring);
 				} catch (exception_var) {
 					tempID = null;
 				} finally {
-					tmObject.markID = tempID;
+					tempObject.markID = tempID;
 				}
-				tmArray.push(tmObject);
+				
+				tmArray.push(tempObject);
 			} else {
 				let itemString = entry[i];
 				itemString = itemString.split(']').shift();
@@ -930,16 +934,22 @@ async function updatedRegEntry(entryObj: any) {
 						qualifier: tempItemString[1],
 						item: tempItemString[0],
 					};
-					res.items.push(temp);
+					res.itemsMentioned.push(temp);
 				}
 			}
 		}
 	}
+	res.tobaccoMark = tmArray;
 	res.entry = finalEntry.trim();
 	return res;
 }
 async function findTMid(id: any) {
-	const res = await TobaccoMarkModel.findOne({ TM_ID: id });
+	
+	let temp : any = id.trim().split(" ");
+	temp = temp[0];
+	temp = temp.replace(/\D|^0+/g, "");
+	console.log(temp);
+	const res = await TobaccoMarkModel.findOne({ TM_ID: temp });
 	if (res) {
 		return res._id;
 	} else {

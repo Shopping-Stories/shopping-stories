@@ -256,7 +256,7 @@ export class TobaccoEntryObject {
 
 	@prop({ type: () => [TobaccoMarkObject] })
 	@Field((_type) => [TobaccoMarkObject], { description: '' })
-	Mark: TobaccoMarkObject;
+	Mark: TobaccoMarkObject[];
 
 	@prop({ type: () => [NoteObject] })
 	@Field((_type) => [NoteObject], { description: '' })
@@ -279,7 +279,7 @@ export class RegularEntryObject {
 
 	@prop({ type: () => [TobaccoMarkObject] })
 	@Field((_type) => [TobaccoMarkObject], { description: '' })
-	TM: TobaccoMarkObject;
+	TM: TobaccoMarkObject[];
 
 	@prop({ type: () => [MentionedItemsObject] })
 	@Field((_type) => [MentionedItemsObject], { description: '' })
