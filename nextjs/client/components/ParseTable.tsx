@@ -54,7 +54,7 @@ const ParseTable = (props: ParseTableProps) => {
 		<>
 			{entries && (
 				<TableContainer component={Paper}>
-					<Table sx={{ minWidth: '20%' }} aria-label="simple table">
+					<Table stickyHeader sx={{ minWidth: '20%' }} aria-label="simple table">
 						<TableHead>
 							<TableRow>
 								<TableCell>Index</TableCell>
@@ -114,8 +114,8 @@ const ParseTable = (props: ParseTableProps) => {
 										<TableCell align="right">
 											<Button onClick={() => handleOpen(i)}>View Entry</Button>
 										</TableCell>
-										{columnValues.map((value: any) => (
-											<TableCell align="right">{value}</TableCell>
+										{columnValues.map((value: any, i: number) => (
+											<TableCell key={i} align="right">{value}</TableCell>
 										))}
 									</TableRow>
 								);

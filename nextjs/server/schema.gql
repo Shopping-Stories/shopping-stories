@@ -22,7 +22,8 @@ type Query {
   listGroups(paginationToken: String, limit: Float): JSONObject
   listGroupsForUser(nextToken: String, limit: Float, username: String!): JSONObject
   listUsersInGroup(nextToken: String, limit: Float, groupname: String!): JSONObject
-  findGlossaryItems(options: FindAllArgsInput): [GlossaryItem!]
+  findGlossaryItems(options: FindAllArgs): [GlossaryItem!]
+  countGlossaryItems: Float!
   findGlossaryItem(id: String!): GlossaryItem
 }
 
@@ -350,7 +351,7 @@ type GlossaryItem {
   relatedPurchases: [String!]!
 }
 
-input FindAllArgsInput {
+input FindAllArgs {
   # Offset of items to skip
   skip: Float = 0
 

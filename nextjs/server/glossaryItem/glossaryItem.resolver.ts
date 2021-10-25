@@ -12,7 +12,7 @@ import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 import { GlossaryItem } from './glossaryItem.schema';
 import GlossaryItemService from './glossaryItem.service';
 import { CreateGlossaryItemInput } from './input/createGlossaryItem.input';
-import { FindAllArgsInput } from './input/findAllArgs.input';
+import { FindAllArgs } from './input/findAllArgs.input';
 import { UpdateGlossaryItemInput } from './input/updateGlossaryItem.input';
 
 function getMongooseFromFields(info: any, fieldPath = null) {
@@ -28,7 +28,7 @@ export default class GlossaryItemResolver {
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Query((_returns) => [GlossaryItem], { nullable: true })
 	async findGlossaryItems(
-		@Arg('options', { nullable: true }) { limit, skip }: FindAllArgsInput,
+		@Arg('options', { nullable: true }) { limit, skip }: FindAllArgs,
 		@Info() info: any,
 	): Promise<GlossaryItem[]> {
 		return GlossaryItemService.findAll(
@@ -36,6 +36,12 @@ export default class GlossaryItemResolver {
 			limit,
 			getMongooseFromFields(info),
 		);
+	}
+
+	@UseMiddleware(ConnectDB, ResolveTime)
+	@Query((_returns) => Number)
+	async countGlossaryItems(): Promise<number> {
+		return GlossaryItemService.count();
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)

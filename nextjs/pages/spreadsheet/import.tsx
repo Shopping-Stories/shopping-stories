@@ -69,6 +69,7 @@ const ImportPage: NextPage = () => {
 
 			const res: any = await parseSheet({ spreadsheet: sheets });
 			setEntries([...res?.data?.entries]);
+			console.log({ entries: res?.data?.entries });
 			getParseErrors(res?.data?.entries);
 			setIsLoading(false);
 		};

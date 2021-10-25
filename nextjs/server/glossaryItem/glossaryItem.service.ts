@@ -28,6 +28,11 @@ export default class GlossaryItemService {
 			.exec();
 	}
 
+
+	static async count(filter: any = {}): Promise<number> {
+		return GlossaryItemModel.estimatedDocumentCount(filter).lean().exec();
+	}
+
 	static async findOne(
 		id: string,
 		selectedFields: Object,
