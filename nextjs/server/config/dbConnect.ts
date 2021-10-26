@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { __prod__, __test__ } from '../../config/constants.config';
-import { logger } from './logger';
+import { __dev__, __test__ } from '../../config/constants.config';
+import { logger } from './utils';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
@@ -35,11 +35,25 @@ async function dbConnect(uri?: string) {
 			useFindAndModify: false,
 			useCreateIndex: true,
 		};
+
+		// if (__dev__) {
+		// 	mongoose.set(
+		// 		'debug',
+		// 		(collectionName: any, method: any, query: any, doc: any) => {
+		// 			logger.info(
+		// 				`Mongoose: ${collectionName}.${method}`,
+		// 				JSON.stringify(query),
+		// 				doc,
+		// 			);
+		// 		},
+		// 	);
+		// }
+
 		cached.promise = mongoose
 			.connect(uri ? uri : MONGODB_URI, opts)
 			.then((mongoose) => {
 				logger.info(`Database successfully connected`);
-				if (!__prod__) {
+				if (__dev__) {
 					logger.info(`Connection URI: ${uri ? uri : MONGODB_URI}`);
 				}
 				return mongoose;

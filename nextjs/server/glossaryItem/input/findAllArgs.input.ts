@@ -2,7 +2,7 @@ import { Max, Min } from 'class-validator';
 import { Field, InputType } from 'type-graphql';
 
 @InputType()
-export class FindAllArgs {
+export class FindAllLimitAndSkip {
 	@Min(0)
 	@Field({ description: 'Offset of items to skip', defaultValue: 0 })
 	skip: number;

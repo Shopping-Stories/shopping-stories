@@ -1,4 +1,3 @@
-import graphqlFields from 'graphql-fields';
 import 'reflect-metadata';
 import {
 	Arg,
@@ -12,23 +11,17 @@ import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 import { GlossaryItem } from './glossaryItem.schema';
 import GlossaryItemService from './glossaryItem.service';
 import { CreateGlossaryItemInput } from './input/createGlossaryItem.input';
-import { FindAllArgs } from './input/findAllArgs.input';
+import { FindAllLimitAndSkip } from './input/findAllArgs.input';
 import { UpdateGlossaryItemInput } from './input/updateGlossaryItem.input';
+import { getMongooseFromFields } from 'server/config/utils';
 
-function getMongooseFromFields(info: any, fieldPath = null) {
-	const selections = graphqlFields(info);
-	const mongooseSelection = Object.keys(
-		fieldPath ? selections[fieldPath] : selections,
-	).reduce((a, b) => ({ ...a, [b]: 1 }), {});
-	return mongooseSelection;
-}
 
 @Resolver((_of) => GlossaryItem)
 export default class GlossaryItemResolver {
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Query((_returns) => [GlossaryItem], { nullable: true })
 	async findGlossaryItems(
-		@Arg('options', { nullable: true }) { limit, skip }: FindAllArgs,
+		@Arg('options', { nullable: true }) { limit, skip }: FindAllLimitAndSkip,
 		@Info() info: any,
 	): Promise<GlossaryItem[]> {
 		return GlossaryItemService.findAll(

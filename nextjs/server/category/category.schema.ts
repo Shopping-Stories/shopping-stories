@@ -5,7 +5,7 @@ import { Field, ID, ObjectType } from 'type-graphql';
 export type CategoriesDocument = Category & Document;
 
 @ObjectType({ description: 'Category Object' })
-@modelOptions({ schemaOptions: { timestamps: true, collection: 'Categories' } })
+@modelOptions({ schemaOptions: { timestamps: true } })
 export class Category {
 	@Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
 	public get id(): string {
@@ -16,15 +16,15 @@ export class Category {
 
 	@prop({ required: true })
 	@Field({ description: 'Category type' })
-	Category: string;
+	category: string;
 
 	@prop({ required: true })
 	@Field({ description: 'Items in the category' })
-	Item: string;
+	item: string;
 
 	@prop({ required: true })
 	@Field({ description: 'Subcategory?' })
-	Subcategory: string;
+	subcategory: string;
 }
 
 export const CategoryModel =

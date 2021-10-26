@@ -3,7 +3,7 @@ import { Model, Document } from 'mongoose';
 import { MiddlewareFn } from 'type-graphql';
 import { MyContext } from '../../pages/api/graphql';
 import dbConnect from '../config/dbConnect';
-import { logger } from '../config/logger';
+import { logger } from '../config/utils';
 
 /**
  * This File is a collection of various middleware
@@ -23,7 +23,7 @@ export const ResolveTime: MiddlewareFn = async ({ info }, next) => {
 	const start = Date.now();
 	await next();
 	const resolveTime = Date.now() - start;
-	logger.info(`${info.parentType.name}.${info.fieldName} [${resolveTime} ms]`);
+	logger.info(`GraphQL: ${info.parentType.name}.${info.fieldName} [${resolveTime} ms]`);
 };
 
 /**

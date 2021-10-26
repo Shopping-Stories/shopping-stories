@@ -1,18 +1,13 @@
+import { filterObject } from '../config/utils';
 import { GlossaryItem, GlossaryItemModel } from './glossaryItem.schema';
 import { CreateGlossaryItemInput } from './input/createGlossaryItem.input';
 import { UpdateGlossaryItemInput } from './input/updateGlossaryItem.input';
 
-const filterObject = (obj: Object, callback: any) => {
-	return Object.fromEntries(
-		Object.entries(obj).filter(([key, val]) => callback(val, key)),
-	);
-};
-
 export default class GlossaryItemService {
 	static async create(
-		createItemInput: CreateGlossaryItemInput,
+		glossaryItem: CreateGlossaryItemInput,
 	): Promise<GlossaryItem> {
-		const createdGlossaryItem = new GlossaryItemModel(createItemInput);
+		const createdGlossaryItem = new GlossaryItemModel(glossaryItem);
 		return createdGlossaryItem.save();
 	}
 

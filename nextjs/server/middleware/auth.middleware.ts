@@ -5,7 +5,7 @@ import { NextApiRequest } from 'next';
 import { AuthChecker } from 'type-graphql';
 import { MyContext } from '../../pages/api/graphql';
 import { CognitoConfig } from '../../config/constants.config';
-import { logger } from '../config/logger';
+import { logger } from '../config/utils';
 
 export interface TokenHeader {
 	kid: string;

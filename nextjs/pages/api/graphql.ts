@@ -14,6 +14,11 @@ import { GraphQLJSONObject } from 'graphql-type-json';
 import { __dev__ } from '../../config/constants.config';
 import SpreadsheetResolver from '../../server/spreadsheet/spreadsheet.resolver';
 import GlossaryItemResolver from '../../server/glossaryItem/glossaryItem.resolver';
+import ItemResolver from 'server/item/item.resolver';
+import PlaceResolver from 'server/place/place.resolver';
+import PersonResolver from 'server/person/person.resolver';
+import TobaccoMarkResolver from 'server/tobaccoMark/tobaccoMark.resolver';
+import CategoryResolver from 'server/category/category.resolver';
 
 export interface MyContext {
 	req: NextApiRequest;
@@ -33,6 +38,11 @@ const getApolloServerHandler = async () => {
 				AdminResolver,
 				SpreadsheetResolver,
 				GlossaryItemResolver,
+				ItemResolver,
+				PlaceResolver,
+				PersonResolver,
+				TobaccoMarkResolver,
+				CategoryResolver,
 			],
 			scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],
 			authChecker: JWTAuthChecker,

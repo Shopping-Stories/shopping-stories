@@ -1,6 +1,6 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { CognitoConfig } from '../../config/constants.config';
-import { logger } from '../config/logger';
+import { logger } from '../config/utils';
 
 const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider({
 	region: CognitoConfig.Region,

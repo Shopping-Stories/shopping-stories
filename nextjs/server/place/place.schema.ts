@@ -2,13 +2,13 @@ import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, ObjectType } from 'type-graphql';
 
-export type ItemDocument = Item & Document;
+export type PlaceDocument = Place & Document;
 
-@ObjectType({ description: 'Item Object' })
+@ObjectType({ description: 'Place Object' })
 @modelOptions({
-	schemaOptions: { timestamps: true, collection: 'ItemMasterList' },
+	schemaOptions: { timestamps: true },
 })
-export class Item {
+export class Place {
 	@Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
 	public get id(): string {
 		return `${this._id}`; // Converts type ObjectId of _id to String
@@ -18,11 +18,15 @@ export class Item {
 
 	@prop({ required: true })
 	@Field({ description: 'Type of item' })
-	Item: string;
+	location: string;
 
 	@prop({ required: true })
 	@Field({ description: 'Variations of given item' })
-	Variants: string;
+	alias: string;
+
+	@prop({ required: true })
+	@Field({ description: 'Variations of given item' })
+	descriptor: string;
 }
 
-export const ItemModel = mongoose.models.Item || getModelForClass(Item);
+export const PlaceModel = mongoose.models.Place || getModelForClass(Place);

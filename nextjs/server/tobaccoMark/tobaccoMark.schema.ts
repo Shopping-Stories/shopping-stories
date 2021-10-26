@@ -4,9 +4,9 @@ import { Field, ID, ObjectType } from 'type-graphql';
 
 export type TobaccoMarkDocument = TobaccoMark & Document;
 
-@ObjectType({ description: 'People Object' })
+@ObjectType({ description: 'TobaccoMark Object' })
 @modelOptions({
-	schemaOptions: { timestamps: true, collection: 'TobaccoMarks' },
+	schemaOptions: { timestamps: true, collection: 'tobaccoMarks' },
 })
 export class TobaccoMark {
 	@Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
@@ -18,43 +18,43 @@ export class TobaccoMark {
 
 	@prop()
 	@Field({ description: 'Variations of given item' })
-	Description: string;
+	description: string;
 
 	@prop({ required: true })
 	@Field({ description: 'TODO: Fill this in' })
-	Image: string;
+	image: string;
 
 	@prop({ required: true })
 	@Field({ description: 'TODO: Fill this in' })
-	NetWeight: string;
+	netWeight: string;
 
 	@prop({ required: true })
 	@Field({ description: 'TODO: Fill this in' })
-	Note: string;
+	note: string;
 
 	@prop({ required: true })
 	@Field({ description: 'TODO: Fill this in' })
-	Notes: string;
+	notes: string;
 
 	@prop({ required: true })
 	@Field({ description: 'TODO: Fill this in' })
-	TM_ID: string;
+	tobaccoMarkId: string;
 
 	@prop({ required: true })
 	@Field({ description: 'TODO: Fill this in' })
-	Warehouse: string;
+	warehouse: string;
 
 	@prop({ required: true })
 	@Field({ description: 'TODO: Fill this in' })
-	Where: string;
+	where: string;
 
 	@prop({ required: true })
 	@Field({ description: 'TODO: Fill this in' })
-	WhoRepresents: string;
+	whoRepresents: string;
 
 	@prop({ required: true })
 	@Field({ description: 'TODO: Fill this in' })
-	WhoUnder: string;
+	whoUnder: string;
 }
 
 export const TobaccoMarkModel =

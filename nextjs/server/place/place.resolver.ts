@@ -1,0 +1,72 @@
+import 'reflect-metadata';
+import {
+	Arg,
+	Info,
+	Mutation,
+	Query,
+	Resolver,
+	UseMiddleware,
+} from 'type-graphql';
+import { getMongooseFromFields } from '../config/utils';
+import { FindAllLimitAndSkip } from '../glossaryItem/input/findAllArgs.input';
+import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
+import { CreatePlaceInput } from './input/createPlace.input';
+import { UpdatePlaceInput } from './input/updatePlace.input';
+import { Place } from './place.schema';
+import PlaceService from './place.service';
+
+@Resolver((_of) => Place)
+export default class PlaceResolver {
+	@UseMiddleware(ConnectDB, ResolveTime)
+	@Query((_returns) => [Place], { nullable: true })
+	async findPlaces(
+		@Arg('options', { nullable: true }) { limit, skip }: FindAllLimitAndSkip,
+		@Info() info: any,
+	): Promise<Place[]> {
+		return PlaceService.findAll(skip, limit, getMongooseFromFields(info));
+	}
+
+	@UseMiddleware(ConnectDB, ResolveTime)
+	@Query((_returns) => Number)
+	async countPlaces(): Promise<number> {
+		return PlaceService.count();
+	}
+
+	@UseMiddleware(ConnectDB, ResolveTime)
+	@Query((_returns) => Place, { nullable: true })
+	async findOnePlace(
+		@Arg('id') id: string,
+		@Info() info: any,
+	): Promise<Place | null> {
+		return PlaceService.findOne(id, getMongooseFromFields(info));
+	}
+
+	@UseMiddleware(ConnectDB, ResolveTime)
+	@Mutation((_returns) => Place)
+	async createPlace(@Arg('place') newPlace: CreatePlaceInput): Promise<Place> {
+		return PlaceService.create(newPlace);
+	}
+
+	@UseMiddleware(ConnectDB, ResolveTime)
+	@Mutation((_returns) => Place, { nullable: true })
+	async updatePlace(
+		@Arg('id') id: string,
+		@Arg('updatedFields') updatedFields: UpdatePlaceInput,
+		@Info() info: any,
+	): Promise<Place | null> {
+		return PlaceService.updateOne(
+			id,
+			updatedFields,
+			getMongooseFromFields(info),
+		);
+	}
+
+	@UseMiddleware(ConnectDB, ResolveTime)
+	@Mutation((_returns) => Place, { nullable: true })
+	async deletePlace(
+		@Arg('id') id: string,
+		@Info() info: any,
+	): Promise<Place | null> {
+		return PlaceService.deleteOne(id, getMongooseFromFields(info));
+	}
+}

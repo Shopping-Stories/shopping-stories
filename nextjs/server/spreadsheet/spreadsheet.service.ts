@@ -1,7 +1,7 @@
-import { CategoryModel } from './categories.schema';
-import { PersonModel } from './person.schema';
-import { PlaceModel } from './place.schema';
-import { TobaccoMarkModel } from './tobaccoMarks.schema';
+import { CategoryModel } from '../category/category.schema';
+import { PersonModel } from '../person/person.schema';
+import { PlaceModel } from '../place/place.schema';
+import { TobaccoMarkModel } from '../tobaccoMark/tobaccoMark.schema';
 
 export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 	let entries = [];
@@ -901,17 +901,17 @@ async function updatedRegEntry(entryObj: any) {
 					markID: null,
 				}
 				let TMstring = entry[i];
-				
+
 				TMstring = entry[i].split(']');
 				finalEntry += TMstring[1];
 				TMstring = TMstring[0];
 				TMstring = TMstring.split(':').pop().trim();
 				console.log(`TM NAME: ${TMstring}`);
 				tempObject.markName = TMstring;
-				
+
 				TMstring = TMstring.trim().split(' ')[0];
 				TMstring = TMstring.replace(/^0+/, '');
-				
+
 				let tempID = null;
 				try {
 					tempID = await findTMid(TMstring);
@@ -920,7 +920,7 @@ async function updatedRegEntry(entryObj: any) {
 				} finally {
 					tempObject.markID = tempID;
 				}
-				
+
 				tmArray.push(tempObject);
 			} else {
 				let itemString = entry[i];
@@ -944,12 +944,12 @@ async function updatedRegEntry(entryObj: any) {
 	return res;
 }
 async function findTMid(id: any) {
-	
+
 	let temp : any = id.trim().split(" ");
 	temp = temp[0];
 	temp = temp.replace(/\D|^0+/g, "");
 	console.log(temp);
-	const res = await TobaccoMarkModel.findOne({ TM_ID: temp });
+	const res = await TobaccoMarkModel.findOne({ tobaccoMarkId: temp });
 	if (res) {
 		return res._id;
 	} else {

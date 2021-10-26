@@ -22,9 +22,24 @@ type Query {
   listGroups(paginationToken: String, limit: Float): JSONObject
   listGroupsForUser(nextToken: String, limit: Float, username: String!): JSONObject
   listUsersInGroup(nextToken: String, limit: Float, groupname: String!): JSONObject
-  findGlossaryItems(options: FindAllArgs): [GlossaryItem!]
+  findGlossaryItems(options: FindAllLimitAndSkip): [GlossaryItem!]
   countGlossaryItems: Float!
   findGlossaryItem(id: String!): GlossaryItem
+  findItems(options: FindAllLimitAndSkip): [Item!]
+  countItems: Float!
+  findOneItem(id: String!): Item
+  findPlaces(options: FindAllLimitAndSkip): [Place!]
+  countPlaces: Float!
+  findOnePlace(id: String!): Place
+  findPeople(options: FindAllLimitAndSkip): [Person!]
+  countPeople: Float!
+  findOnePerson(id: String!): Person
+  findTobaccoMarks(options: FindAllLimitAndSkip): [TobaccoMark!]
+  countTobaccoMarks: Float!
+  findOneTobaccoMark(id: String!): TobaccoMark
+  findCategories(options: FindAllLimitAndSkip): [Category!]
+  countCategories: Float!
+  findOneCategory(id: String!): Category
 }
 
 # Cat Object
@@ -351,12 +366,135 @@ type GlossaryItem {
   relatedPurchases: [String!]!
 }
 
-input FindAllArgs {
+input FindAllLimitAndSkip {
   # Offset of items to skip
   skip: Float = 0
 
   # number of items to return, number must be in the range 1 <= limit <= 50
   limit: Float = 10
+}
+
+# Item Object
+type Item {
+  # String of MongoDB ObjectId
+  id: ID!
+
+  # Type of item
+  item: String!
+
+  # Variations of given item
+  variants: String!
+}
+
+# Place Object
+type Place {
+  # String of MongoDB ObjectId
+  id: ID!
+
+  # Type of item
+  location: String!
+
+  # Variations of given item
+  alias: String!
+
+  # Variations of given item
+  descriptor: String!
+}
+
+# People Object
+type Person {
+  # String of MongoDB ObjectId
+  id: ID!
+
+  # Variations of given item
+  account: String!
+
+  # Variations of given item
+  enslaved: String
+
+  # Variations of given item
+  firstName: String
+
+  # Variations of given item
+  lastName: String
+
+  # Variations of given item
+  gender: String
+
+  # Variations of given item
+  location: String
+
+  # Variations of given item
+  prefix: String
+
+  # Variations of given item
+  profession: String
+
+  # Variations of given item
+  professionCategory: String
+
+  # Variations of given item
+  reference: String
+
+  # Variations of given item
+  store: String!
+
+  # Variations of given item
+  suffix: String
+
+  # Variations of given item
+  variations: String
+}
+
+# TobaccoMark Object
+type TobaccoMark {
+  # String of MongoDB ObjectId
+  id: ID!
+
+  # Variations of given item
+  description: String!
+
+  # TODO: Fill this in
+  image: String!
+
+  # TODO: Fill this in
+  netWeight: String!
+
+  # TODO: Fill this in
+  note: String!
+
+  # TODO: Fill this in
+  notes: String!
+
+  # TODO: Fill this in
+  tobaccoMarkId: String!
+
+  # TODO: Fill this in
+  warehouse: String!
+
+  # TODO: Fill this in
+  where: String!
+
+  # TODO: Fill this in
+  whoRepresents: String!
+
+  # TODO: Fill this in
+  whoUnder: String!
+}
+
+# Category Object
+type Category {
+  # String of MongoDB ObjectId
+  id: ID!
+
+  # Category type
+  category: String!
+
+  # Items in the category
+  item: String!
+
+  # Subcategory?
+  subcategory: String!
 }
 
 type Mutation {
@@ -373,6 +511,21 @@ type Mutation {
   createGlossaryItem(newGlossaryItem: CreateGlossaryItemInput!): GlossaryItem!
   updateGlossaryItem(updatedFields: UpdateGlossaryItemInput!, id: String!): GlossaryItem
   deleteGlossaryItem(id: String!): GlossaryItem
+  createItem(item: CreateItemInput!): Item!
+  updateItem(updatedFields: UpdateItemInput!, id: String!): Item
+  deleteItem(id: String!): Item
+  createPlace(place: CreatePlaceInput!): Place!
+  updatePlace(updatedFields: UpdatePlaceInput!, id: String!): Place
+  deletePlace(id: String!): Place
+  createPerson(person: CreatePersonInput!): Person!
+  updatePerson(updatedFields: UpdatePersonInput!, id: String!): Person
+  deletePerson(id: String!): Person
+  createTobaccoMark(tobaccoMark: CreateTobaccoMarkInput!): TobaccoMark!
+  updateTobaccoMark(updatedFields: UpdateTobaccoMarkInput!, id: String!): TobaccoMark
+  deleteTobaccoMark(id: String!): TobaccoMark
+  createCategory(category: CreateCategoryInput!): Category!
+  updateCategory(updatedFields: UpdateCategoryInput!, id: String!): Category
+  deleteCategory(id: String!): Category
 }
 
 input CreateCatDto {
@@ -628,4 +781,210 @@ input UpdateGlossaryItemInput {
 
   # Purchases related to this item
   relatedPurchases: [String!]
+}
+
+input CreateItemInput {
+  # Name of item
+  item: String!
+
+  # Description of the item
+  variants: String!
+}
+
+input UpdateItemInput {
+  # Name of the item
+  item: String
+
+  # Description of the item
+  variants: String
+}
+
+input CreatePlaceInput {
+  # Type of item
+  location: String!
+
+  # Variations of given item
+  alias: String!
+
+  # Variations of given item
+  descriptor: String!
+}
+
+input UpdatePlaceInput {
+  # Type of item
+  location: String
+
+  # Variations of given item
+  alias: String
+
+  # Variations of given item
+  descriptor: String
+}
+
+input CreatePersonInput {
+  # Variations of given item
+  account: String
+
+  # Variations of given item
+  enslaved: String
+
+  # Variations of given item
+  firstName: String
+
+  # Variations of given item
+  lastName: String
+
+  # Variations of given item
+  gender: String
+
+  # Variations of given item
+  location: String
+
+  # Variations of given item
+  prefix: String
+
+  # Variations of given item
+  profession: String
+
+  # Variations of given item
+  professionCategory: String
+
+  # Variations of given item
+  reference: String
+
+  # Variations of given item
+  store: String
+
+  # Variations of given item
+  suffix: String
+
+  # Variations of given item
+  variations: String
+}
+
+input UpdatePersonInput {
+  # Variations of given item
+  account: String
+
+  # Variations of given item
+  enslaved: String
+
+  # Variations of given item
+  firstName: String
+
+  # Variations of given item
+  lastName: String
+
+  # Variations of given item
+  gender: String
+
+  # Variations of given item
+  location: String
+
+  # Variations of given item
+  prefix: String
+
+  # Variations of given item
+  profession: String
+
+  # Variations of given item
+  professionCategory: String
+
+  # Variations of given item
+  reference: String
+
+  # Variations of given item
+  store: String
+
+  # Variations of given item
+  suffix: String
+
+  # Variations of given item
+  variations: String
+}
+
+input CreateTobaccoMarkInput {
+  # TODO: Fill this in
+  description: String!
+
+  # TODO: Fill this in
+  image: String!
+
+  # TODO: Fill this in
+  netWeight: String!
+
+  # TODO: Fill this in
+  note: String!
+
+  # TODO: Fill this in
+  notes: String!
+
+  # TODO: Fill this in
+  tobaccoMarkId: String!
+
+  # TODO: Fill this in
+  warehouse: String!
+
+  # TODO: Fill this in
+  where: String!
+
+  # TODO: Fill this in
+  whoRepresents: String!
+
+  # TODO: Fill this in
+  whoUnder: String!
+}
+
+input UpdateTobaccoMarkInput {
+  # TODO: Fill this in
+  description: String
+
+  # TODO: Fill this in
+  image: String
+
+  # TODO: Fill this in
+  netWeight: String
+
+  # TODO: Fill this in
+  note: String
+
+  # TODO: Fill this in
+  notes: String
+
+  # TODO: Fill this in
+  tobaccoMarkId: String
+
+  # TODO: Fill this in
+  warehouse: String
+
+  # TODO: Fill this in
+  where: String
+
+  # TODO: Fill this in
+  whoRepresents: String
+
+  # TODO: Fill this in
+  whoUnder: String
+}
+
+input CreateCategoryInput {
+  # Category type
+  category: String!
+
+  # Items in the category
+  item: String!
+
+  # Subcategory?
+  subcategory: String!
+}
+
+input UpdateCategoryInput {
+  # Category type
+  category: String!
+
+  # Items in the category
+  item: String!
+
+  # Subcategory?
+  subcategory: String!
 }
