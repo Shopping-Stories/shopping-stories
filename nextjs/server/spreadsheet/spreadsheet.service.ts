@@ -13,6 +13,7 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 	let money = [];
 	let people = [];
 	let places = [];
+	let references = [];
 	for (let i = 0; i < spreadsheetObj.length; i++) {
 		const entry = spreadsheetObj[i];
 		errorCode[i] = 0;
@@ -49,6 +50,7 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 			money[i] = await formatMoney(entry);
 			dates[i] = await newDateObject(entry.Day, entry.Month, entry.Year);
 			meta[i] = await makeMetaDataObject(entry, 'C_1760');
+			references[i] = await folioReferences(entry);
 			accountHolder[i] = await makeAccountHolderObject(entry);
 		} catch (err) {
 			console.log('EntryID:' + entry.EntryID + '   ' + err);
@@ -164,6 +166,16 @@ async function formatMoney(entry: any) {
 		console.log(err);
 		throw 'Sterling or Currency coloumns are not formatted properly';
 	}
+}
+
+async function folioReferences(entry: any) {
+	let folios: any = entry.FolioReference.toString().split("//");
+	let ledgers: any = entry.Ledger.toString().split("//");
+	let res = {
+		foliosRef: folios,
+		ledgerRef: ledgers
+	}
+	return res;
 }
 
 async function placesIDs(entry: any) {
@@ -320,15 +332,21 @@ async function makeAccountHolderObject(entryObj: any) {
 async function makeMetaDataObject(entryObj: any, ledger: any) {
 	try {
 		const cursor = entryObj;
+		let yearNum: any = cursor.Year.toString();
 		//console.log(cursor);
+		if (cursor.Year.includes("/")) {
+			yearNum = cursor.Year.split("/");
+			yearNum = yearNum[0].toString();
+		}
 		let res = {
-			ledger: ledger,
-			reel: cursor.Reel,
-			folioPage: cursor.FolioPage,
-			year: cursor.Year,
-			owner: cursor.Owner,
-			store: cursor.Store,
+			ledger: ledger.toString(),
+			reel: cursor.Reel.toString(),
+			folioPage: cursor.FolioPage.toString(),
+			year: yearNum,
+			owner: cursor.Owner.toString(),
+			store: cursor.Store.toString(),
 			entryID: cursor.EntryID.toString(),
+			Comments: cursor.Final.toString()
 		};
 		return res;
 	} catch (err) {
@@ -882,9 +900,9 @@ async function removeWhiteSpaceFromArray(array: any) {
 
 async function updatedRegEntry(entryObj: any) {
 	const cursor = entryObj;
-	let entry = cursor.Entry;
+	let entry = cursor.Entry.toString();
 	//console.log(entry);
-	let tmArray :any = [];
+	let tmArray: any = [];
 	let res = {
 		entry: '',
 		tobaccoMark: [] as any[],
@@ -939,13 +957,16 @@ async function updatedRegEntry(entryObj: any) {
 			}
 		}
 	}
+	else {
+		finalEntry = entry;
+	}
 	res.tobaccoMark = tmArray;
 	res.entry = finalEntry.trim();
 	return res;
 }
 async function findTMid(id: any) {
 
-	let temp : any = id.trim().split(" ");
+	let temp: any = id.trim().split(" ");
 	temp = temp[0];
 	temp = temp.replace(/\D|^0+/g, "");
 	console.log(temp);

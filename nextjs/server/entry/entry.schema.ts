@@ -155,8 +155,8 @@ export class ItemOrServiceObject {
 	@Field({ description: '' })
 	Qualifier: string;
 
-	@prop({ type: () => String })
-	@Field((_type) => String, { description: '' })
+	@prop({ type: () => [String] })
+	@Field((_type) => [String], { description: '' })
 	Variant: string[];
 
 	@prop()
@@ -368,6 +368,17 @@ export class AccHolderObject {
 	accHolderID: ObjectId;
 }
 
+@ObjectType('folioAndLedgerRef', { description: '' })
+export class folioAndLedgerRef {
+	@prop({ type: () => [String] })
+	@Field((_type) => [String], { description: '' })
+	foliosRef: [string];
+
+	@prop({ type: () => [String] })
+	@Field((_type) => [String], { description: '' })
+	ledgerRef: [string];
+}
+
 @ObjectType('Entry', { description: 'Single Entry' })
 export class Entry {
 	@Field((_type) => ID, { description: 'String of MongoDB ObjectId' })
@@ -392,6 +403,10 @@ export class Entry {
 	@prop({ type: () => DateObject, required: true })
 	@Field((_type) => DateObject, { description: 'Date of entry' })
 	Date: DateObject;
+
+	@prop({ type: () => folioAndLedgerRef, required: true })
+	@Field((_type) => folioAndLedgerRef, { description: 'Date of entry' })
+	folioLedger: folioAndLedgerRef;
 
 	@prop({ name: 'ItemEntry', type: () => [ItemEntryObject], default: null })
 	@Field((_type) => [ItemEntryObject], { nullable: true })
