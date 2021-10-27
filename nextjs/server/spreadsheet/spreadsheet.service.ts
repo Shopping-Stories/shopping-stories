@@ -810,7 +810,7 @@ async function updatedItemEntry(entryObj: any) {
 					tempItems[itemCount] = {
 						quantity: Number(parts[0]),
 						qualifier: parts[1].trim(),
-						Item: parts[2].trim(),
+						item: parts[2].trim(),
 					};
 					itemCount++;
 				}
@@ -833,10 +833,10 @@ async function updatedItemEntry(entryObj: any) {
 			item2 = {
 				quantity: Number(mainItemString[4].replace('&', '')),
 				qualifier: mainItemString[5],
-				variant: mainItemString[6].split('*'),
+				variants: mainItemString[6].split('*'),
 				item: mainItemString[7],
 				category: categories2.category,
-				subCategory: categories2.subCategory,
+				subcategory: categories2.subcategory,
 				unitCost: await calculateUnitCost(
 					itemCosts,
 					Number(mainItemString[4].replace('&', '')),
@@ -846,10 +846,10 @@ async function updatedItemEntry(entryObj: any) {
 			item = {
 				quantity: Number(mainItemString[0]),
 				qualifier: mainItemString[1],
-				variant: mainItemString[2].split('*'),
+				variants: mainItemString[2].split('*'),
 				item: mainItemString[3],
 				category: categories.category,
-				subCategory: categories.subCategory,
+				subcategory: categories.subcategory,
 				unitCost: await calculateUnitCost(itemCosts, Number(mainItemString[0])),
 				itemCost: itemCosts,
 			};
@@ -859,10 +859,10 @@ async function updatedItemEntry(entryObj: any) {
 				item = {
 					quantity: null,
 					qualifier: mainItemString[1],
-					variant: mainItemString[2].split('*'),
+					variants: mainItemString[2].split('*'),
 					item: mainItemString[3],
 					category: categories.category,
-					subCategory: categories.subCategory,
+					subcategory: categories.subcategory,
 					unitCost: await moneyConversion(mainItemString[4]),
 					itemCost: await moneyConversion(mainItemString[5]),
 				};
@@ -984,12 +984,12 @@ async function findCategories(item: any, inputString: string) {
 	}
 	let res = {
 		category: null,
-		subCategory: null,
+		subcategory: null,
 	};
 	let cursor = await CategoryModel.findOne({ $text: { $search: item } });
 	if (cursor != null) {
 		res.category = cursor.Category;
-		res.subCategory = cursor.Subcategory;
+		res.subcategory = cursor.Subcategory;
 	}
 
 	return res;
