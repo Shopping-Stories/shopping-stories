@@ -6,14 +6,22 @@ const rows: GridRowsProp = [
 ];
 
 const columns: GridColDef[] = [
-  { field: 'accName', headerName: 'Account Holder\'s Name', width: 180 },
-  { field: 'date', headerName: 'Date', width: 70 },
-  { field: 'store', headerName: 'Store', width: 100 },
-  { field: 'items', headerName: 'Items | Category | Sub-Category', width: 200 },
-  { field: 'personMen', headerName: 'Persons Mentioned', width: 100 },
-  { field: 'placeMen', headerName: 'Places Mentioned', width: 100 },
-  { field: 'crdr', headerName: 'Credit(CR) or Debit(DB)', width: 100},
-  { field: 'price', headerName: 'Price', width: 50 },
+  { field: 'accName', headerName: 'Account Holder', flex: 1,
+  minWidth: 100, },
+  { field: 'date', headerName: 'Date', flex: 1,
+  minWidth: 100 },
+  { field: 'store', headerName: 'Store', flex: 1,
+  minWidth: 100 },
+  { field: 'items', headerName: 'Items | Category | Sub-Category', flex: 2,
+  minWidth: 100 },
+  { field: 'personMen', headerName: 'Persons Mentioned', flex: 1.25,
+  minWidth: 100 },
+  { field: 'placeMen', headerName: 'Places Mentioned', flex: 1.25,
+  minWidth: 100 },
+  { field: 'crdr', headerName: 'Credit(CR) or Debit(DB)', flex: 1,
+  minWidth: 100},
+  { field: 'price', headerName: 'Price', flex: 1,
+  minWidth: 100 },
 ];
 
 export default function App() {
