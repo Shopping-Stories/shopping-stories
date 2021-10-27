@@ -74,7 +74,7 @@ export default class AdminResolver {
 		@Arg('nextToken', { nullable: true, defaultValue: undefined })
 		nextToken: string,
 	): Promise<Object> {
-		return AdminService.listGroupsForUser(groupname, limit, nextToken);
+		return AdminService.listUsersInGroup(groupname, limit, nextToken);
 	}
 
 	@Authorized([Roles.Admin])

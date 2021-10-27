@@ -70,6 +70,9 @@ type Entry {
 
   # Date of entry
   Date: DateObject!
+
+  # Date of entry
+  folioLedger: folioAndLedgerRef!
   itemEntry: [ItemEntryObject!]
   tobaccoEntry: TobaccoEntryObject
   regEntry: RegularEntryObject
@@ -170,6 +173,15 @@ type DateObject {
 # The javascript `Date` as string. Type represents date and time as the ISO Date string.
 scalar DateTime
 
+#
+type folioAndLedgerRef {
+  #
+  foliosRef: [String!]!
+
+  #
+  ledgerRef: [String!]!
+}
+
 type ItemEntryObject {
   #
   perOrder: Float!
@@ -192,7 +204,7 @@ type ItemsOrServicesObject {
   Qualifier: String!
 
   #
-  Variant: String!
+  Variant: [String!]!
 
   #
   Item: String!
