@@ -63,96 +63,90 @@ type Entry {
   id: ID!
 
   # Information on the account holder in the transaction
-  AccHolder: AccHolderObject!
+  accountHolder: AccHolderObject!
 
   # Meta information of the entry
-  Meta: MetaObject!
+  meta: MetaObject!
 
   # Date of entry
-  Date: DateObject!
+  dateInfo: DateObject!
 
-  # Date of entry
-  folioLedger: folioAndLedgerRef!
-  itemEntry: [ItemEntryObject!]
+  #
+  folioRefs: [String!]!
+
+  #
+  ledgerRefs: [String!]!
+  itemEntries: [ItemEntryObject!]
   tobaccoEntry: TobaccoEntryObject
-  regEntry: RegularEntryObject
+  regularEntry: RegularEntryObject
 
   # People referenced in this entry
-  People: [PeoplePlacesObject!]!
+  people: [PeoplePlacesObject!]!
 
   # Places referenced in this entry
-  Places: [PeoplePlacesObject!]!
-
-  # Reference to another Folio page
-  FolioReference: Int!
+  places: [PeoplePlacesObject!]!
 
   # Type of Entry
-  EntryType: Int!
+  entry: String!
 
   # general money information for the entry
-  Money: MoneyObject!
-
-  # Indicates if item would survive till today
-  ArchMat: Int!
-
-  # Indicates if someone or someplace is mentioned in the entry
-  GenMat: Int!
-
-  # comments on the entry
-  Final: String!
+  money: MoneyObject!
 }
 
 #
 type AccHolderObject {
   # Prefix of account holder's name
-  Prefix: String!
+  prefix: String!
 
   # First name of account holder
-  AccountFirstName: String!
+  accountFirstName: String!
 
   # Last name of account holder
-  AccountLastName: String!
+  accountLastName: String!
 
   # Suffix of account holder
-  Suffix: String!
+  suffix: String!
 
   # Profession of account holder
-  Profession: String!
+  profession: String!
 
   # Location?
-  Location: String!
+  location: String!
 
   # Reference?
-  Reference: String!
+  reference: String!
 
   # Debt or Credit transaction
-  DrCr: Float!
+  debitOrCredit: Float!
 
   # ID of the accountholder to reference in peoples master list
-  accHolderID: ID!
+  accountHolderID: ID!
 }
 
 type MetaObject {
   # Ledger containing this Entry
-  Ledger: String!
+  ledger: String!
 
   # Reel of the Entry
-  Reel: Int!
+  reel: String!
 
   # Store Owner
-  Owner: String!
+  owner: String!
 
   # Name of Store
-  Store: String!
+  store: String!
 
   # Year the entry was made
-  Year: [Int!]!
+  year: String!
 
   # Folio the entry is contained in
-  FolioPage: Int!
+  folioPage: String!
 
   # ID of entry within Folio
-  EntryID: String!
+  entryID: String!
+
+  # comments
+  comments: String!
 }
 
 # Single Date
@@ -164,23 +158,14 @@ type DateObject {
   month: Int!
 
   # year of date
-  year: Int!
+  year: String!
 
   # complete date
-  date: DateTime!
+  fullDate: DateTime
 }
 
 # The javascript `Date` as string. Type represents date and time as the ISO Date string.
 scalar DateTime
-
-#
-type folioAndLedgerRef {
-  #
-  foliosRef: [String!]!
-
-  #
-  ledgerRef: [String!]!
-}
 
 type ItemEntryObject {
   #
@@ -190,7 +175,7 @@ type ItemEntryObject {
   percentage: Float!
 
   #
-  itemsOrServices: [ItemsOrServicesObject!]!
+  itemsOrServices: [ItemsOrServicesObject]!
 
   #
   itemsMentioned: [MentionedItemsObject!]!
@@ -198,64 +183,64 @@ type ItemEntryObject {
 
 type ItemsOrServicesObject {
   #
-  Quantity: Float!
+  quantity: Float!
 
   #
-  Qualifier: String!
+  qualifier: String!
 
   #
-  Variant: [String!]!
+  variants: [String!]!
 
   #
-  Item: String!
+  item: String!
 
   #
-  Category: String!
+  category: String
 
   #
-  Subcategory: String!
+  subcategory: String
 
   #
-  UnitCost: PoundsShillingsPence!
+  unitCost: PoundsShillingsPence!
 
   #
-  ItemCost: PoundsShillingsPence!
+  itemCost: PoundsShillingsPence!
 }
 
 type PoundsShillingsPence {
   # Number of pounds
-  Pounds: Float!
+  pounds: Float
 
   # Number of shillings
-  Shilling: Float!
+  shilling: Float
 
   # Number of Pence
-  Pence: Float!
+  pence: Float
 }
 
 type MentionedItemsObject {
   #
-  Quantity: Float!
+  quantity: Float!
 
   #
-  Qualifier: String!
+  qualifier: String!
 
   #
-  Item: String!
+  item: String!
 }
 
 type TobaccoEntryObject {
   # words
-  Entry: String!
+  entry: String!
 
   #
-  Mark: [TobaccoMarkObject!]!
+  marks: [TobaccoMarkObject!]!
 
   #
-  Notes: [NoteObject!]!
+  notes: [NoteObject!]!
 
   #
-  Money: [TobaccoRateObject!]!
+  money: [TobaccoMoneyObject!]!
 
   # words
   tobaccoShaved: Float!
@@ -266,74 +251,77 @@ type TobaccoMarkObject {
   markID: ID!
 
   #
-  markString: String!
+  markName: String!
 }
 
 type NoteObject {
   #
-  NoteNum: Float!
+  noteNum: Float!
 
   #
-  TotalWeight: Float!
+  totalWeight: Float!
 
   #
-  BarrelWeight: Float!
+  barrelWeight: Float!
 
   #
-  TobaccoWeight: Float!
+  tobaccoWeight: Float!
 }
 
-type TobaccoRateObject {
-  #
-  MoneyType: String!
+type TobaccoMoneyObject {
+  # words
+  moneyType: String!
 
-  #
-  TobaccoAmount: Float!
+  # words
+  tobaccoAmount: Float!
 
-  #
-  RateForTobacco: PoundsShillingsPence!
+  # words
+  rateForTobacco: PoundsShillingsPence!
 
-  #
-  CaskInTransaction: Float!
+  # words
+  casksInTransaction: Float!
 
-  #
-  CasksSoldFor: PoundsShillingsPence!
+  # words
+  tobaccoSold: PoundsShillingsPence!
+
+  # words
+  casksSoldForEach: PoundsShillingsPence!
 }
 
 type RegularEntryObject {
   # words
-  Entry: String!
+  entry: String!
 
   #
-  TM: [TobaccoMarkObject!]!
+  tobaccoMarks: [TobaccoMarkObject!]!
 
   #
-  Items: [MentionedItemsObject!]!
+  itemsMentioned: [MentionedItemsObject!]!
 }
 
 type PeoplePlacesObject {
   # Persons name
-  Name: String!
+  name: String!
 
   # words
-  ID: ID!
+  id: ID
 }
 
 type MoneyObject {
   #
-  Quantity: String!
+  quantity: String
 
   #
-  Commodity: String!
+  commodity: String!
 
   #
-  Colony: String!
+  colony: String
 
   #
-  Sterling: PoundsShillingsPence!
+  sterling: PoundsShillingsPence!
 
   #
-  Currency: PoundsShillingsPence!
+  currency: PoundsShillingsPence!
 }
 
 type AccessToken {
@@ -512,6 +500,7 @@ type Category {
 type Mutation {
   createCat(newCat: CreateCatDto!): Cat!
   createEntry(createEntryInput: CreateEntryInput!): Entry!
+  createEntries(entries: [CreateEntryInput]!): [Entry!]!
   register(registerInput: RegisterInput!): String
   signUserOut(username: String!): JSONObject
   confirmUserSignUp(username: String!): JSONObject
@@ -547,105 +536,93 @@ input CreateCatDto {
 }
 
 input CreateEntryInput {
-  Reel: Int!
+  # Information on the account holder in the transaction
+  accountHolder: AccountHolderInput!
 
-  # Store Owner
-  Owner: String!
-
-  # Name of Store
-  Store: String!
-
-  # Year the entry was made
-  Year: [Int!]!
-
-  # Folio the entry is contained in
-  FolioPage: Int!
-
-  # ID of entry within Folio
-  EntryID: String!
-
-  # Prefix of account holder's name
-  Prefix: String!
-
-  # First name of account holder
-  AccountFirstName: String!
-
-  # Last name of account holder
-  AccountLastName: String!
-
-  # Suffix of account holder
-  Suffix: String!
-
-  # Profession of account holder
-  Profession: String!
-
-  # Location?
-  Location: String!
-
-  # Reference?
-  Reference: String!
-
-  # Debt or Credit transaction
-  DrCr: String!
+  # Meta information of the entry
+  meta: MetaInput!
 
   # Date of entry
-  Date: InputDate!
-  ItemEntry: [InputItem!]
-  TobaccoEntry: InputTobaccoEntry
+  dateInfo: DateInput!
+
+  #
+  folioRefs: [String!]!
+
+  #
+  ledgerRefs: [String!]!
+  itemEntries: [ItemEntryInput!]
+  tobaccoEntry: TobaccoEntryInput
+  regularEntry: RegularEntryInput
 
   # People referenced in this entry
-  People: [String!]!
+  people: [PeoplePlacesInput!]!
 
   # Places referenced in this entry
-  Places: [String!]!
-
-  # Reference to another Folio page
-  FolioReference: Int!
+  places: [PeoplePlacesInput!]!
 
   # Type of Entry
-  EntryType: Int!
+  entry: String!
 
-  # Ledger containing this Entry
-  Ledger: String!
-
-  # Quantity of commodity purchased
-  Quantity: Int!
-
-  # Commodity being purchased
-  Commodity: String!
-
-  # Sterling pounds used in transaction
-  L1: Int!
-
-  # Sterling shillings used in transaction
-  S1: Int!
-
-  # Sterling pence used in transaction
-  D1: Int!
-
-  # Type of Colonial currency
-  Colony: String!
-
-  # Colonial pounds used in transaction
-  L2: Int!
-
-  # Colonial shillings used in transaction
-  S2: Int!
-
-  # Colonial pence used in transaction
-  D2: Int!
-
-  # Indicates if item would survive till today
-  ArchMat: Int!
-
-  # Indicates if someone or someplace is mentioned in the entry
-  GenMat: Int!
-
-  # comments on the entry
-  Final: String!
+  # general money information for the entry
+  money: MoneyInput!
 }
 
-input InputDate {
+input AccountHolderInput {
+  # Prefix of account holder's name
+  prefix: String!
+
+  # First name of account holder
+  accountFirstName: String!
+
+  # Last name of account holder
+  accountLastName: String!
+
+  # Suffix of account holder
+  suffix: String!
+
+  # Profession of account holder
+  profession: String!
+
+  # Location?
+  location: String!
+
+  # Reference?
+  reference: String!
+
+  # Debt or Credit transaction
+  debitOrCredit: Float!
+
+  # ID of the accountholder to reference in peoples master list
+  accountHolderID: ID!
+}
+
+input MetaInput {
+  # Ledger containing this Entry
+  ledger: String!
+
+  # Reel of the Entry
+  reel: String!
+
+  # Store Owner
+  owner: String!
+
+  # Name of Store
+  store: String!
+
+  # Year the entry was made
+  year: String!
+
+  # Folio the entry is contained in
+  folioPage: String!
+
+  # ID of entry within Folio
+  entryID: String!
+
+  # comments
+  comments: String!
+}
+
+input DateInput {
   # day of date
   day: Int!
 
@@ -653,86 +630,167 @@ input InputDate {
   month: Int!
 
   # year of date
-  year: Int!
+  year: String!
 
   # complete date
-  date: DateTime!
+  fullDate: DateTime
 }
 
-input InputItem {
-  # Quantity of item
-  ItemQuantity: Float!
-
-  # Item descriptors
-  Qualifier: String!
-
-  # Item name
-  Item: String!
-
-  # Price per unit
-  UnitPrice: String!
+input ItemEntryInput {
+  #
+  perOrder: Float!
 
   #
-  TransactionCost: String!
+  percentage: Float!
 
-  # Money used in transaction
-  Money: InputMoney!
+  #
+  itemsOrServices: [ItemOrServiceInput]!
+
+  #
+  itemsMentioned: [MentionedItemsInput!]!
 }
 
-input InputMoney {
+input ItemOrServiceInput {
+  #
+  quantity: Float!
+
+  #
+  qualifier: String!
+
+  #
+  variants: [String!]!
+
+  #
+  item: String!
+
+  #
+  category: String = ""
+
+  #
+  subcategory: String = ""
+
+  #
+  unitCost: PoundsShillingsPenceInput!
+
+  #
+  itemCost: PoundsShillingsPenceInput!
+}
+
+input PoundsShillingsPenceInput {
   # Number of pounds
-  L: Float!
+  pounds: Float = 0
 
   # Number of shillings
-  S: Float!
+  shilling: Float = 0
 
   # Number of Pence
-  D: Float!
+  pence: Float = 0
 }
 
-input InputTobaccoEntry {
+input MentionedItemsInput {
+  #
+  quantity: Float!
+
+  #
+  qualifier: String!
+
+  #
+  item: String!
+}
+
+input TobaccoEntryInput {
   # words
-  Entry: String!
-
-  # Signifies which person is represented in the exchange
-  Mark: String!
+  entry: String!
 
   #
-  Notes: [InputNote!]!
+  marks: [TobaccoMarkInput!]!
 
   #
-  Money: [InputTobaccoRate!]!
+  notes: [NoteInput!]!
+
+  #
+  money: [TobaccoMoneyInput!]!
+
+  # words
+  tobaccoShaved: Float!
 }
 
-input InputNote {
-  #
-  NoteNum: Float!
+input TobaccoMarkInput {
+  # words
+  markID: ID!
 
   #
-  TotalWeight: Float!
-
-  #
-  BarrelWeight: Float!
-
-  #
-  TobaccoWeight: Float!
+  markName: String!
 }
 
-input InputTobaccoRate {
+input NoteInput {
   #
-  MoneyType: String!
+  noteNum: Float!
 
   #
-  TobaccoAmount: Float!
+  totalWeight: Float!
 
   #
-  RateForTobacco: InputMoney!
+  barrelWeight: Float!
 
   #
-  CaskInTransaction: Float!
+  tobaccoWeight: Float!
+}
+
+input TobaccoMoneyInput {
+  # words
+  moneyType: String!
+
+  # words
+  tobaccoAmount: Float!
+
+  # words
+  rateForTobacco: PoundsShillingsPenceInput!
+
+  # words
+  casksInTransaction: Float!
+
+  # words
+  tobaccoSold: PoundsShillingsPenceInput!
+
+  # words
+  casksSoldForEach: PoundsShillingsPenceInput!
+}
+
+input RegularEntryInput {
+  # words
+  entry: String!
 
   #
-  CasksSoldFor: InputMoney!
+  tobaccoMarks: [TobaccoMarkInput!]!
+
+  #
+  itemsMentioned: [MentionedItemsInput!]!
+}
+
+input PeoplePlacesInput {
+  # Persons name
+  name: String!
+
+  # words
+  id: ID
+}
+
+input MoneyInput {
+  #
+  quantity: String = ""
+
+  #
+  commodity: String!
+
+  #
+  colony: String = ""
+
+  #
+  sterling: PoundsShillingsPenceInput!
+
+  #
+  currency: PoundsShillingsPenceInput!
 }
 
 input RegisterInput {

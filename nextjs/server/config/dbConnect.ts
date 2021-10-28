@@ -36,18 +36,18 @@ async function dbConnect(uri?: string) {
 			useCreateIndex: true,
 		};
 
-		// if (__dev__) {
-		// 	mongoose.set(
-		// 		'debug',
-		// 		(collectionName: any, method: any, query: any, doc: any) => {
-		// 			logger.info(
-		// 				`Mongoose: ${collectionName}.${method}`,
-		// 				JSON.stringify(query),
-		// 				doc,
-		// 			);
-		// 		},
-		// 	);
-		// }
+		if (__dev__) {
+			mongoose.set(
+				'debug',
+				(collectionName: any, method: any, query: any, doc: any) => {
+					logger.info(
+						`Mongoose: ${collectionName}.${method}`,
+						JSON.stringify(query),
+						doc,
+					);
+				},
+			);
+		}
 
 		cached.promise = mongoose
 			.connect(uri ? uri : MONGODB_URI, opts)

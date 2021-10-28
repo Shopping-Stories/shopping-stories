@@ -25,11 +25,21 @@ const parseSheetDef = `
 	}
 `;
 
+const createEntriesDef = `
+	mutation CreateEntries($entries: [CreateEntryInput]!) {
+  		createEntries(entries: $entries){
+			id
+		}
+	}
+`;
+
 const ImportPage: NextPage = () => {
 	const { groups, loading } = useAuth('/', [Roles.Admin]);
 	const [_parseResponse, parseSheet] = useMutation(parseSheetDef);
+	const [_createResponse, createEntries] = useMutation(createEntriesDef);
 	const [file, setFile] = useState<any>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isCreatingEntries, setIsCreatingEntries] = useState<boolean>(false);
 	const [entries, setEntries] = useState<any>(null);
 	const [_requestErrors, _setRequestErrors] = useState<any>(null);
 	const [parseErrors, setParseErrors] = useState<any>(null);
@@ -70,12 +80,12 @@ const ImportPage: NextPage = () => {
 			const res: any = await parseSheet({ spreadsheet: sheets });
 			setEntries([...res?.data?.entries]);
 			console.log({ entries: res?.data?.entries });
-			getParseErrors(res?.data?.entries);
+			updateParseErrors(res?.data?.entries);
 			setIsLoading(false);
 		};
 	};
 
-	const getParseErrors = (entries: any) => {
+	const updateParseErrors = (entries: any) => {
 		if (entries) {
 			const errors = entries
 				.map((entry: any, i: number) => ({
@@ -84,8 +94,21 @@ const ImportPage: NextPage = () => {
 				}))
 				.filter((entry: any) => entry.message);
 			setParseErrors([...errors]);
-			console.log(errors, parseErrors);
 		}
+	};
+
+	const handleUploadLoadToDatabase = () => {
+		setIsCreatingEntries(true);
+		const entriesWithoutError = entries.map((entry: any) => {
+			delete entry.errorCode;
+			delete entry.errorMessage;
+			return entry;
+		});
+		createEntries({ entries: entriesWithoutError }).then((res: any) => {
+			setParseErrors(true);
+			setIsCreatingEntries(false);
+			console.log({ res });
+		});
 	};
 
 	if (loading) {
@@ -149,15 +172,23 @@ const ImportPage: NextPage = () => {
 							index={index}
 						/>
 						{/* <DataGrid /> */}
-						{parseErrors && (
+						{!!parseErrors && parseErrors.length > 0 && (
 							<Stack>
-								{parseErrors.map((error: any, i: number) => {
+								{parseErrors.map((error: any, i: number) => (
 									<Typography key={i}>
 										Entry {error.index} had the error: {error.message}
-									</Typography>;
-								})}
+									</Typography>
+								))}
 							</Stack>
 						)}
+						<LoadingButton
+							variant="contained"
+							onClick={handleUploadLoadToDatabase}
+							loading={isCreatingEntries}
+							disabled={(!!parseErrors && parseErrors.length > 0) || !entries}
+						>
+							Confirm Import into Database
+						</LoadingButton>
 					</Grid>
 				</Grid>
 			</div>

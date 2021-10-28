@@ -64,7 +64,7 @@ const TobaccoEntryRow = ({ tobaccoEntry }: any) => {
 					<Collapse in={open} timeout="auto">
 						{!!tobaccoEntry && (
 							<>
-								<MarksTable marks={tobaccoEntry?.mark} />
+								<MarksTable marks={tobaccoEntry?.marks} />
 								<MoneyTable money={tobaccoEntry?.money} />
 								<NotesTable notes={tobaccoEntry?.notes} />
 							</>

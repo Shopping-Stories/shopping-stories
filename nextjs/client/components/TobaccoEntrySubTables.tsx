@@ -101,6 +101,7 @@ const NoteRow = (props: { note: any }) => {
 		note?.noteNum,
 		note?.totalWeight,
 		note?.barrelWeight,
+		note?.tobaccoWeight,
 	];
 	return (
 		<TableRow>
@@ -116,6 +117,7 @@ const NotesTable = (props: { notes: any }) => {
 		'Note number',
 		'Total Weight',
 		'Barrel Weight',
+		'Tobacco Weight',
 	];
 
 	return (

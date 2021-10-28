@@ -12,172 +12,148 @@ export class TobaccoMarkObject {
 
 	@prop()
 	@Field({ description: '' })
-	markString: string;
+	markName: string;
 }
 
 @ObjectType('PoundsShillingsPence')
 export class PoundsShillingsPence {
 	@prop()
-	@Field({ description: 'Number of pounds' })
-	Pounds: number;
+	@Field({ description: 'Number of pounds', defaultValue: 0.0 })
+	pounds: number;
 
 	@prop()
-	@Field({ description: 'Number of shillings' })
-	Shilling: number;
+	@Field({ description: 'Number of shillings', defaultValue: 0.0 })
+	shilling: number;
 
 	@prop()
-	@Field({ description: 'Number of Pence' })
-	Pence: number;
+	@Field({ description: 'Number of Pence', defaultValue: 0.0 })
+	pence: number;
 }
 
 @ObjectType('MoneyObject')
 export class MoneyObject {
 	@prop()
-	@Field({ description: '' })
-	Quantity: string;
+	@Field({ description: '', defaultValue: ''})
+	quantity: string;
 
 	@prop()
 	@Field({ description: '' })
-	Commodity: string;
+	commodity: string;
 
 	@prop()
-	@Field({ description: '' })
-	Colony: string;
+	@Field({ description: '', defaultValue: '' })
+	colony: string;
 
 	@prop()
 	@Field((_type) => PoundsShillingsPence, { description: '' })
-	Sterling: PoundsShillingsPence;
+	sterling: PoundsShillingsPence;
 
 	@prop()
 	@Field((_type) => PoundsShillingsPence, { description: '' })
-	Currency: PoundsShillingsPence;
+	currency: PoundsShillingsPence;
 }
-/*
-@ObjectType('ItemEntry')
-export class ItemEntry {
-	@prop()
-	@Field({ description: 'Quantity of item' })
-	ItemQuantity: number;
-
-	@prop()
-	@Field({ description: 'Item descriptors' })
-	Qualifier: string;
-
-	@prop()
-	@Field({ description: 'Item name' })
-	Item: string;
-
-	@prop()
-	@Field({ description: 'Price per unit' })
-	UnitPrice: string;
-
-	@prop()
-	@Field({ description: '' })
-	TransactionCost: string;
-
-	@prop({ type: () => MoneyObject })
-	@Field((_type) => MoneyObject, { description: 'Money used in transaction' })
-	Money: MoneyObject;
-}*/
-
 @ObjectType('NoteObject')
 export class NoteObject {
 	@prop()
 	@Field({ description: '' })
-	NoteNum: number;
+	noteNum: number;
 
 	@prop()
 	@Field({ description: '' })
-	TotalWeight: number;
+	totalWeight: number;
 
 	@prop()
 	@Field({ description: '' })
-	BarrelWeight: number;
+	barrelWeight: number;
 
 	@prop()
 	@Field({ description: '' })
-	TobaccoWeight: number;
+	tobaccoWeight: number;
 }
 
 @ObjectType('MetaObject')
 export class MetaObject {
 	@prop()
 	@Field((_type) => String, { description: 'Ledger containing this Entry' })
-	Ledger: string;
+	ledger: string;
 
 	@prop()
-	@Field((_type) => Int, { description: 'Reel of the Entry' })
-	Reel: number;
+	@Field((_type) => String, { description: 'Reel of the Entry' })
+	reel: string;
 
 	@prop()
 	@Field((_type) => String, { description: 'Store Owner' })
-	Owner: string;
+	owner: string;
 
 	@prop()
 	@Field((_type) => String, { description: 'Name of Store' })
-	Store: string;
+	store: string;
 
 	@prop({ type: () => [Number] })
-	@Field((_type) => [Int], { description: 'Year the entry was made' })
-	Year: number[];
+	@Field((_type) => String, { description: 'Year the entry was made' })
+	year: string;
 
 	@prop()
-	@Field((_type) => Int, { description: 'Folio the entry is contained in' })
-	FolioPage: number;
+	@Field((_type) => String, { description: 'Folio the entry is contained in' })
+	folioPage: string;
 
 	@prop()
 	@Field((_type) => String, { description: 'ID of entry within Folio' })
-	EntryID: string;
+	entryID: string;
+
+	@prop()
+	@Field((_type) => String, { description: 'comments' })
+	comments: string;
 }
 
 @ObjectType('MentionedItemsObject')
 export class MentionedItemsObject {
 	@prop()
 	@Field({ description: '' })
-	Quantity: number;
+	quantity: number;
 
 	@prop()
 	@Field({ description: '' })
-	Qualifier: string;
+	qualifier: string;
 
 	@prop()
 	@Field({ description: '' })
-	Item: string;
+	item: string;
 }
 
 @ObjectType('ItemsOrServicesObject')
 export class ItemOrServiceObject {
 	@prop()
 	@Field({ description: '' })
-	Quantity: number;
+	quantity: number;
 
 	@prop()
 	@Field({ description: '' })
-	Qualifier: string;
+	qualifier: string;
 
 	@prop({ type: () => [String] })
 	@Field((_type) => [String], { description: '' })
-	Variant: string[];
+	variants: string[];
 
 	@prop()
 	@Field({ description: '' })
-	Item: string;
+	item: string;
 
 	@prop()
-	@Field({ description: '' })
-	Category: string;
+	@Field({ description: '', defaultValue: ''})
+	category: string;
 
 	@prop()
-	@Field({ description: '' })
-	Subcategory: string;
+	@Field({ description: '', defaultValue: ''})
+	subcategory: string;
 
 	@prop({ type: () => PoundsShillingsPence })
 	@Field((_type) => PoundsShillingsPence, { description: '' })
-	UnitCost: PoundsShillingsPence;
+	unitCost: PoundsShillingsPence;
 
 	@prop({ type: () => PoundsShillingsPence })
 	@Field((_type) => PoundsShillingsPence, { description: '' })
-	ItemCost: PoundsShillingsPence;
+	itemCost: PoundsShillingsPence;
 }
 @ObjectType('ItemEntryObject')
 export class ItemEntryObject {
@@ -190,35 +166,12 @@ export class ItemEntryObject {
 	percentage: number;
 
 	@prop({ type: () => [ItemOrServiceObject] })
-	@Field((_type) => [ItemOrServiceObject], { description: '' })
+	@Field((_type) => [ItemOrServiceObject], { description: '', nullable: 'items' })
 	itemsOrServices: ItemOrServiceObject[];
 
 	@prop({ type: () => [MentionedItemsObject] })
 	@Field((_type) => [MentionedItemsObject], { description: '' })
 	itemsMentioned: MentionedItemsObject[];
-}
-
-@ObjectType('TobaccoRateObject')
-export class TobaccoRateObject {
-	@prop()
-	@Field({ description: '' })
-	MoneyType: string;
-
-	@prop()
-	@Field({ description: '' })
-	TobaccoAmount: number;
-
-	@prop({ type: () => PoundsShillingsPence })
-	@Field((_type) => PoundsShillingsPence, { description: '' })
-	RateForTobacco: PoundsShillingsPence;
-
-	@prop()
-	@Field({ description: '' })
-	CaskInTransaction: number;
-
-	@prop({ type: () => PoundsShillingsPence })
-	@Field((_type) => PoundsShillingsPence, { description: '' })
-	CasksSoldFor: PoundsShillingsPence;
 }
 
 @ObjectType('TobaccoMoneyObject')
@@ -252,19 +205,19 @@ export class TobaccoMoneyObject {
 export class TobaccoEntryObject {
 	@prop()
 	@Field({ description: 'words' })
-	Entry: string;
+	entry: string;
 
 	@prop({ type: () => [TobaccoMarkObject] })
 	@Field((_type) => [TobaccoMarkObject], { description: '' })
-	Mark: TobaccoMarkObject[];
+	marks: TobaccoMarkObject[];
 
 	@prop({ type: () => [NoteObject] })
 	@Field((_type) => [NoteObject], { description: '' })
-	Notes: NoteObject[];
+	notes: NoteObject[];
 
-	@prop({ type: () => [TobaccoRateObject] })
-	@Field((_type) => [TobaccoRateObject], { description: '' })
-	Money: TobaccoMoneyObject[];
+	@prop({ type: () => [TobaccoMoneyObject] })
+	@Field((_type) => [TobaccoMoneyObject], { description: '' })
+	money: TobaccoMoneyObject[];
 
 	@prop()
 	@Field({ description: 'words' })
@@ -275,26 +228,26 @@ export class TobaccoEntryObject {
 export class RegularEntryObject {
 	@prop()
 	@Field({ description: 'words' })
-	Entry: string;
+	entry: string;
 
 	@prop({ type: () => [TobaccoMarkObject] })
 	@Field((_type) => [TobaccoMarkObject], { description: '' })
-	TM: TobaccoMarkObject[];
+	tobaccoMarks: TobaccoMarkObject[];
 
 	@prop({ type: () => [MentionedItemsObject] })
 	@Field((_type) => [MentionedItemsObject], { description: '' })
-	Items: MentionedItemsObject[];
+	itemsMentioned: MentionedItemsObject[];
 }
 
 @ObjectType('PeoplePlacesObject')
 export class PeoplePlacesObject {
 	@prop()
 	@Field({ description: 'Persons name' })
-	Name: string;
+	name: string;
 
 	@prop()
-	@Field((_type) => ID, { description: 'words' })
-	ID: ObjectId;
+	@Field((_type) => ID, { description: 'words', nullable: true })
+	id: ObjectId;
 }
 /*
 export const EntryUnion = createUnionType({
@@ -319,64 +272,53 @@ export class DateObject {
 	month: number;
 
 	@prop()
-	@Field((_type) => Int, { description: 'year of date' })
-	year: number;
+	@Field((_type) => String, { description: 'year of date' })
+	year: string;
 
 	@prop()
-	@Field((_type) => Date, { description: 'complete date' })
-	date: Date;
+	@Field((_type) => Date, { description: 'complete date', nullable: true })
+	fullDate: Date;
 }
 
 @ObjectType('AccHolderObject', { description: '' })
 export class AccHolderObject {
 	@prop()
 	@Field((_type) => String, { description: "Prefix of account holder's name" })
-	Prefix: string;
+	prefix: string;
 
 	@prop()
 	@Field((_type) => String, { description: 'First name of account holder' })
-	AccountFirstName: string;
+	accountFirstName: string;
 
 	@prop()
 	@Field((_type) => String, { description: 'Last name of account holder' })
-	AccountLastName: string;
+	accountLastName: string;
 
 	@prop()
 	@Field((_type) => String, { description: 'Suffix of account holder' })
-	Suffix: string;
+	suffix: string;
 
 	@prop()
 	@Field((_type) => String, { description: 'Profession of account holder' })
-	Profession: string;
+	profession: string;
 
 	@prop()
 	@Field((_type) => String, { description: 'Location?' })
-	Location: string;
+	location: string;
 
 	@prop()
 	@Field((_type) => String, { description: 'Reference?' })
-	Reference: string;
+	reference: string;
 
 	@prop()
 	@Field((_type) => Number, { description: 'Debt or Credit transaction' })
-	DrCr: number;
+	debitOrCredit: number;
 
 	@prop()
 	@Field((_type) => ID, {
 		description: 'ID of the accountholder to reference in peoples master list',
 	})
-	accHolderID: ObjectId;
-}
-
-@ObjectType('folioAndLedgerRef', { description: '' })
-export class folioAndLedgerRef {
-	@prop({ type: () => [String] })
-	@Field((_type) => [String], { description: '' })
-	foliosRef: [string];
-
-	@prop({ type: () => [String] })
-	@Field((_type) => [String], { description: '' })
-	ledgerRef: [string];
+	accountHolderID: ObjectId;
 }
 
 @ObjectType('Entry', { description: 'Single Entry' })
@@ -392,25 +334,29 @@ export class Entry {
 	@Field((_type) => AccHolderObject, {
 		description: 'Information on the account holder in the transaction',
 	})
-	AccHolder: AccHolderObject;
+	accountHolder: AccHolderObject;
 
 	@prop({ type: () => MetaObject, required: true })
 	@Field((_type) => MetaObject, {
 		description: 'Meta information of the entry',
 	})
-	Meta: MetaObject;
+	meta: MetaObject;
 
 	@prop({ type: () => DateObject, required: true })
 	@Field((_type) => DateObject, { description: 'Date of entry' })
-	Date: DateObject;
+	dateInfo: DateObject;
 
-	@prop({ type: () => folioAndLedgerRef, required: true })
-	@Field((_type) => folioAndLedgerRef, { description: 'Date of entry' })
-	folioLedger: folioAndLedgerRef;
+	@prop({ type: () => [String] })
+	@Field((_type) => [String], { description: '' })
+	folioRefs: [string];
+
+	@prop({ type: () => [String] })
+	@Field((_type) => [String], { description: '' })
+	ledgerRefs: [string];
 
 	@prop({ name: 'ItemEntry', type: () => [ItemEntryObject], default: null })
 	@Field((_type) => [ItemEntryObject], { nullable: true })
-	itemEntry?: ItemEntryObject[] | null;
+	itemEntries?: ItemEntryObject[] | null;
 
 	@prop({ name: 'TobaccoEntry', type: () => TobaccoEntryObject, default: null })
 	@Field((_type) => TobaccoEntryObject, { nullable: true })
@@ -418,49 +364,28 @@ export class Entry {
 
 	@prop({ name: 'TobaccoEntry', type: () => RegularEntryObject, default: null })
 	@Field((_type) => RegularEntryObject, { nullable: true })
-	regEntry?: RegularEntryObject | null;
+	regularEntry?: RegularEntryObject | null;
 
 	@prop({ type: () => [PeoplePlacesObject], required: true })
 	@Field((_type) => [PeoplePlacesObject], {
 		description: 'People referenced in this entry',
 	})
-	People: PeoplePlacesObject[];
+	people: PeoplePlacesObject[];
 
 	@prop({ type: () => [PeoplePlacesObject], required: true })
 	@Field((_type) => [PeoplePlacesObject], {
 		description: 'Places referenced in this entry',
 	})
-	Places: PeoplePlacesObject[];
+	places: PeoplePlacesObject[];
 
 	@prop({ required: true })
-	@Field((_type) => Int, { description: 'Reference to another Folio page' })
-	FolioReference: number;
-
-	@prop({ required: true })
-	@Field((_type) => Int, { description: 'Type of Entry' })
-	EntryType: number;
+	@Field((_type) => String, { description: 'Type of Entry' })
+	entry: string;
 
 	@prop({ required: true })
 	@Field((_type) => MoneyObject, {
 		description: 'general money information for the entry',
 	})
-	Money: MoneyObject;
-
-	@prop({ required: true })
-	@Field((_type) => Int, {
-		description: 'Indicates if item would survive till today',
-	})
-	ArchMat: number;
-
-	@prop({ required: true })
-	@Field((_type) => Int, {
-		description: 'Indicates if someone or someplace is mentioned in the entry',
-	})
-	GenMat: number;
-
-	@prop({ required: true })
-	@Field((_type) => String, { description: 'comments on the entry' })
-	Final: string;
+	money: MoneyObject;
 }
-
 export const EntryModel = mongoose.models.Entry || getModelForClass(Entry);

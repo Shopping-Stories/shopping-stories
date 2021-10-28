@@ -13,7 +13,7 @@ interface ParseTableProps {
 }
 
 const ParseTable = (props: ParseTableProps) => {
-	const { entries, handleOpen } = props;
+	const { entries, handleOpen: _ } = props;
 
 	const columnNames = [
 		'Account Holder First Name',
@@ -36,6 +36,7 @@ const ParseTable = (props: ParseTableProps) => {
 		'Owner',
 		'Store',
 		'Year',
+		'Comments',
 		'Money.Colony',
 		'Money.Quantity',
 		'Money.Commodity',

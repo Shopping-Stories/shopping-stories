@@ -34,6 +34,15 @@ export default class EntryResolver {
 		return EntryService.createEntry(createEntryInput);
 	}
 
+	@UseMiddleware(ResolveTime, ConnectDB)
+	@Mutation((_returns) => [Entry])
+	async createEntries(
+		@Arg('entries', (_type) => [CreateEntryInput], { nullable: 'items' })
+		entries: CreateEntryInput[],
+	) {
+		return EntryService.createEntries(entries);
+	}
+
 	// @ResolveField()
 	// async Entry(@Parent() entry: Entry) {
 

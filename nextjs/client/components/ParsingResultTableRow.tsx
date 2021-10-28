@@ -34,6 +34,7 @@ const ParsingResultTableRow = (props: { row: any; index: number }) => {
 		row?.meta?.owner,
 		row?.meta?.store,
 		row?.meta?.year,
+		row?.meta?.comments,
 		row?.money?.colony,
 		row?.money?.quantity,
 		row?.money?.commodity,
@@ -44,59 +45,6 @@ const ParsingResultTableRow = (props: { row: any; index: number }) => {
 		row?.money?.sterling.shilling,
 		row?.money?.sterling.pence,
 	];
-
-	// row.people.map((person: { name: string; id: null | string }) => {
-	// 	person.name;
-	// 	person.id;
-	// });
-	// row.places.map((place: { name: string; id: null | string }) => {
-	// 	place.name;
-	// 	place.id;
-	// });
-	// row?.tobaccoEntry.entry;
-	// row?.tobaccoEntry.tobaccoShaved;
-	// row?.tobaccoEntry.mark.map((mark: { markID: string; markString: string }) => {
-	// 	mark.markID;
-	// 	mark.markString;
-	// });
-	// row?.tobaccoEntry.money.map(
-	// 	(money: {
-	// 		moneyType: string;
-	// 		tobaccoMark: number;
-	// 		caskInTransaction: number;
-	// 	}) => {
-	// 		money.moneyType;
-	// 		money.tobaccoMark;
-	// 		money.caskInTransaction;
-	// 	},
-	// );
-	// row?.tobaccoEntry.notes.map(
-	// 	(note: { noteNum: number; totalWeight: number; barrelWeight: number }) => {
-	// 		note.noteNum;
-	// 		note.totalWeight;
-	// 		note.barrelWeight;
-	// 	},
-	// );
-
-	// row?.regularEntry.map(
-	// 	(entry: {
-	// 		entry: string;
-	// 		tobaccoMark: { markName: string; markID: string }[];
-	// 		itemsMentioned: { item: string; quantity: number; qualifier: string }[];
-	// 	}) => {
-	// 		entry.entry;
-	// 		entry.tobaccoMark.map((mark) => {
-	// 			mark.markName;
-	// 			mark.markID;
-	// 		});
-	// 		entry.itemsMentioned.map((item) => {
-	// 			item.item;
-	// 			item.quantity;
-	// 			item.qualifier;
-	// 		});
-	// 	},
-	// );
-	console.log(row.itemEntry);
 
 	return (
 		<>
@@ -122,7 +70,7 @@ const ParsingResultTableRow = (props: { row: any; index: number }) => {
 			<TableRow>
 				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
 					<Collapse in={open} timeout="auto" unmountOnExit>
-						{row.itemEntry && <ItemEntriesTable itemEntries={row.itemEntry} />}
+						{row.itemEntries && <ItemEntriesTable itemEntries={row.itemEntries} />}
 						{row.regularEntry && (
 							<RegularEntryTable regularEntry={row.regularEntry} />
 						)}

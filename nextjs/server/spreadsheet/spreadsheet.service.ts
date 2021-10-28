@@ -20,7 +20,7 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 		errorMessage[i] = null;
 		entries[i] = {
 			tobaccoEntry: null,
-			itemEntry: null,
+			itemEntries: null,
 			regularEntry: null,
 		};
 
@@ -39,7 +39,7 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 					entries[i].tobaccoEntry = await updatedTobaccoEntry(entry);
 				} else if (type === 2) {
 					//console.log('Id: ' + entry._id + ' is a item');
-					entries[i].itemEntry = await updatedItemEntry(entry);
+					entries[i].itemEntries = await updatedItemEntry(entry);
 				} else {
 					//console.log('Id: ' + entry._id + ' is a regular');
 					entries[i].regularEntry = await updatedRegEntry(entry);
@@ -73,6 +73,7 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 			ret.push({
 				entry: spreadsheetObj[i].Entry,
 				...entries[i],
+				...references[i],
 				accountHolder: accountHolder[i],
 				people: people[i],
 				places: places[i],
@@ -169,12 +170,12 @@ async function formatMoney(entry: any) {
 }
 
 async function folioReferences(entry: any) {
-	let folios: any = entry.FolioReference.toString().split("//");
-	let ledgers: any = entry.Ledger.toString().split("//");
+	let folios: any = entry.FolioReference.toString().split('//');
+	let ledgers: any = entry.Ledger.toString().split('//');
 	let res = {
-		foliosRef: folios,
-		ledgerRef: ledgers
-	}
+		folioRefs: folios,
+		ledgerRefs: ledgers,
+	};
 	return res;
 }
 
@@ -334,8 +335,8 @@ async function makeMetaDataObject(entryObj: any, ledger: any) {
 		const cursor = entryObj;
 		let yearNum: any = cursor.Year.toString();
 		//console.log(cursor);
-		if (cursor.Year.includes("/")) {
-			yearNum = cursor.Year.split("/");
+		if (cursor.Year.includes('/')) {
+			yearNum = cursor.Year.split('/');
 			yearNum = yearNum[0].toString();
 		}
 		let res = {
@@ -346,7 +347,7 @@ async function makeMetaDataObject(entryObj: any, ledger: any) {
 			owner: cursor.Owner.toString(),
 			store: cursor.Store.toString(),
 			entryID: cursor.EntryID.toString(),
-			Comments: cursor.Final.toString()
+			comments: cursor.Final.toString(),
 		};
 		return res;
 	} catch (err) {
@@ -373,9 +374,9 @@ async function newDateObject(day: any, month: any, year: any) {
 		}
 		let finalRes = {
 			fullDate: res,
-			day,
-			month,
-			year,
+			day: day && typeof day === 'string' ? parseInt(day) : day,
+			month: month && typeof month === 'string' ? parseInt(month) : month,
+			year: year ? year.toString() : year,
 		};
 		return finalRes;
 	} catch (err) {
@@ -662,7 +663,7 @@ async function calculateTobaccoMoney(MoneyEntry: any) {
 			moneyType: moneyName,
 			tobaccoAmount: poundsOfTobacco,
 			rateForTobacco: tobaccoRate,
-			caskInTransaction: caskQuantity,
+			casksInTransaction: caskQuantity,
 			tobaccoSold: tobaccoSoldFor,
 			casksSoldForEach: caskCost,
 		};
@@ -729,12 +730,12 @@ async function updatedTobaccoEntry(entryObj: any) {
 				console.log('found TM');
 				let markInfo = {
 					markID: null,
-					markString: null,
+					markName: null,
 				};
 				let tempMarkInfo = await brokenEntry[i].split(']');
 				let tempNoteInfo = tempMarkInfo[1].trim();
 				tempMarkInfo = await tempMarkInfo[0].split(':');
-				markInfo.markString = tempMarkInfo[1].trim();
+				markInfo.markName = tempMarkInfo[1].trim();
 				markInfo.markID = await findTMid(tempMarkInfo[1].trim());
 				markArray.push(markInfo);
 				tempNoteInfo = tempNoteInfo.split('{');
@@ -766,7 +767,7 @@ async function updatedTobaccoEntry(entryObj: any) {
 	}
 	let finishedRes = {
 		entry: entryInfo.trim(),
-		mark: markArray,
+		marks: markArray,
 		notes: NoteInfor,
 		money: moneyInfo,
 		tobaccoShaved: tobaccoShavedOff,
@@ -905,7 +906,7 @@ async function updatedRegEntry(entryObj: any) {
 	let tmArray: any = [];
 	let res = {
 		entry: '',
-		tobaccoMark: [] as any[],
+		tobaccoMarks: [] as any[],
 		itemsMentioned: [] as any[],
 	};
 	let finalEntry = '';
@@ -917,7 +918,7 @@ async function updatedRegEntry(entryObj: any) {
 				let tempObject = {
 					markName: null,
 					markID: null,
-				}
+				};
 				let TMstring = entry[i];
 
 				TMstring = entry[i].split(']');
@@ -956,19 +957,17 @@ async function updatedRegEntry(entryObj: any) {
 				}
 			}
 		}
-	}
-	else {
+	} else {
 		finalEntry = entry;
 	}
-	res.tobaccoMark = tmArray;
+	res.tobaccoMarks = tmArray;
 	res.entry = finalEntry.trim();
 	return res;
 }
 async function findTMid(id: any) {
-
-	let temp: any = id.trim().split(" ");
+	let temp: any = id.trim().split(' ');
 	temp = temp[0];
-	temp = temp.replace(/\D|^0+/g, "");
+	temp = temp.replace(/\D|^0+/g, '');
 	console.log(temp);
 	const res = await TobaccoMarkModel.findOne({ tobaccoMarkId: temp });
 	if (res) {

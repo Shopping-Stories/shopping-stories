@@ -56,7 +56,7 @@ const RegularEntryRow = ({ regularEntry }: any) => {
 					<Collapse in={open} timeout="auto">
 						{!!regularEntry && (
 							<>
-								<TobaccoMarksTable tobaccoMarks={regularEntry?.tobaccoMark} />
+								<TobaccoMarksTable tobaccoMarks={regularEntry?.tobaccoMarks} />
 								<ItemsMentionedTable
 									itemsMentioned={regularEntry?.itemsMentioned}
 								/>

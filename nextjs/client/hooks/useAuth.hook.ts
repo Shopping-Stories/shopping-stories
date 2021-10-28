@@ -15,7 +15,7 @@ const useAuth = (redirectURL?: string, authorizedGroups: string[] = []) => {
 	const [groups, setGroups] = useState<any>(null);
 	const [loading, setLoading] = useState<null | string>('idle');
 	const [error, setError] = useState<any>(null);
-	console.log(loading);
+
 	useEffect(() => {
 		setLoading('loading...');
 		setError(null);
