@@ -352,11 +352,11 @@ export class Entry {
 	@Field((_type) => DateObject, { description: 'Date of entry' })
 	dateInfo: DateObject;
 
-	@prop()
+	@prop({ type: (_type) => [String]})
 	@Field((_type) => [String], { description: '' })
 	folioRefs: string[];
 
-	@prop()
+	@prop({ type: (_type) => [String]})
 	@Field((_type) => [String], { description: '' })
 	ledgerRefs: string[];
 
