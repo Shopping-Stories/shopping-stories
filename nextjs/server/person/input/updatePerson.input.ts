@@ -40,4 +40,7 @@ export class UpdatePersonInput extends Object {
 
 	@Field({ nullable: true, description: 'Variations of given item' })
 	variations?: string;
+
+	@Field({ nullable: true })
+	professionQualifier?: string;
 }

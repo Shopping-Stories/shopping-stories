@@ -432,6 +432,7 @@ type Person {
 
   # Variations of given item
   professionCategory: String
+  professionQualifier: String
 
   # Variations of given item
   reference: String
@@ -930,6 +931,7 @@ input CreatePersonInput {
 
   # Variations of given item
   variations: String
+  professionQualifier: String
 }
 
 input UpdatePersonInput {
@@ -971,6 +973,7 @@ input UpdatePersonInput {
 
   # Variations of given item
   variations: String
+  professionQualifier: String
 }
 
 input CreateTobaccoMarkInput {

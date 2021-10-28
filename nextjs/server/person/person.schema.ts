@@ -53,6 +53,10 @@ export class Person {
 	professionCategory: string;
 
 	@prop()
+	@Field({ nullable: true })
+	professionQualifier: string;
+
+	@prop()
 	@Field({ nullable: true, description: 'Variations of given item' })
 	reference: string;
 
