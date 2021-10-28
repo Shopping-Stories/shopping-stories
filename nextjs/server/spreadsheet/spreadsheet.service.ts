@@ -1,3 +1,4 @@
+import { EntryModel } from 'server/entry/entry.schema';
 import { CategoryModel } from '../category/category.schema';
 import { PersonModel } from '../person/person.schema';
 import { PlaceModel } from '../place/place.schema';
@@ -104,7 +105,31 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 
 	return ret;
 }
+
+export async function generalSearch(searchString: string) {
+	//just a general text index
+	const res : any = await EntryModel.find({ $text: { $search: searchString } }, { score: { $meta: "textScore" } }).sort({ score: { $meta: "textScore" } });
+	return res;
+}
+export async function advancedSearch(searchObj: string) {
+	//advanced search
+	//need to pull fields supplied from the search input
+	//if the field is apart of the entry text index, add it to the search string, else
+	//we need to create the fields to search for the entry
+	let searchString = '';
+	let temp = {
+		$text: { $search: searchString}
+	}
+	//append search fields to temp
+	const res : any = await EntryModel.find(temp, { score: { $meta: "textScore" } }).sort({ score: { $meta: "textScore" } });
+	return res;
+}
 async function formatMoney(entry: any) {
+
+	//formats money coloumns of the spreadsheets
+	//L = pounds, S = shilling, D = pence
+	//SL = sterling pounds, CL = colony currency pounds
+	//colony, commodity, quantity coloumns are directly copied over
 	try {
 		let SL: any =
 			entry.SL !== (null || '')
@@ -143,7 +168,7 @@ async function formatMoney(entry: any) {
 			entry.Quantity !== (null || '' || '-')
 				? entry.Quantity.toString().replace(/[^0-9.]/g, '')
 				: null;
-
+		//formatted to objects here
 		let sterling = {
 			pounds: Number(SL),
 			shilling: Number(SS),
@@ -170,8 +195,8 @@ async function formatMoney(entry: any) {
 }
 
 async function folioReferences(entry: any) {
-	let folios: any = entry.FolioReference.toString().split('//');
-	let ledgers: any = entry.Ledger.toString().split('//');
+	let folios: any = entry.FolioReference.toString().replace(/[-]/g,'').split('//');
+	let ledgers: any = entry.Ledger.toString().replace(/[-]/g,'').split('//');
 	let res = {
 		folioRefs: folios,
 		ledgerRefs: ledgers,
@@ -180,6 +205,8 @@ async function folioReferences(entry: any) {
 }
 
 async function placesIDs(entry: any) {
+	//place coloumns is split into an array based off the token "//", from here it goes through every index of the array,  
+	//searches the places masterlist in the database and pulls a 
 	let places =
 		entry.Places !== (null || '' || '-') ? entry.Places.toString() : null;
 	if (places === '') {
