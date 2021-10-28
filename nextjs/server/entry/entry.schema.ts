@@ -1,4 +1,4 @@
-import { getModelForClass, prop } from '@typegoose/typegoose';
+import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, Int, ObjectType } from 'type-graphql';
 
@@ -33,7 +33,7 @@ export class PoundsShillingsPence {
 @ObjectType('MoneyObject')
 export class MoneyObject {
 	@prop()
-	@Field({ description: '', defaultValue: ''})
+	@Field({ description: '', defaultValue: '' })
 	quantity: string;
 
 	@prop()
@@ -44,11 +44,11 @@ export class MoneyObject {
 	@Field({ description: '', defaultValue: '' })
 	colony: string;
 
-	@prop()
+	@prop({ _id: false })
 	@Field((_type) => PoundsShillingsPence, { description: '' })
 	sterling: PoundsShillingsPence;
 
-	@prop()
+	@prop({ _id: false })
 	@Field((_type) => PoundsShillingsPence, { description: '' })
 	currency: PoundsShillingsPence;
 }
@@ -140,18 +140,18 @@ export class ItemOrServiceObject {
 	item: string;
 
 	@prop()
-	@Field({ description: '', defaultValue: ''})
+	@Field({ description: '', defaultValue: '' })
 	category: string;
 
 	@prop()
-	@Field({ description: '', defaultValue: ''})
+	@Field({ description: '', defaultValue: '' })
 	subcategory: string;
 
-	@prop({ type: () => PoundsShillingsPence })
+	@prop({ _id: false, type: () => PoundsShillingsPence })
 	@Field((_type) => PoundsShillingsPence, { description: '' })
 	unitCost: PoundsShillingsPence;
 
-	@prop({ type: () => PoundsShillingsPence })
+	@prop({ _id: false, type: () => PoundsShillingsPence })
 	@Field((_type) => PoundsShillingsPence, { description: '' })
 	itemCost: PoundsShillingsPence;
 }
@@ -165,11 +165,14 @@ export class ItemEntryObject {
 	@Field({ description: '' })
 	percentage: number;
 
-	@prop({ type: () => [ItemOrServiceObject] })
-	@Field((_type) => [ItemOrServiceObject], { description: '', nullable: 'items' })
+	@prop({ _id: false, type: () => [ItemOrServiceObject] })
+	@Field((_type) => [ItemOrServiceObject], {
+		description: '',
+		nullable: 'items',
+	})
 	itemsOrServices: ItemOrServiceObject[];
 
-	@prop({ type: () => [MentionedItemsObject] })
+	@prop({ _id: false, type: () => [MentionedItemsObject] })
 	@Field((_type) => [MentionedItemsObject], { description: '' })
 	itemsMentioned: MentionedItemsObject[];
 }
@@ -184,7 +187,7 @@ export class TobaccoMoneyObject {
 	@Field({ description: 'words' })
 	tobaccoAmount: number;
 
-	@prop()
+	@prop({ _id: false })
 	@Field({ description: 'words' })
 	rateForTobacco: PoundsShillingsPence;
 
@@ -192,11 +195,11 @@ export class TobaccoMoneyObject {
 	@Field({ description: 'words' })
 	casksInTransaction: number;
 
-	@prop()
+	@prop({ _id: false })
 	@Field({ description: 'words' })
 	tobaccoSold: PoundsShillingsPence;
 
-	@prop()
+	@prop({ _id: false })
 	@Field({ description: 'words' })
 	casksSoldForEach: PoundsShillingsPence;
 }
@@ -207,15 +210,15 @@ export class TobaccoEntryObject {
 	@Field({ description: 'words' })
 	entry: string;
 
-	@prop({ type: () => [TobaccoMarkObject] })
+	@prop({ _id: false, type: () => [TobaccoMarkObject] })
 	@Field((_type) => [TobaccoMarkObject], { description: '' })
 	marks: TobaccoMarkObject[];
 
-	@prop({ type: () => [NoteObject] })
+	@prop({ _id: false, type: () => [NoteObject] })
 	@Field((_type) => [NoteObject], { description: '' })
 	notes: NoteObject[];
 
-	@prop({ type: () => [TobaccoMoneyObject] })
+	@prop({ _id: false, type: () => [TobaccoMoneyObject] })
 	@Field((_type) => [TobaccoMoneyObject], { description: '' })
 	money: TobaccoMoneyObject[];
 
@@ -230,11 +233,11 @@ export class RegularEntryObject {
 	@Field({ description: 'words' })
 	entry: string;
 
-	@prop({ type: () => [TobaccoMarkObject] })
+	@prop({ _id: false, type: () => [TobaccoMarkObject] })
 	@Field((_type) => [TobaccoMarkObject], { description: '' })
 	tobaccoMarks: TobaccoMarkObject[];
 
-	@prop({ type: () => [MentionedItemsObject] })
+	@prop({ _id: false, type: () => [MentionedItemsObject] })
 	@Field((_type) => [MentionedItemsObject], { description: '' })
 	itemsMentioned: MentionedItemsObject[];
 }
@@ -322,6 +325,9 @@ export class AccHolderObject {
 }
 
 @ObjectType('Entry', { description: 'Single Entry' })
+@modelOptions({
+	schemaOptions: { timestamps: true },
+})
 export class Entry {
 	@Field((_type) => ID, { description: 'String of MongoDB ObjectId' })
 	public get id(): string {
@@ -330,49 +336,64 @@ export class Entry {
 
 	_id: ObjectId;
 
-	@prop({ type: () => AccHolderObject, required: true })
+	@prop({ _id: false, type: () => AccHolderObject, required: true })
 	@Field((_type) => AccHolderObject, {
 		description: 'Information on the account holder in the transaction',
 	})
 	accountHolder: AccHolderObject;
 
-	@prop({ type: () => MetaObject, required: true })
+	@prop({ _id: false, type: () => MetaObject, required: true })
 	@Field((_type) => MetaObject, {
 		description: 'Meta information of the entry',
 	})
 	meta: MetaObject;
 
-	@prop({ type: () => DateObject, required: true })
+	@prop({ _id: false, type: () => DateObject, required: true })
 	@Field((_type) => DateObject, { description: 'Date of entry' })
 	dateInfo: DateObject;
 
-	@prop({ type: () => [String] })
+	@prop()
 	@Field((_type) => [String], { description: '' })
-	folioRefs: [string];
+	folioRefs: string[];
 
-	@prop({ type: () => [String] })
+	@prop()
 	@Field((_type) => [String], { description: '' })
-	ledgerRefs: [string];
+	ledgerRefs: string[];
 
-	@prop({ name: 'ItemEntry', type: () => [ItemEntryObject], default: null })
+	@prop({
+		_id: false,
+		name: 'ItemEntry',
+		type: () => [ItemEntryObject],
+		default: null,
+	})
 	@Field((_type) => [ItemEntryObject], { nullable: true })
 	itemEntries?: ItemEntryObject[] | null;
 
-	@prop({ name: 'TobaccoEntry', type: () => TobaccoEntryObject, default: null })
+	@prop({
+		_id: false,
+		name: 'TobaccoEntry',
+		type: () => TobaccoEntryObject,
+		default: null,
+	})
 	@Field((_type) => TobaccoEntryObject, { nullable: true })
 	tobaccoEntry?: TobaccoEntryObject | null;
 
-	@prop({ name: 'TobaccoEntry', type: () => RegularEntryObject, default: null })
+	@prop({
+		_id: false,
+		name: 'TobaccoEntry',
+		type: () => RegularEntryObject,
+		default: null,
+	})
 	@Field((_type) => RegularEntryObject, { nullable: true })
 	regularEntry?: RegularEntryObject | null;
 
-	@prop({ type: () => [PeoplePlacesObject], required: true })
+	@prop({ _id: false, type: () => [PeoplePlacesObject], required: true })
 	@Field((_type) => [PeoplePlacesObject], {
 		description: 'People referenced in this entry',
 	})
 	people: PeoplePlacesObject[];
 
-	@prop({ type: () => [PeoplePlacesObject], required: true })
+	@prop({ _id: false, type: () => [PeoplePlacesObject], required: true })
 	@Field((_type) => [PeoplePlacesObject], {
 		description: 'Places referenced in this entry',
 	})
@@ -382,7 +403,7 @@ export class Entry {
 	@Field((_type) => String, { description: 'Type of Entry' })
 	entry: string;
 
-	@prop({ required: true })
+	@prop({ _id: false, required: true })
 	@Field((_type) => MoneyObject, {
 		description: 'general money information for the entry',
 	})
