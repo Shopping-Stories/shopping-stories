@@ -25,20 +25,20 @@ type Query {
   findGlossaryItems(options: FindAllLimitAndSkip): [GlossaryItem!]
   countGlossaryItems: Float!
   findGlossaryItem(id: String!): GlossaryItem
-  findItems(options: FindAllLimitAndSkip): [Item!]
-  countItems: Float!
+  findItems(search: String, options: FindAllLimitAndSkip): [Item!]
+  countItems(search: String): Float!
   findOneItem(id: String!): Item
-  findPlaces(options: FindAllLimitAndSkip): [Place!]
-  countPlaces: Float!
+  findPlaces(search: String, options: FindAllLimitAndSkip): [Place!]
+  countPlaces(search: String): Float!
   findOnePlace(id: String!): Place
-  findPeople(options: FindAllLimitAndSkip): [Person!]
-  countPeople: Float!
+  findPeople(search: String, options: FindAllLimitAndSkip): [Person!]
+  countPeople(search: String): Float!
   findOnePerson(id: String!): Person
-  findTobaccoMarks(options: FindAllLimitAndSkip): [TobaccoMark!]
-  countTobaccoMarks: Float!
+  findTobaccoMarks(search: String, options: FindAllLimitAndSkip): [TobaccoMark!]
+  countTobaccoMarks(search: String): Float!
   findOneTobaccoMark(id: String!): TobaccoMark
-  findCategories(options: FindAllLimitAndSkip): [Category!]
-  countCategories: Float!
+  findCategories(search: String, options: FindAllLimitAndSkip): [Category!]
+  countCategories(search: String): Float!
   findOneCategory(id: String!): Category
 }
 

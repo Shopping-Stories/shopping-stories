@@ -1,12 +1,14 @@
-import { filterObject } from '../config/utils';
-import { CreateItemInput } from "./input/createItem.input"
-import { UpdateItemInput } from "./input/updateItem.input";
-import { ItemModel, Item } from "./item.schema";
+import {
+	filterObject,
+	getMongoTextSearchObject,
+	optimizedMongoCount,
+} from '../config/utils';
+import { CreateItemInput } from './input/createItem.input';
+import { UpdateItemInput } from './input/updateItem.input';
+import { ItemModel, Item } from './item.schema';
 
 export default class ItemService {
-	static async create(
-		item: CreateItemInput,
-	): Promise<Item> {
+	static async create(item: CreateItemInput): Promise<Item> {
 		const createdItem = new ItemModel(item);
 		return createdItem.save();
 	}
@@ -15,17 +17,17 @@ export default class ItemService {
 		skip: number,
 		limit: number,
 		selectedFields: Object,
+		search?: string,
 	): Promise<Item[]> {
-		return ItemModel.find({}, selectedFields)
+		return ItemModel.find(getMongoTextSearchObject(search), selectedFields)
 			.skip(skip)
 			.limit(limit)
 			.lean<Item[]>()
 			.exec();
 	}
 
-
-	static async count(filter: any = {}): Promise<number> {
-		return ItemModel.estimatedDocumentCount(filter).lean().exec();
+	static async count(search?: string): Promise<number> {
+		return optimizedMongoCount(ItemModel, search);
 	}
 
 	static async findOne(

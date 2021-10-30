@@ -21,15 +21,23 @@ export default class ItemResolver {
 	@Query((_returns) => [Item], { nullable: true })
 	async findItems(
 		@Arg('options', { nullable: true }) { limit, skip }: FindAllLimitAndSkip,
+		@Arg('search', { nullable: true }) search: string,
 		@Info() info: any,
 	): Promise<Item[]> {
-		return ItemService.findAll(skip, limit, getMongooseFromFields(info));
+		return ItemService.findAll(
+			skip,
+			limit,
+			getMongooseFromFields(info),
+			search,
+		);
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Query((_returns) => Number)
-	async countItems(): Promise<number> {
-		return ItemService.count();
+	async countItems(
+		@Arg('search', { nullable: true }) search: string,
+	): Promise<number> {
+		return ItemService.count(search);
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)

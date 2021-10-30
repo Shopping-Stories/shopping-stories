@@ -21,15 +21,23 @@ export default class PlaceResolver {
 	@Query((_returns) => [Place], { nullable: true })
 	async findPlaces(
 		@Arg('options', { nullable: true }) { limit, skip }: FindAllLimitAndSkip,
+		@Arg('search', { nullable: true }) search: string,
 		@Info() info: any,
 	): Promise<Place[]> {
-		return PlaceService.findAll(skip, limit, getMongooseFromFields(info));
+		return PlaceService.findAll(
+			skip,
+			limit,
+			getMongooseFromFields(info),
+			search,
+		);
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Query((_returns) => Number)
-	async countPlaces(): Promise<number> {
-		return PlaceService.count();
+	async countPlaces(
+		@Arg('search', { nullable: true }) search: string,
+	): Promise<number> {
+		return PlaceService.count(search);
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)

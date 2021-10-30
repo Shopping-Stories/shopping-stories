@@ -1,12 +1,14 @@
-import { filterObject } from '../config/utils';
-import { CreateCategoryInput } from "./input/createCategory.input"
+import {
+	filterObject,
+	getMongoTextSearchObject,
+	optimizedMongoCount,
+} from '../config/utils';
+import { CreateCategoryInput } from './input/createCategory.input';
 import { UpdateCategoryInput } from './input/updateCategory.input';
-import { CategoryModel, Category } from "./category.schema";
+import { CategoryModel, Category } from './category.schema';
 
 export default class CategoryService {
-	static async create(
-		category: CreateCategoryInput,
-	): Promise<Category> {
+	static async create(category: CreateCategoryInput): Promise<Category> {
 		const createdCategory = new CategoryModel(category);
 		return createdCategory.save();
 	}
@@ -15,17 +17,17 @@ export default class CategoryService {
 		skip: number,
 		limit: number,
 		selectedFields: Object,
+		search?: string,
 	): Promise<Category[]> {
-		return CategoryModel.find({}, selectedFields)
+		return CategoryModel.find(getMongoTextSearchObject(search), selectedFields)
 			.skip(skip)
 			.limit(limit)
 			.lean<Category[]>()
 			.exec();
 	}
 
-
-	static async count(filter: any = {}): Promise<number> {
-		return CategoryModel.estimatedDocumentCount(filter).lean().exec();
+	static async count(search?: string): Promise<number> {
+		return optimizedMongoCount(CategoryModel, search);
 	}
 
 	static async findOne(

@@ -1,7 +1,11 @@
-import { filterObject } from '../config/utils';
-import { CreateTobaccoMarkInput } from "./input/createTobaccoMark.input"
-import { UpdateTobaccoMarkInput } from "./input/updateTobaccoMark.input";
-import { TobaccoMarkModel, TobaccoMark } from "./tobaccoMark.schema";
+import {
+	filterObject,
+	getMongoTextSearchObject,
+	optimizedMongoCount,
+} from '../config/utils';
+import { CreateTobaccoMarkInput } from './input/createTobaccoMark.input';
+import { UpdateTobaccoMarkInput } from './input/updateTobaccoMark.input';
+import { TobaccoMarkModel, TobaccoMark } from './tobaccoMark.schema';
 
 export default class TobaccoMarkService {
 	static async create(
@@ -15,23 +19,26 @@ export default class TobaccoMarkService {
 		skip: number,
 		limit: number,
 		selectedFields: Object,
+		search?: string,
 	): Promise<TobaccoMark[]> {
-		return TobaccoMarkModel.find({}, selectedFields)
+		return TobaccoMarkModel.find(
+			getMongoTextSearchObject(search),
+			selectedFields,
+		)
 			.skip(skip)
 			.limit(limit)
 			.lean<TobaccoMark[]>()
 			.exec();
 	}
 
-
-	static async count(filter: any = {}): Promise<number> {
-		return TobaccoMarkModel.estimatedDocumentCount(filter).lean().exec();
+	static async count(search?: string): Promise<number> {
+		return optimizedMongoCount(TobaccoMarkModel, search);
 	}
 
 	static async findOne(
 		id: string,
 		selectedFields: Object,
-	): Promise<TobaccoMark| null> {
+	): Promise<TobaccoMark | null> {
 		return TobaccoMarkModel.findOne({ _id: id })
 			.select(selectedFields)
 			.lean<TobaccoMark>()

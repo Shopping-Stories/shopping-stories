@@ -1,12 +1,14 @@
-import { filterObject } from '../config/utils';
-import { CreatePersonInput } from "./input/createPerson.input"
-import { UpdatePersonInput } from "./input/updatePerson.input";
-import { PersonModel, Person } from "./person.schema";
+import {
+	filterObject,
+	getMongoTextSearchObject,
+	optimizedMongoCount,
+} from '../config/utils';
+import { CreatePersonInput } from './input/createPerson.input';
+import { UpdatePersonInput } from './input/updatePerson.input';
+import { PersonModel, Person } from './person.schema';
 
 export default class PersonService {
-	static async create(
-		person: CreatePersonInput,
-	): Promise<Person> {
+	static async create(person: CreatePersonInput): Promise<Person> {
 		const createdPerson = new PersonModel(person);
 		return createdPerson.save();
 	}
@@ -15,17 +17,17 @@ export default class PersonService {
 		skip: number,
 		limit: number,
 		selectedFields: Object,
+		search?: string,
 	): Promise<Person[]> {
-		return PersonModel.find({}, selectedFields)
+		return PersonModel.find(getMongoTextSearchObject(search), selectedFields)
 			.skip(skip)
 			.limit(limit)
 			.lean<Person[]>()
 			.exec();
 	}
 
-
-	static async count(filter: any = {}): Promise<number> {
-		return PersonModel.estimatedDocumentCount(filter).lean().exec();
+	static async count(search?: string): Promise<number> {
+		return optimizedMongoCount(PersonModel, search);
 	}
 
 	static async findOne(

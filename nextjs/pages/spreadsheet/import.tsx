@@ -105,7 +105,7 @@ const ImportPage: NextPage = () => {
 			return entry;
 		});
 		createEntries({ entries: entriesWithoutError }).then((res: any) => {
-			setParseErrors(true);
+			setParseErrors(null);
 			setIsCreatingEntries(false);
 			console.log({ res });
 		});

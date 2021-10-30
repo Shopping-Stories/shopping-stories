@@ -21,15 +21,23 @@ export default class PersonResolver {
 	@Query((_returns) => [Person], { nullable: true })
 	async findPeople(
 		@Arg('options', { nullable: true }) { limit, skip }: FindAllLimitAndSkip,
+		@Arg('search', { nullable: true }) search: string,
 		@Info() info: any,
 	): Promise<Person[]> {
-		return PersonService.findAll(skip, limit, getMongooseFromFields(info));
+		return PersonService.findAll(
+			skip,
+			limit,
+			getMongooseFromFields(info),
+			search,
+		);
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Query((_returns) => Number)
-	async countPeople(): Promise<number> {
-		return PersonService.count();
+	async countPeople(
+		@Arg('search', { nullable: true }) search: string,
+	): Promise<number> {
+		return PersonService.count(search);
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)
@@ -43,7 +51,9 @@ export default class PersonResolver {
 
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Mutation((_returns) => Person)
-	async createPerson(@Arg('person') newPerson: CreatePersonInput): Promise<Person> {
+	async createPerson(
+		@Arg('person') newPerson: CreatePersonInput,
+	): Promise<Person> {
 		return PersonService.create(newPerson);
 	}
 

@@ -21,15 +21,23 @@ export default class CategoryResolver {
 	@Query((_returns) => [Category], { nullable: true })
 	async findCategories(
 		@Arg('options', { nullable: true }) { limit, skip }: FindAllLimitAndSkip,
+		@Arg('search', { nullable: true }) search: string,
 		@Info() info: any,
 	): Promise<Category[]> {
-		return CategoryService.findAll(skip, limit, getMongooseFromFields(info));
+		return CategoryService.findAll(
+			skip,
+			limit,
+			getMongooseFromFields(info),
+			search,
+		);
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Query((_returns) => Number)
-	async countCategories(): Promise<number> {
-		return CategoryService.count();
+	async countCategories(
+		@Arg('search', { nullable: true }) search: string,
+	): Promise<number> {
+		return CategoryService.count(search);
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)
@@ -43,7 +51,9 @@ export default class CategoryResolver {
 
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Mutation((_returns) => Category)
-	async createCategory(@Arg('category') newCategory: CreateCategoryInput): Promise<Category> {
+	async createCategory(
+		@Arg('category') newCategory: CreateCategoryInput,
+	): Promise<Category> {
 		return CategoryService.create(newCategory);
 	}
 

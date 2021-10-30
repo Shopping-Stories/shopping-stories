@@ -21,15 +21,23 @@ export default class TobaccoMarkResolver {
 	@Query((_returns) => [TobaccoMark], { nullable: true })
 	async findTobaccoMarks(
 		@Arg('options', { nullable: true }) { limit, skip }: FindAllLimitAndSkip,
+		@Arg('search', { nullable: true }) search: string,
 		@Info() info: any,
 	): Promise<TobaccoMark[]> {
-		return TobaccoMarkService.findAll(skip, limit, getMongooseFromFields(info));
+		return TobaccoMarkService.findAll(
+			skip,
+			limit,
+			getMongooseFromFields(info),
+			search,
+		);
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Query((_returns) => Number)
-	async countTobaccoMarks(): Promise<number> {
-		return TobaccoMarkService.count();
+	async countTobaccoMarks(
+		@Arg('search', { nullable: true }) search: string,
+	): Promise<number> {
+		return TobaccoMarkService.count(search);
 	}
 
 	@UseMiddleware(ConnectDB, ResolveTime)
@@ -43,7 +51,9 @@ export default class TobaccoMarkResolver {
 
 	@UseMiddleware(ConnectDB, ResolveTime)
 	@Mutation((_returns) => TobaccoMark)
-	async createTobaccoMark(@Arg('tobaccoMark') newTobaccoMark: CreateTobaccoMarkInput): Promise<TobaccoMark> {
+	async createTobaccoMark(
+		@Arg('tobaccoMark') newTobaccoMark: CreateTobaccoMarkInput,
+	): Promise<TobaccoMark> {
 		return TobaccoMarkService.create(newTobaccoMark);
 	}
 
