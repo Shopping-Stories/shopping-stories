@@ -30,14 +30,21 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 			type = 0;
 		}
 
-		console.log(type);
+		console.log(spreadsheetObj[i]);
 
-		try {
+		try {			
+			people[i] = await peopleIDs(entry);
+			places[i] = await placesIDs(entry);
+			money[i] = await formatMoney(entry);
+			dates[i] = await newDateObject(entry.Day, entry.Month, entry.Year_1);
+			meta[i] = await makeMetaDataObject(entry, 'C_1760');
+			references[i] = await folioReferences(entry);
+			accountHolder[i] = await makeAccountHolderObject(entry);
 			if (entry.Entry) {
 				if (type === 1) {
 					//console.log('Id: ' + entry._id + ' is a tobacco');
 
-					entries[i].tobaccoEntry = await updatedTobaccoEntry(entry);
+					entries[i].tobaccoEntry = await updatedTobaccoEntry(entry,money[i]);
 				} else if (type === 2) {
 					//console.log('Id: ' + entry._id + ' is a item');
 					entries[i].itemEntries = await updatedItemEntry(entry);
@@ -46,13 +53,7 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
 					entries[i].regularEntry = await updatedRegEntry(entry);
 				}
 			}
-			people[i] = await peopleIDs(entry);
-			places[i] = await placesIDs(entry);
-			money[i] = await formatMoney(entry);
-			dates[i] = await newDateObject(entry.Day, entry.Month, entry.Year);
-			meta[i] = await makeMetaDataObject(entry, 'C_1760');
-			references[i] = await folioReferences(entry);
-			accountHolder[i] = await makeAccountHolderObject(entry);
+
 		} catch (err) {
 			console.log('EntryID:' + entry.EntryID + '   ' + err);
 			meta[i] = await makeMetaDataObject(entry, 'C_1760');
@@ -111,16 +112,37 @@ export async function generalSearch(searchString: string) {
 	const res : any = await EntryModel.find({ $text: { $search: searchString } }, { score: { $meta: "textScore" } }).sort({ score: { $meta: "textScore" } });
 	return res;
 }
-export async function advancedSearch(searchObj: string) {
+export async function advancedSearch(searchObj: any) {
 	//advanced search
 	//need to pull fields supplied from the search input
 	//if the field is apart of the entry text index, add it to the search string, else
 	//we need to create the fields to search for the entry
+
+	//regexes to use (?i) for case insensitivity
+	//regular regex to match things such as numbers for tobacco marks
+
+
 	let searchString = '';
 	let temp = {
 		$text: { $search: searchString}
 	}
-	//append search fields to temp
+	//general fields
+	//fields Reel, StoreOwner, FolioYear,FolioPage,Entry ID, Account holder name (one field), 
+	//Date using date picker, people, places, commodity, colony
+
+	/*for item entry forms 
+	per order(yes or no, 1 for yes, 0 for no), items, category, subcategory, variant
+	*/
+
+	/*for tobacco entry forms
+	entry discription, tobacco mark name, note number, money type
+	*/
+
+	/*for regular entry
+	entry discription, tobacoo mark name
+	*/
+
+	//append search fields to temp like temp[tobaccoEntry.marks.markName] = "blahblah"
 	const res : any = await EntryModel.find(temp, { score: { $meta: "textScore" } }).sort({ score: { $meta: "textScore" } });
 	return res;
 }
@@ -525,23 +547,46 @@ async function moneyConversion(money: any) {
 	}
 }
 
-async function calculateTotalCostTobacco(quantity: any, money: any) {
+async function calculateTotalCostTobacco(quantity: any, rate: any) {
 	//will get the total currency each tobacco is sold for in tobacco transactions, finalized?
 	try {
+		//the rate for tobacco is per 100 pounds so we divide by 100
 		let tobaccoDivided = quantity / 100;
-		let L = money.Pounds;
-		let S = money.Shilling;
-		let D = money.Pence;
+		let L = rate.pounds;
+		let S = rate.shilling;
+		let D = rate.pence;
 
+		/*we start with pounds, then shilling, then pence and calculate what the quantity of tobacco times the rate is, plus
+		//converting a shilling or pence upwards
+		// if we have 
+		// rate = {
+				pounds: 0
+				shilling: 11
+				pence : 8
+		}
+			with a quantity of 500, that is (11 shilling and 8 pence() per 100 pounds so (11 shilling and 8 pence) times 5
+
+			pounds = (0 pounds * 5) + ((11 shilling * 5)/20) while dropping the left over when converting shillings to pounds
+			shillings = ((11 shilling * 5) % 20) + ((8 pence * 5)/12) we take the leftovers shillings dropped from before
+			and convert pence to shilling
+		*/
 		L = L * tobaccoDivided + Math.floor((S * tobaccoDivided) / 20);
 		S = ((S * tobaccoDivided) % 20) + Math.floor((D * tobaccoDivided) / 12);
 		D = (D * tobaccoDivided) % 12;
-		//simplify
-		S = S + Math.round((L % 1) * 20);
-		L = Math.floor(L);
-		D = D + Math.round((S % 1) * 12);
-		S = Math.floor(S);
+		console.log(L,S,D);
 
+		//simplify the numbers using the leftovers so 2.5 pounds =  2 pounds and 10 shilling
+		//and 10.5 shillings = 10 shillings and 6 pence
+		//just drop partial pence
+		S = S + (Math.floor((L % 1) * 20));
+		L = Math.floor(L);
+		D = Math.floor(D) + (Math.floor((S % 1) * 12));
+		S = Math.floor(S) + Math.floor(D/12);
+		D = D%12;
+		L = L + Math.floor(S/20);
+		S = S%20;	
+
+		console.log(L,S,D);
 		let res = {
 			pounds: L,
 			shilling: S,
@@ -553,21 +598,29 @@ async function calculateTotalCostTobacco(quantity: any, money: any) {
 	}
 }
 
-async function calculateTobaccoMoney(MoneyEntry: any) {
+async function calculateTobaccoMoney(MoneyEntry: any, colony : any, money : any) {
 	//finalized version
 	let brokenMoney = [];
+	let colonyName = "";
+	if (colony !== ''){
+		colonyName = colony.charAt(0).toUpperCase() + colony.slice(1).toLowerCase();
+	}
+	  
 	if (MoneyEntry.includes('{')) {
-		brokenMoney = MoneyEntry.trim().split('{');
+		brokenMoney = MoneyEntry.toString().trim().split('{');
 		brokenMoney = await removeWhiteSpaceFromArray(brokenMoney);
 	} else {
 		brokenMoney = [MoneyEntry];
 	}
-
+	console.log(brokenMoney);
 	let res = [];
-	let moneyCount = 0;
-	let tobaccoSoldFor: any = [0, 0, 0];
 
-	for (let i = 0; i < brokenMoney.length; i++) {
+	let tobaccoSoldFor: any = [0, 0, 0];
+	if (brokenMoney[0] === ''){
+		brokenMoney.shift();
+	}
+	console.log(brokenMoney);
+	for(let i = 0; i < brokenMoney.length; i++) {
 		console.log(brokenMoney[i]);
 		let caskQuantity = 0;
 		let caskCost = { pounds: 0, shilling: 0, pence: 0 };
@@ -587,10 +640,14 @@ async function calculateTobaccoMoney(MoneyEntry: any) {
 		} else if (workingString != '' && workingString.includes(']')) {
 			let tempTradeItem = workingString.split('[');
 			tempTradeItem = tempTradeItem[1].split(']');
+
 			moneyName = tempTradeItem[0];
 			workingString = workingString.replace('[' + moneyName + ']', '').trim();
 			moneyName =
 				moneyName.charAt(0).toUpperCase() + moneyName.slice(1).toLowerCase();
+		}
+		else{
+			moneyName = colonyName;
 		}
 		if (workingString.includes('&')) {
 			let tempString = workingString.split('&');
@@ -613,16 +670,9 @@ async function calculateTobaccoMoney(MoneyEntry: any) {
 					);
 				} else if (!tempString[i].includes('CASK')) {
 					poundsOfTobacco = Number(tempString[i]);
-					tobaccoRate = {
-						pounds: 0,
-						shilling: 0,
-						pence: 0,
-					};
-					tobaccoSoldFor = {
-						pounds: 0,
-						shilling: 0,
-						pence: 0,
-					};
+
+					tobaccoRate = await calculateUnitCost(money,poundsOfTobacco);
+					tobaccoSoldFor = money
 				}
 				if (tempString[i].includes('CASK')) {
 					if (tempString[i].includes('FOR')) {
@@ -640,13 +690,24 @@ async function calculateTobaccoMoney(MoneyEntry: any) {
 			if (workingString.includes('AT')) {
 				//console.log('here');
 				let tempArray = workingString.split('AT');
-				//console.log(tempArray);
+				console.log(tempArray);
 				poundsOfTobacco = Number(tempArray[0]);
 				tobaccoRate = await moneyConversion(tempArray[1].trim());
-				tobaccoSoldFor = await calculateTotalCostTobacco(
-					poundsOfTobacco,
-					tobaccoRate,
-				);
+				console.log()
+				if(tempArray[1] === ''){
+					tobaccoSoldFor = {
+						pounds: 0,
+						shilling: 0,
+						pence: 0,
+					}
+				}else{
+					
+					tobaccoSoldFor = await calculateTotalCostTobacco(
+						poundsOfTobacco,
+						tobaccoRate,
+					);
+				}
+
 				//console.log(tobaccoSoldFor);
 			} else if (workingString.includes(',')) {
 				let tempArray = workingString.split(',');
@@ -694,10 +755,10 @@ async function calculateTobaccoMoney(MoneyEntry: any) {
 			tobaccoSold: tobaccoSoldFor,
 			casksSoldForEach: caskCost,
 		};
-		if (moneyInfo.moneyType != '') {
-			res[moneyCount] = moneyInfo;
-			moneyCount++;
-		}
+		
+		res[i] = moneyInfo;
+			
+		
 	}
 	return res;
 }
@@ -732,7 +793,7 @@ async function tobaccoNote(string: any) {
 	return parseAsJson2;
 }
 
-async function updatedTobaccoEntry(entryObj: any) {
+async function updatedTobaccoEntry(entryObj: any, money: any) {
 	//nearly finalized
 	const cursor = entryObj;
 	let entry = await cursor.Entry.toString();
@@ -750,7 +811,13 @@ async function updatedTobaccoEntry(entryObj: any) {
 				.trim()
 				.toUpperCase()
 				.split('[MONEY]');
-			moneyInfo = await calculateTobaccoMoney(tempMoneyInfo[1].trim());
+				if(cursor.Colony.toString === ''){
+					moneyInfo = await calculateTobaccoMoney(tempMoneyInfo[1].trim(),cursor.Colony.toString(),money.sterling);
+				}
+				else{
+					moneyInfo = await calculateTobaccoMoney(tempMoneyInfo[1].trim(),cursor.Colony.toString(),money.currency);
+				}
+			
 		} else if (brokenEntry[i].includes('[TM') || brokenEntry[i].includes('{')) {
 			//brokenEntry[i] = brokenEntry[i].replace("N","");
 			if (brokenEntry[i].includes('TM')) {
@@ -792,6 +859,7 @@ async function updatedTobaccoEntry(entryObj: any) {
 			entryInfo += brokenEntry[i];
 		}
 	}
+
 	let finishedRes = {
 		entry: entryInfo.trim(),
 		marks: markArray,
