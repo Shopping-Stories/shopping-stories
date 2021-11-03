@@ -3,7 +3,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -57,6 +57,7 @@ export default function BasicTabs() {
       </Box>
       <TabPanel value={value} index={0}>
       <TextField id="outlined-basic" label="Outlined" variant="outlined" />
+      <Button variant="contained">Contained</Button>
       </TabPanel>
       <TabPanel value={value} index={1}>
         Item Two
