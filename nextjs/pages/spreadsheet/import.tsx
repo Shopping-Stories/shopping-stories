@@ -1,5 +1,4 @@
 // import DataGrid from '@components/DataGrid';
-import EntryModal from '@components/EntryModal';
 import FileInput from '@components/FileInput';
 import Header from '@components/Header';
 import ParseTable from '@components/ParseTable';
@@ -43,18 +42,6 @@ const ImportPage: NextPage = () => {
     const [entries, setEntries] = useState<any>(null);
     const [_requestErrors, _setRequestErrors] = useState<any>(null);
     const [parseErrors, setParseErrors] = useState<any>(null);
-    const [currentEntry, setModalEntry] = useState<any>(null);
-    const [open, setOpen] = useState(false);
-    const [index, setIndex] = useState<any>(null);
-    const handleOpen = (idx: number) => {
-        setIndex(idx);
-        setModalEntry(entries[idx]);
-        setOpen(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
-        setModalEntry(null);
-    };
 
     const convertFileToJSON = async () => {
         if (file === null || !file) {
@@ -166,14 +153,7 @@ const ImportPage: NextPage = () => {
                                 </FormGroup>
                             </Grid>
                         </Paper>
-                        <ParseTable entries={entries} handleOpen={handleOpen} />
-                        <EntryModal
-                            isOpen={open}
-                            entry={currentEntry}
-                            handleClose={handleClose}
-                            index={index}
-                        />
-                        {/* <DataGrid /> */}
+                        <ParseTable entries={entries} />
                         {!!parseErrors && parseErrors.length > 0 && (
                             <Stack>
                                 {parseErrors.map((error: any, i: number) => (

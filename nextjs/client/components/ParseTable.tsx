@@ -9,11 +9,10 @@ import ParsingResultTableRow from './ParsingResultTableRow';
 
 interface ParseTableProps {
 	entries: null | any[];
-	handleOpen: (index: number) => any;
 }
 
 const ParseTable = (props: ParseTableProps) => {
-	const { entries, handleOpen: _ } = props;
+	const { entries } = props;
 
 	const columnNames = [
 		'Account Holder First Name',
