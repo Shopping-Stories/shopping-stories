@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import {
-	Arg,
-	Info,
-	Mutation,
-	Query,
-	Resolver,
-	UseMiddleware,
+    Arg,
+    Info,
+    Mutation,
+    Query,
+    Resolver,
+    UseMiddleware,
 } from 'type-graphql';
 import { getMongooseFromFields } from '../config/utils';
 import { FindAllLimitAndSkip } from '../glossaryItem/input/findAllArgs.input';
@@ -17,64 +17,65 @@ import ItemService from './item.service';
 
 @Resolver((_of) => Item)
 export default class ItemResolver {
-	@UseMiddleware(ConnectDB, ResolveTime)
-	@Query((_returns) => [Item], { nullable: true })
-	async findItems(
-		@Arg('options', { nullable: true }) { limit, skip }: FindAllLimitAndSkip,
-		@Arg('search', { nullable: true }) search: string,
-		@Info() info: any,
-	): Promise<Item[]> {
-		return ItemService.findAll(
-			skip,
-			limit,
-			getMongooseFromFields(info),
-			search,
-		);
-	}
+    @UseMiddleware(ConnectDB, ResolveTime)
+    @Query((_returns) => [Item], { nullable: true })
+    async findItems(
+        @Arg('options', { nullable: true })
+        { limit, skip }: FindAllLimitAndSkip,
+        @Arg('search', { nullable: true }) search: string,
+        @Info() info: any,
+    ): Promise<Item[]> {
+        return ItemService.findAll(
+            skip,
+            limit,
+            getMongooseFromFields(info),
+            search,
+        );
+    }
 
-	@UseMiddleware(ConnectDB, ResolveTime)
-	@Query((_returns) => Number)
-	async countItems(
-		@Arg('search', { nullable: true }) search: string,
-	): Promise<number> {
-		return ItemService.count(search);
-	}
+    @UseMiddleware(ConnectDB, ResolveTime)
+    @Query((_returns) => Number)
+    async countItems(
+        @Arg('search', { nullable: true }) search: string,
+    ): Promise<number> {
+        return ItemService.count(search);
+    }
 
-	@UseMiddleware(ConnectDB, ResolveTime)
-	@Query((_returns) => Item, { nullable: true })
-	async findOneItem(
-		@Arg('id') id: string,
-		@Info() info: any,
-	): Promise<Item | null> {
-		return ItemService.findOne(id, getMongooseFromFields(info));
-	}
+    @UseMiddleware(ConnectDB, ResolveTime)
+    @Query((_returns) => Item, { nullable: true })
+    async findOneItem(
+        @Arg('id') id: string,
+        @Info() info: any,
+    ): Promise<Item | null> {
+        return ItemService.findOne(id, getMongooseFromFields(info));
+    }
 
-	@UseMiddleware(ConnectDB, ResolveTime)
-	@Mutation((_returns) => Item)
-	async createItem(@Arg('item') newItem: CreateItemInput): Promise<Item> {
-		return ItemService.create(newItem);
-	}
+    @UseMiddleware(ConnectDB, ResolveTime)
+    @Mutation((_returns) => Item)
+    async createItem(@Arg('item') newItem: CreateItemInput): Promise<Item> {
+        return ItemService.create(newItem);
+    }
 
-	@UseMiddleware(ConnectDB, ResolveTime)
-	@Mutation((_returns) => Item, { nullable: true })
-	async updateItem(
-		@Arg('id') id: string,
-		@Arg('updatedFields') updatedFields: UpdateItemInput,
-		@Info() info: any,
-	): Promise<Item | null> {
-		return ItemService.updateOne(
-			id,
-			updatedFields,
-			getMongooseFromFields(info),
-		);
-	}
+    @UseMiddleware(ConnectDB, ResolveTime)
+    @Mutation((_returns) => Item, { nullable: true })
+    async updateItem(
+        @Arg('id') id: string,
+        @Arg('updatedFields') updatedFields: UpdateItemInput,
+        @Info() info: any,
+    ): Promise<Item | null> {
+        return ItemService.updateOne(
+            id,
+            updatedFields,
+            getMongooseFromFields(info),
+        );
+    }
 
-	@UseMiddleware(ConnectDB, ResolveTime)
-	@Mutation((_returns) => Item, { nullable: true })
-	async deleteItem(
-		@Arg('id') id: string,
-		@Info() info: any,
-	): Promise<Item | null> {
-		return ItemService.deleteOne(id, getMongooseFromFields(info));
-	}
+    @UseMiddleware(ConnectDB, ResolveTime)
+    @Mutation((_returns) => Item, { nullable: true })
+    async deleteItem(
+        @Arg('id') id: string,
+        @Info() info: any,
+    ): Promise<Item | null> {
+        return ItemService.deleteOne(id, getMongooseFromFields(info));
+    }
 }

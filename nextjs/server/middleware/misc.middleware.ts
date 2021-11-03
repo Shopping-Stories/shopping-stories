@@ -20,10 +20,12 @@ import { logger } from '../config/utils';
  * @param {function} next next function to be called
  */
 export const ResolveTime: MiddlewareFn = async ({ info }, next) => {
-	const start = Date.now();
-	await next();
-	const resolveTime = Date.now() - start;
-	logger.info(`GraphQL: ${info.parentType.name}.${info.fieldName} [${resolveTime} ms]`);
+    const start = Date.now();
+    await next();
+    const resolveTime = Date.now() - start;
+    logger.info(
+        `GraphQL: ${info.parentType.name}.${info.fieldName} [${resolveTime} ms]`,
+    );
 };
 
 /**
@@ -36,19 +38,19 @@ export const ResolveTime: MiddlewareFn = async ({ info }, next) => {
  * @returns {object} JavaScript Object of converted MongoDB Doc
  */
 export const DocToObject: MiddlewareFn = async (_, next) => {
-	const result = await next();
+    const result = await next();
 
-	if (Array.isArray(result)) {
-		return result.map((item) =>
-			item instanceof Model ? convertDocument(item) : item,
-		);
-	}
+    if (Array.isArray(result)) {
+        return result.map((item) =>
+            item instanceof Model ? convertDocument(item) : item,
+        );
+    }
 
-	if (result instanceof Model) {
-		return convertDocument(result);
-	}
+    if (result instanceof Model) {
+        return convertDocument(result);
+    }
 
-	return result;
+    return result;
 };
 
 /**
@@ -58,10 +60,10 @@ export const DocToObject: MiddlewareFn = async (_, next) => {
  * @returns { object } JavaScript Object of converted MongoDB Doc
  */
 function convertDocument(doc: Document) {
-	const convertedDocument = doc.toObject();
-	const DocumentClass = getClassForDocument(doc)!;
-	Object.setPrototypeOf(convertedDocument, DocumentClass.prototype);
-	return convertedDocument;
+    const convertedDocument = doc.toObject();
+    const DocumentClass = getClassForDocument(doc)!;
+    Object.setPrototypeOf(convertedDocument, DocumentClass.prototype);
+    return convertedDocument;
 }
 
 /**
@@ -72,6 +74,6 @@ function convertDocument(doc: Document) {
  * @returns whatever the next function called returns
  */
 export const ConnectDB: MiddlewareFn<MyContext> = async (_, next) => {
-	await dbConnect();
-	return next();
+    await dbConnect();
+    return next();
 };

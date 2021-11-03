@@ -11,7 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { ItemsMentionedTable } from './ItemEntrySubTables';
-import TobaccoMarksTable from './TobaccoMarksTable';
+import TobaccoMarksSubTable from './TobaccoMarksSubTable';
 
 const RegularEntryTable = (props: any) => {
 	const { regularEntry } = props;
@@ -56,7 +56,7 @@ const RegularEntryRow = ({ regularEntry }: any) => {
 					<Collapse in={open} timeout="auto">
 						{!!regularEntry && (
 							<>
-								<TobaccoMarksTable tobaccoMarks={regularEntry?.tobaccoMarks} />
+								<TobaccoMarksSubTable tobaccoMarks={regularEntry?.tobaccoMarks} />
 								<ItemsMentionedTable
 									itemsMentioned={regularEntry?.itemsMentioned}
 								/>

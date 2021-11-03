@@ -20,7 +20,7 @@ const TobaccoMarksRow = (props: { tobaccoMark: any }) => {
 	);
 };
 
-const TobaccoMarksTable = (props: { tobaccoMarks: any }) => {
+const TobaccoMarksSubTable = (props: { tobaccoMarks: any }) => {
 	const columnNames: string[] = ['Mark Name', 'Mark ID'];
 	return (
 		<Box sx={{ margin: 1 }}>
@@ -46,4 +46,4 @@ const TobaccoMarksTable = (props: { tobaccoMarks: any }) => {
 	);
 };
 
-export default TobaccoMarksTable;
+export default TobaccoMarksSubTable;

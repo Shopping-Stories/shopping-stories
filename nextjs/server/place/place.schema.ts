@@ -6,27 +6,27 @@ export type PlaceDocument = Place & Document;
 
 @ObjectType({ description: 'Place Object' })
 @modelOptions({
-	schemaOptions: { timestamps: true },
+    schemaOptions: { timestamps: true },
 })
 export class Place {
-	@Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
-	public get id(): string {
-		return `${this._id}`; // Converts type ObjectId of _id to String
-	}
+    @Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
+    public get id(): string {
+        return `${this._id}`; // Converts type ObjectId of _id to String
+    }
 
-	readonly _id?: ObjectId;
+    readonly _id?: ObjectId;
 
-	@prop({ required: true })
-	@Field({ description: 'Type of item' })
-	location: string;
+    @prop({ required: true })
+    @Field({ description: 'Type of item', defaultValue: '' })
+    location: string;
 
-	@prop({ required: true })
-	@Field({ description: 'Variations of given item' })
-	alias: string;
+    @prop({ default: '' })
+    @Field({ description: 'Variations of given item', defaultValue: '' })
+    alias: string;
 
-	@prop({ required: true })
-	@Field({ description: 'Variations of given item' })
-	descriptor: string;
+    @prop({ default: '' })
+    @Field({ description: 'Variations of given item', defaultValue: '' })
+    descriptor: string;
 }
 
 export const PlaceModel = mongoose.models.Place || getModelForClass(Place);

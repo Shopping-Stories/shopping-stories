@@ -7,22 +7,26 @@ import CatService from './cat.service';
 let mongod: MongoMemoryServer;
 
 describe('Cat.Service', () => {
-	beforeAll(async () => {
-		// This will create an new instance of "MongoMemoryServer" and automatically start it
-		mongod = await MongoMemoryServer.create();
-		await dbConnect(mongod.getUri());
-	});
+    beforeAll(async () => {
+        // This will create an new instance of "MongoMemoryServer" and automatically start it
+        mongod = await MongoMemoryServer.create();
+        await dbConnect(mongod.getUri());
+    });
 
-	afterAll(async () => {
-		// The Server can be stopped again with
-		// await dbClose();
-		await mongoose.connection.close();
-		await mongod.stop();
-	});
+    afterAll(async () => {
+        // The Server can be stopped again with
+        // await dbClose();
+        await mongoose.connection.close();
+        await mongod.stop();
+    });
 
-	it('CatService.create', async () => {
-		await CatService.create({ name: 'Meow', age: 3, breed: 'Russian Blue' });
-		const cats = await CatModel.find();
-		expect(cats.length).toEqual(1);
-	});
+    it('CatService.create', async () => {
+        await CatService.create({
+            name: 'Meow',
+            age: 3,
+            breed: 'Russian Blue',
+        });
+        const cats = await CatModel.find();
+        expect(cats.length).toEqual(1);
+    });
 });

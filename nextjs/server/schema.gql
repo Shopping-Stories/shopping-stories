@@ -392,13 +392,13 @@ type Place {
   id: ID!
 
   # Type of item
-  location: String!
+  location: String
 
   # Variations of given item
-  alias: String!
+  alias: String
 
   # Variations of given item
-  descriptor: String!
+  descriptor: String
 }
 
 # People Object
@@ -413,10 +413,10 @@ type Person {
   enslaved: String
 
   # Variations of given item
-  firstName: String
+  firstName: String!
 
   # Variations of given item
-  lastName: String
+  lastName: String!
 
   # Variations of given item
   gender: String
@@ -438,7 +438,7 @@ type Person {
   reference: String
 
   # Variations of given item
-  store: String!
+  store: String
 
   # Variations of given item
   suffix: String
@@ -453,19 +453,19 @@ type TobaccoMark {
   id: ID!
 
   # Variations of given item
-  description: String!
+  description: String
 
   # TODO: Fill this in
-  image: String!
+  image: String
 
   # TODO: Fill this in
-  netWeight: String!
+  netWeight: String
 
   # TODO: Fill this in
-  note: String!
+  note: String
 
   # TODO: Fill this in
-  notes: String!
+  notes: String
 
   # TODO: Fill this in
   tobaccoMarkId: String!
@@ -474,13 +474,13 @@ type TobaccoMark {
   warehouse: String!
 
   # TODO: Fill this in
-  where: String!
+  where: String
 
   # TODO: Fill this in
-  whoRepresents: String!
+  whoRepresents: String
 
   # TODO: Fill this in
-  whoUnder: String!
+  whoUnder: String
 }
 
 # Category Object

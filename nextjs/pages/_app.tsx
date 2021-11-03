@@ -15,9 +15,9 @@ import { createTheme, PaletteMode, useMediaQuery } from '@mui/material';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { getDesignTokens } from 'styles/theme';
 import {
-	addAuthToOperation,
-	didAuthError,
-	getAuth,
+    addAuthToOperation,
+    didAuthError,
+    getAuth,
 } from '../client/urqlConfig';
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -26,87 +26,93 @@ const clientSideEmotionCache = createEmotionCache();
 const cache = cacheExchange({});
 
 const client = new Client({
-	url: '/api/graphql',
-	exchanges: [
-		dedupExchange,
-		cache,
-		authExchange({
-			/* config */
-			getAuth: getAuth,
-			addAuthToOperation: addAuthToOperation,
-			didAuthError: didAuthError,
-		}),
-		fetchExchange,
-	],
+    url: '/api/graphql',
+    exchanges: [
+        dedupExchange,
+        cache,
+        authExchange({
+            /* config */
+            getAuth: getAuth,
+            addAuthToOperation: addAuthToOperation,
+            didAuthError: didAuthError,
+        }),
+        fetchExchange,
+    ],
 });
 
 Auth.configure(AmplifyOptions);
 
 Storage.configure(S3Options);
 
-const ColorModeContext = createContext<{ toggleColorMode: () => void, mode: PaletteMode }>({
-	toggleColorMode: () => undefined,
-	mode: 'light'
+const ColorModeContext = createContext<{
+    toggleColorMode: () => void;
+    mode: PaletteMode;
+}>({
+    toggleColorMode: () => undefined,
+    mode: 'light',
 });
 
 export const useColorMode = () => {
-	return useContext(ColorModeContext);
+    return useContext(ColorModeContext);
 };
 
 function App({
-	Component,
-	emotionCache = clientSideEmotionCache,
-	pageProps: { session, ...pageProps },
+    Component,
+    emotionCache = clientSideEmotionCache,
+    pageProps: { session, ...pageProps },
 }: AppProps & { emotionCache: any }) {
-	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
-	const [mode, setMode] = useState<PaletteMode>(
-		prefersDarkMode ? 'dark' : 'light',
-	);
+    const [mode, setMode] = useState<PaletteMode>(
+        prefersDarkMode ? 'dark' : 'light',
+    );
 
-	useEffect(() => {
-		// @ts-ignore
-		setMode(document.querySelector(':root')!.dataset.theme);
-	}, []);
+    useEffect(() => {
+        // @ts-ignore
+        setMode(document.querySelector(':root')!.dataset.theme);
+    }, []);
 
-	useEffect(() => {
-		// @ts-ignore
-		document.querySelector(':root')!.dataset.theme = mode;
-		window.localStorage.setItem('mode', mode);
-	}, [mode]);
+    useEffect(() => {
+        // @ts-ignore
+        document.querySelector(':root')!.dataset.theme = mode;
+        window.localStorage.setItem('mode', mode);
+    }, [mode]);
 
-	const colorMode = useMemo(
-		() => ({
-			// The dark mode switch would invoke this method
-			toggleColorMode: () => {
-				setMode((prevMode: PaletteMode) =>
-					prevMode === 'light' ? 'dark' : 'light',
-				);
-			},
-			mode: mode,
-		}),
-		[mode],
-	);
+    const colorMode = useMemo(
+        () => ({
+            // The dark mode switch would invoke this method
+            toggleColorMode: () => {
+                setMode((prevMode: PaletteMode) =>
+                    prevMode === 'light' ? 'dark' : 'light',
+                );
+            },
+            mode: mode,
+        }),
+        [mode],
+    );
 
-	// Update the theme only if the mode changes
-	const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
+    // Update the theme only if the mode changes
+    const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
-	return (
-		<CacheProvider value={emotionCache}>
-			<Head>
-				<title>Shopping Stories</title>
-				<meta name="viewport" content="initial-scale=1, width=device-width" />
-			</Head>
-			<Provider value={client}>
-				<ColorModeContext.Provider value={colorMode}>
-					<ThemeProvider theme={theme}>
-						<CssBaseline />
-						<Component {...pageProps} />
-					</ThemeProvider>
-				</ColorModeContext.Provider>
-			</Provider>
-		</CacheProvider>
-	);
+    return (
+        <CacheProvider value={emotionCache}>
+            <Head>
+                <title>Shopping Stories</title>
+                <meta
+                    name="viewport"
+                    content="initial-scale=1, width=device-width"
+                />
+            </Head>
+            <Provider value={client}>
+                <ColorModeContext.Provider value={colorMode}>
+                    <ThemeProvider theme={theme}>
+                        <CssBaseline />
+                        <Component {...pageProps} />
+                    </ThemeProvider>
+                </ColorModeContext.Provider>
+            </Provider>
+        </CacheProvider>
+    );
 }
 
 export default App;

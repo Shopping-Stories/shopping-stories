@@ -8,62 +8,61 @@ import { logger } from '@typegoose/typegoose/lib/logSettings';
 
 @Resolver()
 export class UserResolver {
-	constructor(private readonly userService: UserService) {
-		this.userService = new UserService();
-	}
+    constructor(private readonly userService: UserService) {
+        this.userService = new UserService();
+    }
 
-	@Mutation((_returns) => String, { nullable: true })
-	async register(
-		@Arg('registerInput')
-		registerInput: RegisterInput,
-	) {
-		console.log(await this.userService.registerUser(registerInput));
-		return null;
-	}
+    @Mutation((_returns) => String, { nullable: true })
+    async register(
+        @Arg('registerInput')
+        registerInput: RegisterInput,
+    ) {
+        console.log(await this.userService.registerUser(registerInput));
+        return null;
+    }
 
-	@Query((_returns) => AccessToken, { nullable: true })
-	async login(@Arg('loginInput') loginInput: LoginInput) {
-		try {
-			let userSession: CognitoUserSession = await this.userService.loginUser(
-				loginInput,
-			);
-			return { accessToken: userSession.getAccessToken().getJwtToken() };
-		} catch (err) {
-			logger.error(err);
-			throw new Error('Bad Request Exception');
-		}
-	}
+    @Query((_returns) => AccessToken, { nullable: true })
+    async login(@Arg('loginInput') loginInput: LoginInput) {
+        try {
+            let userSession: CognitoUserSession =
+                await this.userService.loginUser(loginInput);
+            return { accessToken: userSession.getAccessToken().getJwtToken() };
+        } catch (err) {
+            logger.error(err);
+            throw new Error('Bad Request Exception');
+        }
+    }
 
-	// @Query((returns) => Boolean)
-	// async refreshToken(@Context() ctx: GraphQLContextWithReqRes) {
-	// 	let req = ctx.req;
+    // @Query((returns) => Boolean)
+    // async refreshToken(@Context() ctx: GraphQLContextWithReqRes) {
+    // 	let req = ctx.req;
 
-	// 	const authHeader = req.headers['authorization'];
-	// 	const token = authHeader && authHeader.split(' ')[1];
+    // 	const authHeader = req.headers['authorization'];
+    // 	const token = authHeader && authHeader.split(' ')[1];
 
-	// 	if (token == null) return false;
+    // 	if (token == null) return false;
 
-	// 	let result: any;
-	// 	try {
-	// 		const tokenSections = (token || '').split('.');
-	// 		if (tokenSections.length < 2) {
-	// 			return false;
-	// 		}
+    // 	let result: any;
+    // 	try {
+    // 		const tokenSections = (token || '').split('.');
+    // 		if (tokenSections.length < 2) {
+    // 			return false;
+    // 		}
 
-	// 		const headerJSON = Buffer.from(tokenSections[0], 'base64').toString(
-	// 			'utf8',
-	// 		);
-	// 		const header = JSON.parse(headerJSON) as TokenHeader;
+    // 		const headerJSON = Buffer.from(tokenSections[0], 'base64').toString(
+    // 			'utf8',
+    // 		);
+    // 		const header = JSON.parse(headerJSON) as TokenHeader;
 
-	// 		const keys = await getPublicKeys();
-	// 		const key = keys[header.kid];
-	// 		if (key === undefined) {
-	// 			throw new Error('claim made for unknown kid');
-	// 		}
+    // 		const keys = await getPublicKeys();
+    // 		const key = keys[header.kid];
+    // 		if (key === undefined) {
+    // 			throw new Error('claim made for unknown kid');
+    // 		}
 
-	// 		result = await jwt.verify(token, key.pem);
-	// 	} catch (error) {}
+    // 		result = await jwt.verify(token, key.pem);
+    // 	} catch (error) {}
 
-	// 	return this.authService.refreshTokens(req.cookies.refresh, result);
-	// }
+    // 	return this.authService.refreshTokens(req.cookies.refresh, result);
+    // }
 }

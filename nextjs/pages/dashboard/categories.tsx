@@ -1,6 +1,6 @@
 // import DataGrid from '@components/DataGrid';
+import CategoryPaginationTable from '@components/CategoryPaginationTable';
 import Header from '@components/Header';
-import PlacePaginationTable from '@components/PlacePaginationTable';
 import SideMenu from '@components/SideMenu';
 import useAuth from '@hooks/useAuth.hook';
 import Button from '@mui/material/Button';
@@ -24,63 +24,60 @@ import backgrounds from 'styles/backgrounds.module.css';
 import { useMutation } from 'urql';
 import * as yup from 'yup';
 
-const placeFields = `
-fragment placeFields on Place {
+const categoryFields = `
+fragment categoryFields on Category {
   id
-  location
-  alias
-  descriptor
+  item
+  category
+  subcategory
 }
 `;
 
-const createPlaceDef = `
-mutation createPlace($place: CreatePlaceInput!) {
-  createPlace(place: $place) {
-    ...placeFields
+const createCategoryDef = `
+mutation createCategory($category: CreateCategoryInput!) {
+  createCategory(category: $category) {
+    ...categoryFields
   }
 }
-${placeFields}
+${categoryFields}
 `;
 
-const searchPlaceDef = `
-query placesQuery($search: String, $options: FindAllLimitAndSkip) {
-  rows: findPlaces(search: $search, options: $options) {
-  	...placeFields
+const searchCategoryDef = `
+query CategoriesQuery($search: String, $options: FindAllLimitAndSkip) {
+  rows: findCategories(search: $search, options: $options) {
+  	...categoryFields
   }
-  count: countPlaces(search: $search)
+  count: countCategories(search: $search)
 }
-${placeFields}
+${categoryFields}
 `;
 
-const updatePlaceDef = `
-mutation updatePlace($id: String!, $updates: UpdatePlaceInput!) {
-  updatePlace(id: $id, updatedFields: $updates) {
-    ...placeFields
-  }
-}
-${placeFields}
-`;
-
-const deletePlaceDef = `
-mutation deletePlace($id: String!) {
-  deletePlace(id: $id) {
-    ...placeFields
+const updateCategoryDef = `
+mutation updateCategory($id: String!, $updates: UpdateCategoryInput!) {
+  updateCategory(id: $id, updatedFields: $updates) {
+    ...categoryFields
   }
 }
-${placeFields}
+${categoryFields}
 `;
 
-const searchSchema = yup.object({
+const deleteCategoryDef = `
+mutation deleteCategory($id: String!) {
+  deleteCategory(id: $id) {
+    ...categoryFields
+  }
+}
+${categoryFields}
+`;
+
+const validationSchema = yup.object({
     search: yup.string(),
 });
 
 const createCategorySchema = yup.object({
-    location: yup.string().required('Location is required'),
-    alias: yup.string().typeError('Alias must be a string').strict(true),
-    descriptor: yup
-        .string()
-        .typeError('Descriptor must be a string')
-        .strict(true),
+    item: yup.string().required('Item name is required'),
+    category: yup.string().required('Category is required'),
+    subcategory: yup.string().required('Subcategory is required'),
 });
 
 const updateCategorySchema = yup.object({
@@ -89,16 +86,20 @@ const updateCategorySchema = yup.object({
     subcategory: yup.string(),
 });
 
-const ManagePlacesPage: NextPage = () => {
+const ManageCategoryPage: NextPage = () => {
     const { groups, loading } = useAuth('/', [Roles.Admin]);
-    const [_createPlaceResult, createPlace] = useMutation(createPlaceDef);
-    const [_updatePlaceResult, updatePlace] = useMutation(updatePlaceDef);
-    const [_deletePlaceResult, deletePlace] = useMutation(deletePlaceDef);
+    const [_createCategoryResult, createCategory] =
+        useMutation(createCategoryDef);
+    const [_updateCategoryResult, updateCategory] =
+        useMutation(updateCategoryDef);
+    const [_deleteCategoryResult, deleteCategory] =
+        useMutation(deleteCategoryDef);
     const [search, setSearch] = useState<string>('');
     const [openUpdate, setOpenUpdate] = useState<boolean>(false);
-    const [placeToDelete, setPlaceToDelete] = useState<{
+    const [categoryToDelete, setCategoryToDelete] = useState<{
         id: string;
-        location: string;
+        item: string;
+        category: string;
     } | null>(null);
     const [reQuery, setReQuery] = useState<Boolean>(false);
 
@@ -132,15 +133,15 @@ const ManagePlacesPage: NextPage = () => {
 
     const createForm = useFormik({
         initialValues: {
-            location: '',
-            alias: '',
-            descriptor: '',
+            item: '',
+            category: '',
+            subcategory: '',
         },
         validationSchema: createCategorySchema,
         onSubmit: async (values, { resetForm }) => {
             // do your stuff
-            const res = await createPlace({
-                place: values,
+            const res = await createCategory({
+                category: values,
             });
             if (res.error) {
             } else {
@@ -154,19 +155,19 @@ const ManagePlacesPage: NextPage = () => {
     const updateForm = useFormik({
         initialValues: {
             id: '',
-            location: '',
-            alias: '',
-            descriptor: '',
+            item: '',
+            category: '',
+            subcategory: '',
         },
         validationSchema: updateCategorySchema,
         onSubmit: async (values, { resetForm }) => {
             // do your stuff
-            const res = await updatePlace({
+            const res = await updateCategory({
                 id: values.id,
                 updates: {
-                    location: values.location,
-                    alias: values.alias,
-                    descriptor: values.descriptor,
+                    item: values.item,
+                    category: values.category,
+                    subcategory: values.subcategory,
                 },
             });
             if (res.error) {
@@ -178,9 +179,9 @@ const ManagePlacesPage: NextPage = () => {
     });
 
     const handleItemDelete = async () => {
-        if (placeToDelete) {
-            const id = placeToDelete.id;
-            const res = await deletePlace({ id });
+        if (categoryToDelete) {
+            const id = categoryToDelete.id;
+            const res = await deleteCategory({ id });
             if (res.error) {
             } else {
                 setReQuery(true);
@@ -193,7 +194,7 @@ const ManagePlacesPage: NextPage = () => {
         initialValues: {
             search: '',
         },
-        validationSchema: searchSchema,
+        validationSchema: validationSchema,
         onSubmit: (values: any) => {
             setSearch(values.search);
         },
@@ -228,7 +229,7 @@ const ManagePlacesPage: NextPage = () => {
                                 variant="contained"
                                 onClick={handleOpenCreate}
                             >
-                                Create new place
+                                Create new category
                             </Button>
                             <FormGroup>
                                 <form onSubmit={formik.handleSubmit}>
@@ -267,16 +268,27 @@ const ManagePlacesPage: NextPage = () => {
                                 padding: '1rem',
                             }}
                         >
-                            <PlacePaginationTable
-                                queryDef={searchPlaceDef}
+                            <CategoryPaginationTable
+                                queryDef={searchCategoryDef}
                                 onEditClick={(row: any) => {
-                                    updateForm.setValues(row);
+                                    updateForm.setFieldValue('id', row.id);
+                                    updateForm.setFieldValue('item', row.item);
+                                    updateForm.setFieldValue(
+                                        'category',
+                                        row.category,
+                                    );
+                                    updateForm.setFieldValue(
+                                        'subcategory',
+                                        row.subcategory,
+                                    );
                                     handleOpenUpdate();
+                                    console.log('edit', row);
                                 }}
                                 onDeleteClick={async (row: any) => {
-                                    setPlaceToDelete({
+                                    setCategoryToDelete({
+                                        item: row.item,
                                         id: row.id,
-                                        location: row.location,
+                                        category: row.category,
                                     });
                                     handleOpenDelete();
                                 }}
@@ -288,7 +300,7 @@ const ManagePlacesPage: NextPage = () => {
                     </Grid>
                 </Grid>
                 <Dialog open={openUpdate} onClose={handleCloseUpdate}>
-                    <DialogTitle>Edit location</DialogTitle>
+                    <DialogTitle>Edit category</DialogTitle>
                     <form onSubmit={updateForm.handleSubmit}>
                         <DialogContent>
                             <DialogContentText>
@@ -299,51 +311,51 @@ const ManagePlacesPage: NextPage = () => {
                                 autoFocus
                                 margin="dense"
                                 variant="standard"
-                                name="location"
-                                label="Location"
-                                value={updateForm.values.location}
+                                name="item"
+                                label="Item"
+                                value={updateForm.values.item}
                                 onChange={updateForm.handleChange}
                                 error={
-                                    updateForm.touched.location &&
-                                    Boolean(updateForm.errors.location)
+                                    updateForm.touched.item &&
+                                    Boolean(updateForm.errors.item)
                                 }
                                 helperText={
-                                    updateForm.touched.location &&
-                                    updateForm.errors.location
+                                    updateForm.touched.item &&
+                                    updateForm.errors.item
                                 }
                             />
                             <TextField
                                 fullWidth
                                 margin="dense"
                                 variant="standard"
-                                name="alias"
-                                label="Alias"
-                                value={updateForm.values.alias}
+                                name="category"
+                                label="category"
+                                value={updateForm.values.category}
                                 onChange={updateForm.handleChange}
                                 error={
-                                    updateForm.touched.alias &&
-                                    Boolean(updateForm.errors.alias)
+                                    updateForm.touched.category &&
+                                    Boolean(updateForm.errors.category)
                                 }
                                 helperText={
-                                    updateForm.touched.alias &&
-                                    updateForm.errors.alias
+                                    updateForm.touched.category &&
+                                    updateForm.errors.category
                                 }
                             />
                             <TextField
                                 fullWidth
                                 margin="dense"
                                 variant="standard"
-                                name="descriptor"
-                                label="Descriptor"
-                                value={updateForm.values.descriptor}
+                                name="subcategory"
+                                label="subcategory"
+                                value={updateForm.values.subcategory}
                                 onChange={updateForm.handleChange}
                                 error={
-                                    updateForm.touched.descriptor &&
-                                    Boolean(updateForm.errors.descriptor)
+                                    updateForm.touched.subcategory &&
+                                    Boolean(updateForm.errors.subcategory)
                                 }
                                 helperText={
-                                    updateForm.touched.descriptor &&
-                                    updateForm.errors.descriptor
+                                    updateForm.touched.subcategory &&
+                                    updateForm.errors.subcategory
                                 }
                             />
                         </DialogContent>
@@ -358,58 +370,58 @@ const ManagePlacesPage: NextPage = () => {
                     <form onSubmit={createForm.handleSubmit}>
                         <DialogContent>
                             <DialogContentText>
-                                Create a new location
+                                Create a new Category
                             </DialogContentText>
                             <TextField
                                 fullWidth
                                 autoFocus
                                 margin="dense"
                                 variant="standard"
-                                name="location"
-                                label="Location"
-                                value={createForm.values.location}
+                                name="item"
+                                label="Item"
+                                value={createForm.values.item}
                                 onChange={createForm.handleChange}
                                 error={
-                                    createForm.touched.location &&
-                                    Boolean(createForm.errors.location)
+                                    createForm.touched.item &&
+                                    Boolean(createForm.errors.item)
                                 }
                                 helperText={
-                                    createForm.touched.location &&
-                                    createForm.errors.location
+                                    createForm.touched.item &&
+                                    createForm.errors.item
                                 }
                             />
                             <TextField
                                 fullWidth
                                 margin="dense"
                                 variant="standard"
-                                name="alias"
-                                label="Alias"
-                                value={createForm.values.alias}
+                                name="category"
+                                label="Category"
+                                value={createForm.values.category}
                                 onChange={createForm.handleChange}
                                 error={
-                                    createForm.touched.alias &&
-                                    Boolean(createForm.errors.alias)
+                                    createForm.touched.category &&
+                                    Boolean(createForm.errors.category)
                                 }
                                 helperText={
-                                    createForm.touched.alias &&
-                                    createForm.errors.alias
+                                    createForm.touched.category &&
+                                    createForm.errors.category
                                 }
                             />
                             <TextField
                                 fullWidth
                                 margin="dense"
                                 variant="standard"
-                                name="descriptor"
-                                label="Descriptor"
-                                value={createForm.values.descriptor}
+                                name="subcategory"
+                                label="Subcategory"
+                                value={createForm.values.subcategory}
                                 onChange={createForm.handleChange}
                                 error={
-                                    createForm.touched.descriptor &&
-                                    Boolean(createForm.errors.descriptor)
+                                    createForm.touched.subcategory &&
+                                    Boolean(createForm.errors.subcategory)
                                 }
                                 helperText={
-                                    createForm.touched.descriptor &&
-                                    createForm.errors.descriptor
+                                    createForm.touched.subcategory &&
+                                    createForm.errors.subcategory
                                 }
                             />
                         </DialogContent>
@@ -422,12 +434,12 @@ const ManagePlacesPage: NextPage = () => {
                 <Dialog open={openDelete} onClose={handleCloseDelete}>
                     <DialogTitle>
                         Confirm Delete of{' '}
-                        {placeToDelete && placeToDelete.location}
+                        {categoryToDelete && categoryToDelete.category}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
                             Are you sure you want to delete{' '}
-                            {placeToDelete && placeToDelete.location}
+                            {categoryToDelete && categoryToDelete.category}
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -440,4 +452,4 @@ const ManagePlacesPage: NextPage = () => {
     );
 };
 
-export default ManagePlacesPage;
+export default ManageCategoryPage;

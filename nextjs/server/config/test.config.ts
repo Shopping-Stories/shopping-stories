@@ -11,21 +11,21 @@ import { DocToObject } from '../middleware/misc.middleware';
 import { UserResolver } from '../user/user.resolver';
 
 const getGraphQLServer = async () => {
-	const schema = await buildSchema({
-		resolvers: [
-			HelloResolver,
-			CatResolver,
-			EntryResolver,
-			UserResolver,
-			AdminResolver,
-		],
-		scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],
-		authChecker: JWTAuthChecker,
-		globalMiddlewares: [DocToObject],
-	});
-	return new ApolloServer({
-		schema,
-	});
+    const schema = await buildSchema({
+        resolvers: [
+            HelloResolver,
+            CatResolver,
+            EntryResolver,
+            UserResolver,
+            AdminResolver,
+        ],
+        scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],
+        authChecker: JWTAuthChecker,
+        globalMiddlewares: [DocToObject],
+    });
+    return new ApolloServer({
+        schema,
+    });
 };
 
 export default getGraphQLServer;

@@ -16,133 +16,148 @@ const parseSheetDef = `
 `;
 
 const FileSelector = () => {
-	const [parseSheetResult, parseSheet] = useMutation(parseSheetDef);
-	const [printState, setPrintState] = useState(false);
+    const [parseSheetResult, parseSheet] = useMutation(parseSheetDef);
+    const [printState, setPrintState] = useState(false);
 
-	async function handleChange(selectorFiles: FileList | null) {
-		if (selectorFiles === null || !selectorFiles) {
-			return;
-		}
-		let sheets: { [name: string]: any } = {};
-		const selectedFile = selectorFiles[0];
-		const fileReader = new FileReader();
-		fileReader.readAsBinaryString(selectedFile);
-		fileReader.onload = (event: any) => {
-			let binaryData = event.target.result;
-			let workbook = xlsx.read(binaryData, { type: 'binary' });
-			workbook.SheetNames.forEach((sheet: string) => {
-				// delete a specific row
-				// function ec(r: number, c: number) {
-				// 	return xlsx.utils.encode_cell({ r: r, c: c });
-				// }
-				// function delete_row(
-				// 	ws: xlsx.WorkSheet,
-				// 	row_index: number,
-				// ): xlsx.WorkSheet {
-				// 	let variable = xlsx.utils.decode_range(ws['!ref' as string]);
-				// 	for (let R = row_index; R < variable.e.r; ++R) {
-				// 		for (let C = variable.s.c; C <= variable.e.c; ++C) {
-				// 			ws[ec(R, C)] = ws[ec(R + 1, C)];
-				// 		}
-				// 	}
-				// 	variable.e.r--;
-				// 	ws['!ref'] = xlsx.utils.encode_range(variable.s, variable.e);
-				// 	return ws;
-				// }
+    async function handleChange(selectorFiles: FileList | null) {
+        if (selectorFiles === null || !selectorFiles) {
+            return;
+        }
+        let sheets: { [name: string]: any } = {};
+        const selectedFile = selectorFiles[0];
+        const fileReader = new FileReader();
+        fileReader.readAsBinaryString(selectedFile);
+        fileReader.onload = (event: any) => {
+            let binaryData = event.target.result;
+            let workbook = xlsx.read(binaryData, { type: 'binary' });
+            workbook.SheetNames.forEach((sheet: string) => {
+                // delete a specific row
+                // function ec(r: number, c: number) {
+                // 	return xlsx.utils.encode_cell({ r: r, c: c });
+                // }
+                // function delete_row(
+                // 	ws: xlsx.WorkSheet,
+                // 	row_index: number,
+                // ): xlsx.WorkSheet {
+                // 	let variable = xlsx.utils.decode_range(ws['!ref' as string]);
+                // 	for (let R = row_index; R < variable.e.r; ++R) {
+                // 		for (let C = variable.s.c; C <= variable.e.c; ++C) {
+                // 			ws[ec(R, C)] = ws[ec(R + 1, C)];
+                // 		}
+                // 	}
+                // 	variable.e.r--;
+                // 	ws['!ref'] = xlsx.utils.encode_range(variable.s, variable.e);
+                // 	return ws;
+                // }
 
-				const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet], {
-					defval: '',
-					raw: true,
-				});
-				sheets[sheet] = data;
-			});
-			// let data = JSON.stringify(sheets, undefined, 4);
-			// console.log(data);
-			// const fileName = 'result';
-			// const exportType = 'json';
+                const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet], {
+                    defval: '',
+                    raw: true,
+                });
+                sheets[sheet] = data;
+            });
+            // let data = JSON.stringify(sheets, undefined, 4);
+            // console.log(data);
+            // const fileName = 'result';
+            // const exportType = 'json';
 
-			console.log(JSON.stringify(sheets, undefined, 4));
-			parseSheet({ spreadsheet: sheets });
-			// exportFromJSON({ data: sheets, fileName, exportType });
-		};
-	}
+            console.log(JSON.stringify(sheets, undefined, 4));
+            parseSheet({ spreadsheet: sheets });
+            // exportFromJSON({ data: sheets, fileName, exportType });
+        };
+    }
 
-	const entries = parseSheetResult.data
-		? parseSheetResult.data.importSpreadsheet
-		: [];
+    const entries = parseSheetResult.data
+        ? parseSheetResult.data.importSpreadsheet
+        : [];
 
-	return (
-		<div style={{ textAlign: 'center' }}>
-			<input type="file" onChange={(e) => handleChange(e.target.files)} />
-			{printState &&
-				entries &&
-				entries.map((entry: any, index: number) => (
-					<div key={index}>
-						<pre style={{ display: 'inline-block', textAlign: 'left' }}>
-							{JSON.stringify(entry, undefined, 4)}
-						</pre>
-						<br />
-					</div>
-				))}
-			{printState && parseSheetResult.error ? (
-				<pre>{JSON.stringify(parseSheetResult.error, undefined, 4)}</pre>
-			) : (
-				''
-			)}
-			<Switch
-				checked={printState}
-				onChange={() => setPrintState(!printState)}
-			/>
-			<Button
-				onClick={() => {
-					const fileName = 'result';
-					const exportType = 'json';
+    return (
+        <div style={{ textAlign: 'center' }}>
+            <input type="file" onChange={(e) => handleChange(e.target.files)} />
+            {printState &&
+                entries &&
+                entries.map((entry: any, index: number) => (
+                    <div key={index}>
+                        <pre
+                            style={{
+                                display: 'inline-block',
+                                textAlign: 'left',
+                            }}
+                        >
+                            {JSON.stringify(entry, undefined, 4)}
+                        </pre>
+                        <br />
+                    </div>
+                ))}
+            {printState && parseSheetResult.error ? (
+                <pre>
+                    {JSON.stringify(parseSheetResult.error, undefined, 4)}
+                </pre>
+            ) : (
+                ''
+            )}
+            <Switch
+                checked={printState}
+                onChange={() => setPrintState(!printState)}
+            />
+            <Button
+                onClick={() => {
+                    const fileName = 'result';
+                    const exportType = 'json';
 
-					exportFromJSON({ data: entries, fileName, exportType });
-				}}
-			>
-				Download JSON File
-			</Button>
-		</div>
-	);
+                    exportFromJSON({ data: entries, fileName, exportType });
+                }}
+            >
+                Download JSON File
+            </Button>
+        </div>
+    );
 };
 
 const Home: NextPage = () => {
-	return (
-		<div className={styles.container}>
-			<Head>
-				<title>Create Next App</title>
-				<meta name="description" content="Generated by create next app" />
-				<link rel="icon" href="/favicon.ico" />
-			</Head>
+    return (
+        <div className={styles.container}>
+            <Head>
+                <title>Create Next App</title>
+                <meta
+                    name="description"
+                    content="Generated by create next app"
+                />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
 
-			<main className={styles.main}>
-				<h1 className={styles.title}>
-					Welcome to <a href="https://nextjs.org">Next.js!</a>
-				</h1>
+            <main className={styles.main}>
+                <h1 className={styles.title}>
+                    Welcome to <a href="https://nextjs.org">Next.js!</a>
+                </h1>
 
-				<FileSelector />
+                <FileSelector />
 
-				<p className={styles.description}>
-					Get started by editing{' '}
-					<code className={styles.code}>pages/exceltest.tsx</code>
-				</p>
-			</main>
+                <p className={styles.description}>
+                    Get started by editing{' '}
+                    <code className={styles.code}>pages/exceltest.tsx</code>
+                </p>
+            </main>
 
-			<footer className={styles.footer}>
-				<a
-					href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Powered by{' '}
-					<span className={styles.logo}>
-						<Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-					</span>
-				</a>
-			</footer>
-		</div>
-	);
+            <footer className={styles.footer}>
+                <a
+                    href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Powered by{' '}
+                    <span className={styles.logo}>
+                        <Image
+                            src="/vercel.svg"
+                            alt="Vercel Logo"
+                            width={72}
+                            height={16}
+                        />
+                    </span>
+                </a>
+            </footer>
+        </div>
+    );
 };
 
 export default Home;

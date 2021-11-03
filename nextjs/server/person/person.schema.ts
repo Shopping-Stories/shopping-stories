@@ -6,71 +6,71 @@ export type PersonDocument = Person & Document;
 
 @ObjectType({ description: 'People Object' })
 @modelOptions({
-	schemaOptions: { timestamps: true },
+    schemaOptions: { timestamps: true },
 })
 export class Person {
-	@Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
-	public get id(): string {
-		return `${this._id}`; // Converts type ObjectId of _id to String
-	}
+    @Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
+    public get id(): string {
+        return `${this._id}`; // Converts type ObjectId of _id to String
+    }
 
-	readonly _id?: ObjectId;
+    readonly _id?: ObjectId;
 
-	@prop({ required: true })
-	@Field({ description: 'Variations of given item' })
-	account: string;
+    @prop({ required: true })
+    @Field({ description: 'Variations of given item' })
+    account: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	enslaved: string;
+    @prop({ default: '' })
+    @Field({ nullable: true, description: 'Variations of given item' })
+    enslaved: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	firstName: string;
+    @prop({ required: true })
+    @Field({ description: 'Variations of given item' })
+    firstName: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	lastName: string;
+    @prop({ required: true })
+    @Field({ description: 'Variations of given item' })
+    lastName: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	gender: string;
+    @prop({ default: '' })
+    @Field({ nullable: true, description: 'Variations of given item' })
+    gender: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	location: string;
+    @prop({ default: '' })
+    @Field({ nullable: true, description: 'Variations of given item' })
+    location: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	prefix: string;
+    @prop({ default: '' })
+    @Field({ nullable: true, description: 'Variations of given item' })
+    prefix: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	profession: string;
+    @prop({ default: '' })
+    @Field({ nullable: true, description: 'Variations of given item' })
+    profession: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	professionCategory: string;
+    @prop({ default: '' })
+    @Field({ nullable: true, description: 'Variations of given item' })
+    professionCategory: string;
 
-	@prop()
-	@Field({ nullable: true })
-	professionQualifier: string;
+    @prop({ default: '' })
+    @Field({ nullable: true })
+    professionQualifier: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	reference: string;
+    @prop({ default: '' })
+    @Field({ nullable: true, description: 'Variations of given item' })
+    reference: string;
 
-	@prop({ nullable: true, required: true })
-	@Field({ description: 'Variations of given item' })
-	store: string;
+    @prop({ default: '' })
+    @Field({ nullable: true, description: 'Variations of given item' })
+    store: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	suffix: string;
+    @prop({ default: '' })
+    @Field({ nullable: true, description: 'Variations of given item' })
+    suffix: string;
 
-	@prop()
-	@Field({ nullable: true, description: 'Variations of given item' })
-	variations: string;
+    @prop({ default: '' })
+    @Field({ nullable: true, description: 'Variations of given item' })
+    variations: string;
 }
 
 export const PersonModel = mongoose.models.Person || getModelForClass(Person);

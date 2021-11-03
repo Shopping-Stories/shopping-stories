@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 
 const ItemGlossaryPage: NextPage = () => {
-	return <div></div>;
+    return <div></div>;
 };
 
 export default ItemGlossaryPage;

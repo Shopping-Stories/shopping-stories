@@ -8,49 +8,49 @@ import { gql, useQuery } from 'urql';
 import { Roles } from '../config/constants.config';
 
 const FIND_CATS_QUERY = gql`
-	{
-		findCatsAuth {
-			id
-			name
-		}
-	}
+    {
+        findCatsAuth {
+            id
+            name
+        }
+    }
 `;
 
 const Cats = () => {
-	const [result, executeQuery] = useQuery({
-		query: FIND_CATS_QUERY,
-		pause: true,
-	});
+    const [result, executeQuery] = useQuery({
+        query: FIND_CATS_QUERY,
+        pause: true,
+    });
 
-	const { loading } = useAuth('/', [Roles.Admin]);
+    const { loading } = useAuth('/', [Roles.Admin]);
 
-	const getCats = useCallback(() => {
-		executeQuery();
-	}, [executeQuery]);
+    const getCats = useCallback(() => {
+        executeQuery();
+    }, [executeQuery]);
 
-	if (loading) {
-		return (
-			<Box sx={{ width: '100%' }}>
-				<LinearProgressWithLabel value="loading..." />
-			</Box>
-		);
-	}
+    if (loading) {
+        return (
+            <Box sx={{ width: '100%' }}>
+                <LinearProgressWithLabel value="loading..." />
+            </Box>
+        );
+    }
 
-	console.log(result);
+    console.log(result);
 
-	const cats = result.data ? result.data.findCatsAuth : [];
+    const cats = result.data ? result.data.findCatsAuth : [];
 
-	return (
-		<div>
-			<AmplifySignOut />
-			<LoadingButton onClick={getCats} loading={result.fetching}>
-				get Cats
-			</LoadingButton>
-			{cats.map((cat: any) => (
-				<div key={cat.id}>{cat.name}</div>
-			))}
-		</div>
-	);
+    return (
+        <div>
+            <AmplifySignOut />
+            <LoadingButton onClick={getCats} loading={result.fetching}>
+                get Cats
+            </LoadingButton>
+            {cats.map((cat: any) => (
+                <div key={cat.id}>{cat.name}</div>
+            ))}
+        </div>
+    );
 };
 
 export default Cats;
