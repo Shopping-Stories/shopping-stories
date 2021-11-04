@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env FORCE_COLOR=true next dev | pino-pretty --colorize",
-    "build": "next build && next export",
+    "build": "next build",
     "start": "NODE_ENV=production next start",
     "lint": "next lint",
     "format": "prettier --write \"server/**/*.ts\" \"client/**/*.tsx\" \"client/**/*.ts\" \"tests/**/*.ts\" \"pages/**/*.ts\" \"pages/**/*.tsx\"",
