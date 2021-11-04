@@ -155,6 +155,7 @@ export async function advancedSearch(searchObj: any) {
     const res: any = await EntryModel.find(temp, {
         score: { $meta: 'textScore' },
     }).sort({ score: { $meta: 'textScore' } });
+    console.log(res);
     return res;
 }
 async function formatMoney(entry: any) {

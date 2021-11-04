@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { getMongooseFromFields } from 'server/config/utils';
 import { FindAllLimitAndSkip } from 'server/glossaryItem/input/findAllArgs.input';
+import { advancedSearch } from 'server/spreadsheet/spreadsheet.service';
 import {
     Arg,
     Info,
@@ -12,6 +13,7 @@ import {
 import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 import { Entry } from './entry.schema';
 import { EntryService } from './entry.service';
+import { AdvancedSearchInput } from './input/advancedSearch.input';
 import { CreateEntryInput } from './input/createEntry.input';
 import { UpdateEntryInput } from './input/updateEntry.input';
 
@@ -35,6 +37,20 @@ export default class EntryResolver {
             getMongooseFromFields(info),
             search,
         );
+    }
+
+    @UseMiddleware(ResolveTime, ConnectDB)
+    @Query((_returns) => [Object], {
+        nullable: true,
+        description: 'Search all Entries in the database',
+    })
+    async advancedFindEntries(
+        // @Arg('options', { nullable: true })
+        // { limit, skip }: FindAllLimitAndSkip,
+        @Arg('search', { nullable: true }) search: AdvancedSearchInput,
+        // @Info() info: any,
+    ): Promise<any> {
+        return advancedSearch(search);
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
