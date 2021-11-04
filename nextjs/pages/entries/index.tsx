@@ -51,7 +51,6 @@ const ManagePlacesPage: NextPage = () => {
     const router = useRouter();
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isModerator = isInGroup(Roles.Moderator, groups);
-    console.log(isAdmin, isModerator);
     const [_deletePlaceResult, deletePlace] = useMutation(deleteEntryDef);
     const [search, setSearch] = useState<string>('');
     const [placeToDelete, setPlaceToDelete] = useState<{
@@ -62,6 +61,7 @@ const ManagePlacesPage: NextPage = () => {
     const [openDelete, setOpenDelete] = useState<boolean>(false);
 
     const handleOpenDelete = () => {
+        console.log(isAdmin, isModerator);
         setOpenDelete(true);
     };
 

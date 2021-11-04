@@ -43,7 +43,9 @@ const CreateEntryPage: NextPage = () => {
         },
     });
 
-    console.log(createForm);
+    if (createForm.values.location) {
+        console.log("");
+    }
 
     return <div>hello</div>;
 };

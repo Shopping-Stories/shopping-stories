@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  webpack: function (config, options) {
+  webpack: (config) => {
+    config.optimization.splitChunks.cacheGroups = { }
+    config.optimization.minimize = true;
     // config.experiments = { topLevelAwait: true }
-    return config;
+    return config
   },
   webpack5: false,
   env: {

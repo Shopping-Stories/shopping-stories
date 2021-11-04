@@ -63,7 +63,9 @@ const UpdateEntryPage: NextPage = () => {
         },
     });
 
-    console.log(updateForm);
+    if (updateForm.values.id) {
+        console.log("");
+    }
 
     if (findEntryResult.fetching) {
         return <div>Fetching {router.query.id}</div>;
