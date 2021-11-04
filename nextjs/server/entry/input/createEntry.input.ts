@@ -3,7 +3,7 @@ import { Field, ID, Int, InputType } from 'type-graphql';
 
 @InputType()
 export class TobaccoMarkInput {
-    @Field((_type) => ID, { description: 'words' })
+    @Field(() => ID, { description: 'words' })
     markID: ObjectId;
 
     @Field({ description: '' })
@@ -33,10 +33,10 @@ export class MoneyInput {
     @Field({ description: '', defaultValue: '' })
     colony: string;
 
-    @Field((_type) => PoundsShillingsPenceInput, { description: '' })
+    @Field(() => PoundsShillingsPenceInput, { description: '' })
     sterling: PoundsShillingsPenceInput;
 
-    @Field((_type) => PoundsShillingsPenceInput, { description: '' })
+    @Field(() => PoundsShillingsPenceInput, { description: '' })
     currency: PoundsShillingsPenceInput;
 }
 @InputType()
@@ -56,30 +56,30 @@ export class NoteInput {
 
 @InputType()
 export class MetaInput {
-    @Field((_type) => String, { description: 'Ledger containing this Entry' })
+    @Field(() => String, { description: 'Ledger containing this Entry' })
     ledger: string;
 
-    @Field((_type) => String, { description: 'Reel of the Entry' })
+    @Field(() => String, { description: 'Reel of the Entry' })
     reel: string;
 
-    @Field((_type) => String, { description: 'Store Owner' })
+    @Field(() => String, { description: 'Store Owner' })
     owner: string;
 
-    @Field((_type) => String, { description: 'Name of Store' })
+    @Field(() => String, { description: 'Name of Store' })
     store: string;
 
-    @Field((_type) => String, { description: 'Year the entry was made' })
+    @Field(() => String, { description: 'Year the entry was made' })
     year: string;
 
-    @Field((_type) => String, {
+    @Field(() => String, {
         description: 'Folio the entry is contained in',
     })
     folioPage: string;
 
-    @Field((_type) => String, { description: 'ID of entry within Folio' })
+    @Field(() => String, { description: 'ID of entry within Folio' })
     entryID: string;
 
-    @Field((_type) => String, { description: 'comments' })
+    @Field(() => String, { description: 'comments' })
     comments: string;
 }
 
@@ -103,7 +103,7 @@ export class ItemOrServiceInput {
     @Field({ description: '' })
     qualifier: string;
 
-    @Field((_type) => [String], { description: '' })
+    @Field(() => [String], { description: '' })
     variants: string[];
 
     @Field({ description: '' })
@@ -115,10 +115,10 @@ export class ItemOrServiceInput {
     @Field({ description: '', defaultValue: '' })
     subcategory: string;
 
-    @Field((_type) => PoundsShillingsPenceInput, { description: '' })
+    @Field(() => PoundsShillingsPenceInput, { description: '' })
     unitCost: PoundsShillingsPenceInput;
 
-    @Field((_type) => PoundsShillingsPenceInput, { description: '' })
+    @Field(() => PoundsShillingsPenceInput, { description: '' })
     itemCost: PoundsShillingsPenceInput;
 }
 @InputType()
@@ -129,13 +129,13 @@ export class ItemEntryInput {
     @Field({ description: '' })
     percentage: number;
 
-    @Field((_type) => [ItemOrServiceInput], {
+    @Field(() => [ItemOrServiceInput], {
         description: '',
         nullable: 'items',
     })
     itemsOrServices: ItemOrServiceInput[];
 
-    @Field((_type) => [MentionedItemsInput], { description: '' })
+    @Field(() => [MentionedItemsInput], { description: '' })
     itemsMentioned: MentionedItemsInput[];
 }
 
@@ -165,13 +165,13 @@ export class TobaccoEntryInput {
     @Field({ description: 'words' })
     entry: string;
 
-    @Field((_type) => [TobaccoMarkInput], { description: '' })
+    @Field(() => [TobaccoMarkInput], { description: '' })
     marks: TobaccoMarkInput[];
 
-    @Field((_type) => [NoteInput], { description: '' })
+    @Field(() => [NoteInput], { description: '' })
     notes: NoteInput[];
 
-    @Field((_type) => [TobaccoMoneyInput], { description: '' })
+    @Field(() => [TobaccoMoneyInput], { description: '' })
     money: TobaccoMoneyInput[];
 
     @Field({ description: 'words' })
@@ -183,10 +183,10 @@ export class RegularEntryInput {
     @Field({ description: 'words' })
     entry: string;
 
-    @Field((_type) => [TobaccoMarkInput], { description: '' })
+    @Field(() => [TobaccoMarkInput], { description: '' })
     tobaccoMarks: TobaccoMarkInput[];
 
-    @Field((_type) => [MentionedItemsInput], { description: '' })
+    @Field(() => [MentionedItemsInput], { description: '' })
     itemsMentioned: MentionedItemsInput[];
 }
 
@@ -195,7 +195,7 @@ export class PeoplePlacesInput {
     @Field({ description: 'Persons name' })
     name: string;
 
-    @Field((_type) => ID, { description: 'words', nullable: true })
+    @Field(() => ID, { description: 'words', nullable: true })
     id: ObjectId;
 }
 /*
@@ -212,48 +212,48 @@ export const EntryUnion = createUnionType({
 
 @InputType()
 export class DateInput {
-    @Field((_type) => Int, { description: 'day of date' })
+    @Field(() => Int, { description: 'day of date' })
     day: number;
 
-    @Field((_type) => Int, { description: 'month of date' })
+    @Field(() => Int, { description: 'month of date' })
     month: number;
 
-    @Field((_type) => String, { description: 'year of date' })
+    @Field(() => String, { description: 'year of date' })
     year: string;
 
-    @Field((_type) => Date, { description: 'complete date', nullable: true })
+    @Field(() => Date, { description: 'complete date', nullable: true })
     fullDate: Date;
 }
 
 @InputType()
 export class AccountHolderInput {
-    @Field((_type) => String, {
+    @Field(() => String, {
         description: "Prefix of account holder's name",
     })
     prefix: string;
 
-    @Field((_type) => String, { description: 'First name of account holder' })
+    @Field(() => String, { description: 'First name of account holder' })
     accountFirstName: string;
 
-    @Field((_type) => String, { description: 'Last name of account holder' })
+    @Field(() => String, { description: 'Last name of account holder' })
     accountLastName: string;
 
-    @Field((_type) => String, { description: 'Suffix of account holder' })
+    @Field(() => String, { description: 'Suffix of account holder' })
     suffix: string;
 
-    @Field((_type) => String, { description: 'Profession of account holder' })
+    @Field(() => String, { description: 'Profession of account holder' })
     profession: string;
 
-    @Field((_type) => String, { description: 'Location?' })
+    @Field(() => String, { description: 'Location?' })
     location: string;
 
-    @Field((_type) => String, { description: 'Reference?' })
+    @Field(() => String, { description: 'Reference?' })
     reference: string;
 
-    @Field((_type) => Number, { description: 'Debt or Credit transaction' })
+    @Field(() => Number, { description: 'Debt or Credit transaction' })
     debitOrCredit: number;
 
-    @Field((_type) => ID, {
+    @Field(() => ID, {
         description:
             'ID of the accountholder to reference in peoples master list',
     })
@@ -262,48 +262,48 @@ export class AccountHolderInput {
 
 @InputType()
 export class CreateEntryInput {
-    @Field((_type) => AccountHolderInput, {
+    @Field(() => AccountHolderInput, {
         description: 'Information on the account holder in the transaction',
     })
     accountHolder: AccountHolderInput;
 
-    @Field((_type) => MetaInput, {
+    @Field(() => MetaInput, {
         description: 'Meta information of the entry',
     })
     meta: MetaInput;
 
-    @Field((_type) => DateInput, { description: 'Date of entry' })
+    @Field(() => DateInput, { description: 'Date of entry' })
     dateInfo: DateInput;
 
-    @Field((_type) => [String], { description: '' })
+    @Field(() => [String], { description: '' })
     folioRefs: [string];
 
-    @Field((_type) => [String], { description: '' })
+    @Field(() => [String], { description: '' })
     ledgerRefs: [string];
 
-    @Field((_type) => [ItemEntryInput], { nullable: true })
+    @Field(() => [ItemEntryInput], { nullable: true })
     itemEntries?: ItemEntryInput[] | null;
 
-    @Field((_type) => TobaccoEntryInput, { nullable: true })
+    @Field(() => TobaccoEntryInput, { nullable: true })
     tobaccoEntry?: TobaccoEntryInput | null;
 
-    @Field((_type) => RegularEntryInput, { nullable: true })
+    @Field(() => RegularEntryInput, { nullable: true })
     regularEntry?: RegularEntryInput | null;
 
-    @Field((_type) => [PeoplePlacesInput], {
+    @Field(() => [PeoplePlacesInput], {
         description: 'People referenced in this entry',
     })
     people: PeoplePlacesInput[];
 
-    @Field((_type) => [PeoplePlacesInput], {
+    @Field(() => [PeoplePlacesInput], {
         description: 'Places referenced in this entry',
     })
     places: PeoplePlacesInput[];
 
-    @Field((_type) => String, { description: 'Type of Entry' })
+    @Field(() => String, { description: 'Type of Entry' })
     entry: string;
 
-    @Field((_type) => MoneyInput, {
+    @Field(() => MoneyInput, {
         description: 'general money information for the entry',
     })
     money: MoneyInput;

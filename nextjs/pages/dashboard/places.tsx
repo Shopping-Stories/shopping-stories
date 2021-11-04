@@ -1,4 +1,3 @@
-// import DataGrid from '@components/DataGrid';
 import Header from '@components/Header';
 import PlacePaginationTable from '@components/PlacePaginationTable';
 import SideMenu from '@components/SideMenu';
@@ -13,8 +12,6 @@ import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
-// import LoadingButton from '@mui/lab/LoadingButton';
-// import TextareaAutosize from '@mui/material/TextareaAutosize';
 import TextField from '@mui/material/TextField';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
@@ -74,7 +71,7 @@ const searchSchema = yup.object({
     search: yup.string(),
 });
 
-const createCategorySchema = yup.object({
+const createPlaceSchema = yup.object({
     location: yup.string().required('Location is required'),
     alias: yup.string().typeError('Alias must be a string').strict(true),
     descriptor: yup
@@ -83,7 +80,7 @@ const createCategorySchema = yup.object({
         .strict(true),
 });
 
-const updateCategorySchema = yup.object({
+const updatePlaceSchema = yup.object({
     item: yup.string(),
     category: yup.string(),
     subcategory: yup.string(),
@@ -136,7 +133,7 @@ const ManagePlacesPage: NextPage = () => {
             alias: '',
             descriptor: '',
         },
-        validationSchema: createCategorySchema,
+        validationSchema: createPlaceSchema,
         onSubmit: async (values, { resetForm }) => {
             // do your stuff
             const res = await createPlace({
@@ -158,7 +155,7 @@ const ManagePlacesPage: NextPage = () => {
             alias: '',
             descriptor: '',
         },
-        validationSchema: updateCategorySchema,
+        validationSchema: updatePlaceSchema,
         onSubmit: async (values, { resetForm }) => {
             // do your stuff
             const res = await updatePlace({

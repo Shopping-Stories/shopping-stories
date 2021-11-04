@@ -1,9 +1,19 @@
 import 'reflect-metadata';
-import { Arg, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { getMongooseFromFields } from 'server/config/utils';
+import { FindAllLimitAndSkip } from 'server/glossaryItem/input/findAllArgs.input';
+import {
+    Arg,
+    Info,
+    Mutation,
+    Query,
+    Resolver,
+    UseMiddleware,
+} from 'type-graphql';
 import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 import { Entry } from './entry.schema';
 import { EntryService } from './entry.service';
-import { CreateEntryInput } from './input/create-entry.input';
+import { CreateEntryInput } from './input/createEntry.input';
+import { UpdateEntryInput } from './input/updateEntry.input';
 
 @Resolver((_of) => Entry)
 export default class EntryResolver {
@@ -11,10 +21,28 @@ export default class EntryResolver {
     @UseMiddleware(ResolveTime, ConnectDB)
     @Query((_returns) => [Entry], {
         nullable: true,
-        description: 'Find all Cats in the database',
+        description: 'Search all Entries in the database',
     })
-    async findEntries() {
-        return EntryService.findAllEntries();
+    async findEntries(
+        @Arg('options', { nullable: true })
+        { limit, skip }: FindAllLimitAndSkip,
+        @Arg('search', { nullable: true }) search: string,
+        @Info() info: any,
+    ) {
+        return EntryService.findAll(
+            skip,
+            limit,
+            getMongooseFromFields(info),
+            search,
+        );
+    }
+
+    @UseMiddleware(ResolveTime, ConnectDB)
+    @Query((_returns) => Number)
+    async countEntries(
+        @Arg('search', { nullable: true }) search: string,
+    ): Promise<number> {
+        return EntryService.count(search);
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
@@ -23,7 +51,7 @@ export default class EntryResolver {
         description: 'Find an entry by id',
     })
     async findEntry(@Arg('id') id: string) {
-        return EntryService.findOneEntry(id);
+        return EntryService.findOne(id);
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
@@ -31,7 +59,7 @@ export default class EntryResolver {
     async createEntry(
         @Arg('createEntryInput') createEntryInput: CreateEntryInput,
     ) {
-        return EntryService.createEntry(createEntryInput);
+        return EntryService.create(createEntryInput);
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
@@ -43,16 +71,26 @@ export default class EntryResolver {
         return EntryService.createEntries(entries);
     }
 
-    // @ResolveField()
-    // async Entry(@Parent() entry: Entry) {
+    @UseMiddleware(ConnectDB, ResolveTime)
+    @Mutation((_returns) => Entry, { nullable: true })
+    async updateEntry(
+        @Arg('id') id: string,
+        @Arg('updatedFields') updatedFields: UpdateEntryInput,
+        @Info() info: any,
+    ): Promise<Entry | null> {
+        return EntryService.updateOne(
+            id,
+            updatedFields,
+            getMongooseFromFields(info),
+        );
+    }
 
-    // 	if (typeof entry.Entry.value === "number"){
-    // 		let val = new IntBox();
-    // 		val.value = entry.Entry.value;
-    // 		return val;
-    // 	}
-    // 	let val = new StringBox();
-    // 	val.value = entry.Entry.value;
-    // 	return val;
-    // }
+    @UseMiddleware(ConnectDB, ResolveTime)
+    @Mutation((_returns) => Entry, { nullable: true })
+    async deleteEntry(
+        @Arg('id') id: string,
+        @Info() info: any,
+    ): Promise<Entry | null> {
+        return EntryService.deleteOne(id, getMongooseFromFields(info));
+    }
 }

@@ -8,8 +8,9 @@ type Query {
   findCats: [Cat!]
   findCat(id: String!): Cat
 
-  # Find all Cats in the database
-  findEntries: [Entry!]
+  # Search all Entries in the database
+  findEntries(search: String, options: FindAllLimitAndSkip): [Entry!]
+  countEntries(search: String): Float!
 
   # Find an entry by id
   findEntry(id: String!): Entry
@@ -324,6 +325,14 @@ type MoneyObject {
   currency: PoundsShillingsPence!
 }
 
+input FindAllLimitAndSkip {
+  # Offset of items to skip
+  skip: Float = 0
+
+  # number of items to return, number must be in the range 1 <= limit <= 50
+  limit: Float = 10
+}
+
 type AccessToken {
   accessToken: String!
 }
@@ -364,14 +373,6 @@ type GlossaryItem {
 
   # Purchases related to this item
   relatedPurchases: [String!]!
-}
-
-input FindAllLimitAndSkip {
-  # Offset of items to skip
-  skip: Float = 0
-
-  # number of items to return, number must be in the range 1 <= limit <= 50
-  limit: Float = 10
 }
 
 # Item Object
@@ -502,6 +503,8 @@ type Mutation {
   createCat(newCat: CreateCatDto!): Cat!
   createEntry(createEntryInput: CreateEntryInput!): Entry!
   createEntries(entries: [CreateEntryInput]!): [Entry!]!
+  updateEntry(updatedFields: UpdateEntryInput!, id: String!): Entry
+  deleteEntry(id: String!): Entry
   register(registerInput: RegisterInput!): String
   signUserOut(username: String!): JSONObject
   confirmUserSignUp(username: String!): JSONObject
@@ -792,6 +795,264 @@ input MoneyInput {
 
   #
   currency: PoundsShillingsPenceInput!
+}
+
+input UpdateEntryInput {
+  # Information on the account holder in the transaction
+  accountHolder: UpdateAccountHolder
+
+  # Meta information of the entry
+  meta: UpdateMeta
+
+  # Date of entry
+  dateInfo: UpdateDate
+
+  #
+  folioRefs: [String!]
+
+  #
+  ledgerRefs: [String!]
+  itemEntries: [UpdateItemEntry!]
+  tobaccoEntry: UpdateTobaccoEntry
+  regularEntry: UpdateRegularEntry
+
+  # People referenced in this entry
+  people: [UpdatePeoplePlaces!]
+
+  # Places referenced in this entry
+  places: [UpdatePeoplePlaces!]
+
+  # Type of Entry
+  entry: String
+
+  # general money information for the entry
+  money: UpdateMoney
+}
+
+input UpdateAccountHolder {
+  # Prefix of account holder's name
+  prefix: String
+
+  # First name of account holder
+  accountFirstName: String
+
+  # Last name of account holder
+  accountLastName: String
+
+  # Suffix of account holder
+  suffix: String
+
+  # Profession of account holder
+  profession: String
+
+  # Location?
+  location: String
+
+  # Reference?
+  reference: String
+
+  # Debt or Credit transaction
+  debitOrCredit: Float
+
+  # ID of the accountholder to reference in peoples master list
+  accountHolderID: ID
+}
+
+input UpdateMeta {
+  # Ledger containing this Entry
+  ledger: String
+
+  # Reel of the Entry
+  reel: String
+
+  # Store Owner
+  owner: String
+
+  # Name of Store
+  store: String
+
+  # Year the entry was made
+  year: String
+
+  # Folio the entry is contained in
+  folioPage: String
+
+  # ID of entry within Folio
+  entryID: String
+
+  # comments
+  comments: String
+}
+
+input UpdateDate {
+  # day of date
+  day: Int
+
+  # month of date
+  month: Int
+
+  # year of date
+  year: String
+
+  # complete date
+  fullDate: DateTime
+}
+
+input UpdateItemEntry {
+  #
+  perOrder: Float
+
+  #
+  percentage: Float
+
+  #
+  itemsOrServices: [UpdateItemOrService]!
+
+  #
+  itemsMentioned: [UpdateMentionedItems!]
+}
+
+input UpdateItemOrService {
+  #
+  quantity: Float
+
+  #
+  qualifier: String
+
+  #
+  variants: [String!]
+
+  #
+  item: String
+
+  #
+  category: String = ""
+
+  #
+  subcategory: String = ""
+
+  #
+  unitCost: UpdatePoundsShillingsPence
+
+  #
+  itemCost: UpdatePoundsShillingsPence
+}
+
+input UpdatePoundsShillingsPence {
+  # Number of pounds
+  pounds: Float
+
+  # Number of shillings
+  shilling: Float
+
+  # Number of Pence
+  pence: Float
+}
+
+input UpdateMentionedItems {
+  #
+  quantity: Float
+
+  #
+  qualifier: String
+
+  #
+  item: String
+}
+
+input UpdateTobaccoEntry {
+  # words
+  entry: String
+
+  #
+  marks: [UpdateTobaccoMark!]
+
+  #
+  notes: [UpdateNote!]
+
+  #
+  money: [UpdateTobaccoMoney!]
+
+  # words
+  tobaccoShaved: Float
+}
+
+input UpdateTobaccoMark {
+  # words
+  markID: ID
+
+  #
+  markName: String
+}
+
+input UpdateNote {
+  #
+  noteNum: Float
+
+  #
+  totalWeight: Float
+
+  #
+  barrelWeight: Float
+
+  #
+  tobaccoWeight: Float
+}
+
+input UpdateTobaccoMoney {
+  # words
+  moneyType: String
+
+  # words
+  tobaccoAmount: Float
+
+  # words
+  rateForTobacco: UpdatePoundsShillingsPence
+
+  # words
+  casksInTransaction: Float
+
+  # words
+  tobaccoSold: UpdatePoundsShillingsPence
+
+  # words
+  casksSoldForEach: UpdatePoundsShillingsPence
+}
+
+input UpdateRegularEntry {
+  # words
+  entry: String
+
+  #
+  tobaccoMarks: [UpdateTobaccoMark!]
+
+  #
+  itemsMentioned: [UpdateMentionedItems!]
+}
+
+input UpdatePeoplePlaces {
+  # Persons name
+  name: String
+
+  # words
+  id: ID
+}
+
+input UpdateMoney {
+  #
+  quantity: String
+
+  #
+  commodity: String
+
+  #
+  colony: String
+
+  #
+  sterling: UpdatePoundsShillingsPence
+
+  #
+  currency: UpdatePoundsShillingsPence
 }
 
 input RegisterInput {

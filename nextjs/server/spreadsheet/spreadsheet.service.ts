@@ -138,7 +138,7 @@ export async function advancedSearch(searchObj: any) {
     //fields Reel, StoreOwner, FolioYear,FolioPage,Entry ID, Account holder name (one field),
     //Date using date picker, people, places, commodity, colony
 
-    /*for item entry forms 
+    /*for item entry forms
     per order(yes or no, 1 for yes, 0 for no), items, category, subcategory, variant
     */
 
@@ -574,7 +574,7 @@ async function calculateTotalCostTobacco(quantity: any, rate: any) {
 
         /*we start with pounds, then shilling, then pence and calculate what the quantity of tobacco times the rate is, plus
         //converting a shilling or pence upwards
-        // if we have 
+        // if we have
         // rate = {
                 pounds: 0
                 shilling: 11
@@ -921,7 +921,7 @@ async function updatedItemEntry(entryObj: any) {
         if (brokenEntry[i].toUpperCase().includes('PER')) {
             itemFormat.perOrder = 1;
             workingString = brokenEntry[i].trim().replace(/\bPER ORDER\b/gi, "");
-           
+
         }
         else{
             itemFormat.perOrder = 0;

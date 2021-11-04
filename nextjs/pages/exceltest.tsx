@@ -1,163 +1,183 @@
-import Button from '@mui/material/Button';
-import Switch from '@mui/material/Switch';
+// import DataGrid from '@components/DataGrid';
+import FileInput from '@components/FileInput';
+import Header from '@components/Header';
+import ParseTable from '@components/ParseTable';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { Typography } from '@mui/material';
+import FormGroup from '@mui/material/FormGroup';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import exportFromJSON from 'export-from-json';
-import type { NextPage } from 'next';
-import Head from 'next/head';
-import Image from 'next/image';
-import React, { useState } from 'react';
+import { NextPage } from 'next';
+import { useState } from 'react';
+import backgrounds from 'styles/backgrounds.module.css';
 import { useMutation } from 'urql';
 import xlsx from 'xlsx';
-import styles from '../styles/Home.module.css';
 
 const parseSheetDef = `
-	mutation ($spreadsheet: JSONObject!) {
-		importSpreadsheet(spreadsheetObj: $spreadsheet)
+	mutation ParseSheet ($spreadsheet: JSONObject!) {
+		entries : importSpreadsheet(spreadsheetObj: $spreadsheet)
 	}
 `;
 
-const FileSelector = () => {
-    const [parseSheetResult, parseSheet] = useMutation(parseSheetDef);
-    const [printState, setPrintState] = useState(false);
+const createEntriesDef = `
+	mutation CreateEntries($entries: [CreateEntryInput]!) {
+  		createEntries(entries: $entries){
+			id
+		}
+	}
+`;
 
-    async function handleChange(selectorFiles: FileList | null) {
-        if (selectorFiles === null || !selectorFiles) {
+const ExcelTestPage: NextPage = () => {
+    const [_parseResponse, parseSheet] = useMutation(parseSheetDef);
+    const [_createResponse, createEntries] = useMutation(createEntriesDef);
+    const [file, setFile] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isCreatingEntries, setIsCreatingEntries] = useState<boolean>(false);
+    const [entries, setEntries] = useState<any>(null);
+    const [_requestErrors, _setRequestErrors] = useState<any>(null);
+    const [parseErrors, setParseErrors] = useState<any>(null);
+
+    const convertFileToJSON = async () => {
+        if (file === null || !file) {
             return;
         }
+
+        setIsLoading(true);
         let sheets: { [name: string]: any } = {};
-        const selectedFile = selectorFiles[0];
+        const selectedFile = file;
         const fileReader = new FileReader();
         fileReader.readAsBinaryString(selectedFile);
-        fileReader.onload = (event: any) => {
+        fileReader.onload = async (event: any) => {
             let binaryData = event.target.result;
             let workbook = xlsx.read(binaryData, { type: 'binary' });
             workbook.SheetNames.forEach((sheet: string) => {
-                // delete a specific row
-                // function ec(r: number, c: number) {
-                // 	return xlsx.utils.encode_cell({ r: r, c: c });
-                // }
-                // function delete_row(
-                // 	ws: xlsx.WorkSheet,
-                // 	row_index: number,
-                // ): xlsx.WorkSheet {
-                // 	let variable = xlsx.utils.decode_range(ws['!ref' as string]);
-                // 	for (let R = row_index; R < variable.e.r; ++R) {
-                // 		for (let C = variable.s.c; C <= variable.e.c; ++C) {
-                // 			ws[ec(R, C)] = ws[ec(R + 1, C)];
-                // 		}
-                // 	}
-                // 	variable.e.r--;
-                // 	ws['!ref'] = xlsx.utils.encode_range(variable.s, variable.e);
-                // 	return ws;
-                // }
-
                 const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet], {
                     defval: '',
                     raw: true,
                 });
                 sheets[sheet] = data;
             });
-            // let data = JSON.stringify(sheets, undefined, 4);
-            // console.log(data);
-            // const fileName = 'result';
-            // const exportType = 'json';
 
-            console.log(JSON.stringify(sheets, undefined, 4));
-            parseSheet({ spreadsheet: sheets });
-            // exportFromJSON({ data: sheets, fileName, exportType });
+            const res: any = await parseSheet({ spreadsheet: sheets });
+            setEntries([...res?.data?.entries]);
+            console.log({ entries: res?.data?.entries });
+            updateParseErrors(res?.data?.entries);
+            setIsLoading(false);
         };
-    }
+    };
 
-    const entries = parseSheetResult.data
-        ? parseSheetResult.data.importSpreadsheet
-        : [];
+    const updateParseErrors = (entries: any) => {
+        if (entries) {
+            const errors = entries
+                .map((entry: any, i: number) => ({
+                    index: i,
+                    message: entry.errorMessage,
+                }))
+                .filter((entry: any) => entry.message);
+            setParseErrors([...errors]);
+        }
+    };
+
+    const handleUploadLoadToDatabase = () => {
+        setIsCreatingEntries(true);
+        const entriesWithoutError = entries.map((entry: any) => {
+            delete entry.errorCode;
+            delete entry.errorMessage;
+            return entry;
+        });
+        createEntries({ entries: entriesWithoutError }).then((res: any) => {
+            setParseErrors(null);
+            setIsCreatingEntries(false);
+            console.log({ res });
+        });
+    };
 
     return (
-        <div style={{ textAlign: 'center' }}>
-            <input type="file" onChange={(e) => handleChange(e.target.files)} />
-            {printState &&
-                entries &&
-                entries.map((entry: any, index: number) => (
-                    <div key={index}>
-                        <pre
-                            style={{
-                                display: 'inline-block',
-                                textAlign: 'left',
+        <>
+            <div className={backgrounds.colorBackground}>
+                <Header />
+                <Grid container spacing={2}>
+                    <Grid item xs={10} spacing={2}>
+                        <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '3rem',
+                                padding: '1rem',
                             }}
                         >
-                            {JSON.stringify(entry, undefined, 4)}
-                        </pre>
-                        <br />
-                    </div>
-                ))}
-            {printState && parseSheetResult.error ? (
-                <pre>
-                    {JSON.stringify(parseSheetResult.error, undefined, 4)}
-                </pre>
-            ) : (
-                ''
-            )}
-            <Switch
-                checked={printState}
-                onChange={() => setPrintState(!printState)}
-            />
-            <Button
-                onClick={() => {
-                    const fileName = 'result';
-                    const exportType = 'json';
+                            <Grid
+                                container
+                                spacing={0}
+                                direction="column"
+                                alignItems="center"
+                                justifyContent="center"
+                            >
+                                <FormGroup>
+                                    <Stack spacing={2} direction="row">
+                                        <FileInput
+                                            label="import spreadsheet"
+                                            accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                            onChange={({ files }: any) =>
+                                                setFile(files)
+                                            }
+                                        />
+                                        <LoadingButton
+                                            loading={isLoading}
+                                            onClick={convertFileToJSON}
+                                            variant="contained"
+                                            sx={{
+                                                margin: '1rem 5rem',
+                                            }}
+                                        >
+                                            Parse File
+                                        </LoadingButton>
+                                    </Stack>
+                                </FormGroup>
+                            </Grid>
+                        </Paper>
+                        <ParseTable entries={entries} />
+                        {!!parseErrors && parseErrors.length > 0 && (
+                            <Stack>
+                                {parseErrors.map((error: any, i: number) => (
+                                    <Typography key={i}>
+                                        Entry {error.index} had the error:{' '}
+                                        {error.message}
+                                    </Typography>
+                                ))}
+                            </Stack>
+                        )}
+                        <LoadingButton
+                            variant="contained"
+                            onClick={handleUploadLoadToDatabase}
+                            loading={isCreatingEntries}
+                            disabled={
+                                (!!parseErrors && parseErrors.length > 0) ||
+                                !entries
+                            }
+                        >
+                            Confirm Import into Database
+                        </LoadingButton>
+                        <LoadingButton
+                            onClick={() => {
+                                const fileName = 'result';
+                                const exportType = 'json';
 
-                    exportFromJSON({ data: entries, fileName, exportType });
-                }}
-            >
-                Download JSON File
-            </Button>
-        </div>
+                                exportFromJSON({
+                                    data: entries,
+                                    fileName,
+                                    exportType,
+                                });
+                            }}
+                        >
+                            Download JSON File
+                        </LoadingButton>
+                    </Grid>
+                </Grid>
+            </div>
+        </>
     );
 };
 
-const Home: NextPage = () => {
-    return (
-        <div className={styles.container}>
-            <Head>
-                <title>Create Next App</title>
-                <meta
-                    name="description"
-                    content="Generated by create next app"
-                />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-
-            <main className={styles.main}>
-                <h1 className={styles.title}>
-                    Welcome to <a href="https://nextjs.org">Next.js!</a>
-                </h1>
-
-                <FileSelector />
-
-                <p className={styles.description}>
-                    Get started by editing{' '}
-                    <code className={styles.code}>pages/exceltest.tsx</code>
-                </p>
-            </main>
-
-            <footer className={styles.footer}>
-                <a
-                    href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Powered by{' '}
-                    <span className={styles.logo}>
-                        <Image
-                            src="/vercel.svg"
-                            alt="Vercel Logo"
-                            width={72}
-                            height={16}
-                        />
-                    </span>
-                </a>
-            </footer>
-        </div>
-    );
-};
-
-export default Home;
+export default ExcelTestPage;
