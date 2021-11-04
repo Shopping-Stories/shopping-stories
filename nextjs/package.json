@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^1.2.16",
+    "@date-io/date-fns": "^2.11.0",
     "@emotion/cache": "^11.4.0",
     "@emotion/react": "^11.4.1",
     "@emotion/server": "^11.4.0",
