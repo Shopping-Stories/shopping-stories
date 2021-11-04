@@ -1,8 +1,8 @@
 :root[data-theme="light"] {
   --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
-  --amplify-primary-color: #ff9900;
+  --amplify-primary-color: #335C67;
   --amplify-primary-contrast: var(--amplify-white);
-  --amplify-primary-tint: #ffac31;
+  --amplify-primary-tint: #606C38;
   --amplify-primary-shade: #e88b01;
   --amplify-secondary-color: #152939;
   --amplify-secondary-contrast: var(--amplify-white);

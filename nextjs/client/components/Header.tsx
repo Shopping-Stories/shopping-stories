@@ -21,6 +21,7 @@ const defaultNavLinks: NavLink[] = [
 	{ title: `sign in`, path: `/auth` },
 	{ title: `home`, path: `/` },
 	{ title: `about`, path: `/about` },
+	{ title: `Database Search`, path: `/databasesearch` },
 ];
 
 const adminNavLinks: NavLink[] = [
