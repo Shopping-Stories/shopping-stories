@@ -11,70 +11,77 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import {
-	ItemsMentionedTable,
-	ItemsOrServicesTable,
+    ItemsMentionedTable,
+    ItemsOrServicesTable,
 } from './ItemEntrySubTables';
 
 const ItemEntriesTable = (props: any) => {
-	const { itemEntries } = props;
+    const { itemEntries } = props;
 
-	return (
-		<Box sx={{ margin: 1 }}>
-			<Typography variant="h6" gutterBottom component="div">
-				Item Entries
-			</Typography>
-			<Table size="small" aria-label="purchases">
-				<TableHead>
-					<TableCell />
-					<TableCell>PerOrder</TableCell>
-					<TableCell>Percentage</TableCell>
-				</TableHead>
-				<TableBody>
-					{itemEntries.map((entry: any, i: number) => (
-						<ItemEntryRow itemEntry={entry} key={i} />
-					))}
-				</TableBody>
-			</Table>
-		</Box>
-	);
+    return (
+        <Box sx={{ margin: 1 }}>
+            <Typography variant="h6" gutterBottom component="div">
+                Item Entries
+            </Typography>
+            <Table size="small" aria-label="purchases">
+                <TableHead>
+                    <TableCell />
+                    <TableCell>PerOrder</TableCell>
+                    <TableCell>Percentage</TableCell>
+                </TableHead>
+                <TableBody>
+                    {itemEntries.map((entry: any, i: number) => (
+                        <ItemEntryRow itemEntry={entry} key={i} />
+                    ))}
+                </TableBody>
+            </Table>
+        </Box>
+    );
 };
 
 const ItemEntryRow = ({ itemEntry }: any) => {
-	const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
 
-	return (
-		<>
-			<TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-				<TableCell>
-					<IconButton
-						aria-label="expand row"
-						size="small"
-						onClick={() => setOpen(!open)}
-					>
-						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-					</IconButton>
-				</TableCell>
-				<TableCell>{itemEntry?.perOrder}</TableCell>
-				<TableCell>{itemEntry?.percentage}</TableCell>
-			</TableRow>
-			<TableRow>
-				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-					<Collapse in={open} timeout="auto">
-						{!!itemEntry && (
-							<>
-								<ItemsOrServicesTable
-									itemsOrServices={itemEntry?.itemsOrServices}
-								/>
-								<ItemsMentionedTable
-									itemsMentioned={itemEntry?.itemsMentioned}
-								/>
-							</>
-						)}
-					</Collapse>
-				</TableCell>
-			</TableRow>
-		</>
-	);
+    return (
+        <>
+            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                <TableCell>
+                    <IconButton
+                        aria-label="expand row"
+                        size="small"
+                        onClick={() => setOpen(!open)}
+                    >
+                        {open ? (
+                            <KeyboardArrowUpIcon />
+                        ) : (
+                            <KeyboardArrowDownIcon />
+                        )}
+                    </IconButton>
+                </TableCell>
+                <TableCell>{itemEntry?.perOrder}</TableCell>
+                <TableCell>{itemEntry?.percentage}</TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell
+                    style={{ paddingBottom: 0, paddingTop: 0 }}
+                    colSpan={6}
+                >
+                    <Collapse in={open} timeout="auto">
+                        {!!itemEntry && (
+                            <>
+                                <ItemsOrServicesTable
+                                    itemsOrServices={itemEntry?.itemsOrServices}
+                                />
+                                <ItemsMentionedTable
+                                    itemsMentioned={itemEntry?.itemsMentioned}
+                                />
+                            </>
+                        )}
+                    </Collapse>
+                </TableCell>
+            </TableRow>
+        </>
+    );
 };
 
 export default ItemEntriesTable;

@@ -7,10 +7,9 @@ const databasesearch = () => {
     return (
         <div>
             <Header />
-            <DsTabs/>
+            <DsTabs />
         </div>
     );
 };
-
 
 export default databasesearch;

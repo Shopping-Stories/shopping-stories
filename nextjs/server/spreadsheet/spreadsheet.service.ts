@@ -122,6 +122,7 @@ export async function generalSearch(searchString: string) {
     return res;
 }
 export async function advancedSearch(searchObj: any) {
+    console.log(searchObj);
     //advanced search
     //need to pull fields supplied from the search input
     //if the field is apart of the entry text index, add it to the search string, else
@@ -478,13 +479,12 @@ async function moneyConversion(money: any) {
         let S = 0;
         let D = 0;
         //console.log(money);
-        if (money === "") {
+        if (money === '') {
             return {
                 pounds: 0,
                 shilling: 0,
                 pence: 0,
             };
-
         }
         //money = money.toString();
         if (money.includes('d')) {
@@ -743,10 +743,7 @@ async function calculateTobaccoMoney(MoneyEntry: any, colony: any, money: any) {
             } else if (!workingString.includes('CASK')) {
                 poundsOfTobacco = Number(workingString);
                 console.log(money, poundsOfTobacco);
-                tobaccoRate = await calculateUnitCost(
-                    money,
-                    poundsOfTobacco,
-                );
+                tobaccoRate = await calculateUnitCost(money, poundsOfTobacco);
                 tobaccoSoldFor = money;
             }
             if (workingString.includes('CASK')) {
@@ -828,8 +825,8 @@ async function updatedTobaccoEntry(entryObj: any, money: any) {
                 .trim()
                 .toUpperCase()
                 .split('[MONEY]');
-            if (cursor.Colony.toString().replace(/[^a-zA-Z]/, "") === '') {
-                console.log()
+            if (cursor.Colony.toString().replace(/[^a-zA-Z]/, '') === '') {
+                console.log();
                 moneyInfo = await calculateTobaccoMoney(
                     tempMoneyInfo[1].trim(),
                     cursor.Colony.toString(),
@@ -883,7 +880,7 @@ async function updatedTobaccoEntry(entryObj: any, money: any) {
                 .trim();
             tobaccoShavedOff += Number(workingString);
         } else {
-            entryInfo += brokenEntry[i].replace(/[^\s*0-9a-zA-Z]/,"");
+            entryInfo += brokenEntry[i].replace(/[^\s*0-9a-zA-Z]/, '');
         }
     }
 
@@ -920,10 +917,10 @@ async function updatedItemEntry(entryObj: any) {
         };
         if (brokenEntry[i].toUpperCase().includes('PER')) {
             itemFormat.perOrder = 1;
-            workingString = brokenEntry[i].trim().replace(/\bPER ORDER\b/gi, "");
-
-        }
-        else{
+            workingString = brokenEntry[i]
+                .trim()
+                .replace(/\bPER ORDER\b/gi, '');
+        } else {
             itemFormat.perOrder = 0;
         }
         if (workingString.includes('[')) {
@@ -966,14 +963,16 @@ async function updatedItemEntry(entryObj: any) {
         let item: any = {};
         let item2: any = {};
         if (mainItemString.length > 6) {
-            let itemCosts: any = await moneyConversion(mainItemString[mainItemString.length - 1]);
+            let itemCosts: any = await moneyConversion(
+                mainItemString[mainItemString.length - 1],
+            );
             itemCosts = await calculateUnitCost(itemCosts, 2);
             let categories = await findCategories(
                 mainItemString[3],
                 workingString,
             );
             let categories2 = await findCategories(
-                mainItemString[mainItemString.length-3],
+                mainItemString[mainItemString.length - 3],
                 workingString,
             );
             item2 = {
@@ -1005,21 +1004,33 @@ async function updatedItemEntry(entryObj: any) {
         } else {
             try {
                 console.log(mainItemString);
-                let unitCost = await moneyConversion(mainItemString[mainItemString.length - 2]);
-                let itemCost = await moneyConversion(mainItemString[mainItemString.length - 1]);
+                let unitCost = await moneyConversion(
+                    mainItemString[mainItemString.length - 2],
+                );
+                let itemCost = await moneyConversion(
+                    mainItemString[mainItemString.length - 1],
+                );
                 let categories = await findCategories(
                     mainItemString[3],
                     workingString,
                 );
-                if (mainItemString[mainItemString.length - 2] === "") {
-                    if (mainItemString[0] === "") {
+                if (mainItemString[mainItemString.length - 2] === '') {
+                    if (mainItemString[0] === '') {
                         unitCost = await calculateUnitCost(itemCost, 1);
                     } else {
-                        unitCost = await calculateUnitCost(itemCost, mainItemString[0]);
+                        unitCost = await calculateUnitCost(
+                            itemCost,
+                            mainItemString[0],
+                        );
                     }
-
-                }else if(mainItemString[mainItemString.length-1] === "" && mainItemString[mainItemString.length-2] !== ""){
-                    itemCost = await calculateTotalCostTobacco(mainItemString[0]*100, unitCost);
+                } else if (
+                    mainItemString[mainItemString.length - 1] === '' &&
+                    mainItemString[mainItemString.length - 2] !== ''
+                ) {
+                    itemCost = await calculateTotalCostTobacco(
+                        mainItemString[0] * 100,
+                        unitCost,
+                    );
                 }
                 item = {
                     quantity: null,
@@ -1042,8 +1053,6 @@ async function updatedItemEntry(entryObj: any) {
         } else {
             item.quantity = Number(mainItemString[0]);
         }
-
-
 
         mainItems.push(item);
         mainItems.push(item2);

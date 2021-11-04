@@ -13,67 +13,71 @@ import { useState } from 'react';
 import { MarksTable, MoneyTable, NotesTable } from './TobaccoEntrySubTables';
 
 const TobaccoEntryTable = (props: any) => {
-	const { tobaccoEntry } = props;
-	const columnNames = ['Entry', 'Tobacco Shaved'];
+    const { tobaccoEntry } = props;
+    const columnNames = ['Entry', 'Tobacco Shaved'];
 
-	return (
-		<Box sx={{ margin: 1 }}>
-			<Typography variant="h6" gutterBottom component="div">
-				Tobacco Entry
-			</Typography>
-			<Table size="small" aria-label="purchases">
-				<TableHead component="td">
-					<TableCell />
-					{columnNames.map((name: string, i: number) => (
-						<TableCell key={i}>{name}</TableCell>
-					))}
-				</TableHead>
-				<TableBody>
-					<TobaccoEntryRow tobaccoEntry={tobaccoEntry} />
-				</TableBody>
-			</Table>
-		</Box>
-	);
+    return (
+        <Box sx={{ margin: 1 }}>
+            <Typography variant="h6" gutterBottom component="div">
+                Tobacco Entry
+            </Typography>
+            <Table size="small" aria-label="purchases">
+                <TableHead component="td">
+                    <TableCell />
+                    {columnNames.map((name: string, i: number) => (
+                        <TableCell key={i}>{name}</TableCell>
+                    ))}
+                </TableHead>
+                <TableBody>
+                    <TobaccoEntryRow tobaccoEntry={tobaccoEntry} />
+                </TableBody>
+            </Table>
+        </Box>
+    );
 };
 
 const TobaccoEntryRow = ({ tobaccoEntry }: any) => {
-	const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(false);
 
-    const columnValues = [
-        tobaccoEntry?.entry,
-        tobaccoEntry?.tobaccoShaved,
-    ]
-	return (
-		<>
-			<TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-				<TableCell>
-					<IconButton
-						aria-label="expand row"
-						size="small"
-						onClick={() => setOpen(!open)}
-					>
-						{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-					</IconButton>
-				</TableCell>
-				{columnValues.map((value: string, i: number) => (
-					<TableCell key={i}>{value}</TableCell>
-				))}
-			</TableRow>
-			<TableRow>
-				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-					<Collapse in={open} timeout="auto">
-						{!!tobaccoEntry && (
-							<>
-								<MarksTable marks={tobaccoEntry?.marks} />
-								<MoneyTable money={tobaccoEntry?.money} />
-								<NotesTable notes={tobaccoEntry?.notes} />
-							</>
-						)}
-					</Collapse>
-				</TableCell>
-			</TableRow>
-		</>
-	);
+    const columnValues = [tobaccoEntry?.entry, tobaccoEntry?.tobaccoShaved];
+    return (
+        <>
+            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                <TableCell>
+                    <IconButton
+                        aria-label="expand row"
+                        size="small"
+                        onClick={() => setOpen(!open)}
+                    >
+                        {open ? (
+                            <KeyboardArrowUpIcon />
+                        ) : (
+                            <KeyboardArrowDownIcon />
+                        )}
+                    </IconButton>
+                </TableCell>
+                {columnValues.map((value: string, i: number) => (
+                    <TableCell key={i}>{value}</TableCell>
+                ))}
+            </TableRow>
+            <TableRow>
+                <TableCell
+                    style={{ paddingBottom: 0, paddingTop: 0 }}
+                    colSpan={6}
+                >
+                    <Collapse in={open} timeout="auto">
+                        {!!tobaccoEntry && (
+                            <>
+                                <MarksTable marks={tobaccoEntry?.marks} />
+                                <MoneyTable money={tobaccoEntry?.money} />
+                                <NotesTable notes={tobaccoEntry?.notes} />
+                            </>
+                        )}
+                    </Collapse>
+                </TableCell>
+            </TableRow>
+        </>
+    );
 };
 
 export default TobaccoEntryTable;

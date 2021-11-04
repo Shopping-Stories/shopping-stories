@@ -23,7 +23,6 @@ import backgrounds from 'styles/backgrounds.module.css';
 import { useMutation } from 'urql';
 import * as yup from 'yup';
 
-
 const searchEntryDef = `
 query entriesQuery($search: String, $options: FindAllLimitAndSkip) {
   rows: findEntries(search: $search, options: $options) {
@@ -33,7 +32,6 @@ query entriesQuery($search: String, $options: FindAllLimitAndSkip) {
 }
 ${entryFields}
 `;
-
 
 const deleteEntryDef = `
 mutation deleteEntry($id: String!) {
@@ -50,9 +48,10 @@ const searchSchema = yup.object({
 
 const ManagePlacesPage: NextPage = () => {
     const { groups, loading } = useAuth();
-    const router = useRouter()
+    const router = useRouter();
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isModerator = isInGroup(Roles.Moderator, groups);
+    console.log(isAdmin, isModerator);
     const [_deletePlaceResult, deletePlace] = useMutation(deleteEntryDef);
     const [search, setSearch] = useState<string>('');
     const [placeToDelete, setPlaceToDelete] = useState<{
@@ -69,8 +68,6 @@ const ManagePlacesPage: NextPage = () => {
     const handleCloseDelete = () => {
         setOpenDelete(false);
     };
-
-
 
     const handleItemDelete = async () => {
         if (placeToDelete) {
@@ -119,7 +116,7 @@ const ManagePlacesPage: NextPage = () => {
                             <Button
                                 variant="contained"
                                 onClick={() => {
-                                    router.push(`/entries/create`)
+                                    router.push(`/entries/create`);
                                 }}
                             >
                                 Create new entry
@@ -164,7 +161,7 @@ const ManagePlacesPage: NextPage = () => {
                             <EntryPaginationTable
                                 queryDef={searchEntryDef}
                                 onEditClick={(row: any) => {
-                                    router.push(`/entries/update/${row.id}`)
+                                    router.push(`/entries/update/${row.id}`);
                                 }}
                                 onDeleteClick={async (row: any) => {
                                     setPlaceToDelete({
@@ -180,9 +177,7 @@ const ManagePlacesPage: NextPage = () => {
                     </Grid>
                 </Container>
                 <Dialog open={openDelete} onClose={handleCloseDelete}>
-                    <DialogTitle>
-                        Confirm Delete of this entry
-                    </DialogTitle>
+                    <DialogTitle>Confirm Delete of this entry</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
                             Are you sure you want to delete this entry

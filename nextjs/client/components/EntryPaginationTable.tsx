@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -84,38 +83,38 @@ const EntryPaginationTable = (props: any) => {
         }));
     };
 
-	const columnNames = [
-		'Account Holder First Name',
-		'Account Holder Last Name',
-		'Account Holder Prefix',
-		'Account Holder Suffix',
-		'Debt or Credit',
-		'Location',
-		'Account Holder Profession',
-		'Account Holder Reference',
-		'Account Holder ID',
-		'Day',
-		'Month',
-		'Year',
-		'Date',
-		'EntryID (Meta)',
-		'Ledger (Meta)',
-		'Reel (Meta)',
-		'FolioPage (Meta)',
-		'Owner',
-		'Store',
-		'Year',
-		'Comments',
-		'Money.Colony',
-		'Money.Quantity',
-		'Money.Commodity',
-		'Money.Currency.Pounds',
-		'Money.Currency.Shilling',
-		'Money.Currency.Pence',
-		'Money.Sterling.Pounds',
-		'Money.Sterling.Shilling',
-		'Money.Sterling.Pence',
-	];
+    const columnNames = [
+        'Account Holder First Name',
+        'Account Holder Last Name',
+        'Account Holder Prefix',
+        'Account Holder Suffix',
+        'Debt or Credit',
+        'Location',
+        'Account Holder Profession',
+        'Account Holder Reference',
+        'Account Holder ID',
+        'Day',
+        'Month',
+        'Year',
+        'Date',
+        'EntryID (Meta)',
+        'Ledger (Meta)',
+        'Reel (Meta)',
+        'FolioPage (Meta)',
+        'Owner',
+        'Store',
+        'Year',
+        'Comments',
+        'Money.Colony',
+        'Money.Quantity',
+        'Money.Commodity',
+        'Money.Currency.Pounds',
+        'Money.Currency.Shilling',
+        'Money.Currency.Pence',
+        'Money.Sterling.Pounds',
+        'Money.Sterling.Shilling',
+        'Money.Sterling.Pence',
+    ];
 
     return (
         <TableContainer component={Paper}>

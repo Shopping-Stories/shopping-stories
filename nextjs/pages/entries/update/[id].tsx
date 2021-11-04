@@ -32,7 +32,7 @@ const updateEntrySchema = yup.object({
 const UpdateEntryPage: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
-    const [findEntryResult, findEntry] = useQuery({
+    const [findEntryResult, _findEntry] = useQuery({
         query: findEntryDef,
         variables: { id },
     });
@@ -63,16 +63,14 @@ const UpdateEntryPage: NextPage = () => {
         },
     });
 
+    console.log(updateForm);
+
     if (findEntryResult.fetching) {
         return <div>Fetching {router.query.id}</div>;
-    }
-
-    else if (findEntryResult.error) {
-        console.log(findEntryResult.error)
-        return <>error</>
-    }
-
-    else {
+    } else if (findEntryResult.error) {
+        console.log(findEntryResult.error);
+        return <>error</>;
+    } else {
         return <div>{entry.id} yay</div>;
     }
 };
