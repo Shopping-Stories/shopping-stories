@@ -13,6 +13,7 @@ export const isInGroup = (groupName: string, groups: null | string[]) => {
 const useAuth = (redirectURL?: string, authorizedGroups: string[] = []) => {
     const router = useRouter();
     const [groups, setGroups] = useState<any>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const [loading, setLoading] = useState<null | string>('idle');
     const [error, setError] = useState<any>(null);
 
@@ -26,6 +27,7 @@ const useAuth = (redirectURL?: string, authorizedGroups: string[] = []) => {
 
             if (err && redirectURL) {
                 err && setError(err);
+                setIsLoggedIn(false);
                 router.push(redirectURL);
                 return;
             }
@@ -33,6 +35,12 @@ const useAuth = (redirectURL?: string, authorizedGroups: string[] = []) => {
                 res?.getAccessToken().payload['cognito:groups'] ?? null;
             // res?.signInUserSession?.accessToken?.payload['cognito:groups'] ?? null;
             setGroups(groupsUserIsIn);
+            const [authRes, _authErr] = await handlePromise(
+                Auth.currentAuthenticatedUser(),
+            );
+            if (authRes) {
+                setIsLoggedIn(true);
+            }
             if (authorizedGroups.length !== 0 && redirectURL) {
                 const isAuthorized = authorizedGroups
                     .map((group: string) => isInGroup(group, groupsUserIsIn))
@@ -50,7 +58,7 @@ const useAuth = (redirectURL?: string, authorizedGroups: string[] = []) => {
         return () => {};
     }, []);
 
-    return { groups, loading, error };
+    return { groups, loading, error, isLoggedIn };
 };
 
 export default useAuth;

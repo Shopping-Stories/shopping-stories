@@ -10,6 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import { styled } from '@mui/system';
 import { Roles } from 'config/constants.config';
+import _ from 'lodash';
 import { Fragment, useEffect, useState } from 'react';
 
 export interface NavLink {
@@ -18,7 +19,6 @@ export interface NavLink {
 }
 
 const defaultNavLinks: NavLink[] = [
-    { title: `sign in`, path: `/auth` },
     { title: `home`, path: `/` },
     { title: `about`, path: `/about` },
     { title: `search`, path: `/entries` },
@@ -34,18 +34,23 @@ const Offset = styled('div')(
 );
 
 const Header = () => {
-    // const navLinks: NavLink[] = [...defaultNavLinks];
     const [navLinks, setNavLinks] = useState<NavLink[]>(defaultNavLinks);
-    const { groups } = useAuth();
+    const { groups, isLoggedIn } = useAuth();
+    const authLink = !isLoggedIn
+        ? { title: `sign in`, path: `/auth` }
+        : { title: `sign out`, path: `/signout` };
+    const uniqueNavLinks = _.uniqWith([authLink, ...navLinks], _.isEqual);
 
     useEffect(() => {
         const updateLinks = () => {
             if (isInGroup(Roles.Admin, groups)) {
                 setNavLinks((prev: NavLink[]) => [...prev, ...adminNavLinks]);
             }
+
+            setNavLinks((prev: NavLink[]) => [...prev]);
         };
         updateLinks();
-    }, [groups]);
+    }, [groups, isLoggedIn]);
 
     return (
         <Fragment>
@@ -70,8 +75,8 @@ const Header = () => {
                                     />
                                 </MuiNextLink>
                             </IconButton>
-                            <Navbar navLinks={navLinks} />
-                            <SideDrawer navLinks={navLinks} />
+                            <Navbar navLinks={uniqueNavLinks} />
+                            <SideDrawer navLinks={uniqueNavLinks} />
                         </Container>
                     </Toolbar>
                 </AppBar>
