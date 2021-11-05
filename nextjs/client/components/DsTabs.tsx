@@ -3,13 +3,27 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { Button, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
+import { makeStyles } from '@mui/styles';
+import TextField from '@mui/material/TextField';
+import { useState } from 'react';
+import RegularEntryForm from './RegularEntryForm';
+import ItemEntryForm from './ItemEntryForm';
+import TobaccoEntryForm from './TobaccoEntryForm';
 
 interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
     value: number;
 }
+
+const useStyles = makeStyles({
+    field: {
+        marginTop: 20,
+        marginBottom: 20,
+        display: 'block'
+    }
+})
 
 function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
@@ -39,8 +53,17 @@ function a11yProps(index: number) {
 }
 
 export default function BasicTabs() {
-    const [value, setValue] = React.useState(0);
+    const classes = useStyles()
+    const [enter, setEnter] = useState('')
 
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        if(enter){
+            console.log(enter)
+        }
+    }
+
+    const [value, setValue] = React.useState(0);
     const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
@@ -61,237 +84,34 @@ export default function BasicTabs() {
             </Box>
 
             <TabPanel value={value} index={0}>
+                <form noValidate autoComplete='off' onSubmit={handleSubmit}>
                 <TextField
+                    onChange={(e) => setEnter(e.target.value)}
+                    className={classes.field}
                     id="outlined-basic"
                     label="Enter"
                     variant="outlined"
+                    fullWidth
                 />
-                <Button variant="contained">Search</Button>
+                <Button 
+                type="submit"
+                variant="contained"
+                >
+                    Search
+                </Button>
+                </form>
             </TabPanel>
 
             <TabPanel value={value} index={1}>
-                <TextField
-                    id="outlined-basic"
-                    label="Reel"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Store Owner"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Folio Year"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Folio Page"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Entry ID"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Account Holder Name"
-                    variant="outlined"
-                />
-
-                <TextField
-                    id="outlined-basic"
-                    label="People"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Places"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Commodity"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Colony"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-multiline-static"
-                    label="Entry Description"
-                    multiline
-                    rows={4}
-                    defaultValue="..."
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Tobacco Mark Name"
-                    variant="outlined"
-                />
-                <Button variant="contained">Search</Button>
+                <RegularEntryForm />
             </TabPanel>
 
             <TabPanel value={value} index={2}>
-                <TextField
-                    id="outlined-basic"
-                    label="Reel"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Store Owner"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Folio Year"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Folio Page"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Entry ID"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Account Holder Name"
-                    variant="outlined"
-                />
-
-                <TextField
-                    id="outlined-basic"
-                    label="People"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Places"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Commodity"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Colony"
-                    variant="outlined"
-                />
-                <TextField
-                    required
-                    id="outlined-required"
-                    label="Per Order (Yes or No)"
-                    defaultValue="1 for Yes, 0 for no"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Item Name"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Category"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Sub-Category"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Varient"
-                    variant="outlined"
-                />
-                <Button variant="contained">Search</Button>
+                <ItemEntryForm />
             </TabPanel>
 
             <TabPanel value={value} index={3}>
-                <TextField
-                    id="outlined-basic"
-                    label="Reel"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Store Owner"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Folio Year"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Folio Page"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Entry ID"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Account Holder Name"
-                    variant="outlined"
-                />
-
-                <TextField
-                    id="outlined-basic"
-                    label="People"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Places"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Commodity"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Colony"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-multiline-static"
-                    label="Entry Description"
-                    multiline
-                    rows={4}
-                    defaultValue="..."
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Tobacco Mark Name"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Note Number"
-                    variant="outlined"
-                />
-                <TextField
-                    id="outlined-basic"
-                    label="Money Type"
-                    variant="outlined"
-                />
-                <Button variant="contained">Search</Button>
+                <TobaccoEntryForm />
             </TabPanel>
         </Box>
     );
