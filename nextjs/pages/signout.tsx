@@ -13,6 +13,7 @@ const SignOutPage: NextPage = () => {
                 .then(() => router.push('/'))
                 .catch(() => router.push('/'));
         };
+
         signOut();
     });
 
