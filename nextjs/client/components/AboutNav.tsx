@@ -4,7 +4,6 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Title from '@mui/icons-material/Title';
 import Paper from '@mui/material/Paper';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -54,51 +53,115 @@ export default function VerticalTabs() {
             sx={{
                 flexGrow: 1,
                 bgcolor: '#606c38',
+                border: 1,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
-                textAlign: 'center',
+                borderRadius: 2,
+                boxShadow: 3,
             }}
         >
+            <Box
+            alignItems="center"
+            sx={{
+                flexGrow: .5,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+            }}
+            >
             <Tabs
                 orientation="vertical"
                 variant="scrollable"
                 value={value}
                 onChange={handleChange}
-                aria-label="Vertical tabs example"
-                sx={{ borderRight: 1, borderColor: 'divider' }}
+                aria-label="Vertical tabs"
+                sx={{ borderRadius: 1, bgcolor: '#335C67', border: 1, borderColor: 'divider', padding: '1rem', marginTop: '2rem',}}
             >
-                <Tab label="About History Revealed" {...a11yProps(0)} />
-                <Tab label="About the Project" {...a11yProps(1)} />
-                <Tab
-                    label="The Transcription and Database Process"
-                    {...a11yProps(2)}
+                <Tab  label="About History Revealed" {...a11yProps(0)} 
+                sx={{
+                borderRadius: .75,
+                border: 1,
+                bgcolor: '#DDA15E',
+                boxShadow: .5,
+                padding: '1rem',
+                fontWeight: 'bold',
+            }}
+            />
+                <Tab  label="About the Project" {...a11yProps(1)} 
+                sx={{
+                    borderRadius: .25,
+                    border: 1,
+                    bgcolor: '#DDA15E',
+                    boxShadow: .5,
+                    fontWeight: 'bold',
+                }}
                 />
-                <Tab label="Ledger Basics" {...a11yProps(3)} />
-                <Tab label="Acknowledgements" {...a11yProps(4)} />
+                <Tab
+                     label="The Transcription and Database Process"
+                    {...a11yProps(2)}
+                    sx={{
+                        borderRadius: .25,
+                        border: 1,
+                        bgcolor: '#DDA15E',
+                        boxShadow: .5,
+                        fontWeight: 'bold',
+                    }}
+                />
+                <Tab  label="Ledger Basics" {...a11yProps(3)} 
+                sx={{
+                    borderRadius: .25,
+                    border: 1,
+                    bgcolor: '#DDA15E',
+                    boxShadow: .5,
+                    fontWeight: 'bold',
+                }}
+                />
+                <Tab  label="Acknowledgements" {...a11yProps(4)} 
+                sx={{
+                    borderRadius: .25,
+                    border: 1,
+                    bgcolor: '#DDA15E',
+                    boxShadow: .5,
+                    fontWeight: 'bold',
+                }}
+                />
             </Tabs>
-            <TabPanel value={value} index={0}>
-                <Grid container spacing={2}>
+            </Box>
+            <TabPanel value={value} index={0} >
+                <Grid container spacing={2} >
                     <Paper
                         sx={{
                             backgroundColor: `var(--secondary-bg)`,
-                            margin: '3rem',
+                            margin: '2rem',
                             padding: '1rem',
                         }}
                     >
                         <Typography>
-                            <h2>About History Revealed</h2>
+                            <h1>About History Revealed</h1>
                             <Image
-                                src={'/FXCO_Research_01.png'}
+                                src={'/FXCO_Research_01.jpg'}
                                 layout="responsive"
-                                width={700}
-                                height={475}
+                                width={1.6}
+                                height={.8}
                             />
+                            <Box 
+                            alignItems="center"
+                            sx={{
+                                padding: '1rem',
+                                bgcolor: '#DDA15E',
+                                flexGrow: .5,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                fontFamily: `Merriweather`,
+                            }}
+                            >Conducting additional research 
+                                at the Fairfax County Historic Records Center.</Box>
                             <p>
                                 <Link href="https://www.historyrevealed.co/">
                                     <a>History Revealed, Inc.</a>
-                                </Link>{' '}
-                                is an independent, 501(c)(3) non-profit,
+                                </Link>{' '}is an independent, 501(c)(3) non-profit,
                                 historical research organization.
                             </p>
                             <p>
@@ -136,12 +199,30 @@ export default function VerticalTabs() {
                     <Paper
                         sx={{
                             backgroundColor: `var(--secondary-bg)`,
-                            margin: '3rem',
+                            margin: '2rem',
                             padding: '1rem',
                         }}
                     >
                         <Typography>
-                            <Title>The Shopping Stories Project</Title>
+                            <h1>The Shopping Stories Project</h1>
+                            <Image
+                                src={'/C_1760_001D_John Glassford.jpg'}
+                                layout="responsive"
+                                width={1}
+                                height={.8}
+                            />
+                            <Box 
+                            alignItems="center"
+                            sx={{
+                                padding: '1rem',
+                                bgcolor: '#DDA15E',
+                                flexGrow: .5,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                fontFamily: `Merriweather`,
+                            }}
+                            >John Glassford account (folio 1), Colchester store 1760/1761</Box>
                             <p>
                                 Eighteenth-century ledgers detail tabular data:
                                 recording purchases, account holders, and
@@ -158,8 +239,20 @@ export default function VerticalTabs() {
                                 their accounts and purchases by and on behalf of
                                 them by others.
                             </p>
-                            <p>
-                                Without even connecting the ledgers to other
+                            <Box 
+                            alignItems="center"
+                            sx={{
+                                padding: '1rem',
+                                bgcolor: '#FEFAE0',
+                                flexGrow: .5,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                fontFamily: `Merriweather`,
+                                fontSize: '.9rem',
+                                borderRadius: 1,
+                            }}
+                            >Without even connecting the ledgers to other
                                 documents, much can be learned from the
                                 accounts. Mrs. Elizabeth Connell made twelve
                                 trips to the store beginning on October 4, 1760,
@@ -194,7 +287,7 @@ export default function VerticalTabs() {
                                 thread, buttons, pins, and needles); although,
                                 she also purchased some kitchen accoutrements,
                                 shoes, hats, and a large blanket.
-                            </p>
+                                </Box>
                             <p>
                                 To date, most research using ledgers (whether it
                                 be for a store, tradesperson, or individual)
@@ -214,24 +307,44 @@ export default function VerticalTabs() {
                     <Paper
                         sx={{
                             backgroundColor: `var(--secondary-bg)`,
-                            margin: '3rem',
+                            margin: '2rem',
                             padding: '1rem',
                         }}
                     >
                         <Typography>
-                            <Title>People, Places, and Things</Title>
-                            <Title>
+                            <h1>People, Places, and Things</h1>
+                            <h2>
                                 The Power of the 18th-Century Ledgers of John
                                 Glassford & Company
-                            </Title>
+                            </h2>
+                            <Image
+                                src={'/ColchesterToday.JPG'}
+                                layout="responsive"
+                                width={1}
+                                height={.8}
+                            />
+                            <Box 
+                            alignItems="center"
+                            sx={{
+                                padding: '1rem',
+                                bgcolor: '#DDA15E',
+                                flexGrow: .5,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                fontFamily: `Merriweather`,
+                            }}
+                            >Colchester, Virginia, looks much changed today.</Box>
                             <p>
                                 Scotsman John Glassford controlled a major
                                 portion of the Chesapeake tobacco trade by
                                 establishing stores along the Potomac River
                                 where planters sold tobacco and purchased goods
                                 such as rum, sugar, salt, cloth, and hardware,
-                                as well as slaves. The John Glassford & Company
-                                Papers, owned by the Library of Congress, detail
+                                as well as slaves.{' '}<Link href="https://findingaids.loc.gov/db/search/xq/searchMfer02.xq?_id=loc.mss.eadmss.ms998016&_faSection=overview&_faSubsection=did&_dmdid=">
+                                    <a>The John Glassford & Company Papers</a>
+                                </Link>
+                                , owned by the Library of Congress, detail
                                 the daily transactions of the company and
                                 include the records of twenty identified branch
                                 stores in the Tidewater of Virginia and
@@ -248,15 +361,25 @@ export default function VerticalTabs() {
                                 crowd-sourced effort to transcribe 11 ledgers,
                                 with over 4,300 pages from two Virginia stores
                                 in Colchester and Alexandria from 1758-1769. In
-                                the second phase, History Revealed, Inc. (HRI),
+                                the second phase,{' '}
+                                <Link href="https://www.historyrevealed.co/">
+                                    <a>History Revealed, Inc.</a>
+                                </Link>{' '}(HRI),
                                 worked with the University of Central Florida
                                 (UCF) on a community partnership grant with
                                 history students to explore the people, places,
                                 and objects found within the 1760/1761
                                 Colchester store ledger through essays published
-                                on the website, Economy of Goods. In addition,
-                                HRI posted transcription challenges on social
-                                media and blog posts to its website. In
+                                on the website,{' '}<Link href="https://projects.cah.ucf.edu/economyofgoods/">
+                                    <a>Economy of Goods</a>
+                                </Link>.{' '}In addition,
+                                HRI posted transcription challenges on{' '}
+                                <Link href="https://www.facebook.com/HistoryReveal">
+                                    <a>social media</a>
+                                </Link>{' '}and{' '}
+                                <Link href="https://www.historyrevealed.co/blog-1">
+                                    <a>blog posts</a>
+                                </Link>{' '}to its website. In
                                 addition, interns developed an index of objects
                                 and an index of people and places found in the
                                 ledger. The UCF partnership is culminating in
@@ -286,18 +409,27 @@ export default function VerticalTabs() {
                     <Paper
                         sx={{
                             backgroundColor: `var(--secondary-bg)`,
-                            margin: '3rem',
+                            margin: '2rem',
                             padding: '1rem',
                         }}
                     >
                         <Typography>
-                            <Title>
+                            <h1>
                                 The Transcription and Database Process
-                            </Title>
+                            </h1>
+                            <Image
+                                src={'/shutterstock_445572439.jpg'}
+                                layout="responsive"
+                                width={1.4}
+                                height={.8}
+                            />
                             <p>
                                 Going from original manuscripts to digital
                                 transcriptions is challenging. What started as
-                                eleven ledgers from the John Glassford & Company
+                                eleven ledgers from the {' '}
+                                <Link href="https://www.loc.gov/item/mm78022939/">
+                                    <a>John Glassford & Company</a>
+                                </Link>{' '}
                                 records found on six microfilm reels turned into
                                 nearly 4,400 transcription files through the
                                 efforts of numerous people and partners.
@@ -359,12 +491,30 @@ export default function VerticalTabs() {
                     <Paper
                         sx={{
                             backgroundColor: `var(--secondary-bg)`,
-                            margin: '3rem',
+                            margin: '2rem',
                             padding: '1rem',
                         }}
                     >
                         <Typography>
-                            <Title>A Look at Ledgers</Title>
+                            <h1>A Look at Ledgers</h1>
+                            <Image
+                                src={'/C_1760_023_ElizabethConnell.jpg'}
+                                layout="responsive"
+                                width={.8}
+                                height={1}
+                            />
+                            <Box 
+                            alignItems="center"
+                            sx={{
+                                padding: '1rem',
+                                bgcolor: '#DDA15E',
+                                flexGrow: .5,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                fontFamily: `Merriweather`,
+                            }}
+                            >Elizabeth Connell’s purchases and payments (folio 23), Colchester store 1760/1761</Box>
                             <p>
                                 With no computers and databases to keep track of
                                 inventory and customers, businesses kept ledgers
@@ -384,12 +534,18 @@ export default function VerticalTabs() {
                     <Paper
                         sx={{
                             backgroundColor: `var(--secondary-bg)`,
-                            margin: '3rem',
+                            margin: '2rem',
                             padding: '1rem',
                         }}
                     >
                         <Typography>
-                            <Title>Ledgers: The Basics</Title>
+                            <h1>Ledgers: The Basics</h1>
+                            <Image
+                                src={'/shutterstock_48906238.jpg'}
+                                layout="responsive"
+                                width={.5}
+                                height={1}
+                            />
                             <p>
                                 Creation of ledgers started with waste books –
                                 similar to receipts. Then, at the conclusion of
@@ -426,12 +582,30 @@ export default function VerticalTabs() {
                     <Paper
                         sx={{
                             backgroundColor: `var(--secondary-bg)`,
-                            margin: '3rem',
+                            margin: '2rem',
                             padding: '1rem',
                         }}
                     >
                         <Typography>
-                            <Title>Purchases and Payments</Title>
+                            <h1>Purchases and Payments</h1>
+                            <Image
+                                src={'/shutterstock_19824082.jpg'}
+                                layout="responsive"
+                                width={.5}
+                                height={1}
+                            />
+                            <Box 
+                            alignItems="center"
+                            sx={{
+                                padding: '1rem',
+                                bgcolor: '#DDA15E',
+                                flexGrow: .5,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                fontFamily: `Merriweather`,
+                            }}
+                            >Tobacco leaves</Box>
                             <p>
                                 In the 18th-century, while customers could pay
                                 at the time of sale, many people made their
@@ -497,12 +671,31 @@ export default function VerticalTabs() {
                     <Paper
                         sx={{
                             backgroundColor: `var(--secondary-bg)`,
-                            margin: '3rem',
+                            margin: '2rem',
                             padding: '1rem',
                         }}
                     >
                         <Typography>
-                            <Title>Acknowledgements</Title>
+                            <h1>Acknowledgements</h1>
+                            <Image
+                                src={'/FXCO_Research_02.JPG'}
+                                layout="responsive"
+                                width={1.6}
+                                height={1}
+                            />
+                            <Box 
+                            alignItems="center"
+                            sx={{
+                                padding: '1rem',
+                                bgcolor: '#DDA15E',
+                                flexGrow: .5,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                fontFamily: `Merriweather`,
+                            }}
+                            >Learning more about the people and places in the ledgers requires a 
+                            visit to the Fairfax County Historic Records Center.</Box>
                             <p>
                                 Without the help of numerous individuals, we
                                 would not have been able to complete the initial
@@ -513,7 +706,7 @@ export default function VerticalTabs() {
                                 for their hard work transcribing and reviewing
                                 the Colchester 1760/1761 ledger:
                             </p>
-                            <p>
+                            <b>
                                 Krisse Adams, Lori Arbuckle, Michelle Bakels,
                                 Julia Bennett, Laura Braddock, Barry Burr,
                                 Angela Claude, John Crowell Mackie, Rebecca
@@ -527,7 +720,7 @@ export default function VerticalTabs() {
                                 Siegel, Joelle Simpson, Sarah Steele, Katherine
                                 Thurlow, Brett Trace, Nathan Van Buskirk, and
                                 Rachel Williams.
-                            </p>
+                            </b>
                             <p>
                                 From 2016-2019, numerous undergraduate and
                                 graduate students at the University of Central
@@ -540,14 +733,14 @@ export default function VerticalTabs() {
                                 America, 1607-1765; History & Historians; and
                                 Colloquia in Material Culture).
                             </p>
-                            <p>
+                            <b>
                                 Finally, the Shopping Stories website and
                                 database were developed as part of the
                                 University of Central Florida’s Computer Science
                                 Senior Design class with a terrific team of
                                 students: Andrew John (Project Manager), John
                                 Kennedy, and Laurell Cuza.
-                            </p>
+                            </b>
                         </Typography>
                     </Paper>
                 </Grid>
@@ -555,39 +748,41 @@ export default function VerticalTabs() {
                     <Paper
                         sx={{
                             backgroundColor: `var(--secondary-bg)`,
-                            margin: '3rem',
+                            margin: '2rem',
                             padding: '1rem',
                         }}
                     >
                         <Typography>
                             <p>
-                                High Life Below Stairs, John Collet, London,
+                                <i>High Life Below Stairs,</i> John Collet, London,
                                 England, 1763, oil on canvas, accession
                                 #1991-175, A&B, image #TC2000-887. Courtesy of
                                 The Colonial Williamsburg Foundation, Gift of
                                 Mrs. Cora Ginsburg.
                             </p>
                             <p>
-                                A map of the most inhabited part of Virginia
+                                <i>A map of the most inhabited part of Virginia
                                 containing the whole province of Maryland with
                                 part of Pensilvania [Pennsylvania], New Jersey
-                                and North Carolina, by Joshua Fry, Peter
+                                and North Carolina</i>, by Joshua Fry, Peter
                                 Jefferson, and Thomas Jefferys, 1755. Courtesy
                                 of the Library of Congress, Geography and Map
                                 Division.
                             </p>
                             <p>
-                                Ledger 1760-1761, Colchester, Virginia, Account
-                                of Elizabeth Connell (folio 23), from the John
+                                <i>Ledger 1760-1761, Colchester, Virginia, Account
+                                of Elizabeth Connell (folio 23)</i>, from the John
                                 Glassford and Company Records. Courtesy of the
                                 Library of Congress, Manuscript Division.
                             </p>
                             <p>
-                                "Tobacco Production, Virginia, 18th cent.",
+                                <i>"Tobacco Production, Virginia, 18th cent.",
                                 Slavery Images: A Visual Record of the African
                                 Slave Trade and Slave Life in the Early African
-                                Diaspora, accessed October 21, 2020,
-                                http://slaveryimages.org/s/slaveryimages/item/1118.
+                                Diaspora</i>, accessed October 21, 2020,
+                                {' '}<Link href="http://slaveryimages.org/s/slaveryimages/item/1118">
+                                    <a>http://slaveryimages.org/s/slaveryimages/item/1118</a>
+                                </Link>
                             </p>
                         </Typography>
                     </Paper>

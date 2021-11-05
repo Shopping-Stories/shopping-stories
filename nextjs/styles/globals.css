@@ -35,17 +35,37 @@ p {
   font-family: Merriweather;
   text-align: left;
 }
+
+b {
+  font-size: 1rem;
+  color: inherit;
+  font-family: Merriweather;
+  font-weight: bold;
+  text-align: left;
+}
+
+i {
+  font-size: 1rem;
+  font-style: 'italic';
+  color: inherit;
+  font-family: Merriweather;
+  text-align: left;
+}
+
 h1 {
-  font-size: 3rem;
+  font-size: 2rem;
   letter-spacing: 5px;
-  color: #35342f;
+  color: #030300e7;
+  font-weight: bold;
   font-family: Merriweather;
   text-align: center;
 }
+
 h2 {
-  font-size: 2rem;
-  letter-spacing: 3px;
-  color: #35342f;
+  font-size: 1.5rem;
+  letter-spacing: 5px;
+  color: #030300e7;
+  font-weight: lighter;
   font-family: Merriweather;
   text-align: center;
 }
