@@ -5,6 +5,9 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Title from '@mui/icons-material/Title';
+import Paper from '@mui/material/Paper';
+import Link from 'next/link';
+import Image from 'next/image';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -25,7 +28,7 @@ function TabPanel(props: TabPanelProps) {
         >
             {value === index && (
                 <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
+                    <Typography >{children}</Typography>
                 </Box>
             )}
         </div>
@@ -50,9 +53,11 @@ export default function VerticalTabs() {
         <Box
             sx={{
                 flexGrow: 1,
-                bgcolor: 'background.paper',
+                bgcolor: '#606c38',
                 display: 'flex',
-                height: 224,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                textAlign: 'center',
             }}
         >
             <Tabs
@@ -73,31 +78,28 @@ export default function VerticalTabs() {
                 <Tab label="Acknowledgements" {...a11yProps(4)} />
             </Tabs>
             <TabPanel value={value} index={0}>
-                About History Reveled
                 <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ minHeight: '50vh' }}
+                    container spacing={2}
                 >
-                    <Box
-                        sx={{
-                            width: '60%',
-                            backgroundColor: 'primary.main',
-                            textAlign: 'center',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // '&:hover': {
-                            // backgroundColor: 'primary.main',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // },
-                        }}
-                    >
+                    <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '3rem',
+                                padding: '1rem',
+                            }}
+                        >
                         <Typography>
-                            <Title>About History Revealed</Title>
+                        <h2>About History Revealed</h2>
+                        <Image
+                            src={"/FXCO_Research_01.png"}
+                            layout="responsive"
+                            width={700}
+                            height={475}
+                            />
                             <p>
-                                History Revealed, Inc. is an independent,
+                            <Link href="https://www.historyrevealed.co/">
+                                <a>History Revealed, Inc.</a>
+                            </Link> is an independent,
                                 501(c)(3) non-profit, historical research
                                 organization.
                             </p>
@@ -128,31 +130,20 @@ export default function VerticalTabs() {
                                 communities relating to the American experience.
                             </p>
                         </Typography>
-                    </Box>
+                        </Paper>
                 </Grid>
             </TabPanel>
             <TabPanel value={value} index={1}>
-                About Shopping Stories
-                <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ minHeight: '50vh' }}
+            <Grid
+                    container spacing={2}
                 >
-                    <Box
-                        sx={{
-                            width: '60%',
-                            backgroundColor: 'primary.main',
-                            textAlign: 'center',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // '&:hover': {
-                            // backgroundColor: 'primary.main',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // },
-                        }}
-                    >
+                    <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '3rem',
+                                padding: '1rem',
+                            }}
+                        >
                         <Typography>
                             <Title>The Shopping Stories Project</Title>
                             <p>
@@ -221,28 +212,18 @@ export default function VerticalTabs() {
                                 database.
                             </p>
                         </Typography>
-                    </Box>
+                    </Paper>
                 </Grid>
                 <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ minHeight: '50vh' }}
+                    container spacing={2}
                 >
-                    <Box
-                        sx={{
-                            width: '60%',
-                            backgroundColor: 'primary.main',
-                            textAlign: 'center',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // '&:hover': {
-                            // backgroundColor: 'primary.main',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // },
-                        }}
-                    >
+                    <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '3rem',
+                                padding: '1rem',
+                            }}
+                        >
                         <Typography>
                             <Title>People, Places, and Things</Title>
                             <Title>
@@ -303,31 +284,20 @@ export default function VerticalTabs() {
                                 1758-1804, all contained in these interactions.
                             </p>
                         </Typography>
-                    </Box>
+                    </Paper>
                 </Grid>
             </TabPanel>
             <TabPanel value={value} index={2}>
-                Transcription and the database
                 <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ minHeight: '50vh' }}
+                    container spacing={2}
                 >
-                    <Box
-                        sx={{
-                            width: '60%',
-                            backgroundColor: 'primary.main',
-                            textAlign: 'center',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // '&:hover': {
-                            // backgroundColor: 'primary.main',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // },
-                        }}
-                    >
+                    <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '3rem',
+                                padding: '1rem',
+                            }}
+                        >
                         <Typography>
                             <Title>
                                 The Transcription and Database Process
@@ -389,30 +359,20 @@ export default function VerticalTabs() {
                                 information.
                             </p>
                         </Typography>
-                    </Box>
+                    </Paper>
                 </Grid>
             </TabPanel>
             <TabPanel value={value} index={3}>
-                <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ minHeight: '50vh' }}
+            <Grid
+                    container spacing={2}
                 >
-                    <Box
-                        sx={{
-                            width: '60%',
-                            backgroundColor: 'primary.main',
-                            textAlign: 'center',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // '&:hover': {
-                            // backgroundColor: 'primary.main',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // },
-                        }}
-                    >
+                    <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '3rem',
+                                padding: '1rem',
+                            }}
+                        >
                         <Typography>
                             <Title>A Look at Ledgers</Title>
                             <p>
@@ -428,28 +388,18 @@ export default function VerticalTabs() {
                                 Virginia.
                             </p>
                         </Typography>
-                    </Box>
+                    </Paper>
                 </Grid>
                 <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ minHeight: '50vh' }}
+                    container spacing={2}
                 >
-                    <Box
-                        sx={{
-                            width: '60%',
-                            backgroundColor: 'primary.main',
-                            textAlign: 'center',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // '&:hover': {
-                            // backgroundColor: 'primary.main',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // },
-                        }}
-                    >
+                    <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '3rem',
+                                padding: '1rem',
+                            }}
+                        >
                         <Typography>
                             <Title>Ledgers: The Basics</Title>
                             <p>
@@ -482,28 +432,18 @@ export default function VerticalTabs() {
                                 annual account total on both pages.
                             </p>
                         </Typography>
-                    </Box>
+                    </Paper>
                 </Grid>
                 <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ minHeight: '50vh' }}
+                    container spacing={2}
                 >
-                    <Box
-                        sx={{
-                            width: '60%',
-                            backgroundColor: 'primary.main',
-                            textAlign: 'center',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // '&:hover': {
-                            // backgroundColor: 'primary.main',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // },
-                        }}
-                    >
+                    <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '3rem',
+                                padding: '1rem',
+                            }}
+                        >
                         <Typography>
                             <Title>Purchases and Payments</Title>
                             <p>
@@ -563,31 +503,20 @@ export default function VerticalTabs() {
                                 and payment transactions on the other.
                             </p>
                         </Typography>
-                    </Box>
+                    </Paper>
                 </Grid>
             </TabPanel>
             <TabPanel value={value} index={4}>
-                Acknowledgements
-                <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ minHeight: '50vh' }}
+            <Grid
+                    container spacing={2}
                 >
-                    <Box
-                        sx={{
-                            width: '60%',
-                            backgroundColor: 'primary.main',
-                            textAlign: 'center',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // '&:hover': {
-                            // backgroundColor: 'primary.main',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // },
-                        }}
-                    >
+                    <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '3rem',
+                                padding: '1rem',
+                            }}
+                        >
                         <Typography>
                             <Title>Acknowledgements</Title>
                             <p>
@@ -636,30 +565,19 @@ export default function VerticalTabs() {
                                 Kennedy, and Laurell Cuza.
                             </p>
                         </Typography>
-                    </Box>
+                    </Paper>
                 </Grid>
                 <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    style={{ minHeight: '50vh' }}
+                    container spacing={2}
                 >
-                    <Box
-                        sx={{
-                            width: '60%',
-                            backgroundColor: 'primary.main',
-                            textAlign: 'center',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // '&:hover': {
-                            // backgroundColor: 'primary.main',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // },
-                        }}
-                    >
+                    <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '3rem',
+                                padding: '1rem',
+                            }}
+                        >
                         <Typography>
-                            <Title>Image Credits</Title>
                             <p>
                                 High Life Below Stairs, John Collet, London,
                                 England, 1763, oil on canvas, accession
@@ -690,7 +608,7 @@ export default function VerticalTabs() {
                                 http://slaveryimages.org/s/slaveryimages/item/1118.
                             </p>
                         </Typography>
-                    </Box>
+                    </Paper>
                 </Grid>
             </TabPanel>
         </Box>
