@@ -22,7 +22,7 @@ const defaultNavLinks: NavLink[] = [
     { title: `home`, path: `/` },
     { title: `about`, path: `/about` },
     { title: `search`, path: `/entries` },
-	{ title: `Database`, path: `/databasesearch` },
+    { title: `Database`, path: `/databasesearch` },
 ];
 
 const adminNavLinks: NavLink[] = [

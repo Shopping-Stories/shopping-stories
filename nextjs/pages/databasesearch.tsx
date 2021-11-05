@@ -9,7 +9,7 @@ const databasesearch = () => {
         <div>
             <Header />
             <DsTabs />
-            <ParseTable entries = {[]}/>
+            <ParseTable entries={[]} />
         </div>
     );
 };

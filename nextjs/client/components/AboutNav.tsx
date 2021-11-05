@@ -28,7 +28,7 @@ function TabPanel(props: TabPanelProps) {
         >
             {value === index && (
                 <Box sx={{ p: 3 }}>
-                    <Typography >{children}</Typography>
+                    <Typography>{children}</Typography>
                 </Box>
             )}
         </div>
@@ -78,30 +78,28 @@ export default function VerticalTabs() {
                 <Tab label="Acknowledgements" {...a11yProps(4)} />
             </Tabs>
             <TabPanel value={value} index={0}>
-                <Grid
-                    container spacing={2}
-                >
+                <Grid container spacing={2}>
                     <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
+                        sx={{
+                            backgroundColor: `var(--secondary-bg)`,
+                            margin: '3rem',
+                            padding: '1rem',
+                        }}
+                    >
                         <Typography>
-                        <h2>About History Revealed</h2>
-                        <Image
-                            src={"/FXCO_Research_01.png"}
-                            layout="responsive"
-                            width={700}
-                            height={475}
+                            <h2>About History Revealed</h2>
+                            <Image
+                                src={'/FXCO_Research_01.png'}
+                                layout="responsive"
+                                width={700}
+                                height={475}
                             />
                             <p>
-                            <Link href="https://www.historyrevealed.co/">
-                                <a>History Revealed, Inc.</a>
-                            </Link> is an independent,
-                                501(c)(3) non-profit, historical research
-                                organization.
+                                <Link href="https://www.historyrevealed.co/">
+                                    <a>History Revealed, Inc.</a>
+                                </Link>{' '}
+                                is an independent, 501(c)(3) non-profit,
+                                historical research organization.
                             </p>
                             <p>
                                 We focus on learning more about lesser-known
@@ -130,20 +128,18 @@ export default function VerticalTabs() {
                                 communities relating to the American experience.
                             </p>
                         </Typography>
-                        </Paper>
+                    </Paper>
                 </Grid>
             </TabPanel>
             <TabPanel value={value} index={1}>
-            <Grid
-                    container spacing={2}
-                >
+                <Grid container spacing={2}>
                     <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
+                        sx={{
+                            backgroundColor: `var(--secondary-bg)`,
+                            margin: '3rem',
+                            padding: '1rem',
+                        }}
+                    >
                         <Typography>
                             <Title>The Shopping Stories Project</Title>
                             <p>
@@ -214,16 +210,14 @@ export default function VerticalTabs() {
                         </Typography>
                     </Paper>
                 </Grid>
-                <Grid
-                    container spacing={2}
-                >
+                <Grid container spacing={2}>
                     <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
+                        sx={{
+                            backgroundColor: `var(--secondary-bg)`,
+                            margin: '3rem',
+                            padding: '1rem',
+                        }}
+                    >
                         <Typography>
                             <Title>People, Places, and Things</Title>
                             <Title>
@@ -288,16 +282,14 @@ export default function VerticalTabs() {
                 </Grid>
             </TabPanel>
             <TabPanel value={value} index={2}>
-                <Grid
-                    container spacing={2}
-                >
+                <Grid container spacing={2}>
                     <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
+                        sx={{
+                            backgroundColor: `var(--secondary-bg)`,
+                            margin: '3rem',
+                            padding: '1rem',
+                        }}
+                    >
                         <Typography>
                             <Title>
                                 The Transcription and Database Process
@@ -363,16 +355,14 @@ export default function VerticalTabs() {
                 </Grid>
             </TabPanel>
             <TabPanel value={value} index={3}>
-            <Grid
-                    container spacing={2}
-                >
+                <Grid container spacing={2}>
                     <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
+                        sx={{
+                            backgroundColor: `var(--secondary-bg)`,
+                            margin: '3rem',
+                            padding: '1rem',
+                        }}
+                    >
                         <Typography>
                             <Title>A Look at Ledgers</Title>
                             <p>
@@ -390,16 +380,14 @@ export default function VerticalTabs() {
                         </Typography>
                     </Paper>
                 </Grid>
-                <Grid
-                    container spacing={2}
-                >
+                <Grid container spacing={2}>
                     <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
+                        sx={{
+                            backgroundColor: `var(--secondary-bg)`,
+                            margin: '3rem',
+                            padding: '1rem',
+                        }}
+                    >
                         <Typography>
                             <Title>Ledgers: The Basics</Title>
                             <p>
@@ -434,16 +422,14 @@ export default function VerticalTabs() {
                         </Typography>
                     </Paper>
                 </Grid>
-                <Grid
-                    container spacing={2}
-                >
+                <Grid container spacing={2}>
                     <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
+                        sx={{
+                            backgroundColor: `var(--secondary-bg)`,
+                            margin: '3rem',
+                            padding: '1rem',
+                        }}
+                    >
                         <Typography>
                             <Title>Purchases and Payments</Title>
                             <p>
@@ -507,16 +493,14 @@ export default function VerticalTabs() {
                 </Grid>
             </TabPanel>
             <TabPanel value={value} index={4}>
-            <Grid
-                    container spacing={2}
-                >
+                <Grid container spacing={2}>
                     <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
+                        sx={{
+                            backgroundColor: `var(--secondary-bg)`,
+                            margin: '3rem',
+                            padding: '1rem',
+                        }}
+                    >
                         <Typography>
                             <Title>Acknowledgements</Title>
                             <p>
@@ -567,16 +551,14 @@ export default function VerticalTabs() {
                         </Typography>
                     </Paper>
                 </Grid>
-                <Grid
-                    container spacing={2}
-                >
+                <Grid container spacing={2}>
                     <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
+                        sx={{
+                            backgroundColor: `var(--secondary-bg)`,
+                            margin: '3rem',
+                            padding: '1rem',
+                        }}
+                    >
                         <Typography>
                             <p>
                                 High Life Below Stairs, John Collet, London,

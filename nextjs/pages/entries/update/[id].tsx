@@ -64,7 +64,7 @@ const UpdateEntryPage: NextPage = () => {
     });
 
     if (updateForm.values.id) {
-        console.log("");
+        console.log('');
     }
 
     if (findEntryResult.fetching) {

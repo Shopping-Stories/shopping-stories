@@ -191,7 +191,8 @@ const createEntrySchema = yup.object({
                 ),
             }),
         )
-        .default(null).nullable(),
+        .default(null)
+        .nullable(),
     tobaccoEntry: yup
         .object({
             entry: yup.string().default(''),
@@ -221,7 +222,8 @@ const createEntrySchema = yup.object({
             ),
             tobaccoShaved: yup.number().default(0),
         })
-        .default(null).nullable(),
+        .default(null)
+        .nullable(),
     regularEntry: yup
         .object({
             entry: yup.string().default(''),
@@ -239,7 +241,8 @@ const createEntrySchema = yup.object({
                 }),
             ),
         })
-        .default(null).nullable(),
+        .default(null)
+        .nullable(),
     people: yup.array().of(
         yup.object({
             name: yup.string().default(''),
@@ -667,7 +670,7 @@ const CreateEntryPage: NextPage = () => {
                                 />
                                 <FormHelperText id="outlined-weight-helper-text">
                                     {createForm.touched.dateInfo?.fullDate &&
-                                    createForm.errors.dateInfo?.fullDate}
+                                        createForm.errors.dateInfo?.fullDate}
                                 </FormHelperText>
                             </FormGroup>
                         </Grid>
