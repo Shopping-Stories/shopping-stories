@@ -131,10 +131,65 @@ export async function advancedSearch(searchObj: any) {
     //regexes to use (?i) for case insensitivity
     //regular regex to match things such as numbers for tobacco marks
 
-    let searchString = '';
-    let temp = {
-        $text: { $search: searchString },
+    let searchString = "";
+    let indexFlag = 0;
+    let temp : any = {
+    
     };
+    if(searchObj.people !== undefined){
+        console.log("people undefined");
+        searchString += searchObj.people.toString();
+    }
+    if(searchObj.reel !== undefined){
+        temp["meta.reel"] = searchObj.reel.toString();
+    }
+    if (searchObj.storeOwner != undefined){
+        let owner = searchObj.storeOwner.toString();
+
+        temp["meta.owner"] = {"$regex" : owner, "$options" : "i"};
+    }
+    if(searchObj.folioYear != undefined){
+        let folioYear = searchObj.folioYear.toString();
+        temp["meta.year"] = {"$regex" : folioYear};
+    }
+    if(searchObj.folioPage != undefined){
+        let folioPage = searchObj.folioPage.toString();
+        temp["meta.folioPage"] = {"$regex" : folioPage};
+    }
+    if(searchObj.entryID != undefined){
+        let entryID = searchObj.entryID.toString();
+        temp["meta.entryID"] = {"$regex" : entryID, "$options" : "i"};
+    }
+    if(searchObj.accountHolderName != undefined){
+        searchString += searchObj.accountHolderName.trim().toString();
+    }
+    if(searchObj.date != undefined){
+        let date = new Date(searchObj.date);
+        let date2 = new Date(1761, 11, 22);
+        console.log(date, date2);
+        temp["dateInfo.fullDate"] = {"$gte" : date, "$lt" : date2};
+    }
+    if(searchObj.people != undefined){
+        searchString += searchObj.people;
+    }
+    if(searchObj.places != undefined){
+        searchString += searchObj.places;
+    }
+    if(searchObj.colony != undefined){
+        let colony = searchObj.colony;
+        temp["money.colony"] ={"$regex" : colony, "$option" : "i"};
+    }
+
+    console.log(searchString);
+    if(searchString !== ""){
+        let searchJson = {
+            "$search" : searchString
+        }
+        temp["$text"] = searchJson;
+        indexFlag = 1;
+    }
+    
+    console.log(temp);
     //general fields
     //fields Reel, StoreOwner, FolioYear,FolioPage,Entry ID, Account holder name (one field),
     //Date using date picker, people, places, commodity, colony
@@ -152,10 +207,20 @@ export async function advancedSearch(searchObj: any) {
     */
 
     //append search fields to temp like temp[tobaccoEntry.marks.markName] = "blahblah"
-    const res: any = await EntryModel.find(temp, {
-        score: { $meta: 'textScore' },
-    }).sort({ score: { $meta: 'textScore' } });
-    console.log(res);
+    let res : any= [];
+    
+    if(indexFlag === 1){
+        console.log("using index");
+        res = await EntryModel.find(temp, {
+            score: { $meta: 'textScore' },
+        }).sort({ score: { $meta: 'textScore' } });
+    }else{
+        console.log("not using index");
+        res =  await EntryModel.find(temp);
+    }
+
+    
+    //console.log(res);
     return res;
 }
 async function formatMoney(entry: any) {
