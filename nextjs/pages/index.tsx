@@ -37,27 +37,26 @@ const Home: NextPage = () => {
                 >
                     <Box
                         sx={{
+                            borderRadius: 2,
+                            boxShadow: 3,
                             width: '60%',
                             backgroundColor: 'primary.main',
                             textAlign: 'center',
+                            mx: 'auto',
+                            margin: '3rem',
+                            padding: '1rem',
                             // opacity: [0.9, 0.8, 0.7],
                             // '&:hover': {
                             // backgroundColor: 'primary.main',
                             // opacity: [0.9, 0.8, 0.7],
                             // },
                         }}
-                    >
-                        <Typography variant="h2" component="h1">
+                    ><h3>
+                        <h4>
                             Welcome to
-                        </Typography>
-                        <Typography
-                            alignContent={'center'}
-                            variant="h1"
-                            component="h2"
-                            gutterBottom
-                        >
+                        </h4>
                             Shopping Stories
-                        </Typography>
+                        </h3>
                     </Box>
                     <Switch
                         checked={toggleOn}
