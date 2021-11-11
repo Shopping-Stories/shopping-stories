@@ -218,8 +218,8 @@ export class DateInput {
     @Field(() => Int, { description: 'month of date' })
     month: number;
 
-    @Field(() => String, { description: 'year of date' })
-    year: string;
+    @Field(() => Int, { description: 'year of date' })
+    year: number;
 
     @Field(() => Date, { description: 'complete date', nullable: true })
     fullDate: Date;

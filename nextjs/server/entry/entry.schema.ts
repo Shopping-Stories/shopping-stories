@@ -277,8 +277,8 @@ export class DateObject {
     month: number;
 
     @prop()
-    @Field(() => String, { description: 'year of date' })
-    year: string;
+    @Field(() => Int, { description: 'year of date' })
+    year: number;
 
     @prop({nullable: true})
     @Field(() => Date, { description: 'complete date', nullable: true })
@@ -404,8 +404,8 @@ export class Entry {
     })
     places: PeoplePlacesObject[];
 
-    @prop({ required: true })
-    @Field(() => String, { description: 'Type of Entry' })
+    @prop({ default:"" })
+    @Field(() => String, { description: 'Type of Entry'})
     entry: string;
 
     @prop({ _id: false, required: true })

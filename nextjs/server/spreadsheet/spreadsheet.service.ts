@@ -94,14 +94,14 @@ export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
         }
     } else {
         for (let i = 0; i < entries.length; i++) {
-            if (errorCode[i] === 1) {
+            if (errorCode[i] === 0) {
                 ret.push({
                     entry: spreadsheetObj[i].Entry,
                     ...entries[i],
-                    //AccHolder: accHold[i],
-                    //people: people[i],
-                    //meta: meta[i],
-                    //DateInfo: dates[i],
+                    AccHolder: accountHolder[i],
+                    people: people[i],
+                    meta: meta[i],
+                    DateInfo: dates[i],
                     money: money[i],
                     errorCode: errorCode[i],
                     errorMessage: errorMessage[i],
@@ -161,9 +161,9 @@ export async function advancedSearch(searchObj: any) {
     if (searchObj.accountHolderName != undefined) {
         searchString += searchObj.accountHolderName.trim().toString();
     }
-    if (searchObj.date != undefined) {
+    if ((searchObj.date != undefined) && (searchObj.date2 != undefined)) {
         let date = new Date(searchObj.date);
-        let date2 = new Date(1761, 11, 22);
+        let date2 = new Date(searchObj.date2);
         console.log(date, date2);
         temp['dateInfo.fullDate'] = { $gte: date, $lt: date2 };
     }
@@ -176,6 +176,59 @@ export async function advancedSearch(searchObj: any) {
     if (searchObj.colony != undefined) {
         let colony = searchObj.colony;
         temp['money.colony'] = { $regex: colony, $option: 'i' };
+    }
+    if (searchObj.itemEntry != null) {
+        let entry = searchObj.itemEntry;
+        if (entry.perOrder === 1) {
+            temp['itemEntries.perOrder'] = 1;
+        }
+        if (entry.items != undefined) {
+            let entryItems = entry.items.toString();
+
+            temp['itemEntries.itemsOrServices.item'] = { $regex: new RegExp(entryItems, 'i') };
+        }
+        if (entry.category != undefined) {
+            temp['itemEntries.itemsOrServices.category'] = entry.category.toString();
+        }
+        if (entry.subcategory != undefined) {
+            temp['itemEntries.itemsOrServices.subcategory'] = entry.subcategory.toString();
+        }
+        if (entry.variant != undefined) {
+            let variantString = entry.variant.toString();
+            temp['itemEntries.itemsOrServices.variants'] = { $regex: variantString, $options: 'i' };
+        }
+        console.log(entry);
+    }
+    if (searchObj.tobaccoEntry != null) {
+        let entry = searchObj.tobaccoEntry;
+        console.log(entry);
+        if (entry.description != undefined) {
+            let description = entry.description.toString();
+            temp['tobaccoEntry.entry'] = { $regex: description, $options: 'i' };
+        }
+        if (entry.tobaccoMarkName != undefined) {
+            let name = entry.tobaccoMarkName.toString();
+            temp['tobaccoEntry.marks.markName'] = { $regex: name, $options: 'ix' };
+        }
+        if (entry.noteNumber != undefined) {
+            temp['tobaccoEntry.notes.noteNum'] = entry.noteNumber;
+        }
+        if (entry.moneyType != undefined) {
+            let money = entry.moneyType.toString();
+            temp['tobaccoEntry.money.moneyType'] = { $regex: money, $options: 'ix' };
+        }
+    }
+    if (searchObj.regularEntry != null) {
+        let entry = searchObj.regularEntry;
+        console.log(entry);
+        if (entry.entryDescription != undefined) {
+            let description = entry.entryDescription.toString();
+            temp['regularEntry.entry'] = { $regex: description, $options: 'ix' };
+        }
+        if (entry.tobaccoMarkName != undefined) {
+            let name = entry.tobaccoMarkName.toString();
+            temp['regularEntry.tobaccoMarks.markName'] = { $regex: name, $options: 'ix' };
+        }
     }
 
     console.log(searchString);
@@ -487,7 +540,7 @@ async function newDateObject(day: any, month: any, year: any) {
         day = day.toString().replace(/[^0-9.]/g, '');
         month = month.toString().replace(/[^0-9.]/g, '');
         year = year.toString().replace(/[^0-9.]/g, '');
-        let res: any = '';
+        let res: any = null;
         if (month == 0 || month == '') {
             month = 1;
         }
@@ -495,7 +548,8 @@ async function newDateObject(day: any, month: any, year: any) {
             day = 1;
         }
         if (year == 0 || year == '') {
-            res = null;
+            year = 1760;
+
         } else {
             res = new Date(Number(year), Number(month - 1), Number(day));
         }
@@ -1077,6 +1131,7 @@ async function updatedItemEntry(entryObj: any) {
                     mainItemString[3],
                     workingString,
                 );
+                console.log(categories);
                 if (mainItemString[mainItemString.length - 2] === '') {
                     if (mainItemString[0] === '') {
                         unitCost = await calculateUnitCost(itemCost, 1);
@@ -1220,8 +1275,8 @@ async function findCategories(item: any, inputString: string) {
     };
     let cursor = await CategoryModel.findOne({ $text: { $search: item } });
     if (cursor != null) {
-        res.category = cursor.Category;
-        res.subcategory = cursor.Subcategory;
+        res.category = cursor.category;
+        res.subcategory = cursor.subcategory;
     }
 
     return res;

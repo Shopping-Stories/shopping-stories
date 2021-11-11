@@ -162,7 +162,7 @@ type DateObject {
   month: Int!
 
   # year of date
-  year: String!
+  year: Int!
 
   # complete date
   fullDate: DateTime
@@ -347,11 +347,12 @@ input AdvancedSearchInput {
   entryID: String
   accountHolderName: String
   date: DateTime
+  date2: DateTime
   people: String
   places: String
   commodity: String
   colony: String
-  itemEntry: ItemEntrySearch
+  itemEntry: ItemEntrySearch = null
   tobaccoEntry: TobaccoEntrySearch = null
   regularEntry: RegularEntrySearch = null
 }
@@ -677,7 +678,7 @@ input DateInput {
   month: Int!
 
   # year of date
-  year: String!
+  year: Int!
 
   # complete date
   fullDate: DateTime
