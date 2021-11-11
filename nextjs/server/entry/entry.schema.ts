@@ -280,9 +280,9 @@ export class DateObject {
     @Field(() => String, { description: 'year of date' })
     year: string;
 
-    @prop()
+    @prop({nullable: true})
     @Field(() => Date, { description: 'complete date', nullable: true })
-    fullDate: Date;
+    fullDate: Date | null;
 }
 
 @ObjectType('AccHolderObject', { description: '' })

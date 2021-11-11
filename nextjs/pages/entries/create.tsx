@@ -1,12 +1,20 @@
+import EntryPeopleForm from '@components/EntryPeopleForm';
+import EntryPlacesForm from '@components/EntryPlacesForm';
+import EntrySelectionTabForm from '@components/EntrySelectionTabForm';
+import FindAccountHolder from '@components/FindAccountHolder';
+import FolioReferencesForm from '@components/FolioRefrencesForm';
 import Header from '@components/Header';
+import LedgerReferencesForm from '@components/LedgerReferencesForm';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Paper from '@mui/material/Paper';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { entryFields } from 'client/graphqlDefs';
@@ -23,110 +31,7 @@ mutation createEntry($entry: CreateEntryInput!) {
 }
 ${entryFields}
 `;
-/**
- * fragment items on MentionedItemsObject {
-	quantity
-  qualifier
-  item
-}
 
-fragment money on PoundsShillingsPence {
-  pounds
-  shilling
-  pence
-}
-
-fragment entryFields on Entry {
-  id
-  dateInfo {
-    day
-    month
-    year
-    fullDate
-  }
-  folioRefs
-  ledgerRefs
-  itemEntries {
-    perOrder
-    percentage
-    itemsOrServices {
-      quantity
-      qualifier
-      variants
-      item
-      category
-      subcategory
-      unitCost {
-        ...money
-      }
-      itemCost {
-        ...money
-      }
-    }
-    itemsMentioned {
-      ...items
-    }
-  }
-  tobaccoEntry {
-    entry
-    marks {
-      markID
-      markName
-    }
-    notes {
-      noteNum
-      totalWeight
-      barrelWeight
-      tobaccoWeight
-    }
-    money {
-      moneyType
-      tobaccoAmount
-      rateForTobacco {
-        ...money
-      }
-      casksInTransaction
-      tobaccoSold{
-        ...money
-      }
-      casksSoldForEach{
-        ...money
-      }
-    }
-    tobaccoShaved
-  }
-  regularEntry {
-    entry
-    tobaccoMarks {
-      markID
-      markName
-    }
-    itemsMentioned {
-      ...items
-    }
-  }
-  people {
-    name
-    id
-  }
-  places {
-    name
-    id
-  }
-  entry
-  money {
-    commodity
-    colony
-    quantity
-    currency {
-      ...money
-    }
-    sterling {
-      ...money
-    }
-  }
-}
- */
 
 const poundShillingPence = yup.object({
     pounds: yup.number().default(0),
@@ -144,7 +49,7 @@ const createEntrySchema = yup.object({
         location: yup.string().default(''),
         reference: yup.string().default(''),
         debitOrCredit: yup.number().default(2),
-        accountHolderID: yup.string().default(''),
+        accountHolderID: yup.string().default('').matches(/^[a-fA-F0-9]{24}$/, "You much pick a person"),
     }),
     meta: yup.object({
         ledger: yup.string().default(''),
@@ -160,10 +65,10 @@ const createEntrySchema = yup.object({
         day: yup.number().default(-1),
         month: yup.number().default(-1),
         year: yup.string().default(''),
-        fullDate: yup.date().default(null).nullable(),
+        fullDate: yup.date().nullable(),
     }),
-    folioRefs: yup.array().of(yup.string().default('')),
-    ledgerRefs: yup.array().of(yup.string().default('')),
+    folioRefs: yup.array().of(yup.string().default('')).default([]),
+    ledgerRefs: yup.array().of(yup.string().default('')).default([]),
     itemEntries: yup
         .array()
         .of(
@@ -246,13 +151,13 @@ const createEntrySchema = yup.object({
     people: yup.array().of(
         yup.object({
             name: yup.string().default(''),
-            id: yup.string().default(null).nullable(),
+            id: yup.string().default('').nullable(),
         }),
     ),
     places: yup.array().of(
         yup.object({
             name: yup.string().default(''),
-            id: yup.string().default(null).nullable(),
+            id: yup.string().default('').nullable(),
         }),
     ),
     entry: yup.string().default(''),
@@ -266,7 +171,8 @@ const createEntrySchema = yup.object({
 });
 
 const CreateEntryPage: NextPage = () => {
-    const [_createEntryResult, _createEntry] = useMutation(createEntryDef);
+    const [_createEntryResult, createEntry] = useMutation(createEntryDef);
+
     const createForm = useFormik({
         initialValues: {
             accountHolder: {
@@ -294,7 +200,7 @@ const CreateEntryPage: NextPage = () => {
                 day: -1,
                 month: -1,
                 year: '',
-                fullDate: null,
+                fullDate: '',
             },
             folioRefs: [],
             ledgerRefs: [],
@@ -323,20 +229,16 @@ const CreateEntryPage: NextPage = () => {
         validationSchema: createEntrySchema,
         onSubmit: async (values, { resetForm }) => {
             // do your stuff
-            // const res = await createEntry({
-            //     entry: values,
-            // });
+            const res = await createEntry({
+                entry: values,
+            });
             console.log({ values });
-            // if (res.error) {
-            // } else {
+            if (res.error) {
+            } else {
             resetForm();
-            // }
+            }
         },
     });
-
-    if (createForm.values.entry) {
-        console.log('');
-    }
 
     return (
         <div>
@@ -561,32 +463,7 @@ const CreateEntryPage: NextPage = () => {
                                             ?.debitOrCredit
                                     }
                                 />
-                                <TextField
-                                    fullWidth
-                                    margin="dense"
-                                    variant="standard"
-                                    name="accountHolder.accountHolderID"
-                                    label="Account Holder ID"
-                                    value={
-                                        createForm.values.accountHolder
-                                            .accountHolderID
-                                    }
-                                    onChange={createForm.handleChange}
-                                    error={
-                                        createForm.touched.accountHolder
-                                            ?.accountHolderID &&
-                                        Boolean(
-                                            createForm.errors.accountHolder
-                                                ?.accountHolderID,
-                                        )
-                                    }
-                                    helperText={
-                                        createForm.touched.accountHolder
-                                            ?.accountHolderID &&
-                                        createForm.errors.accountHolder
-                                            ?.accountHolderID
-                                    }
-                                />
+                                <FindAccountHolder formikForm={createForm}/>
                             </FormGroup>
                             <Divider />
                             <Typography component="h2">Date Info</Typography>
@@ -672,6 +549,20 @@ const CreateEntryPage: NextPage = () => {
                                     {createForm.touched.dateInfo?.fullDate &&
                                         createForm.errors.dateInfo?.fullDate}
                                 </FormHelperText>
+                                <FolioReferencesForm formikForm={createForm} />
+                                <LedgerReferencesForm formikForm={createForm} />
+                                <EntryPeopleForm formikForm={createForm} />
+                                <EntryPlacesForm formikForm={createForm} />
+                                {/* <Button
+                                    onClick={() =>
+                                        createForm.setFieldValue(
+                                            'people.0.name',
+                                            'hello',
+                                        )
+                                    }
+                                >
+                                    click
+                                </Button> */}
                             </FormGroup>
                         </Grid>
                         <Grid item xs={4}>
@@ -817,7 +708,259 @@ const CreateEntryPage: NextPage = () => {
                                         createForm.errors.meta?.comments
                                     }
                                 />
+                                <Divider />
+                                <FormControlLabel
+                                    value=""
+                                    control={
+                                        <TextareaAutosize
+                                            // fullWidth
+                                            // margin="dense"
+                                            // variant="standard"
+                                            name="entry"
+                                            // label="Original Entry"
+                                            value={createForm.values.entry}
+                                            onChange={createForm.handleChange}
+                                            placeholder="Text of original entry"
+                                        />
+                                    }
+                                    label="Original Entry Text"
+                                    labelPlacement="top"
+                                />
+                                <FormHelperText
+                                    error={
+                                        createForm.touched.entry &&
+                                        Boolean(createForm.errors.entry)
+                                    }
+                                >
+                                    {createForm.touched.entry &&
+                                        createForm.errors.entry}
+                                </FormHelperText>
+                                <Divider />
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    variant="standard"
+                                    name="money.commodity"
+                                    label="Money Commodity"
+                                    value={createForm.values.money.commodity}
+                                    onChange={createForm.handleChange}
+                                    error={
+                                        createForm.touched.money?.commodity &&
+                                        Boolean(
+                                            createForm.errors.money?.commodity,
+                                        )
+                                    }
+                                    helperText={
+                                        createForm.touched.money?.commodity &&
+                                        createForm.errors.money?.commodity
+                                    }
+                                />
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    variant="standard"
+                                    name="money.colony"
+                                    label="Colony of Money"
+                                    value={createForm.values.money.colony}
+                                    onChange={createForm.handleChange}
+                                    error={
+                                        createForm.touched.money?.colony &&
+                                        Boolean(createForm.errors.money?.colony)
+                                    }
+                                    helperText={
+                                        createForm.touched.money?.colony &&
+                                        createForm.errors.money?.colony
+                                    }
+                                />
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    variant="standard"
+                                    name="money.quantity"
+                                    label="Quantity of Money"
+                                    value={createForm.values.money?.quantity}
+                                    onChange={createForm.handleChange}
+                                    error={
+                                        createForm.touched.money?.quantity &&
+                                        Boolean(
+                                            createForm.errors.money?.quantity,
+                                        )
+                                    }
+                                    helperText={
+                                        createForm.touched.money?.quantity &&
+                                        createForm.errors.money?.quantity
+                                    }
+                                />
+                                <Divider />
+                                <Typography component="h2">Currency</Typography>
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    variant="standard"
+                                    name="money.currency.pounds"
+                                    label="Pounds"
+                                    type="number"
+                                    inputProps={{ min: 0 }}
+                                    value={
+                                        createForm.values.money.currency.pounds
+                                    }
+                                    onChange={createForm.handleChange}
+                                    error={
+                                        createForm.touched.money?.currency
+                                            ?.pounds &&
+                                        Boolean(
+                                            createForm.errors.money?.currency
+                                                ?.pounds,
+                                        )
+                                    }
+                                    helperText={
+                                        createForm.touched.money?.currency
+                                            ?.pounds &&
+                                        createForm.errors.money?.currency
+                                            ?.pounds
+                                    }
+                                />
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    variant="standard"
+                                    name="money.currency.shilling"
+                                    label="Shilling"
+                                    type="number"
+                                    inputProps={{ min: 0 }}
+                                    value={
+                                        createForm.values.money.currency
+                                            .shilling
+                                    }
+                                    onChange={createForm.handleChange}
+                                    error={
+                                        createForm.touched.money?.currency
+                                            ?.shilling &&
+                                        Boolean(
+                                            createForm.errors.money?.currency
+                                                ?.shilling,
+                                        )
+                                    }
+                                    helperText={
+                                        createForm.touched.money?.currency
+                                            ?.shilling &&
+                                        createForm.errors.money?.currency
+                                            ?.shilling
+                                    }
+                                />
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    variant="standard"
+                                    name="money.currency.pence"
+                                    label="Pence"
+                                    type="number"
+                                    inputProps={{ min: 0 }}
+                                    value={
+                                        createForm.values.money.currency.pence
+                                    }
+                                    onChange={createForm.handleChange}
+                                    error={
+                                        createForm.touched.money?.currency
+                                            ?.pence &&
+                                        Boolean(
+                                            createForm.errors.money?.currency
+                                                ?.pence,
+                                        )
+                                    }
+                                    helperText={
+                                        createForm.touched.money?.currency
+                                            ?.pence &&
+                                        createForm.errors.money?.currency?.pence
+                                    }
+                                />
+                                <Divider />
+                                <Typography component="h2">Sterling</Typography>
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    variant="standard"
+                                    name="money.sterling.pounds"
+                                    label="Pounds"
+                                    type="number"
+                                    inputProps={{ min: 0 }}
+                                    value={
+                                        createForm.values.money.sterling.pounds
+                                    }
+                                    onChange={createForm.handleChange}
+                                    error={
+                                        createForm.touched.money?.sterling
+                                            ?.pounds &&
+                                        Boolean(
+                                            createForm.errors.money?.sterling
+                                                ?.pounds,
+                                        )
+                                    }
+                                    helperText={
+                                        createForm.touched.money?.sterling
+                                            ?.pounds &&
+                                        createForm.errors.money?.sterling
+                                            ?.pounds
+                                    }
+                                />
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    variant="standard"
+                                    name="money.sterling.shilling"
+                                    label="Day"
+                                    type="number"
+                                    inputProps={{ min: 0 }}
+                                    value={
+                                        createForm.values.money.sterling
+                                            .shilling
+                                    }
+                                    onChange={createForm.handleChange}
+                                    error={
+                                        createForm.touched.money?.sterling
+                                            ?.shilling &&
+                                        Boolean(
+                                            createForm.errors.money?.sterling
+                                                ?.shilling,
+                                        )
+                                    }
+                                    helperText={
+                                        createForm.touched.money?.sterling
+                                            ?.shilling &&
+                                        createForm.errors.money?.sterling
+                                            ?.shilling
+                                    }
+                                />
+                                <TextField
+                                    fullWidth
+                                    margin="dense"
+                                    variant="standard"
+                                    name="money.sterling.pence"
+                                    label="Day"
+                                    type="number"
+                                    inputProps={{ min: 0 }}
+                                    value={
+                                        createForm.values.money.sterling.pence
+                                    }
+                                    onChange={createForm.handleChange}
+                                    error={
+                                        createForm.touched.money?.sterling
+                                            ?.pence &&
+                                        Boolean(
+                                            createForm.errors.money?.sterling
+                                                ?.pence,
+                                        )
+                                    }
+                                    helperText={
+                                        createForm.touched.money?.sterling
+                                            ?.pence &&
+                                        createForm.errors.money?.sterling?.pence
+                                    }
+                                />
                             </FormGroup>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <EntrySelectionTabForm formikForm={createForm} />
                         </Grid>
                     </Grid>
                     <Button variant="contained" type="submit">

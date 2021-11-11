@@ -447,6 +447,9 @@ type Person {
   # String of MongoDB ObjectId
   id: ID!
 
+  # Full name of person
+  fullName: String!
+
   # Variations of given item
   account: String!
 

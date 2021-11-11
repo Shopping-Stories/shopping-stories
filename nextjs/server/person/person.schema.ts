@@ -6,7 +6,11 @@ export type PersonDocument = Person & Document;
 
 @ObjectType({ description: 'People Object' })
 @modelOptions({
-    schemaOptions: { timestamps: true },
+    schemaOptions: {
+        timestamps: true,
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
+    },
 })
 export class Person {
     @Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
@@ -15,6 +19,11 @@ export class Person {
     }
 
     readonly _id?: ObjectId;
+
+    @Field(() => String, { description: 'Full name of person' })
+    public get fullName(): string {
+        return `${this.firstName} ${this.lastName}`.trim();
+    }
 
     @prop({ required: true })
     @Field({ description: 'Variations of given item' })
