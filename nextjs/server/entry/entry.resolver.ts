@@ -75,6 +75,39 @@ export default class EntryResolver {
     async createEntry(
         @Arg('createEntryInput') createEntryInput: CreateEntryInput,
     ) {
+        (createEntryInput.people as any[]).map((person: any) => {
+            if (!Boolean(person.id)) {
+                delete person.id;
+            }
+            return person;
+        });
+        (createEntryInput.places as any[]).map((place: any) => {
+            if (!Boolean(place.id)) {
+                delete place.id;
+            }
+            return place;
+        });
+
+        if (createEntryInput.regularEntry) {
+            (createEntryInput.regularEntry as any).tobaccoMarks.map(
+                (mark: any) => {
+                    if (!Boolean(mark.markID)) {
+                        delete mark.markID;
+                    }
+                    return mark;
+                },
+            );
+        }
+
+        if (createEntryInput.tobaccoEntry) {
+            (createEntryInput.tobaccoEntry as any).marks.map((mark: any) => {
+                if (!Boolean(mark.markID)) {
+                    delete mark.markID;
+                }
+                return mark;
+            });
+        }
+
         return EntryService.create(createEntryInput);
     }
 
@@ -94,6 +127,46 @@ export default class EntryResolver {
         @Arg('updatedFields') updatedFields: UpdateEntryInput,
         @Info() info: any,
     ): Promise<Entry | null> {
+        (updatedFields.people as any[]).map((person: any) => {
+            if (!Boolean(person.id)) {
+                delete person.id;
+            }
+            return person;
+        });
+        (updatedFields.places as any[]).map((place: any) => {
+            if (!Boolean(place.id)) {
+                delete place.id;
+            }
+            return place;
+        });
+
+        if (updatedFields.regularEntry) {
+            (updatedFields.regularEntry as any).tobaccoMarks.map(
+                (mark: any) => {
+                    if (!Boolean(mark.markID)) {
+                        delete mark.markID;
+                    }
+                    return mark;
+                },
+            );
+        }
+
+        if (updatedFields.tobaccoEntry) {
+            (updatedFields.tobaccoEntry as any).marks.map((mark: any) => {
+                if (!Boolean(mark.markID)) {
+                    delete mark.markID;
+                }
+                return mark;
+            });
+        }
+
+        if (
+            updatedFields.dateInfo &&
+            !Boolean(updatedFields?.dateInfo?.fullDate)
+        ) {
+            delete updatedFields.dateInfo.fullDate;
+        }
+
         return EntryService.updateOne(
             id,
             updatedFields,

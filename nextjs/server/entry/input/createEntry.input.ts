@@ -222,7 +222,7 @@ export class DateInput {
     year: number;
 
     @Field(() => Date, { description: 'complete date', nullable: true })
-    fullDate: Date;
+    fullDate?: Date;
 }
 
 @InputType()

@@ -2,7 +2,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { FieldArray, FormikProvider } from 'formik';
-import { useState } from 'react';
+import debounce from 'lodash/debounce';
+import { useCallback, useState } from 'react';
 import { useQuery } from 'urql';
 
 const queryDef = `
@@ -36,6 +37,17 @@ const RegularMarkForm = ({ formikForm }: any) => {
 
     const marksOptions = data?.marks ?? [];
 
+    const delayedMarkSearch = useCallback(
+        debounce((search: string, index: number) => {
+            setSearch(search);
+            formikForm.setFieldValue(
+                `regularEntry.tobaccoMarks.${index}.markID`,
+                '',
+            );
+        }, 500),
+        [],
+    );
+
     return (
         <FormikProvider value={formikForm}>
             <FieldArray
@@ -43,8 +55,10 @@ const RegularMarkForm = ({ formikForm }: any) => {
                 render={(arrayHelpers: any) => {
                     // const [inputValue, setInputValue] = useState<string>('');
                     const refs = formikForm.values?.regularEntry?.tobaccoMarks;
-                    const touched = formikForm.touched?.regularEntry?.tobaccoMarks;
-                    const errors = formikForm.errors?.regularEntry?.tobaccoMarks;
+                    const touched =
+                        formikForm.touched?.regularEntry?.tobaccoMarks;
+                    const errors =
+                        formikForm.errors?.regularEntry?.tobaccoMarks;
                     const atLeastOneError =
                         touched &&
                         errors &&
@@ -73,45 +87,45 @@ const RegularMarkForm = ({ formikForm }: any) => {
                                                       value={
                                                           formikForm.values
                                                               .regularEntry
-                                                              .tobaccoMarks[index]
+                                                              .tobaccoMarks[
+                                                              index
+                                                          ]
                                                       }
                                                       onChange={(
-                                                          _event: any,
+                                                          _,
                                                           newValue,
                                                       ) => {
-                                                          if (newValue) {
-                                                              formikForm.setFieldValue(
-                                                                  `regularEntry.tobaccoMarks.${index}.markName`,
-                                                                  newValue.markName,
-                                                              );
-                                                              formikForm.setFieldValue(
-                                                                  `regularEntry.tobaccoMarks.${index}.markID`,
-                                                                  newValue.markID,
-                                                              );
-                                                          }
-                                                      }}
-                                                      onInputChange={(
-                                                          _event,
-                                                          newInputValue,
-                                                      ) => {
-                                                          setSearch(
-                                                              newInputValue,
+                                                          formikForm.setFieldValue(
+                                                              `regularEntry.tobaccoMarks.${index}.markName`,
+                                                              newValue.markName,
                                                           );
                                                           formikForm.setFieldValue(
                                                               `regularEntry.tobaccoMarks.${index}.markID`,
-                                                              '',
+                                                              newValue.markID,
+                                                          );
+                                                      }}
+                                                      onInputChange={(
+                                                          _,
+                                                          newSearch: string,
+                                                      ) => {
+                                                          delayedMarkSearch(
+                                                              newSearch,
+                                                              index,
                                                           );
                                                       }}
                                                       options={marksOptions}
                                                       getOptionLabel={(
                                                           option: any,
-                                                      ) => option.markName || ''}
+                                                      ) =>
+                                                          option.markName || ''
+                                                      }
                                                       isOptionEqualToValue={(
                                                           option: any,
                                                           value: any,
                                                       ) =>
                                                           option.markName ===
-                                                              value.markName || true
+                                                              value.markName ||
+                                                          true
                                                       }
                                                       freeSolo
                                                       renderOption={(
@@ -130,7 +144,6 @@ const RegularMarkForm = ({ formikForm }: any) => {
                                                               </li>
                                                           );
                                                       }}
-                                                      sx={{ width: 300 }}
                                                       renderInput={(params) => (
                                                           <TextField
                                                               {...params}

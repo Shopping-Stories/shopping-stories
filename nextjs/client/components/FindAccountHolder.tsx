@@ -1,7 +1,8 @@
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useQuery } from 'urql';
+import debounce from 'lodash/debounce';
 
 const queryDef = `
 query searchPeople($search: String!, $options: FindAllLimitAndSkip) {
@@ -34,6 +35,14 @@ const FindAccountHolder = ({ formikForm }: any) => {
 
     const peopleOptions = data?.people ?? [];
 
+    const delayedPersonSearch = useCallback(
+        debounce((search: string) => {
+            setSearch(search);
+            formikForm.setFieldValue(`accountHolder.accountHolderID`, '');
+        }, 500),
+        [],
+    );
+
     return (
         <Autocomplete
             value={{
@@ -41,18 +50,15 @@ const FindAccountHolder = ({ formikForm }: any) => {
                 id: formikForm.values.accountHolder.accountHolderID,
             }}
             onChange={(_event: any, newValue: any) => {
-                if (newValue) {
-                    formikForm.setFieldValue(
-                        `accountHolder.accountHolderID`,
-                        newValue.id,
-                    );
-                    setSearch(newValue.name);
-                }
+                formikForm.setFieldValue(
+                    `accountHolder.accountHolderID`,
+                    newValue.id,
+                );
+                setSearch(newValue.name);
             }}
-            onInputChange={(_event, newInputValue) => {
-                setSearch(newInputValue);
-                formikForm.setFieldValue(`accountHolder.accountHolderID`, '');
-            }}
+            onInputChange={(_, newSearch: string) =>
+                delayedPersonSearch(newSearch)
+            }
             options={peopleOptions}
             getOptionLabel={(option: any) => option.name || ''}
             isOptionEqualToValue={(option: any, value: any) =>
@@ -66,7 +72,6 @@ const FindAccountHolder = ({ formikForm }: any) => {
                     </li>
                 );
             }}
-            sx={{ width: 300 }}
             renderInput={(params) => (
                 <TextField
                     {...params}

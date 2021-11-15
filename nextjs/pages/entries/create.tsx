@@ -20,6 +20,7 @@ import Typography from '@mui/material/Typography';
 import { entryFields } from 'client/graphqlDefs';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import { useMutation } from 'urql';
 import * as yup from 'yup';
 
@@ -31,7 +32,6 @@ mutation createEntry($entry: CreateEntryInput!) {
 }
 ${entryFields}
 `;
-
 
 const poundShillingPence = yup.object({
     pounds: yup.number().default(0),
@@ -49,7 +49,10 @@ const createEntrySchema = yup.object({
         location: yup.string().default(''),
         reference: yup.string().default(''),
         debitOrCredit: yup.number().default(2),
-        accountHolderID: yup.string().default('').matches(/^[a-fA-F0-9]{24}$/, "You much pick a person"),
+        accountHolderID: yup
+            .string()
+            .default('')
+            .matches(/^[a-fA-F0-9]{24}$/, 'You much pick a person'),
     }),
     meta: yup.object({
         ledger: yup.string().default(''),
@@ -64,7 +67,7 @@ const createEntrySchema = yup.object({
     dateInfo: yup.object({
         day: yup.number().default(-1),
         month: yup.number().default(-1),
-        year: yup.string().default(''),
+        year: yup.number().default(-1),
         fullDate: yup.date().nullable(),
     }),
     folioRefs: yup.array().of(yup.string().default('')).default([]),
@@ -171,6 +174,7 @@ const createEntrySchema = yup.object({
 });
 
 const CreateEntryPage: NextPage = () => {
+    const router = useRouter();
     const [_createEntryResult, createEntry] = useMutation(createEntryDef);
 
     const createForm = useFormik({
@@ -199,7 +203,7 @@ const CreateEntryPage: NextPage = () => {
             dateInfo: {
                 day: -1,
                 month: -1,
-                year: '',
+                year: -1,
                 fullDate: '',
             },
             folioRefs: [],
@@ -228,14 +232,20 @@ const CreateEntryPage: NextPage = () => {
         },
         validationSchema: createEntrySchema,
         onSubmit: async (values, { resetForm }) => {
-            // do your stuff
+            const entry = JSON.parse(JSON.stringify(values));
+
+            if (!Boolean(entry.dateInfo.fullDate)) {
+                delete entry.dateInfo.fullDate;
+            }
+
             const res = await createEntry({
-                entry: values,
+                entry,
             });
             console.log({ values });
             if (res.error) {
             } else {
-            resetForm();
+                router.push('/entries');
+                resetForm();
             }
         },
     });
@@ -463,7 +473,7 @@ const CreateEntryPage: NextPage = () => {
                                             ?.debitOrCredit
                                     }
                                 />
-                                <FindAccountHolder formikForm={createForm}/>
+                                <FindAccountHolder formikForm={createForm} />
                             </FormGroup>
                             <Divider />
                             <Typography component="h2">Date Info</Typography>
@@ -515,6 +525,7 @@ const CreateEntryPage: NextPage = () => {
                                     name="dateInfo.year"
                                     label="Year"
                                     value={createForm.values.dateInfo.year}
+                                    type="number"
                                     onChange={createForm.handleChange}
                                     error={
                                         createForm.touched.dateInfo?.year &&

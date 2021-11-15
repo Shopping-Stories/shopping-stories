@@ -1,4 +1,7 @@
-import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
+import {
+    getModelForClass,
+    modelOptions, prop
+} from '@typegoose/typegoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, Int, ObjectType } from 'type-graphql';
 
@@ -89,7 +92,7 @@ export class MetaObject {
     @Field(() => String, { description: 'Name of Store' })
     store: string;
 
-    @prop({ type: () => [Number] })
+    @prop({ type: () => String })
     @Field(() => String, { description: 'Year the entry was made' })
     year: string;
 
@@ -280,9 +283,9 @@ export class DateObject {
     @Field(() => Int, { description: 'year of date' })
     year: number;
 
-    @prop({nullable: true})
+    @prop({ nullable: true })
     @Field(() => Date, { description: 'complete date', nullable: true })
-    fullDate: Date | null;
+    fullDate: Date;
 }
 
 @ObjectType('AccHolderObject', { description: '' })
@@ -322,7 +325,7 @@ export class AccHolderObject {
     debitOrCredit: number;
 
     @prop()
-    @Field(() => ID, {
+    @Field(() => String, {
         description:
             'ID of the accountholder to reference in peoples master list',
     })
@@ -404,8 +407,8 @@ export class Entry {
     })
     places: PeoplePlacesObject[];
 
-    @prop({ default:"" })
-    @Field(() => String, { description: 'Type of Entry'})
+    @prop({ default: '' })
+    @Field(() => String, { description: 'Type of Entry' })
     entry: string;
 
     @prop({ _id: false, required: true })

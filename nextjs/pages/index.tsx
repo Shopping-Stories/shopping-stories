@@ -1,13 +1,12 @@
 import Header from '@components/Header';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { Fragment, useState } from 'react';
-import { useColorMode } from './_app';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import backgrounds from 'styles/backgrounds.module.css';
+import { useColorMode } from './_app';
 
 const Home: NextPage = () => {
     const [toggleOn, setToggle] = useState<boolean>(false);
@@ -51,10 +50,11 @@ const Home: NextPage = () => {
                             // opacity: [0.9, 0.8, 0.7],
                             // },
                         }}
-                    ><h3>
+                    >
                         <h4>
                             Welcome to
                         </h4>
+                        <h3>
                             Shopping Stories
                         </h3>
                     </Box>

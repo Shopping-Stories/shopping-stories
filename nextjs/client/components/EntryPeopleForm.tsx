@@ -2,7 +2,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { FieldArray, FormikProvider } from 'formik';
-import { useState } from 'react';
+import debounce from 'lodash/debounce';
+import { useCallback, useState } from 'react';
 import { useQuery } from 'urql';
 
 const queryDef = `
@@ -35,6 +36,14 @@ const EntryPeopleForm = ({ formikForm }: any) => {
     });
 
     const peopleOptions = data?.people ?? [];
+
+    const delayedPersonSearch = useCallback(
+        debounce((search: string, index: number) => {
+            setSearch(search);
+            formikForm.setFieldValue(`people.${index}.id`, '');
+        }, 500),
+        [],
+    );
 
     return (
         <FormikProvider value={formikForm}>
@@ -74,32 +83,27 @@ const EntryPeopleForm = ({ formikForm }: any) => {
                                                               .people[index]
                                                       }
                                                       onChange={(
-                                                          _event: any,
+                                                          _,
                                                           newValue,
                                                       ) => {
-                                                          if (newValue) {
-                                                              formikForm.setFieldValue(
-                                                                  `people.${index}.name`,
-                                                                  newValue.name,
-                                                              );
-                                                              formikForm.setFieldValue(
-                                                                  `people.${index}.id`,
-                                                                  newValue.id,
-                                                              );
-                                                          }
-                                                      }}
-                                                      onInputChange={(
-                                                          _event,
-                                                          newInputValue,
-                                                      ) => {
-                                                          setSearch(
-                                                              newInputValue,
+                                                          formikForm.setFieldValue(
+                                                              `people.${index}.name`,
+                                                              newValue.name,
                                                           );
                                                           formikForm.setFieldValue(
                                                               `people.${index}.id`,
-                                                              '',
+                                                              newValue.id,
                                                           );
                                                       }}
+                                                      onInputChange={(
+                                                          _,
+                                                          newSearch,
+                                                      ) =>
+                                                          delayedPersonSearch(
+                                                              newSearch,
+                                                              index,
+                                                          )
+                                                      }
                                                       options={peopleOptions}
                                                       getOptionLabel={(
                                                           option: any,
@@ -108,7 +112,8 @@ const EntryPeopleForm = ({ formikForm }: any) => {
                                                           option: any,
                                                           value: any,
                                                       ) =>
-                                                          option.name === value.name || true
+                                                          option.name ===
+                                                              value.name || true
                                                       }
                                                       freeSolo
                                                       renderOption={(
@@ -127,7 +132,6 @@ const EntryPeopleForm = ({ formikForm }: any) => {
                                                               </li>
                                                           );
                                                       }}
-                                                      sx={{ width: 300 }}
                                                       renderInput={(params) => (
                                                           <TextField
                                                               {...params}
