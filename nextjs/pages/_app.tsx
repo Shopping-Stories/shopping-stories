@@ -23,7 +23,26 @@ import {
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-const cache = cacheExchange({});
+const cache = cacheExchange({
+    keys: {
+        AccHolderObject: () => null,
+        MetaObject: () => null,
+        DateObject: () => null,
+        RegularEntryObject: () => null,
+        TobaccoMarkObject: () => null,
+        TobaccoEntryObject: () => null,
+        TobaccoMoneyObject: () => null,
+        PeoplePlacesObject: () => null,
+        MoneyObject: () => null,
+        PoundsShillingsPence: () => null,
+        ItemEntryObject: () => null,
+        ItemsOrServicesObject: () => null,
+        MentionedItemsObject: () => null,
+        NoteObject: () => null,
+        ImageObject: () => null,
+        PurchaseObject: () => null,
+    },
+});
 
 const client = new Client({
     url: '/api/graphql',

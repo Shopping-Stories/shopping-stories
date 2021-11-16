@@ -27,7 +27,7 @@ export function optimizedMongoCount(
     model: mongoose.Model<any, {}, {}>,
     search?: string,
 ): Promise<number> {
-    return !search
+    return !Boolean(search)
         ? model.estimatedDocumentCount().exec()
         : model.countDocuments(getMongoTextSearchObject(search)).exec();
 }

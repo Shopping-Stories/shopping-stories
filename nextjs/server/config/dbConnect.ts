@@ -48,6 +48,8 @@ async function dbConnect(uri?: string) {
                 },
             );
         }
+        const Str = mongoose.Schema.Types.String as any;
+        Str.checkRequired((v: any) => v !== null);
 
         cached.promise = mongoose
             .connect(uri ? uri : MONGODB_URI, opts)

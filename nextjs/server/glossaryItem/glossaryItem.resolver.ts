@@ -22,19 +22,23 @@ export default class GlossaryItemResolver {
     async findGlossaryItems(
         @Arg('options', { nullable: true })
         { limit, skip }: FindAllLimitAndSkip,
+        @Arg('search', { nullable: true }) search: string,
         @Info() info: any,
     ): Promise<GlossaryItem[]> {
         return GlossaryItemService.findAll(
             skip,
             limit,
             getMongooseFromFields(info),
+            search,
         );
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
-    @Query((_returns) => Number)
-    async countGlossaryItems(): Promise<number> {
-        return GlossaryItemService.count();
+    @Query(() => Number)
+    async countGlossaryItems(
+        @Arg('search', { nullable: true }) search: string,
+    ): Promise<number> {
+        return GlossaryItemService.count(search);
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)

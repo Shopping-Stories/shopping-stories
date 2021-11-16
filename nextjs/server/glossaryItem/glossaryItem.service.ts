@@ -1,4 +1,4 @@
-import { filterObject } from '../config/utils';
+import { filterObject, getMongoTextSearchObject, optimizedMongoCount } from '../config/utils';
 import { GlossaryItem, GlossaryItemModel } from './glossaryItem.schema';
 import { CreateGlossaryItemInput } from './input/createGlossaryItem.input';
 import { UpdateGlossaryItemInput } from './input/updateGlossaryItem.input';
@@ -15,16 +15,28 @@ export default class GlossaryItemService {
         skip: number,
         limit: number,
         selectedFields: Object,
+        search?: string,
     ): Promise<GlossaryItem[]> {
-        return GlossaryItemModel.find({}, selectedFields)
+        if (!!search) {
+            return GlossaryItemModel.find(getMongoTextSearchObject(search), {
+                ...selectedFields,
+                score: { $meta: 'textScore' },
+            })
+                .skip(skip)
+                .limit(limit)
+                .sort({ score: { $meta: 'textScore' } })
+                .lean<GlossaryItem[]>()
+                .exec();
+        }
+        return GlossaryItemModel.find(getMongoTextSearchObject(search), selectedFields)
             .skip(skip)
             .limit(limit)
             .lean<GlossaryItem[]>()
             .exec();
     }
 
-    static async count(filter: any = {}): Promise<number> {
-        return GlossaryItemModel.estimatedDocumentCount(filter).lean().exec();
+    static async count(search?: string): Promise<number> {
+        return optimizedMongoCount(GlossaryItemModel, search);
     }
 
     static async findOne(

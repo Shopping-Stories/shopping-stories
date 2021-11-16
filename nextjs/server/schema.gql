@@ -26,8 +26,8 @@ type Query {
   listGroups(paginationToken: String, limit: Float): JSONObject
   listGroupsForUser(nextToken: String, limit: Float, username: String!): JSONObject
   listUsersInGroup(nextToken: String, limit: Float, groupname: String!): JSONObject
-  findGlossaryItems(options: FindAllLimitAndSkip): [GlossaryItem!]
-  countGlossaryItems: Float!
+  findGlossaryItems(search: String, options: FindAllLimitAndSkip): [GlossaryItem!]
+  countGlossaryItems(search: String): Float!
   findGlossaryItem(id: String!): GlossaryItem
   findItems(search: String, options: FindAllLimitAndSkip): [Item!]
   countItems(search: String): Float!
@@ -388,32 +388,101 @@ input LoginInput {
 
 # Glossary Item Object
 type GlossaryItem {
-  # String of MongoDB _id
+  # Glossary Item ID
   id: ID!
 
   # Name of glossary item
   name: String!
 
-  # Filename of image in S3 bucket
-  imageKey: String!
-
   # Description of item
   description: String!
+
+  # Item's origin
+  origin: String!
+
+  # Item's use
+  use: String!
 
   # Category item is in
   category: String!
 
   # Sub-category item is in
-  subCategory: String!
+  subcategory: String!
 
-  # Original price of item
-  originalPrice: Float!
+  # Qualifiers
+  qualifiers: [String!]!
 
-  # Other items related to this one
-  relatedItems: [String!]!
+  # description of the cultural context surrounding the item
+  culturalContext: String!
 
-  # Purchases related to this item
-  relatedPurchases: [String!]!
+  # citations form information used in this item's details
+  citations: String!
+
+  # images of item
+  images: [ImageObject!]!
+
+  # Example of what a purchase of this item looks like
+  examplePurchases: [PurchaseObject!]!
+}
+
+# Image Information
+type ImageObject {
+  # string of filename of thumbnail image in the S3 Bucket
+  thumbnailImage: String!
+
+  # name of the image
+  name: String!
+
+  #
+  material: String!
+
+  # width of the image
+  width: Int!
+
+  # height of the image
+  height: Int!
+
+  # date of the image
+  date: String!
+
+  # image caption
+  caption: String!
+
+  # citation about the collection the image is in
+  collectionCitation: String!
+
+  # key to image in S3 Bucket
+  url: String!
+
+  # license the image is under
+  license: String!
+}
+
+# Example purchases
+type PurchaseObject {
+  folio: String!
+  folioItem: String!
+
+  # quantity of item purchased
+  quantityPurchased: Float!
+
+  # account used for purchase
+  accountHolder: String!
+
+  # customer purchasing the item
+  customer: String!
+
+  # date the item was purchased on
+  purchaseDate: DateTime!
+
+  # pounds used in the transaction
+  pounds: Float!
+
+  # shillings used in the transaction
+  shilling: Float!
+
+  # pence used in the transaction 
+  pence: Float!
 }
 
 # Item Object
@@ -1111,52 +1180,190 @@ input CreateGlossaryItemInput {
   # Name of glossary item
   name: String!
 
-  # Filename of image in S3 bucket
-  imageKey: String!
-
   # Description of item
   description: String!
+
+  # Item's origin
+  origin: String!
+
+  # Item's use
+  use: String!
 
   # Category item is in
   category: String!
 
   # Sub-category item is in
-  subCategory: String!
+  subcategory: String!
 
-  # Original price of item
-  originalPrice: Float!
+  # Qualifiers
+  qualifiers: [String!]!
 
-  # Other items related to this one
-  relatedItems: [String!]!
+  # description of the cultural context surrounding the item
+  culturalContext: String!
 
-  # Purchases related to this item
-  relatedPurchases: [String!]!
+  # citations form information used in this item's details
+  citations: String!
+
+  # images of item
+  images: [CreateImageObject!]!
+
+  # Example of what a purchase of this item looks like
+  examplePurchases: [CreatePurchaseObject!]!
+}
+
+# Image Information
+input CreateImageObject {
+  # string of filename of thumbnail image in the S3 Bucket
+  thumbnailImage: String!
+
+  # name of the image
+  name: String!
+
+  #
+  material: String!
+
+  # width of the image
+  width: Int!
+
+  # height of the image
+  height: Int!
+
+  # date of the image
+  date: String!
+
+  # image caption
+  caption: String!
+
+  # citation about the collection the image is in
+  collectionCitation: String!
+
+  # key to image in S3 Bucket
+  url: String!
+
+  # license the image is under
+  license: String!
+}
+
+# Example purchases
+input CreatePurchaseObject {
+  folio: String!
+  folioItem: String!
+
+  # quantity of item purchased
+  quantityPurchased: Float!
+
+  # account used for purchase
+  accountHolder: String!
+
+  # customer purchasing the item
+  customer: String!
+
+  # date the item was purchased on
+  purchaseDate: DateTime!
+
+  # pounds used in the transaction
+  pounds: Float!
+
+  # shillings used in the transaction
+  shilling: Float!
+
+  # pence used in the transaction 
+  pence: Float!
 }
 
 input UpdateGlossaryItemInput {
   # Name of glossary item
   name: String
 
-  # Filename of image in S3 bucket
-  imageKey: String
-
   # Description of item
   description: String
+
+  # Item's origin
+  origin: String
+
+  # Item's use
+  use: String
 
   # Category item is in
   category: String
 
   # Sub-category item is in
-  subCategory: String
+  subcategory: String
 
-  # Original price of item
-  originalPrice: Float
+  # Qualifiers
+  qualifiers: [String!]
 
-  # Other items related to this one
-  relatedItems: [String!]
+  # description of the cultural context surrounding the item
+  culturalContext: String
 
-  # Purchases related to this item
-  relatedPurchases: [String!]
+  # citations form information used in this item's details
+  citations: String
+
+  # images of item
+  images: [UpdateImageObject!]
+
+  # Example of what a purchase of this item looks like
+  examplePurchases: [UpdatePurchaseObject!]
+}
+
+# Image Information
+input UpdateImageObject {
+  # string of filename of thumbnail image in the S3 Bucket
+  thumbnailImage: String
+
+  # name of the image
+  name: String
+
+  #
+  material: String
+
+  # width of the image
+  width: Int
+
+  # height of the image
+  height: Int
+
+  # date of the image
+  date: String
+
+  # image caption
+  caption: String
+
+  # citation about the collection the image is in
+  collectionCitation: String
+
+  # key to image in S3 Bucket
+  url: String
+
+  # license the image is under
+  license: String
+}
+
+# Example purchases
+input UpdatePurchaseObject {
+  folio: String
+  folioItem: String
+
+  # quantity of item purchased
+  quantityPurchased: Float
+
+  # account used for purchase
+  accountHolder: String
+
+  # customer purchasing the item
+  customer: String
+
+  # date the item was purchased on
+  purchaseDate: DateTime
+
+  # pounds used in the transaction
+  pounds: Float
+
+  # shillings used in the transaction
+  shilling: Float
+
+  # pence used in the transaction 
+  pence: Float
 }
 
 input CreateItemInput {

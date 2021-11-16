@@ -267,7 +267,6 @@ const ManageItemsPage: NextPage = () => {
                                         row.variants,
                                     );
                                     handleOpenUpdate();
-                                    console.log('edit', row);
                                 }}
                                 onDeleteClick={async (row: any) => {
                                     setItemToDelete({
