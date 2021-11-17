@@ -124,7 +124,7 @@ type AccHolderObject {
   debitOrCredit: Float!
 
   # ID of the accountholder to reference in peoples master list
-  accountHolderID: String!
+  accountHolderID: String
 }
 
 type MetaObject {
@@ -834,7 +834,7 @@ input TobaccoEntryInput {
 
 input TobaccoMarkInput {
   # words
-  markID: ID!
+  markID: ID
 
   #
   markName: String!

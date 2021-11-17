@@ -3,7 +3,7 @@ import { Field, ID, Int, InputType } from 'type-graphql';
 
 @InputType()
 export class TobaccoMarkInput {
-    @Field(() => ID, { description: 'words' })
+    @Field(() => ID, { description: 'words', nullable : true })
     markID: ObjectId;
 
     @Field({ description: '' })

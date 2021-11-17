@@ -371,10 +371,7 @@ async function placesIDs(entry: any) {
     }
     for (let i = 0; i < split.length; i++) {
         let temp: any = split[i].trim().toString();
-        let object = {
-            name: null,
-            id: null,
-        };
+
         let placeID = null;
         try {
             console.log(temp);
@@ -386,9 +383,19 @@ async function placesIDs(entry: any) {
         } catch {
             placeID = null;
         }
-        object.name = temp;
-        object.id = placeID;
-        res[i] = object;
+        if(placeID === null){
+            let object = {
+                name: temp
+          };
+          res[i] = object;
+        }else{
+            let object = {
+                name: temp,
+                id : placeID
+            };
+            res[i] = object;
+        }
+        
     }
     return res;
 }
@@ -410,19 +417,19 @@ async function peopleIDs(entry: any) {
         let temp: any = split[i].trim().toString();
 
         //console.log('looking for ' + temp);
-        let object = {
-            name: null,
-            id: null,
-        };
+
         if (
             temp.toUpperCase().includes('FNU') ||
             temp.toUpperCase().includes('LNU') ||
-            temp.toUpperCase().includes('CASH')
+            temp.toUpperCase().includes('CASH') || 
+            temp === "" ||
+            temp === " "
         ) {
-            object = {
-                name: temp,
-                id: null,
+            let object = {
+                name: temp
+                
             };
+            res[i] = object;
         } else {
             let personID: any = '';
             try {
@@ -438,12 +445,13 @@ async function peopleIDs(entry: any) {
             } catch {
                 personID = null;
             }
-            object = {
+            let object = {
                 name: temp,
                 id: personID,
             };
+            res[i] = object;
         }
-        res[i] = object;
+        
         //console.log(res[i]);
     }
     //console.log(res);
@@ -505,6 +513,9 @@ async function makeAccountHolderObject(entryObj: any) {
             debitOrCredit,
             accountHolderID: accID,
         };
+        if(accID === null){
+            delete res.accountHolderID;
+        }
         return res;
     } catch (err) {
         throw 'error making account holder data';
@@ -965,16 +976,25 @@ async function updatedTobaccoEntry(entryObj: any, money: any) {
             //brokenEntry[i] = brokenEntry[i].replace("N","");
             if (brokenEntry[i].includes('TM')) {
                 console.log('found TM');
-                let markInfo = {
-                    markID: null,
-                    markName: null,
-                };
+
                 let tempMarkInfo = await brokenEntry[i].split(']');
                 let tempNoteInfo = tempMarkInfo[1].trim();
                 tempMarkInfo = await tempMarkInfo[0].split(':');
-                markInfo.markName = tempMarkInfo[1].trim();
-                markInfo.markID = await findTMid(tempMarkInfo[1].trim());
-                markArray.push(markInfo);
+                let finalMarkName = tempMarkInfo[1].trim();
+                let finalMarkID = await findTMid(tempMarkInfo[1].trim());
+                if(finalMarkID === null){
+                    let markInfo = {
+                        markName : finalMarkName
+                    };
+                    markArray.push(markInfo);
+                }else{
+                    let markInfo = {
+                        markName : finalMarkName,
+                        markID : finalMarkID
+                    };
+                    markArray.push(markInfo);
+                }
+                
                 tempNoteInfo = tempNoteInfo.split('{');
 
                 for (let j = 1; j < tempNoteInfo.length; j++) {
@@ -1208,10 +1228,7 @@ async function updatedRegEntry(entryObj: any) {
         finalEntry += entry[0];
         for (let i = 1; i < entry.length; i++) {
             if (entry[i].replace(/\s+/g, '').includes('TM:')) {
-                let tempObject = {
-                    markName: null,
-                    markID: null,
-                };
+                
                 let TMstring = entry[i];
 
                 TMstring = entry[i].split(']');
@@ -1219,8 +1236,8 @@ async function updatedRegEntry(entryObj: any) {
                 TMstring = TMstring[0];
                 TMstring = TMstring.split(':').pop().trim();
                 console.log(`TM NAME: ${TMstring}`);
-                tempObject.markName = TMstring;
-
+                
+                let finalString = TMstring;
                 TMstring = TMstring.trim().split(' ')[0];
                 TMstring = TMstring.replace(/^0+/, '');
 
@@ -1230,10 +1247,23 @@ async function updatedRegEntry(entryObj: any) {
                 } catch (exception_var) {
                     tempID = null;
                 } finally {
-                    tempObject.markID = tempID;
+                    if(tempID === null){
+                        let tempObject = {
+                            markName: finalString
+                        };
+                        tmArray.push(tempObject);
+                    }
+                    else {
+                        let tempObject = {
+                            markName: finalString,
+                            markID : tempID
+                        };
+                        tmArray.push(tempObject);
+                    }
+                    
                 }
 
-                tmArray.push(tempObject);
+                
             } else {
                 let itemString = entry[i];
                 itemString = itemString.split(']').shift();
