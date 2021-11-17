@@ -888,8 +888,10 @@ async function calculateTobaccoMoney(MoneyEntry: any, colony: any, money: any) {
             tobaccoSold: tobaccoSoldFor,
             casksSoldForEach: caskCost,
         };
-
-        res[i] = moneyInfo;
+        if(moneyInfo != null){
+            res.push(moneyInfo);
+        }
+        //res[i] = moneyInfo;
     }
     return res;
 }
@@ -1173,7 +1175,10 @@ async function updatedItemEntry(entryObj: any) {
         }
 
         mainItems.push(item);
-        mainItems.push(item2);
+        if(item2 !== null){
+            mainItems.push(item2);
+        }
+        
         itemFormat.itemsOrServices = mainItems;
         itemFormat.itemsMentioned = miniItems;
 

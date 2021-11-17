@@ -328,8 +328,9 @@ export class AccHolderObject {
     @Field(() => String, {
         description:
             'ID of the accountholder to reference in peoples master list',
+        defaultValue: null
     })
-    accountHolderID: ObjectId;
+    accountHolderID: ObjectId | null;
 }
 
 @ObjectType('Entry', { description: 'Single Entry' })

@@ -710,7 +710,7 @@ input AccountHolderInput {
   debitOrCredit: Float!
 
   # ID of the accountholder to reference in peoples master list
-  accountHolderID: ID!
+  accountHolderID: ID
 }
 
 input MetaInput {

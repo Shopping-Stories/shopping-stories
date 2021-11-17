@@ -256,8 +256,9 @@ export class AccountHolderInput {
     @Field(() => ID, {
         description:
             'ID of the accountholder to reference in peoples master list',
+        nullable: true
     })
-    accountHolderID: ObjectId;
+    accountHolderID: ObjectId | null;
 }
 
 @InputType()
