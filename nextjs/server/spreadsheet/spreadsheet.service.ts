@@ -578,7 +578,7 @@ async function newDateObject(day: any, month: any, year: any) {
 
 async function calculateUnitCost(money: any, quant: any) {
     try {
-        let quantity = Number(quant);
+        let quantity = Number(quant.toString().replace(/[^0-9.]/g, ''));
         const { pounds: pounds, shilling: shilling, pence: pence } = money;
 
         let res: any = '';
@@ -1073,12 +1073,14 @@ async function updatedItemEntry(entryObj: any) {
                 let miniString = minis[j].replace(regex, '').trim();
                 miniString = miniString.split('&');
                 for (let k = 0; k < miniString.length; k++) {
+                    console.log(miniString[k]);
                     let parts = miniString[k].split(',');
+                    console.log(parts);
                     if (parts.length > 3) {
                         tempItems[itemCount] = {
                             quantity: Number(parts[0]),
                             qualifier: parts[1].trim(),
-                            item: parts[parts.length - 1].trim(),
+                            item: parts[2].trim(),
                         };
                     } else {
                         tempItems[itemCount] = {
@@ -1274,9 +1276,12 @@ async function updatedRegEntry(entryObj: any) {
                     let temp = {
                         quantity: Number(tempItemString[0]),
                         qualifier: tempItemString[1],
-                        item: tempItemString[0],
+                        item: tempItemString[2],
                     };
-                    res.itemsMentioned.push(temp);
+                    if(tempItemString.length === 3){
+                        res.itemsMentioned.push(temp);
+                    }
+                    
                 }
             }
         }
