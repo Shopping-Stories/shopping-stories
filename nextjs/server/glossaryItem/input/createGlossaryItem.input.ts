@@ -20,8 +20,8 @@ export class CreateGlossaryItemInput {
     @Field({ description: 'Sub-category item is in' })
     subcategory: string;
 
-    @Field(() => [String], { description: 'Qualifiers' })
-    qualifiers: string[];
+    @Field(() => String, { description: 'Qualifiers' })
+    qualifiers: string;
 
     @Field({
         description: 'description of the cultural context surrounding the item',

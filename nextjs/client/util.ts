@@ -1,4 +1,10 @@
+import { S3ProviderListOutput } from '@aws-amplify/storage';
 import { CognitoConfig } from 'config/constants.config';
+
+export const cloneWithoutTypename = (obj: any) => JSON.parse(JSON.stringify(obj), omitTypename);
+
+export const omitTypename = (key: string, value: any) =>
+    key === '__typename' ? undefined : value;
 
 export const handlePromise = async <T>(
     promise: Promise<T>,
@@ -8,6 +14,22 @@ export const handlePromise = async <T>(
     } catch (err: any) {
         return [null, err];
     }
+};
+
+export const processStorageList = (result: S3ProviderListOutput) => {
+    let files: any[] = [];
+    let folders = new Set<any>();
+    result.forEach((res) => {
+        if (res.size) {
+            files.push(res);
+            // sometimes files declare a folder with a / within then
+            let possibleFolder = res.key!.split('/').slice(0, -1).join('/');
+            if (possibleFolder) folders.add(possibleFolder);
+        } else {
+            folders.add(res.key);
+        }
+    });
+    return { files, folders };
 };
 
 export const S3Options: any = {

@@ -1,7 +1,8 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
+import IconButton from '@mui/material/IconButton';
 
 const Input = styled('input')({
     display: 'none',
@@ -12,14 +13,12 @@ interface FileInputProps {
     accept?: string;
     multiple?: boolean;
     onChange?: (input: { files: File | File[] }) => any;
+    icon?: boolean;
+    children?: React.ReactNode;
 }
 
-const FileInput = ({
-    label,
-    onChange,
-    accept,
-    multiple = false,
-}: FileInputProps) => {
+const FileInput = (props: FileInputProps) => {
+    const { label, onChange, accept, multiple = false, icon = false } = props;
     const [fileOrFiles, setSelectedFiles] = useState<File | File[]>();
 
     const handleChange = (event: { target: HTMLInputElement }) => {
@@ -34,21 +33,28 @@ const FileInput = ({
     };
 
     return (
-        <label htmlFor="contained-button-file">
+        <label>
             <Input
-                id="contained-button-file"
                 accept={accept}
                 multiple={multiple}
                 type="file"
                 onChange={handleChange}
             />
-            <Button variant="contained" component="span">
-                {label}
-            </Button>
+            {icon ? (
+                <IconButton component="span">{props.children}</IconButton>
+            ) : (
+                <Button variant="contained" component="span">
+                    {label}
+                </Button>
+            )}
             {fileOrFiles && !multiple && (
-                <Typography>
-                    Selected: {fileOrFiles instanceof File && fileOrFiles.name}
-                </Typography>
+                <>
+                    <br />
+                    <Typography>
+                        Selected:{' '}
+                        {fileOrFiles instanceof File && fileOrFiles.name}
+                    </Typography>
+                </>
             )}
         </label>
     );

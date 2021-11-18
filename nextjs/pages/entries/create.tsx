@@ -234,6 +234,38 @@ const CreateEntryPage: NextPage = () => {
         onSubmit: async (values, { resetForm }) => {
             const entry = JSON.parse(JSON.stringify(values));
 
+            entry.people.map((person: any) => {
+                if (!Boolean(person.id)) {
+                    delete person.id;
+                }
+                return person;
+            });
+
+            entry.places.map((place: any) => {
+                if (!Boolean(place.id)) {
+                    delete place.id;
+                }
+                return place;
+            });
+
+            if (entry.regularEntry) {
+                entry.regularEntry.tobaccoMarks.map((mark: any) => {
+                    if (!Boolean(mark.markID)) {
+                        delete mark.markID;
+                    }
+                    return mark;
+                });
+            }
+
+            if (entry.tobaccoEntry) {
+                entry.tobaccoEntry.marks.map((mark: any) => {
+                    if (!Boolean(mark.markID)) {
+                        delete mark.markID;
+                    }
+                    return mark;
+                });
+            }
+
             if (!Boolean(entry.dateInfo.fullDate)) {
                 delete entry.dateInfo.fullDate;
             }

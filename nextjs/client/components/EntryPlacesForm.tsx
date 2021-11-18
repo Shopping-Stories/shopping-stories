@@ -154,26 +154,6 @@ const EntryPlacesForm = ({ formikForm }: any) => {
                                                           />
                                                       )}
                                                   />
-                                                  {/* <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`places.${index}.id`}
-                                                      label={`ID`}
-                                                      value={ref?.id}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.id,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.id
-                                                      }
-                                                  /> */}
                                                   <br />
                                                   <Button
                                                       variant="contained"

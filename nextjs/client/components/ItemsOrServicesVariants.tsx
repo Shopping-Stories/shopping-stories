@@ -7,7 +7,7 @@ const ItemsOrServicesVariantsForm = ({
     prevPrevIdx,
     prevIdx,
 }: any) => {
-    return (
+    return formikForm.values.itemEntries[prevPrevIdx].itemsOrServices[prevIdx].variants && (
         <FormikProvider value={formikForm}>
             <FieldArray
                 name={`itemEntries.${prevPrevIdx}.itemsOrServices.${prevIdx}.variants`}

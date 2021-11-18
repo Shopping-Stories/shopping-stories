@@ -20,8 +20,8 @@ export class UpdateGlossaryItemInput {
     @Field({ nullable: true, description: 'Sub-category item is in' })
     subcategory?: string;
 
-    @Field(() => [String], { nullable: true, description: 'Qualifiers' })
-    qualifiers?: string[];
+    @Field(() => String, { nullable: true, description: 'Qualifiers' })
+    qualifiers?: string;
 
     @Field({
         nullable: true, description: 'description of the cultural context surrounding the item',

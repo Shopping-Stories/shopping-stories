@@ -410,7 +410,7 @@ type GlossaryItem {
   subcategory: String!
 
   # Qualifiers
-  qualifiers: [String!]!
+  qualifiers: String!
 
   # description of the cultural context surrounding the item
   culturalContext: String!
@@ -1196,7 +1196,7 @@ input CreateGlossaryItemInput {
   subcategory: String!
 
   # Qualifiers
-  qualifiers: [String!]!
+  qualifiers: String!
 
   # description of the cultural context surrounding the item
   culturalContext: String!
@@ -1291,7 +1291,7 @@ input UpdateGlossaryItemInput {
   subcategory: String
 
   # Qualifiers
-  qualifiers: [String!]
+  qualifiers: String
 
   # description of the cultural context surrounding the item
   culturalContext: String

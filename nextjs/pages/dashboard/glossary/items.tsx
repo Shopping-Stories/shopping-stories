@@ -13,6 +13,11 @@ import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
+import { Storage } from 'aws-amplify';
+import {
+    deleteGlossaryItemDef,
+    searchGlossaryItemsDef,
+} from 'client/graphqlDefs';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
@@ -22,87 +27,8 @@ import backgrounds from 'styles/backgrounds.module.css';
 import { useMutation } from 'urql';
 import * as yup from 'yup';
 
-const glossaryItemFields = `
-fragment glossaryItemFields on  GlossaryItem {
-    id
-    name
-    description
-    origin
-    use
-    category
-    subcategory
-    qualifiers
-    culturalContext
-    citations
-    images {
-      thumbnailImage
-      name
-      material
-      width
-      height
-      date
-      caption
-      collectionCitation
-      url
-      license
-    }
-    examplePurchases {
-      folio
-      folioItem
-      quantityPurchased
-      accountHolder
-      customer
-      purchaseDate
-      pounds
-      shilling
-      pence
-    }
-}
-`;
-
-const _createItemDef = `
-mutation($item: CreateGlossaryItemInput!) {
-  createGlossaryItem(newGlossaryItem: $item) {
-    ...glossaryItemFields
-  }
-}
-${glossaryItemFields}
-`;
-
-const searchItemsDef = `
-query glossaryItemsQuery($search: String, $options: FindAllLimitAndSkip) {
-  rows: findGlossaryItems(search: $search, options: $options) {
-    ...glossaryItemFields
-  }
-  count: countGlossaryItems(search: $search)
-}
-${glossaryItemFields}
-`;
-
-const _updateItemDef = `
-mutation($id: String!, $input: UpdateGlossaryItemInput!) {
-  updateGlossaryItem(id: $id, updatedFields: $updates) {
-    ...glossaryItemFields
-  }
-}
-${glossaryItemFields}
-`;
-const deleteItemDef = `
-mutation deleteItem($id: String!) {
-  deleteGlossaryItem(id: $id) {
-    ...glossaryItemFields
-  }
-}
-${glossaryItemFields}
-`;
-
 const validationSchema = yup.object({
     search: yup.string(),
-});
-
-const _createItemSchema = yup.object({
-    item: yup.string().required('Item name is required'),
-    variants: yup.string(),
 });
 
 const _updateItemSchema = yup.object({
@@ -110,16 +36,18 @@ const _updateItemSchema = yup.object({
     variants: yup.string(),
 });
 
+interface ItemToDelete {
+    id: string;
+    name: string;
+}
+
 const GlossaryItemsDashboardPage: NextPage = () => {
     const { groups, loading } = useAuth('/', [Roles.Admin]);
     // const [_createItemResult, createItem] = useMutation(createItemDef);
     // const [_updateItesmResult, updateItem] = useMutation(updateItemDef);
-    const [_deleteItemResult, deleteItem] = useMutation(deleteItemDef);
+    const [_deleteItemResult, deleteItem] = useMutation(deleteGlossaryItemDef);
     const [search, setSearch] = useState<string>('');
-    const [itemToDelete, setItemToDelete] = useState<{
-        id: string;
-        name: string;
-    } | null>(null);
+    const [itemToDelete, setItemToDelete] = useState<ItemToDelete | null>(null);
     const [reQuery, setReQuery] = useState<Boolean>(false);
     const router = useRouter();
 
@@ -139,7 +67,19 @@ const GlossaryItemsDashboardPage: NextPage = () => {
             const res = await deleteItem({ id });
             if (res.error) {
             } else {
+                const images = res.data.deletedItem.images.map(
+                    (image: any) => image.thumbnailImage,
+                );
                 setReQuery(true);
+
+                for (const image of images) {
+                    try {
+                        await Storage.remove(`images/${image}`);
+                    } catch (error: any) {
+                        console.error(error.message);
+                    }
+                }
+
                 handleCloseDelete();
             }
         }
@@ -179,7 +119,12 @@ const GlossaryItemsDashboardPage: NextPage = () => {
                             padding: '1rem',
                         }}
                     >
-                        <Button variant="contained" onClick={() => router.push("/dashboard/glossary/create")}>
+                        <Button
+                            variant="contained"
+                            onClick={() =>
+                                router.push('/dashboard/glossary/create')
+                            }
+                        >
                             Create new item
                         </Button>
                         <FormGroup>
@@ -219,9 +164,9 @@ const GlossaryItemsDashboardPage: NextPage = () => {
                         }}
                     >
                         <ItemGlossaryPaginationTable
-                            queryDef={searchItemsDef}
+                            queryDef={searchGlossaryItemsDef}
                             onEditClick={(id: string) => {
-                                router.push(`/dashboard/glossary/update/${id}`)
+                                router.push(`/dashboard/glossary/update/${id}`);
                             }}
                             onDeleteClick={async (row: any) => {
                                 setItemToDelete({

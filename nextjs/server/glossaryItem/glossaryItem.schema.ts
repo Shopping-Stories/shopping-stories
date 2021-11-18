@@ -42,9 +42,9 @@ export class GlossaryItem {
     @Field({ description: 'Sub-category item is in' })
     subcategory: string;
 
-    @prop({ required: true, type: () => [String] })
-    @Field(() => [String], { description: 'Qualifiers' })
-    qualifiers: string[];
+    @prop({ required: true })
+    @Field(() => String, { description: 'Qualifiers' })
+    qualifiers: string;
 
     @prop({ required: true })
     @Field({

@@ -29,7 +29,7 @@ a {
   text-decoration: underline;
 }
 
-p {
+/* p {
   font-size: 1rem;
   color: inherit;
   font-family: Merriweather;
@@ -50,9 +50,9 @@ i {
   color: inherit;
   font-family: Merriweather;
   text-align: left;
-}
+} */
 
-h1 {
+/* h1 {
   font-size: 2rem;
   letter-spacing: 5px;
   color: #030300e7;
@@ -89,7 +89,7 @@ h2 {
   font-weight: lighter;
   font-family: Merriweather;
   text-align: center;
-}
+} */
 
 * {
   box-sizing: border-box;

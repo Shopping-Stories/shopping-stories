@@ -123,3 +123,88 @@ fragment entryFields on Entry {
   }
 }
 `;
+
+const glossaryItemFields = `
+fragment glossaryItemFields on  GlossaryItem {
+    id
+    name
+    description
+    origin
+    use
+    category
+    subcategory
+    qualifiers
+    culturalContext
+    citations
+    images {
+      thumbnailImage
+      name
+      material
+      width
+      height
+      date
+      caption
+      collectionCitation
+      url
+      license
+    }
+    examplePurchases {
+      folio
+      folioItem
+      quantityPurchased
+      accountHolder
+      customer
+      purchaseDate
+      pounds
+      shilling
+      pence
+    }
+}
+`;
+
+
+export const createGlossaryItemDef = `
+mutation($item: CreateGlossaryItemInput!) {
+  createGlossaryItem(newGlossaryItem: $item) {
+    ...glossaryItemFields
+  }
+}
+${glossaryItemFields}
+`;
+
+export const searchGlossaryItemsDef = `
+query glossaryItemsQuery($search: String, $options: FindAllLimitAndSkip) {
+  rows: findGlossaryItems(search: $search, options: $options) {
+    ...glossaryItemFields
+  }
+  count: countGlossaryItems(search: $search)
+}
+${glossaryItemFields}
+`;
+
+export const updateGlossaryItemDef = `
+mutation($id: String!, $updates: UpdateGlossaryItemInput!) {
+  updateGlossaryItem(id: $id, updatedFields: $updates) {
+    ...glossaryItemFields
+  }
+}
+${glossaryItemFields}
+`;
+
+export const deleteGlossaryItemDef = `
+mutation deleteItem($id: String!) {
+  deletedItem: deleteGlossaryItem(id: $id) {
+    ...glossaryItemFields
+  }
+}
+${glossaryItemFields}
+`;
+
+export const findGlossaryItemDef = `
+query($id: String!) {
+  findGlossaryItem(id: $id) {
+    ...glossaryItemFields
+  }
+}
+${glossaryItemFields}
+`
