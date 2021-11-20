@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
-import { glossaryItemSchema } from 'client/formikSchemas';
+import { GlossaryItem, glossaryItemSchema } from 'client/formikSchemas';
 import { findGlossaryItemDef, updateGlossaryItemDef } from 'client/graphqlDefs';
 import { cloneWithoutTypename } from 'client/util';
 import { useFormik } from 'formik';
@@ -17,15 +17,17 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
+import backgrounds from 'styles/backgrounds.module.css';
+import { GlossaryItemQueryResult } from 'client/urqlConfig';
 
 const UpdateGlossaryItem: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
-    const [findGlossaryItemResult, _findGlossaryItem] = useQuery({
+    const [findGlossaryItemResult, _findGlossaryItem] = useQuery<GlossaryItemQueryResult>({
         query: findGlossaryItemDef,
         variables: { id },
     });
-    const glossaryItem = findGlossaryItemResult?.data?.findGlossaryItem;
+    const glossaryItem = findGlossaryItemResult?.data?.item;
     const [_updateGlossaryItemResult, updateGlossaryItem] = useMutation(
         updateGlossaryItemDef,
     );
@@ -53,8 +55,7 @@ const UpdateGlossaryItem: NextPage = () => {
         qualifiers: '',
         culturalContext: '',
         citations: '',
-        images: [],
-        examplePurchases: [],
+        images: [] as any,
     };
 
     useEffect(() => {
@@ -65,31 +66,22 @@ const UpdateGlossaryItem: NextPage = () => {
         }
     }, [glossaryItem]);
 
-    const updateForm = useFormik({
+    type UpdateGlossaryItemType = Omit<GlossaryItem, "id">
+
+    const updateForm = useFormik<UpdateGlossaryItemType>({
         enableReinitialize: true,
-        initialValues: {
-            name: '',
-            description: '',
-            origin: '',
-            use: '',
-            category: '',
-            subcategory: '',
-            qualifiers: '',
-            culturalContext: '',
-            citations: '',
-            images: [],
-            examplePurchases: [],
-        },
+        initialValues: initialValues,
         validationSchema: glossaryItemSchema,
         onSubmit: async (values, { resetForm }) => {
             let errorUploadingImage = false;
             setIsLoading(true);
+
             const UploadImage = async (image: any) => {
                 // find the File corresponding to the filename
-                // in thumbnailImage
+                // in imageKey
                 const imageFile = imageFiles.find(
                     (imageFile: File) =>
-                        imageFile.name === image.thumbnailImage,
+                        imageFile.name === image.imageKey,
                 );
 
                 try {
@@ -140,7 +132,7 @@ const UpdateGlossaryItem: NextPage = () => {
         return <>error</>;
     } else {
         return (
-            <div>
+            <div className={backgrounds.colorBackground}>
                 <Header />
                 <Paper
                     sx={{

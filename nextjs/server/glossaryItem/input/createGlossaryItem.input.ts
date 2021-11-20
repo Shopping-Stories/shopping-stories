@@ -1,4 +1,4 @@
-import { Field, InputType, Int } from 'type-graphql';
+import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class CreateGlossaryItemInput {
@@ -37,17 +37,10 @@ export class CreateGlossaryItemInput {
         description: 'images of item',
     })
     images: CreateImageObject[];
-
-    @Field(() => [CreatePurchaseObject], {
-        description: 'Example of what a purchase of this item looks like',
-    })
-    examplePurchases: CreatePurchaseObject[];
-
-    // ledgerImage: string;
 }
 
 @InputType({ description: 'Example purchases' })
-class CreatePurchaseObject {
+export class CreatePurchaseObject {
     @Field()
     folio: string;
 
@@ -78,9 +71,9 @@ class CreatePurchaseObject {
 @InputType({ description: 'Image Information' })
 class CreateImageObject {
     @Field({
-        description: 'string of filename of thumbnail image in the S3 Bucket',
+        description: 'string of filename of image in the S3 Bucket',
     })
-    thumbnailImage: string;
+    imageKey: string;
 
     @Field({ description: 'name of the image' })
     name: string;
@@ -88,11 +81,8 @@ class CreateImageObject {
     @Field({ description: '' })
     material: string;
 
-    @Field(() => Int, { description: 'width of the image' })
-    width: number;
-
-    @Field(() => Int, { description: 'height of the image' })
-    height: number;
+    @Field({ description: 'dimensions of the item in the image' })
+    dimensions: string;
 
     @Field({ description: 'date of the image' })
     date: string;

@@ -1,5 +1,31 @@
 import * as yup from 'yup';
 
+export interface GlossaryItem {
+    id: string;
+    name: string;
+    description: string;
+    origin: string;
+    use: string;
+    category: string;
+    subcategory: string;
+    qualifiers: string;
+    culturalContext: string;
+    citations: string;
+    images: [
+        {
+            dimensions: string;
+            imageKey: string;
+            name: string;
+            material: string;
+            date: string;
+            caption: string;
+            collectionCitation: string;
+            url: string;
+            license: string;
+        },
+    ];
+}
+
 export const glossaryItemSchema = yup.object({
     name: yup.string(),
     description: yup.string(),
@@ -12,29 +38,15 @@ export const glossaryItemSchema = yup.object({
     citations: yup.string(),
     images: yup.array().of(
         yup.object({
-            thumbnailImage: yup.string(),
+            imageKey: yup.string(),
             name: yup.string(),
             material: yup.string(),
-            width: yup.number(),
-            height: yup.number(),
+            dimensions: yup.string(),
             date: yup.string(),
             caption: yup.string(),
             collectionCitation: yup.string(),
             url: yup.string(),
             license: yup.string(),
-        }),
-    ),
-    examplePurchases: yup.array().of(
-        yup.object({
-            folio: yup.string(),
-            folioItem: yup.string(),
-            quantityPurchased: yup.number(),
-            accountHolder: yup.string(),
-            customer: yup.string(),
-            purchaseDate: yup.date(),
-            pounds: yup.number(),
-            shilling: yup.number(),
-            pence: yup.number(),
         }),
     ),
 });

@@ -15,6 +15,7 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useMutation } from 'urql';
+import backgrounds from 'styles/backgrounds.module.css';
 
 const CreateGlossaryItemPage: NextPage = () => {
     const router = useRouter();
@@ -48,7 +49,6 @@ const CreateGlossaryItemPage: NextPage = () => {
             culturalContext: '',
             citations: '',
             images: [],
-            examplePurchases: [],
         },
         validationSchema: glossaryItemSchema,
         onSubmit: async (values, { resetForm }) => {
@@ -58,10 +58,10 @@ const CreateGlossaryItemPage: NextPage = () => {
 
             const UploadImage = async (image: any) => {
                 // find the File corresponding to the filename
-                // in thumbnailImage
+                // in imageKey
                 const imageFile = imageFiles.find(
                     (imageFile: File) =>
-                        imageFile.name === image.thumbnailImage,
+                        imageFile.name === image.imageKey,
                 );
 
                 try {
@@ -101,7 +101,7 @@ const CreateGlossaryItemPage: NextPage = () => {
     });
 
     return (
-        <div>
+        <div className={backgrounds.colorBackground}>
             <Header />
             <Paper
                 sx={{

@@ -25,9 +25,9 @@ export default function RegularEntryForm(){
     const [entryDescription, setEntryDescription] = useState('')
     const [tobaccoMarkName, setTobaccoMarkName] = useState('')
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: any) => {
         e.preventDefault()
-        if( reel || 
+        if( reel ||
             storeOwner ||
             folioYear ||
             folioPage ||
@@ -39,7 +39,7 @@ export default function RegularEntryForm(){
             colony ||
             entryDescription ||
             tobaccoMarkName){
-            console.log(reel, storeOwner, folioYear, folioPage, entryID, accountHolder, people, places, 
+            console.log(reel, storeOwner, folioYear, folioPage, entryID, accountHolder, people, places,
                 commodity, colony, entryDescription, tobaccoMarkName)
         }
     }
@@ -132,7 +132,7 @@ export default function RegularEntryForm(){
                     label="Tobacco Mark Name"
                     variant="outlined"
                 />
-                <Button 
+                <Button
                 type="submit"
                 variant="contained"
                 >

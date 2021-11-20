@@ -1,5 +1,6 @@
 import { makeOperation } from '@urql/core';
 import { Auth } from 'aws-amplify';
+import { GlossaryItem } from './formikSchemas';
 import { handlePromise } from './util';
 
 export const addAuthToOperation = ({ authState, operation }: any) => {
@@ -48,3 +49,7 @@ export const getAuth = async ({ authState }: any) => {
     Auth.signOut();
     return null;
 };
+
+export interface GlossaryItemQueryResult {
+    item: GlossaryItem;
+}

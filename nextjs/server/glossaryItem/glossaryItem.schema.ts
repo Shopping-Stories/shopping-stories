@@ -1,6 +1,6 @@
 import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import mongoose, { Document } from 'mongoose';
-import { Field, ID, Int, ObjectType } from 'type-graphql';
+import { Field, ID, ObjectType } from 'type-graphql';
 import { v4 as uuidv4 } from 'uuid';
 
 export type GlossaryItemDocument = GlossaryItem & Document;
@@ -63,18 +63,10 @@ export class GlossaryItem {
         description: 'images of item',
     })
     images: ImageObject[];
-
-    @prop({ _id: false, type: () => [PurchaseObject], required: true })
-    @Field(() => [PurchaseObject], {
-        description: 'Example of what a purchase of this item looks like',
-    })
-    examplePurchases: PurchaseObject[];
-
-    // ledgerImage: string;
 }
 
 @ObjectType({ description: 'Example purchases' })
-class PurchaseObject {
+export class PurchaseObject {
     @prop()
     @Field()
     folio: string;
@@ -115,9 +107,9 @@ class PurchaseObject {
 class ImageObject {
     @prop()
     @Field({
-        description: 'string of filename of thumbnail image in the S3 Bucket',
+        description: 'string of filename of image in the S3 Bucket',
     })
-    thumbnailImage: string;
+    imageKey: string;
 
     @prop()
     @Field({ description: 'name of the image' })
@@ -128,12 +120,8 @@ class ImageObject {
     material: string;
 
     @prop()
-    @Field(() => Int, { description: 'width of the image' })
-    width: number;
-
-    @prop()
-    @Field(() => Int, { description: 'height of the image' })
-    height: number;
+    @Field({ description: 'dimensions of the item in the image' })
+    dimensions: string;
 
     @prop()
     @Field({ description: 'date of the image' })

@@ -310,7 +310,7 @@ const SignInPage: NextPage = () => {
                             setCodeSent(false);
                         }}
                     >
-                        Don't have a code? Click here!
+                        Don&#39;t have a code? Click here!
                     </Link>
                 </Container>
             </FormGroup>

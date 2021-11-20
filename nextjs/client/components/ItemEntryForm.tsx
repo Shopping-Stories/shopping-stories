@@ -27,11 +27,11 @@ export default function ItemEntryForm(){
     const [cat, setCat] = useState('')
     const [subCat, setSubCat] = useState('')
     const [varient, setVarient] = useState('')
-    
 
-    const handleSubmit = (e) => {
+
+    const handleSubmit = (e: any) => {
         e.preventDefault()
-        if( reel || 
+        if( reel ||
             storeOwner ||
             folioYear ||
             folioPage ||
@@ -46,7 +46,7 @@ export default function ItemEntryForm(){
             cat ||
             subCat ||
             varient){
-            console.log(reel, storeOwner, folioYear, folioPage, entryID, accountHolder, people, places, 
+            console.log(reel, storeOwner, folioYear, folioPage, entryID, accountHolder, people, places,
                 commodity, colony, perOrder, itemName, cat, subCat, varient)
         }
     }
@@ -160,7 +160,7 @@ export default function ItemEntryForm(){
                     label="Varient"
                     variant="outlined"
                 />
-                <Button 
+                <Button
                 type="submit"
                 variant="contained"
                 >

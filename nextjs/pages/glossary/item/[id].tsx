@@ -1,26 +1,30 @@
+import GlossaryItemImageCard from '@components/GlossaryItemImageCard';
 import Header from '@components/Header';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
+import InfoSection from '@components/InfoSection';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
+import { GlossaryItem } from 'client/formikSchemas';
 import { findGlossaryItemDef } from 'client/graphqlDefs';
+import { GlossaryItemQueryResult } from 'client/urqlConfig';
 import { handlePromise, processStorageList } from 'client/util';
+import { pickBy } from 'lodash';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import backgrounds from 'styles/backgrounds.module.css';
 import { useQuery } from 'urql';
 
 const ItemGlossaryPage: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
-    const [findGlossaryItemResult, _findGlossaryItem] = useQuery({
-        query: findGlossaryItemDef,
-        variables: { id },
-    });
+    const [findGlossaryItemResult, _findGlossaryItem] =
+        useQuery<GlossaryItemQueryResult>({
+            query: findGlossaryItemDef,
+            variables: { id },
+        });
 
     const [images, setImages] = useState<any[]>([]);
 
@@ -38,8 +42,8 @@ const ItemGlossaryPage: NextPage = () => {
                     const imagesFromS3: any[] = [];
 
                     const data = findGlossaryItemResult.data;
-                    const keys = data.findGlossaryItem.images.map(
-                        (image: any) => image.thumbnailImage,
+                    const keys = data.item.images.map(
+                        (image: GlossaryItem['images'][0]) => image.imageKey,
                     );
                     for (const key of keys) {
                         const imageKey = imageKeys.find(
@@ -71,12 +75,34 @@ const ItemGlossaryPage: NextPage = () => {
                 <Header />
             </div>
         );
-    } else if (findGlossaryItemResult.error) {
-        router.push('/glossary');
-        return <>error</>;
-    } else {
+    } else if (findGlossaryItemResult.data) {
+        const {
+            name,
+            description,
+            origin,
+            use,
+            category,
+            subcategory,
+            qualifiers,
+            culturalContext,
+            citations,
+        } = findGlossaryItemResult.data.item;
+
+        const data = {
+            Description: description,
+            Origin: origin,
+            Use: use,
+            Category: category,
+            Subcategory: subcategory,
+            'Cultural Context': culturalContext,
+            Citations: citations,
+            Qualifiers: qualifiers,
+        };
+
+        const cleanedObject = pickBy(data, (value, _) => Boolean(value));
+
         return (
-            <div>
+            <div className={backgrounds.colorBackground}>
                 <Header />
                 <Paper
                     sx={{
@@ -86,37 +112,48 @@ const ItemGlossaryPage: NextPage = () => {
                     }}
                 >
                     <Grid container justifyContent="center" spacing={4}>
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12}>
+                            <Typography variant="h2">{name}</Typography>
+                        </Grid>
+                        <Grid item xs={12} lg={4}>
                             <Stack spacing={2}>
-                                {images.map((image: any, i: number) => (
-                                    <Card key={i}>
-                                        <CardMedia
-                                            component="img"
-                                            image={image}
+                                {images.map((image: any, i: number) =>
+                                    findGlossaryItemResult.data ? (
+                                        <GlossaryItemImageCard
+                                            index={i}
+                                            imageUrl={image}
+                                            item={
+                                                findGlossaryItemResult.data
+                                                    ?.item
+                                            }
                                         />
-                                        <CardContent>
-                                            <Typography variant="body2">
-                                                {
-                                                    findGlossaryItemResult.data
-                                                        .findGlossaryItem
-                                                        .images[i]
-                                                        .thumbnailImage
-                                                }
-                                                <br />
-                                                {'"a benevolent smile"'}
-                                            </Typography>
-                                        </CardContent>
-                                    </Card>
-                                ))}
+                                    ) : null,
+                                )}
                             </Stack>
                         </Grid>
-                        <Grid item xs={12} md={8}>
-                            <Stack spacing={2}></Stack>
+                        <Grid item xs={12} lg={8}>
+                            <Stack spacing={2}>
+                                {Object.entries(cleanedObject).map(
+                                    ([key, value]: string[], i: number) => (
+                                        <div>
+                                            <InfoSection
+                                                key={i}
+                                                label={key}
+                                                body={value}
+                                            />
+                                            <br />
+                                        </div>
+                                    ),
+                                )}
+                            </Stack>
                         </Grid>
                     </Grid>
                 </Paper>
             </div>
         );
+    } else {
+        // router.push('/glossary');
+        return <>error</>;
     }
 };
 

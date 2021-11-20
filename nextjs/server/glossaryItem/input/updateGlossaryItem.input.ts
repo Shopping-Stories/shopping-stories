@@ -1,4 +1,4 @@
-import { Field, InputType, Int } from 'type-graphql';
+import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class UpdateGlossaryItemInput {
@@ -37,17 +37,10 @@ export class UpdateGlossaryItemInput {
         nullable: true, description: 'images of item',
     })
     images?: UpdateImageObject[];
-
-    @Field(() => [UpdatePurchaseObject], {
-        nullable: true, description: 'Example of what a purchase of this item looks like',
-    })
-    examplePurchases?: UpdatePurchaseObject[];
-
-    // ledgerImage: string;
 }
 
 @InputType({ description: 'Example purchases' })
-class UpdatePurchaseObject {
+export class UpdatePurchaseObject {
     @Field({ nullable: true })
     folio?: string;
 
@@ -78,9 +71,9 @@ class UpdatePurchaseObject {
 @InputType({ description: 'Image Information' })
 class UpdateImageObject {
     @Field({
-        nullable: true, description: 'string of filename of thumbnail image in the S3 Bucket',
+        nullable: true, description: 'string of filename of image in the S3 Bucket',
     })
-    thumbnailImage?: string;
+    imageKey?: string;
 
     @Field({ nullable: true, description: 'name of the image' })
     name?: string;
@@ -88,11 +81,8 @@ class UpdateImageObject {
     @Field({ nullable: true, description: '' })
     material?: string;
 
-    @Field(() => Int, { nullable: true, description: 'width of the image' })
-    width?: number;
-
-    @Field(() => Int, { nullable: true, description: 'height of the image' })
-    height?: number;
+    @Field({ description: 'dimensions of the item in the image' })
+    dimensions?: string;
 
     @Field({ nullable: true, description: 'date of the image' })
     date?: string;

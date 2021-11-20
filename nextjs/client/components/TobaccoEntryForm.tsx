@@ -27,9 +27,9 @@ export default function TobaccoEntryForm(){
     const [noteNumber, setNoteNumber] = useState('')
     const [moneyType, setMoneyType] = useState('')
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: any) => {
         e.preventDefault()
-        if( reel || 
+        if( reel ||
             storeOwner ||
             folioYear ||
             folioPage ||
@@ -43,7 +43,7 @@ export default function TobaccoEntryForm(){
             tobaccoMarkName ||
             noteNumber ||
             moneyType){
-            console.log(reel, storeOwner, folioYear, folioPage, entryID, accountHolder, people, places, 
+            console.log(reel, storeOwner, folioYear, folioPage, entryID, accountHolder, people, places,
                 commodity, colony, entryDescription, tobaccoMarkName, noteNumber, moneyType)
         }
     }
@@ -150,7 +150,7 @@ export default function TobaccoEntryForm(){
                     label="Money Type"
                     variant="outlined"
                 />
-                <Button 
+                <Button
                 type="submit"
                 variant="contained"
                 >

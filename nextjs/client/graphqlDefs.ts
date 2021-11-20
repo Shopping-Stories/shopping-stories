@@ -137,27 +137,15 @@ fragment glossaryItemFields on  GlossaryItem {
     culturalContext
     citations
     images {
-      thumbnailImage
+      imageKey
       name
       material
-      width
-      height
+      dimensions
       date
       caption
       collectionCitation
       url
       license
-    }
-    examplePurchases {
-      folio
-      folioItem
-      quantityPurchased
-      accountHolder
-      customer
-      purchaseDate
-      pounds
-      shilling
-      pence
     }
 }
 `;
@@ -202,7 +190,7 @@ ${glossaryItemFields}
 
 export const findGlossaryItemDef = `
 query($id: String!) {
-  findGlossaryItem(id: $id) {
+  item: findGlossaryItem(id: $id) {
     ...glossaryItemFields
   }
 }

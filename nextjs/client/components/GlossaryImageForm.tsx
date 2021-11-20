@@ -42,11 +42,10 @@ const GlossaryItemForm = (props: ImageFormProps) => {
                                 type="button"
                                 onClick={() =>
                                     arrayHelpers.push({
-                                        thumbnailImage: '',
+                                        imageKey: '',
                                         name: '',
                                         material: '',
-                                        width: 300,
-                                        height: 300,
+                                        dimensions: '',
                                         date: '',
                                         caption: '',
                                         collectionCitation: '',

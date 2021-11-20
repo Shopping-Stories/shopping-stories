@@ -56,7 +56,7 @@ export default function BasicTabs() {
     const classes = useStyles()
     const [enter, setEnter] = useState('')
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: any) => {
         e.preventDefault()
         if(enter){
             console.log(enter)
@@ -93,7 +93,7 @@ export default function BasicTabs() {
                     variant="outlined"
                     fullWidth
                 />
-                <Button 
+                <Button
                 type="submit"
                 variant="contained"
                 >

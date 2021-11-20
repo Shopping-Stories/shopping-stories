@@ -420,15 +420,12 @@ type GlossaryItem {
 
   # images of item
   images: [ImageObject!]!
-
-  # Example of what a purchase of this item looks like
-  examplePurchases: [PurchaseObject!]!
 }
 
 # Image Information
 type ImageObject {
-  # string of filename of thumbnail image in the S3 Bucket
-  thumbnailImage: String!
+  # string of filename of image in the S3 Bucket
+  imageKey: String!
 
   # name of the image
   name: String!
@@ -436,11 +433,8 @@ type ImageObject {
   #
   material: String!
 
-  # width of the image
-  width: Int!
-
-  # height of the image
-  height: Int!
+  # dimensions of the item in the image
+  dimensions: String!
 
   # date of the image
   date: String!
@@ -456,33 +450,6 @@ type ImageObject {
 
   # license the image is under
   license: String!
-}
-
-# Example purchases
-type PurchaseObject {
-  folio: String!
-  folioItem: String!
-
-  # quantity of item purchased
-  quantityPurchased: Float!
-
-  # account used for purchase
-  accountHolder: String!
-
-  # customer purchasing the item
-  customer: String!
-
-  # date the item was purchased on
-  purchaseDate: DateTime!
-
-  # pounds used in the transaction
-  pounds: Float!
-
-  # shillings used in the transaction
-  shilling: Float!
-
-  # pence used in the transaction 
-  pence: Float!
 }
 
 # Item Object
@@ -1206,15 +1173,12 @@ input CreateGlossaryItemInput {
 
   # images of item
   images: [CreateImageObject!]!
-
-  # Example of what a purchase of this item looks like
-  examplePurchases: [CreatePurchaseObject!]!
 }
 
 # Image Information
 input CreateImageObject {
-  # string of filename of thumbnail image in the S3 Bucket
-  thumbnailImage: String!
+  # string of filename of image in the S3 Bucket
+  imageKey: String!
 
   # name of the image
   name: String!
@@ -1222,11 +1186,8 @@ input CreateImageObject {
   #
   material: String!
 
-  # width of the image
-  width: Int!
-
-  # height of the image
-  height: Int!
+  # dimensions of the item in the image
+  dimensions: String!
 
   # date of the image
   date: String!
@@ -1242,33 +1203,6 @@ input CreateImageObject {
 
   # license the image is under
   license: String!
-}
-
-# Example purchases
-input CreatePurchaseObject {
-  folio: String!
-  folioItem: String!
-
-  # quantity of item purchased
-  quantityPurchased: Float!
-
-  # account used for purchase
-  accountHolder: String!
-
-  # customer purchasing the item
-  customer: String!
-
-  # date the item was purchased on
-  purchaseDate: DateTime!
-
-  # pounds used in the transaction
-  pounds: Float!
-
-  # shillings used in the transaction
-  shilling: Float!
-
-  # pence used in the transaction 
-  pence: Float!
 }
 
 input UpdateGlossaryItemInput {
@@ -1301,15 +1235,12 @@ input UpdateGlossaryItemInput {
 
   # images of item
   images: [UpdateImageObject!]
-
-  # Example of what a purchase of this item looks like
-  examplePurchases: [UpdatePurchaseObject!]
 }
 
 # Image Information
 input UpdateImageObject {
-  # string of filename of thumbnail image in the S3 Bucket
-  thumbnailImage: String
+  # string of filename of image in the S3 Bucket
+  imageKey: String
 
   # name of the image
   name: String
@@ -1317,11 +1248,8 @@ input UpdateImageObject {
   #
   material: String
 
-  # width of the image
-  width: Int
-
-  # height of the image
-  height: Int
+  # dimensions of the item in the image
+  dimensions: String!
 
   # date of the image
   date: String
@@ -1337,33 +1265,6 @@ input UpdateImageObject {
 
   # license the image is under
   license: String
-}
-
-# Example purchases
-input UpdatePurchaseObject {
-  folio: String
-  folioItem: String
-
-  # quantity of item purchased
-  quantityPurchased: Float
-
-  # account used for purchase
-  accountHolder: String
-
-  # customer purchasing the item
-  customer: String
-
-  # date the item was purchased on
-  purchaseDate: DateTime
-
-  # pounds used in the transaction
-  pounds: Float
-
-  # shillings used in the transaction
-  shilling: Float
-
-  # pence used in the transaction 
-  pence: Float
 }
 
 input CreateItemInput {

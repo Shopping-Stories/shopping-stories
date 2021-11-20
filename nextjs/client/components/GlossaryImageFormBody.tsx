@@ -28,11 +28,10 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
     const prefix = 'images';
     const fieldNames = {
         name: `${prefix}.${index}.name`,
-        thumbnailImage: `${prefix}.${index}.thumbnailImage`,
+        imageKey: `${prefix}.${index}.imageKey`,
         material: `${prefix}.${index}.material`,
-        width: `${prefix}.${index}.width`,
-        height: `${prefix}.${index}.height`,
-        date: `${prefix}.${index}.date}`,
+        dimensions: `${prefix}.${index}.dimensions`,
+        date: `${prefix}.${index}.date`,
         caption: `${prefix}.${index}.caption`,
         collectionCitation: `${prefix}.${index}.collectionCitation`,
         url: `${prefix}.${index}.url`,
@@ -44,7 +43,7 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
     const onImageChange = (input: { files: File | File[] }) => {
         if (!isArray(input.files)) {
             const prevImage: string =
-                formikForm.values.images[index].thumbnailImage;
+                formikForm.values.images[index].imageKey;
             props.removeImage(prevImage);
 
             const image = input.files;
@@ -58,13 +57,13 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
             props.handleImage(newImage);
             setImage(URL.createObjectURL(newImage));
 
-            formikForm.setFieldValue(fieldNames.thumbnailImage, newImage.name);
+            formikForm.setFieldValue(fieldNames.imageKey, newImage.name);
         }
     };
 
     useEffect(() => {
         const getImage = async () => {
-            if (formikForm.values.images[index].thumbnailImage) {
+            if (formikForm.values.images[index].imageKey) {
                 const [res, err] = await handlePromise(Storage.list('images/'));
 
                 if (!err && res) {
@@ -73,7 +72,7 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
                         (image: any) => image.key.split('/')[1],
                     );
 
-                    const key = formikForm.values.images[index].thumbnailImage;
+                    const key = formikForm.values.images[index].imageKey;
                     const imageKey = imageKeys.find(
                         (imageKey: string) => imageKey === key,
                     );
@@ -91,7 +90,7 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
             }
         };
         getImage();
-    }, [formikForm.values.images[index].thumbnailImage]);
+    }, [formikForm.values.images[index].imageKey]);
 
     return (
         <Card>
@@ -145,33 +144,18 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
                         placeholder="Material information (if applicable)"
                     />
 
-                    <TextFieldWithFormikValidation
-                        fullWidth
-                        label="Image Width"
-                        name={fieldNames.width}
-                        type="number"
-                        inputProps={{
-                            min: 100,
-                        }}
-                        fieldName={fieldNames.width}
+
+                    <TextAreaWithFormikValidation
+                        label="Dimensions"
+                        name={fieldNames.dimensions}
+                        fieldName={fieldNames.dimensions}
                         formikForm={formikForm}
+                        placeholder="Physical dimensions of the item"
                     />
 
                     <TextFieldWithFormikValidation
                         fullWidth
-                        label="Image Height"
-                        name={fieldNames.height}
-                        type="number"
-                        inputProps={{
-                            min: 100,
-                        }}
-                        fieldName={fieldNames.height}
-                        formikForm={formikForm}
-                    />
-
-                    <TextFieldWithFormikValidation
-                        fullWidth
-                        label="Image Height"
+                        label="Date"
                         name={fieldNames.date}
                         fieldName={fieldNames.date}
                         formikForm={formikForm}
@@ -203,7 +187,7 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
                     type="button"
                     onClick={() => {
                         const prevImage: string =
-                            formikForm.values.images[index].thumbnailImage;
+                            formikForm.values.images[index].imageKey;
                         props.removeImage(prevImage);
                         arrayHelpers.remove(index);
                         console.log(formikForm.values.images);

@@ -147,7 +147,7 @@ const SignInPage: NextPage = () => {
                 </LoadingButton>
                 <Container>
                     <MuiNextLink href="/auth/signup">
-                        Don't have an account? Create one!
+                        Don&#39;t have an account? Create one!
                     </MuiNextLink>
                     <Divider />
                     <MuiNextLink href="/auth/forgot-password">

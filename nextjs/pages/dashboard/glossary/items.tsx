@@ -14,6 +14,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import { Storage } from 'aws-amplify';
+import { GlossaryItem } from 'client/formikSchemas';
 import {
     deleteGlossaryItemDef,
     searchGlossaryItemsDef,
@@ -31,10 +32,10 @@ const validationSchema = yup.object({
     search: yup.string(),
 });
 
-const _updateItemSchema = yup.object({
-    item: yup.string(),
-    variants: yup.string(),
-});
+// const _updateItemSchema = yup.object({
+//     item: yup.string(),
+//     variants: yup.string(),
+// });
 
 interface ItemToDelete {
     id: string;
@@ -48,7 +49,7 @@ const GlossaryItemsDashboardPage: NextPage = () => {
     const [_deleteItemResult, deleteItem] = useMutation(deleteGlossaryItemDef);
     const [search, setSearch] = useState<string>('');
     const [itemToDelete, setItemToDelete] = useState<ItemToDelete | null>(null);
-    const [reQuery, setReQuery] = useState<Boolean>(false);
+    const [reQuery, setReQuery] = useState<Boolean>(true);
     const router = useRouter();
 
     const [openDelete, setOpenDelete] = useState<boolean>(false);
@@ -68,7 +69,7 @@ const GlossaryItemsDashboardPage: NextPage = () => {
             if (res.error) {
             } else {
                 const images = res.data.deletedItem.images.map(
-                    (image: any) => image.thumbnailImage,
+                    (image: GlossaryItem["images"][0]) => image.imageKey,
                 );
                 setReQuery(true);
 
