@@ -3,14 +3,16 @@ import {
     getMongoTextSearchObject,
     optimizedMongoCount,
 } from '../config/utils';
-import { CreatePersonInput } from './input/createPerson.input';
-import { UpdatePersonInput } from './input/updatePerson.input';
-import { PersonModel, Person } from './person.schema';
+import { DocumentInfo, DocumentInfoModel } from './document.schema';
+import { CreateDocumentInput } from './input/createDocument.input';
+import { UpdateDocumentInput } from './input/updateDocument.input';
 
-export default class PersonService {
-    static async create(person: CreatePersonInput): Promise<Person> {
-        const createdPerson = new PersonModel(person);
-        return createdPerson.save();
+export default class DocumentService {
+    static async create(
+        glossaryItem: CreateDocumentInput,
+    ): Promise<DocumentInfo> {
+        const createdDocument = new DocumentInfoModel(glossaryItem);
+        return createdDocument.save();
     }
 
     static async findAll(
@@ -18,9 +20,9 @@ export default class PersonService {
         limit: number,
         selectedFields: Object,
         search?: string,
-    ): Promise<Person[]> {
+    ): Promise<DocumentInfo[]> {
         if (!!search) {
-            return PersonModel.find(getMongoTextSearchObject(search), {
+            return DocumentInfoModel.find(getMongoTextSearchObject(search), {
                 ...selectedFields,
                 score: { $meta: 'textScore' },
             })
@@ -28,44 +30,43 @@ export default class PersonService {
                 .limit(limit)
                 .sort({
                     score: { $meta: 'textScore' },
-                    firstName: 'asc',
-                    lastName: 'asc',
+                    name: 'asc',
                     _id: 'asc',
                 })
-                .lean<Person[]>()
+                .lean<DocumentInfo[]>()
                 .exec();
         }
-        return PersonModel.find(
+        return DocumentInfoModel.find(
             getMongoTextSearchObject(search),
             selectedFields,
         )
-            .sort({ firstName: 'asc', lastName: 'asc', _id: 'asc' })
+            .sort({ name: 'asc', _id: 'asc' })
             .skip(skip)
             .limit(limit)
-            .lean<Person[]>()
+            .lean<DocumentInfo[]>()
             .exec();
     }
 
     static async count(search?: string): Promise<number> {
-        return optimizedMongoCount(PersonModel, search);
+        return optimizedMongoCount(DocumentInfoModel, search);
     }
 
     static async findOne(
         id: string,
         selectedFields: Object,
-    ): Promise<Person | null> {
-        return PersonModel.findOne({ _id: id })
+    ): Promise<DocumentInfo | null> {
+        return DocumentInfoModel.findOne({ _id: id })
             .select(selectedFields)
-            .lean<Person>()
+            .lean<DocumentInfo>()
             .exec();
     }
 
     static async updateOne(
         id: string,
-        updateFields: UpdatePersonInput,
+        updateFields: UpdateDocumentInput,
         selectedFields: Object,
-    ): Promise<Person | null> {
-        return PersonModel.findOneAndUpdate(
+    ): Promise<DocumentInfo | null> {
+        return DocumentInfoModel.findOneAndUpdate(
             { _id: id },
             {
                 $set: filterObject(
@@ -82,8 +83,8 @@ export default class PersonService {
     static async deleteOne(
         id: string,
         selectedFields: Object,
-    ): Promise<Person | null> {
-        return PersonModel.findOneAndDelete({ _id: id })
+    ): Promise<DocumentInfo | null> {
+        return DocumentInfoModel.findOneAndDelete({ _id: id })
             .select(selectedFields)
             .exec();
     }

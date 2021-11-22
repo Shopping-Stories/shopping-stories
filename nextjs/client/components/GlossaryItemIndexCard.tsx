@@ -7,6 +7,8 @@ import { GlossaryItem } from 'client/formikSchemas';
 import { useEffect, useState } from 'react';
 import CardActions from '@mui/material/CardActions';
 import MuiNextLink from './MuiNextLink';
+import { handlePromise } from 'client/util';
+import CardActionArea from '@mui/material/CardActionArea';
 
 interface GlossaryItemIndexCardProps {
     item: GlossaryItem;
@@ -16,7 +18,13 @@ const GlossaryItemIndexCard = (props: GlossaryItemIndexCardProps) => {
     const { item } = props;
     const getImage = async (key: string): Promise<string> => {
         try {
-            return Storage.get(key);
+            const S3imageUrl = await Storage.get(key);
+            const imageReq = new Request(S3imageUrl);
+            const [res, _imageNotFound] = await handlePromise(fetch(imageReq));
+            if (res && res.status === 200) {
+                return S3imageUrl;
+            }
+            return '';
         } catch (error: any) {
             console.log(error.message);
             return '';
@@ -33,14 +41,18 @@ const GlossaryItemIndexCard = (props: GlossaryItemIndexCardProps) => {
     }, [item.images]);
 
     return (
-        <Card>
-            <CardHeader title={item.name} />
-            {item.images.length > 0 && imageURL && (
-                <CardMedia component="img" image={imageURL} />
-            )}
-            <CardContent>
-                {item.description.substring(0, 100) + '...'}
-            </CardContent>
+        <Card sx={{height:"100%"}}>
+            <CardActionArea href={`/glossary/item/${item.id}`}>
+                <CardHeader title={item.name} />
+                {item.images.length > 0 && imageURL && (
+                    <CardMedia component="img" image={imageURL} />
+                )}
+                <CardContent>
+                    {item.description.length > 100
+                        ? item.description.substring(0, 100) + '...'
+                        : item.description}
+                </CardContent>
+            </CardActionArea>
             <CardActions sx={{ justifyContent: 'center' }}>
                 <MuiNextLink href={`/glossary/item/${item.id}`}>
                     View Item

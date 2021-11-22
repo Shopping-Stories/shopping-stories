@@ -21,6 +21,19 @@ export default class TobaccoMarkService {
         selectedFields: Object,
         search?: string,
     ): Promise<TobaccoMark[]> {
+        if (!!search) {
+            return TobaccoMarkModel.find(getMongoTextSearchObject(search), {
+                ...selectedFields,
+                score: { $meta: 'textScore' },
+            })
+                .skip(skip)
+                .limit(limit)
+                .sort({
+                    score: { $meta: 'textScore' },
+                })
+                .lean<TobaccoMark[]>()
+                .exec();
+        }
         return TobaccoMarkModel.find(
             getMongoTextSearchObject(search),
             selectedFields,

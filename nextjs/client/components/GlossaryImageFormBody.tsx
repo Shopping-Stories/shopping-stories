@@ -42,8 +42,7 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
 
     const onImageChange = (input: { files: File | File[] }) => {
         if (!isArray(input.files)) {
-            const prevImage: string =
-                formikForm.values.images[index].imageKey;
+            const prevImage: string = formikForm.values.images[index].imageKey;
             props.removeImage(prevImage);
 
             const image = input.files;
@@ -64,10 +63,12 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
     useEffect(() => {
         const getImage = async () => {
             if (formikForm.values.images[index].imageKey) {
-                const [res, err] = await handlePromise(Storage.list('images/'));
+                const [fileList, listErr] = await handlePromise(
+                    Storage.list('images/'),
+                );
 
-                if (!err && res) {
-                    const { files: images } = processStorageList(res);
+                if (!listErr && fileList) {
+                    const { files: images } = processStorageList(fileList);
                     const imageKeys: string[] = images.map(
                         (image: any) => image.key.split('/')[1],
                     );
@@ -81,7 +82,13 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
                             const S3image = await Storage.get(
                                 `images/${imageKey}`,
                             );
-                            setImage(S3image);
+                            const imageReq = new Request(S3image);
+                            const [res, _imageNotFound] = await handlePromise(
+                                fetch(imageReq),
+                            );
+                            if (res && res.status === 200) {
+                                setImage(S3image);
+                            }
                         } catch (error: any) {
                             console.error(error);
                         }
@@ -143,7 +150,6 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
                         formikForm={formikForm}
                         placeholder="Material information (if applicable)"
                     />
-
 
                     <TextAreaWithFormikValidation
                         label="Dimensions"

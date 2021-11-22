@@ -1,4 +1,6 @@
 import AuthSkeleton from '@components/AuthSkeleton';
+import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import TextFieldWithHide from '@components/TextFieldWithHide';
 import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Container from '@mui/material/Container';
@@ -7,7 +9,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Snackbar from '@mui/material/Snackbar';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Auth } from 'aws-amplify';
 import { useFormik } from 'formik';
@@ -148,7 +149,9 @@ const SignInPage: NextPage = () => {
     });
 
     useEffect(() => {
-        submitPassChangeForm.setFieldValue('username', user);
+        if (user) {
+            submitPassChangeForm.setFieldValue('username', user);
+        }
     }, [user]);
 
     const closeSnackBarButton = (
@@ -169,22 +172,12 @@ const SignInPage: NextPage = () => {
             <FormGroup>
                 <Typography variant="h2">Forgot Password</Typography>
                 {/* <FormHelperText>Please enter your username</FormHelperText> */}
-                <TextField
+                <TextFieldWithFormikValidation
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="username"
                     label="Username"
-                    value={initiatePassChangeForm.values.username}
-                    onChange={initiatePassChangeForm.handleChange}
-                    error={
-                        initiatePassChangeForm.touched.username &&
-                        Boolean(initiatePassChangeForm.errors.username)
-                    }
-                    helperText={
-                        initiatePassChangeForm.touched.username &&
-                        initiatePassChangeForm.errors.username
-                    }
+                    fieldName="username"
+                    formikForm={initiatePassChangeForm}
                 />
                 <FormHelperText error={!!error}>{error}</FormHelperText>
                 <Snackbar
@@ -217,76 +210,33 @@ const SignInPage: NextPage = () => {
         <AuthSkeleton formikForm={submitPassChangeForm}>
             <FormGroup>
                 <Typography variant="h2">Change password</Typography>
-                <TextField
+                <TextFieldWithFormikValidation
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="username"
                     label="Username"
-                    value={submitPassChangeForm.values.username}
-                    onChange={submitPassChangeForm.handleChange}
-                    error={
-                        submitPassChangeForm.touched.username &&
-                        Boolean(submitPassChangeForm.errors.username)
-                    }
-                    helperText={
-                        submitPassChangeForm.touched.username &&
-                        submitPassChangeForm.errors.username
-                    }
+                    fieldName="username"
+                    formikForm={submitPassChangeForm}
                 />
-                <TextField
+                <TextFieldWithHide
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="password"
                     label="New Password"
-                    type="password"
-                    value={submitPassChangeForm.values.password}
-                    onChange={submitPassChangeForm.handleChange}
-                    error={
-                        submitPassChangeForm.touched.password &&
-                        Boolean(submitPassChangeForm.errors.password)
-                    }
-                    helperText={
-                        submitPassChangeForm.touched.password &&
-                        submitPassChangeForm.errors.password
-                    }
+                    formikForm={submitPassChangeForm}
+                    fieldName="password"
                 />
-                <TextField
+                <TextFieldWithHide
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="confirmPassword"
                     label="Confirm New Password"
-                    type="password"
-                    value={submitPassChangeForm.values.confirmPassword}
-                    onChange={submitPassChangeForm.handleChange}
-                    error={
-                        submitPassChangeForm.touched.confirmPassword &&
-                        Boolean(submitPassChangeForm.errors.confirmPassword)
-                    }
-                    helperText={
-                        submitPassChangeForm.touched.confirmPassword &&
-                        submitPassChangeForm.errors.confirmPassword
-                    }
+                    formikForm={submitPassChangeForm}
+                    fieldName="confirmPassword"
                 />
-                <TextField
+                <TextFieldWithFormikValidation
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="code"
-                    label="Confirmation code"
-                    type="text"
-                    value={submitPassChangeForm.values.code}
-                    onChange={submitPassChangeForm.handleChange}
-                    error={
-                        submitPassChangeForm.touched.code &&
-                        Boolean(submitPassChangeForm.errors.code)
-                    }
-                    helperText={
-                        submitPassChangeForm.touched.code &&
-                        submitPassChangeForm.errors.code
-                    }
+                    label="Confirm Code"
+                    fieldName="code"
+                    formikForm={submitPassChangeForm}
                 />
                 <FormHelperText error={!!error}>{error}</FormHelperText>
                 <Snackbar

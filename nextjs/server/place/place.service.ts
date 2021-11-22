@@ -19,7 +19,24 @@ export default class PlaceService {
         selectedFields: Object,
         search?: string,
     ): Promise<Place[]> {
+        if (!!search) {
+            return PlaceModel.find(getMongoTextSearchObject(search), {
+                ...selectedFields,
+                score: { $meta: 'textScore' },
+            })
+                .skip(skip)
+                .limit(limit)
+                .sort({
+                    score: { $meta: 'textScore' },
+                    location: 'asc',
+                    alias: 'asc',
+                    _id: 'asc',
+                })
+                .lean<Place[]>()
+                .exec();
+        }
         return PlaceModel.find(getMongoTextSearchObject(search), selectedFields)
+            .sort({ location: 'asc', alias: 'asc', _id: 'asc' })
             .skip(skip)
             .limit(limit)
             .lean<Place[]>()

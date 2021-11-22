@@ -9,6 +9,7 @@ import TextareaAutosize, {
 interface TextAreaFormikProps {
     formikForm: any;
     fieldName: string;
+    name: string;
     label: string;
     formControlLabelProps?: Omit<FormControlLabelProps, 'label' | 'control'>;
 }
@@ -16,7 +17,7 @@ interface TextAreaFormikProps {
 type TextAreaProps = TextareaAutosizeProps & TextAreaFormikProps;
 
 const TextAreaWithFormikValidation = (props: TextAreaProps) => {
-    const { formikForm, fieldName, label, ...textAreaProps } = props;
+    const { formikForm, fieldName, name, label, ...textAreaProps } = props;
 
     return (
         <>
@@ -29,6 +30,7 @@ const TextAreaWithFormikValidation = (props: TextAreaProps) => {
                             width: '100%',
                             maxWidth: '100%',
                         }}
+                        name={name}
                         minRows={5}
                         {...textAreaProps}
                         value={formikForm.values[fieldName]}

@@ -19,10 +19,27 @@ export default class CategoryService {
         selectedFields: Object,
         search?: string,
     ): Promise<Category[]> {
+        if (!!search) {
+            return CategoryModel.find(getMongoTextSearchObject(search), {
+                ...selectedFields,
+                score: { $meta: 'textScore' },
+            })
+                .skip(skip)
+                .limit(limit)
+                .sort({
+                    score: { $meta: 'textScore' },
+                    item: 'asc',
+                    category: 'asc',
+                    _id: 'asc',
+                })
+                .lean<Category[]>()
+                .exec();
+        }
         return CategoryModel.find(
             getMongoTextSearchObject(search),
             selectedFields,
         )
+            .sort({ item: 'asc', category: 'asc', _id: 'asc' })
             .skip(skip)
             .limit(limit)
             .lean<Category[]>()

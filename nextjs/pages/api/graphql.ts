@@ -7,7 +7,6 @@ import { JWTAuthChecker } from '../../server/middleware/auth.middleware';
 import CatResolver from '../../server/cat/cat.resolver';
 import EntryResolver from '../../server/entry/entry.resolver';
 import HelloResolver from '../../server/hello.resolver';
-import { UserResolver } from '../../server/user/user.resolver';
 import { DocToObject } from '../../server/middleware/misc.middleware';
 import AdminResolver from '../../server/admin/admin.resolver';
 import { GraphQLJSONObject } from 'graphql-type-json';
@@ -19,6 +18,7 @@ import PlaceResolver from 'server/place/place.resolver';
 import PersonResolver from 'server/person/person.resolver';
 import TobaccoMarkResolver from 'server/tobaccoMark/tobaccoMark.resolver';
 import CategoryResolver from 'server/category/category.resolver';
+import DocumentResolver from 'server/document/document.resolver';
 
 export interface MyContext {
     req: NextApiRequest;
@@ -34,7 +34,7 @@ const getApolloServerHandler = async () => {
                 HelloResolver,
                 CatResolver,
                 EntryResolver,
-                UserResolver,
+                DocumentResolver,
                 AdminResolver,
                 SpreadsheetResolver,
                 GlossaryItemResolver,

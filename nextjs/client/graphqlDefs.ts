@@ -1,4 +1,4 @@
-export const entryFields = `
+export const EntryFields = `
 fragment items on MentionedItemsObject {
 	quantity
   qualifier
@@ -124,7 +124,7 @@ fragment entryFields on Entry {
 }
 `;
 
-const glossaryItemFields = `
+const GlossaryItemFields = `
 fragment glossaryItemFields on  GlossaryItem {
     id
     name
@@ -151,48 +151,94 @@ fragment glossaryItemFields on  GlossaryItem {
 `;
 
 
-export const createGlossaryItemDef = `
+export const CreateGlossaryItemDef = `
 mutation($item: CreateGlossaryItemInput!) {
   createGlossaryItem(newGlossaryItem: $item) {
     ...glossaryItemFields
   }
 }
-${glossaryItemFields}
+${GlossaryItemFields}
 `;
 
-export const searchGlossaryItemsDef = `
+export const FetchGlossaryItemsDef = `
 query glossaryItemsQuery($search: String, $options: FindAllLimitAndSkip) {
   rows: findGlossaryItems(search: $search, options: $options) {
     ...glossaryItemFields
   }
   count: countGlossaryItems(search: $search)
 }
-${glossaryItemFields}
+${GlossaryItemFields}
 `;
 
-export const updateGlossaryItemDef = `
+export const UpdateGlossaryItemDef = `
 mutation($id: String!, $updates: UpdateGlossaryItemInput!) {
   updateGlossaryItem(id: $id, updatedFields: $updates) {
     ...glossaryItemFields
   }
 }
-${glossaryItemFields}
+${GlossaryItemFields}
 `;
 
-export const deleteGlossaryItemDef = `
+export const DeleteGlossaryItemDef = `
 mutation deleteItem($id: String!) {
   deletedItem: deleteGlossaryItem(id: $id) {
     ...glossaryItemFields
   }
 }
-${glossaryItemFields}
+${GlossaryItemFields}
 `;
 
-export const findGlossaryItemDef = `
+export const FetchGlossaryItemDef = `
 query($id: String!) {
   item: findGlossaryItem(id: $id) {
     ...glossaryItemFields
   }
 }
-${glossaryItemFields}
+${GlossaryItemFields}
 `
+
+export const DocumentFields = `
+fragment documentFields on DocumentInfo {
+  id
+  name
+  description
+  fileKey
+}
+`;
+
+export const CreateDocumentDef = `
+mutation createDocument($doc: CreateDocumentInput!) {
+  createDocument(newDocument: $doc) {
+    ...documentFields
+  }
+}
+${DocumentFields}
+`;
+
+export const FetchDocumentsDef = `
+query fetchDocuments($search: String, $options: FindAllLimitAndSkip) {
+  rows: findDocuments(search: $search, options: $options) {
+  	...documentFields
+  }
+  count: countDocuments(search: $search)
+}
+${DocumentFields}
+`;
+
+export const UpdateDocumentDef = `
+mutation updateDocument($id: String!, $updates: UpdateDocumentInput!) {
+  updateDocument(id: $id, updatedFields: $updates) {
+    ...documentFields
+  }
+}
+${DocumentFields}
+`;
+
+export const DeleteDocumentDef = `
+mutation deleteDocument($id: String!) {
+  deleteDocument(id: $id) {
+    ...documentFields
+  }
+}
+${DocumentFields}
+`;

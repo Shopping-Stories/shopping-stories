@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
 import { GlossaryItem, glossaryItemSchema } from 'client/formikSchemas';
-import { findGlossaryItemDef, updateGlossaryItemDef } from 'client/graphqlDefs';
+import { FetchGlossaryItemDef, UpdateGlossaryItemDef } from 'client/graphqlDefs';
 import { cloneWithoutTypename } from 'client/util';
 import { useFormik } from 'formik';
 import { merge } from 'lodash';
@@ -24,12 +24,12 @@ const UpdateGlossaryItem: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
     const [findGlossaryItemResult, _findGlossaryItem] = useQuery<GlossaryItemQueryResult>({
-        query: findGlossaryItemDef,
+        query: FetchGlossaryItemDef,
         variables: { id },
     });
     const glossaryItem = findGlossaryItemResult?.data?.item;
     const [_updateGlossaryItemResult, updateGlossaryItem] = useMutation(
-        updateGlossaryItemDef,
+        UpdateGlossaryItemDef,
     );
 
     const [imageFiles, setImageFiles] = useState<File[]>([]);

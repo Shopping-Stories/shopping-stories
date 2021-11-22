@@ -1,4 +1,8 @@
-import { filterObject, getMongoTextSearchObject, optimizedMongoCount } from '../config/utils';
+import {
+    filterObject,
+    getMongoTextSearchObject,
+    optimizedMongoCount,
+} from '../config/utils';
 import { GlossaryItem, GlossaryItemModel } from './glossaryItem.schema';
 import { CreateGlossaryItemInput } from './input/createGlossaryItem.input';
 import { UpdateGlossaryItemInput } from './input/updateGlossaryItem.input';
@@ -24,11 +28,26 @@ export default class GlossaryItemService {
             })
                 .skip(skip)
                 .limit(limit)
-                .sort({ score: { $meta: 'textScore' } })
+                .sort({
+                    score: { $meta: 'textScore' },
+                    name: 'asc',
+                    category: 'asc',
+                    subcategory: 'asc',
+                    id: 'asc',
+                })
                 .lean<GlossaryItem[]>()
                 .exec();
         }
-        return GlossaryItemModel.find(getMongoTextSearchObject(search), selectedFields)
+        return GlossaryItemModel.find(
+            getMongoTextSearchObject(search),
+            selectedFields,
+        )
+            .sort({
+                name: 'asc',
+                category: 'asc',
+                subcategory: 'asc',
+                id: 'asc',
+            })
             .skip(skip)
             .limit(limit)
             .lean<GlossaryItem[]>()

@@ -16,8 +16,16 @@ interface GlossaryItemImageCardProps {
 const GlossaryItemImageCard = (props: GlossaryItemImageCardProps) => {
     const { imageUrl, item, index } = props;
     const itemData = item.images[index];
-    const { name, caption, collectionCitation, material, date, url, license, dimensions } =
-        itemData;
+    const {
+        name,
+        caption,
+        collectionCitation,
+        material,
+        date,
+        url,
+        license,
+        dimensions,
+    } = itemData;
 
     const data = {
         Caption: caption,
@@ -42,12 +50,8 @@ const GlossaryItemImageCard = (props: GlossaryItemImageCardProps) => {
                 <br />
                 {Object.entries(cleanedObject).map(
                     ([key, value]: string[], i: number) => (
-                        <div>
-                            <InfoSection
-                                key={i}
-                                label={key}
-                                body={value}
-                            />
+                        <div key={i}>
+                            <InfoSection label={key} body={value} />
                             <br />
                         </div>
                     ),

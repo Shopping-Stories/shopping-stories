@@ -145,7 +145,6 @@ const PlacePaginationTable = (props: any) => {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25, 50]}
-                            colSpan={3}
                             count={count}
                             rowsPerPage={rowsPerPage}
                             page={page}

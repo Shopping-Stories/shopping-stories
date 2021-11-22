@@ -1,4 +1,5 @@
-import Typography from "@mui/material/Typography";
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 interface InfoProps {
     label: string;
@@ -8,8 +9,12 @@ interface InfoProps {
 const InfoSection = (props: InfoProps) => {
     return (
         <div>
-            <b>{props.label}</b>
-            <Typography sx={{whiteSpace: 'pre-line'}} variant="body2">{props.body}</Typography>
+            <Typography component="div">
+                <Box sx={{ fontWeight: 'bold' }}>{props.label}</Box>
+            </Typography>
+            <Typography sx={{ whiteSpace: 'pre-line' }} variant="body2">
+                {props.body}
+            </Typography>
         </div>
     );
 };

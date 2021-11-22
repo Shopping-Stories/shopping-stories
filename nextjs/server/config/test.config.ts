@@ -8,7 +8,6 @@ import EntryResolver from '../entry/entry.resolver';
 import HelloResolver from '../hello.resolver';
 import { JWTAuthChecker } from '../middleware/auth.middleware';
 import { DocToObject } from '../middleware/misc.middleware';
-import { UserResolver } from '../user/user.resolver';
 
 const getGraphQLServer = async () => {
     const schema = await buildSchema({
@@ -16,7 +15,6 @@ const getGraphQLServer = async () => {
             HelloResolver,
             CatResolver,
             EntryResolver,
-            UserResolver,
             AdminResolver,
         ],
         scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],

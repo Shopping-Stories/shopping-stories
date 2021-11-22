@@ -8,7 +8,7 @@ import {
     UseMiddleware,
 } from 'type-graphql';
 import { getMongooseFromFields } from '../config/utils';
-import { FindAllLimitAndSkip } from '../glossaryItem/input/findAllArgs.input';
+import { FindAllLimitAndSkip } from '../findAllArgs.input';
 import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 import { CreatePersonInput } from './input/createPerson.input';
 import { UpdatePersonInput } from './input/updatePerson.input';

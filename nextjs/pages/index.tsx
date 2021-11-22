@@ -1,7 +1,8 @@
 import Header from '@components/Header';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { Fragment, useState } from 'react';
@@ -25,47 +26,42 @@ const Home: NextPage = () => {
                 </Head>
 
                 <Header />
-
                 <Grid
                     container
                     spacing={0}
                     direction="column"
                     alignItems="center"
                     justifyContent="center"
-                    style={{ minHeight: '100vh' }}
+                    margin="auto"
                 >
-                    <Box
+                    <Grid
+                        item
+                        md={4}
+                        sm={8}
+                        xs={10}
+                        component={Paper}
                         sx={{
-                            borderRadius: 2,
-                            boxShadow: 3,
-                            width: '60%',
-                            backgroundColor: 'primary.main',
-                            textAlign: 'center',
-                            mx: 'auto',
+                            backgroundColor: `var(--secondary-bg-translucent)`,
                             margin: '3rem',
                             padding: '1rem',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // '&:hover': {
-                            // backgroundColor: 'primary.main',
-                            // opacity: [0.9, 0.8, 0.7],
-                            // },
                         }}
                     >
-                        <h4>
+                        <Typography align="center" variant="h2" component="div">
                             Welcome to
-                        </h4>
-                        <h3>
+                        </Typography>
+                        <Typography align="center" variant="h1" component="div">
                             Shopping Stories
-                        </h3>
-                    </Box>
-                    <Switch
-                        checked={toggleOn}
-                        onChange={() => {
-                            setToggle(!toggleOn);
-                            toggleColorMode();
-                        }}
-                    />
+                        </Typography>
+                    </Grid>
                 </Grid>
+
+                <Switch
+                    checked={toggleOn}
+                    onChange={() => {
+                        setToggle(!toggleOn);
+                        toggleColorMode();
+                    }}
+                />
             </div>
         </Fragment>
     );

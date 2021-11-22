@@ -11,7 +11,7 @@ import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 import { GlossaryItem } from './glossaryItem.schema';
 import GlossaryItemService from './glossaryItem.service';
 import { CreateGlossaryItemInput } from './input/createGlossaryItem.input';
-import { FindAllLimitAndSkip } from './input/findAllArgs.input';
+import { FindAllLimitAndSkip } from '../findAllArgs.input';
 import { UpdateGlossaryItemInput } from './input/updateGlossaryItem.input';
 import { getMongooseFromFields } from 'server/config/utils';
 

@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
 import { GlossaryItem } from 'client/formikSchemas';
-import { findGlossaryItemDef } from 'client/graphqlDefs';
+import { FetchGlossaryItemDef } from 'client/graphqlDefs';
 import { GlossaryItemQueryResult } from 'client/urqlConfig';
 import { handlePromise, processStorageList } from 'client/util';
 import { pickBy } from 'lodash';
@@ -22,7 +22,7 @@ const ItemGlossaryPage: NextPage = () => {
     const id = router.query.id;
     const [findGlossaryItemResult, _findGlossaryItem] =
         useQuery<GlossaryItemQueryResult>({
-            query: findGlossaryItemDef,
+            query: FetchGlossaryItemDef,
             variables: { id },
         });
 
@@ -52,10 +52,15 @@ const ItemGlossaryPage: NextPage = () => {
 
                         if (imageKey) {
                             try {
-                                const S3image = await Storage.get(
+                                const S3imageUrl = await Storage.get(
                                     `images/${imageKey}`,
                                 );
-                                imagesFromS3.push(S3image);
+                                const imageReq = new Request(S3imageUrl);
+                                const [res, _imageNotFound] =
+                                    await handlePromise(fetch(imageReq));
+                                if (res && res.status === 200) {
+                                    imagesFromS3.push(S3imageUrl);
+                                }
                             } catch (error: any) {
                                 console.error(error);
                             }
@@ -121,6 +126,7 @@ const ItemGlossaryPage: NextPage = () => {
                                     findGlossaryItemResult.data ? (
                                         <GlossaryItemImageCard
                                             index={i}
+                                            key={i}
                                             imageUrl={image}
                                             item={
                                                 findGlossaryItemResult.data
@@ -135,9 +141,8 @@ const ItemGlossaryPage: NextPage = () => {
                             <Stack spacing={2}>
                                 {Object.entries(cleanedObject).map(
                                     ([key, value]: string[], i: number) => (
-                                        <div>
+                                        <div key={i}>
                                             <InfoSection
-                                                key={i}
                                                 label={key}
                                                 body={value}
                                             />

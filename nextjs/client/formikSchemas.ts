@@ -50,3 +50,37 @@ export const glossaryItemSchema = yup.object({
         }),
     ),
 });
+
+export interface SearchType {
+    search: string;
+}
+
+export const searchSchema = yup.object({
+    search: yup.string(),
+});
+
+export interface DocumentInfo {
+    id: string;
+    name: string;
+    description: string;
+    fileKey: string;
+}
+
+export type CreateDocument = Omit<DocumentInfo, 'id'>;
+
+export const CreateDocumentSchema = yup.object({
+    name: yup.string().required('A name is required'),
+    description: yup.string().required('A description is required'),
+    fileKey: yup.string().required('A file key is required'),
+});
+
+export const UpdateDocumentSchema = yup.object({
+    name: yup.string().required('A name is required'),
+    description: yup.string().required('A description is required'),
+    fileKey: yup.string().required('A file key is required'),
+});
+
+export interface OptionsType {
+    limit: number | null;
+    skip: number | null;
+}

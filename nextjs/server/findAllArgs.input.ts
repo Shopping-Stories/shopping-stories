@@ -7,7 +7,7 @@ export class FindAllLimitAndSkip {
     @Field({ description: 'Offset of items to skip', defaultValue: 0 })
     skip: number;
 
-    @Max(50)
+    @Max(100)
     @Min(1)
     @Field({
         description:

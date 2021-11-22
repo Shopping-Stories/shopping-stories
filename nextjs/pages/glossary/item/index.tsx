@@ -6,8 +6,8 @@ import Container from '@mui/material/Container';
 import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { GlossaryItem } from 'client/formikSchemas';
-import { searchGlossaryItemsDef } from 'client/graphqlDefs';
+import { GlossaryItem, OptionsType } from 'client/formikSchemas';
+import { FetchGlossaryItemsDef } from 'client/graphqlDefs';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -36,12 +36,7 @@ const ItemGlossaryIndexPage: NextPage = () => {
     });
 
     const [page, setPage] = useState(0);
-    const [rowsPerPage, _setRowsPerPage] = useState(5);
-
-    interface OptionsType {
-        limit: number | null;
-        skip: number | null;
-    }
+    const rowsPerPage = 10;
 
     const [options, setOptions] = useState<OptionsType>({
         limit: rowsPerPage,
@@ -53,8 +48,8 @@ const ItemGlossaryIndexPage: NextPage = () => {
         count: number;
     }
 
-    const [{ data , fetching }, _executeQuery] = useQuery<GlossaryItemsQueryResult>({
-        query: searchGlossaryItemsDef,
+    const [{ data, fetching }] = useQuery<GlossaryItemsQueryResult>({
+        query: FetchGlossaryItemsDef,
         variables: { options, search },
     });
 
@@ -83,7 +78,7 @@ const ItemGlossaryIndexPage: NextPage = () => {
             query: {
                 search: encodeURI(search),
                 page: encodeURI(page + 1 + ''),
-             },
+            },
         });
     };
 
@@ -93,7 +88,7 @@ const ItemGlossaryIndexPage: NextPage = () => {
         } else {
             setLoading(false);
         }
-    }, [fetching])
+    }, [fetching]);
 
     const fetchItemsPage = (newPage: number) => {
         setOptions((prevOpts: any) => ({
@@ -151,8 +146,8 @@ const ItemGlossaryIndexPage: NextPage = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Grid container spacing={2}>
-                            {rows.map((row, index: number) => (
-                                <Grid key={index} item xs={12} sm={6} md={4}>
+                            {rows.map((row, index) => (
+                                <Grid key={index} item xs={12} sm={6} md={3}>
                                     <GlossaryItemIndexCard item={row} />
                                 </Grid>
                             ))}
@@ -173,13 +168,13 @@ const ItemGlossaryIndexPage: NextPage = () => {
                                 </Grid>
                                 <Grid item xs={4}>
                                     Page {page + 1} of{' '}
-                                    {Math.floor(count / rowsPerPage) + 1}
+                                    {Math.ceil(count / rowsPerPage)}
                                 </Grid>
                                 <Grid item xs={4}>
                                     <LoadingButton
                                         disabled={
                                             page ===
-                                            Math.floor(count / rowsPerPage)
+                                            Math.ceil(count / rowsPerPage) - 1
                                         }
                                         variant="contained"
                                         loading={loading}

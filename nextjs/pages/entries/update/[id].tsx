@@ -17,7 +17,7 @@ import Paper from '@mui/material/Paper';
 import TextareaAutosize from '@mui/material/TextareaAutosize';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { entryFields } from 'client/graphqlDefs';
+import { EntryFields } from 'client/graphqlDefs';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -31,7 +31,7 @@ query entryQuery($id: String!) {
   	...entryFields
   }
 }
-${entryFields}
+${EntryFields}
 `;
 
 const updateEntryDef = `
@@ -40,7 +40,7 @@ mutation updateEntry($id: String!, $updates: UpdateEntryInput!) {
     ...entryFields
   }
 }
-${entryFields}
+${EntryFields}
 `;
 
 const poundShillingPence = yup.object({

@@ -15,10 +15,11 @@ interface FileInputProps {
     onChange?: (input: { files: File | File[] }) => any;
     icon?: boolean;
     children?: React.ReactNode;
+    initialFilename?: string;
 }
 
 const FileInput = (props: FileInputProps) => {
-    const { label, onChange, accept, multiple = false, icon = false } = props;
+    const { label, onChange, accept, multiple = false, icon = false, initialFilename } = props;
     const [fileOrFiles, setSelectedFiles] = useState<File | File[]>();
 
     const handleChange = (event: { target: HTMLInputElement }) => {
@@ -47,12 +48,20 @@ const FileInput = (props: FileInputProps) => {
                     {label}
                 </Button>
             )}
-            {fileOrFiles && !multiple && (
+            {fileOrFiles && !multiple ?  (
                 <>
                     <br />
                     <Typography>
                         Selected:{' '}
-                        {fileOrFiles instanceof File && fileOrFiles.name}
+                        {fileOrFiles instanceof File && fileOrFiles.name || initialFilename}
+                    </Typography>
+                </>
+            ) : (
+                <>
+                    <br />
+                    <Typography>
+                        Selected:{' '}
+                        {initialFilename || "none"}
                     </Typography>
                 </>
             )}

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { getMongooseFromFields } from 'server/config/utils';
-import { FindAllLimitAndSkip } from 'server/glossaryItem/input/findAllArgs.input';
+import { FindAllLimitAndSkip } from 'server/findAllArgs.input';
 import { advancedSearch } from 'server/spreadsheet/spreadsheet.service';
 import {
     Arg,

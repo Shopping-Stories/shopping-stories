@@ -34,16 +34,18 @@ const PersonTableRow = (props: any) => {
                     <Button
                         variant="contained"
                         onClick={() => onEditClick(row.id)}
+                        startIcon={<ModeEditIcon />}
                     >
-                        Edit <ModeEditIcon />
+                        Edit
                     </Button>
                 </TableCell>
                 <TableCell>
                     <Button
                         variant="contained"
                         onClick={() => onDeleteClick(row)}
+                        startIcon={<DeleteIcon />}
                     >
-                        Delete <DeleteIcon />
+                        Delete
                     </Button>
                 </TableCell>
                 {rowValues.map((value: any, i: number) => (

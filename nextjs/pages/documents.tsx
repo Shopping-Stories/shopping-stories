@@ -1,137 +1,244 @@
 import Header from '@components/Header';
-import LinearProgressWithLabel from '@components/LinearProgressWithLabel';
-import useAuth from '@hooks/useAuth.hook';
-import Box from '@mui/material/Box';
+import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import LoadingButton from '@mui/lab/LoadingButton';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Container from '@mui/material/Container';
+import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
 import { Storage } from 'aws-amplify';
-import { handlePromise } from '../client/util';
+import {
+    DocumentInfo,
+    OptionsType,
+    searchSchema,
+    SearchType
+} from 'client/formikSchemas';
+import { FetchDocumentsDef } from 'client/graphqlDefs';
+import { handlePromise } from 'client/util';
+import { useFormik } from 'formik';
 import { NextPage } from 'next';
-import Button from '@mui/material/Button';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import backgrounds from 'styles/backgrounds.module.css';
+import { useQuery } from 'urql';
 
-function processStorageList(result: any[]) {
-    let files: Object[] = [];
-    let folders = new Set<Object>();
-    result.forEach((res: any) => {
-        if (res.size) {
-            files.push(res);
-            // sometimes files declare a folder with a / within then
-            let possibleFolder = res.key.split('/').slice(0, -1).join('/');
-            if (possibleFolder) folders.add(possibleFolder);
-        } else {
-            folders.add(res.key);
+interface DocumentCardProps {
+    document: DocumentInfo;
+}
+
+const getFile = async (fileKey: string) => {
+    if (!fileKey || !fileKey.trim()) return null;
+    try {
+        const S3FileUrl = await Storage.get(`documents/${fileKey}`);
+        const fileReq = new Request(S3FileUrl);
+        const [res, _fileNotFound] = await handlePromise(fetch(fileReq));
+        if (res && res.status === 200) {
+            return S3FileUrl;
         }
-    });
-    return { files, folders };
+    } catch (error: any) {
+        console.error(error.message);
+    }
+    return null;
+};
+
+const DocumentCard = (props: DocumentCardProps) => {
+    const { document } = props;
+
+    const [fileUrl, setFileUrl] = useState<string>('');
+
+    useEffect(() => {
+        getFile(document.fileKey).then((url) => url && setFileUrl(url));
+    }, []);
+
+    return (
+        <Card sx={{ height: '100%' }}>
+            <CardHeader title={document.name} />
+            <CardContent>{document.description}</CardContent>
+            {fileUrl && (
+                <CardActions>
+                    <Link href={fileUrl}>Download {document.fileKey}</Link>
+                </CardActions>
+            )}
+        </Card>
+    );
+};
+
+interface QueryDocuments {
+    rows: DocumentInfo[];
+    count: number;
 }
 
 const DocumentsPage: NextPage = () => {
-    const { loading } = useAuth('/');
     const router = useRouter();
-    const [files, setFiles] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [search, setSearch] = useState<string>('');
+    const [page, setPage] = useState(0);
 
-    const getFile = async (fileKey: string) => {
-        const [res, err] = await handlePromise(Storage.get(fileKey));
-        if (err) {
-            console.log(err);
+    const rowsPerPage = 10;
+
+    const [options, setOptions] = useState<OptionsType>({
+        limit: rowsPerPage,
+        skip: null,
+    });
+
+    const [{ data, fetching }] = useQuery<QueryDocuments>({
+        query: FetchDocumentsDef,
+        variables: { options, search },
+    });
+
+    useEffect(() => {
+        setPage(0);
+        updateQuery(0);
+    }, [search]);
+
+
+    useEffect(() => {
+        if (!router.query.page) {
+            return;
         }
-        res && router.push(res);
-    };
-
-    const submit = () => {
-        Storage.put('transcripts/test.txt', 'Hello')
-            .then((result) => console.log(result))
-            .catch((err) => console.log(err));
-    };
-
-    const onChange = async (e: any) => {
-        const file = e.target.files[0];
-        try {
-            await Storage.put(
-                `transcripts/${file.name}`,
-                file,
-                //     , {
-                // 	contentType: 'image/png', // contentType is optional
-                // }
-            );
-        } catch (error) {
-            console.log('Error uploading file: ', error);
+        const pageNum = parseInt(router.query.page as string, 10);
+        if (Number.isInteger(pageNum) && pageNum > 0) {
+            setPage(pageNum - 1);
+            fetchDocumentsPage(pageNum - 1);
         }
-    };
+    }, [router.query.page]);
 
-    const listFiles = async () => {
-        // for listing ALL files without prefix, pass '' instead
-        const [res, err] = await handlePromise(Storage.list('transcripts/'));
-        if (err) {
-            // TODO: trigger error pop up
-            console.error(err.message);
-        }
-        res && setFiles(processStorageList(res).files);
+    const formik = useFormik<SearchType>({
+        initialValues: {
+            search: '',
+        },
+        validationSchema: searchSchema,
+        onSubmit: (values: any) => {
+            setSearch(values.search);
+        },
+    });
+
+    const rows = data?.rows ?? [];
+    const count = data?.count ?? 0;
+
+    const updateQuery = (page: number) => {
+        router.push({
+            pathname: router.pathname,
+            query: {
+                search: encodeURI(search),
+                page: encodeURI(page + 1 + ''),
+            },
+        });
     };
 
     useEffect(() => {
-        if (!loading) {
-            listFiles();
+        if (fetching) {
+            setLoading(true);
+        } else {
+            setLoading(false);
         }
-    }, [loading]);
+    }, [fetching]);
 
-    if (loading) {
-        return (
-            <Box sx={{ width: '100%' }}>
-                <LinearProgressWithLabel value="loading..." />
-            </Box>
-        );
-    }
+    const fetchDocumentsPage = (newPage: number) => {
+        setOptions((prevOpts: any) => ({
+            ...prevOpts,
+            limit: rowsPerPage,
+            skip: newPage * rowsPerPage,
+        }));
+        setPage(newPage);
+        updateQuery(newPage);
+    };
 
     return (
-        <>
+        <div className={backgrounds.colorBackground}>
             <Header />
-            <Grid
-                container
-                spacing={0}
-                direction="column"
-                alignItems="center"
-                justifyContent="center"
-                style={{ minHeight: '50vh' }}
-            >
-                <Box
-                    sx={{
-                        width: '60%',
-                        backgroundColor: 'primary.light',
-                        textAlign: 'center',
-                        // opacity: [0.9, 0.8, 0.7],
-                        // '&:hover': {
-                        // backgroundColor: 'primary.main',
-                        // opacity: [0.9, 0.8, 0.7],
-                        // },
-                    }}
-                >
-                    <Button
-                        aria-label="Button to List Transcript Files"
-                        onClick={listFiles}
+            <Grid container justifyContent="center">
+                <Grid item xs={12} sm={10} md={8} lg={6}>
+                    <Paper
+                        sx={{
+                            backgroundColor: `var(--secondary-bg)`,
+                            margin: '3rem',
+                            padding: '1rem',
+                        }}
                     >
-                        List Files
-                    </Button>
-                    <Button onClick={submit}>
-                        create Files in transcripts folder
-                    </Button>
-                    {files &&
-                        files.map((file: any) => (
-                            <Button
-                                key={file.key}
-                                onClick={() => getFile(file.key)}
-                            >
-                                <Typography>
-                                    {file.key.split('/')[1]}
-                                </Typography>
-                            </Button>
-                        ))}
-                    <input type="file" onChange={onChange} />
-                </Box>
+                        <FormGroup>
+                            <form onSubmit={formik.handleSubmit}>
+                                <TextFieldWithFormikValidation
+                                    fullWidth
+                                    name="search"
+                                    label="Search"
+                                    fieldName="search"
+                                    formikForm={formik}
+                                />
+                                <LoadingButton
+                                    variant="contained"
+                                    loading={loading}
+                                    fullWidth
+                                    type="submit"
+                                >
+                                    Search
+                                </LoadingButton>
+                            </form>
+                        </FormGroup>
+                    </Paper>
+                </Grid>
             </Grid>
-        </>
+            <Paper
+                sx={{
+                    backgroundColor: `var(--secondary-bg)`,
+                    margin: '3rem',
+                    padding: '1rem',
+                }}
+            >
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <Grid container spacing={2}>
+                            {rows.map((doc, i) => (
+                                <Grid item xs={12} sm={6} md={3} key={i}>
+                                    <DocumentCard document={doc} />
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Container maxWidth="xs">
+                            <Grid container spacing={2}>
+                                <Grid item xs={4}>
+                                    <LoadingButton
+                                        disabled={page < 1}
+                                        variant="contained"
+                                        loading={loading}
+                                        onClick={() =>
+                                            fetchDocumentsPage(page - 1)
+                                        }
+                                    >
+                                        Prev
+                                    </LoadingButton>
+                                </Grid>
+                                <Grid item xs={4}>
+                                    Page {page + 1} of{' '}
+                                    {Math.ceil(count / rowsPerPage)}
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <LoadingButton
+                                        disabled={
+                                            page ===
+                                            Math.ceil(count / rowsPerPage) - 1
+                                        }
+                                        variant="contained"
+                                        loading={loading}
+                                        onClick={() =>
+                                            fetchDocumentsPage(page + 1)
+                                        }
+                                    >
+                                        Next
+                                    </LoadingButton>
+                                </Grid>
+                            </Grid>
+                        </Container>
+                    </Grid>
+                </Grid>
+            </Paper>
+        </div>
     );
 };
 

@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
 import { glossaryItemSchema } from 'client/formikSchemas';
-import { createGlossaryItemDef } from 'client/graphqlDefs';
+import { CreateGlossaryItemDef } from 'client/graphqlDefs';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -20,7 +20,7 @@ import backgrounds from 'styles/backgrounds.module.css';
 const CreateGlossaryItemPage: NextPage = () => {
     const router = useRouter();
     const [_createEntryResult, createEntry] = useMutation(
-        createGlossaryItemDef,
+        CreateGlossaryItemDef,
     );
 
     const [imageFiles, setImageFiles] = useState<File[]>([]);

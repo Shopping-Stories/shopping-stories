@@ -20,7 +20,6 @@ type Query {
 
   # Return the greeting "hello"
   hello: String!
-  login(loginInput: LoginInput!): AccessToken
   getUser(username: String!): JSONObject
   listUsers(paginationToken: String, limit: Float): JSONObject
   listGroups(paginationToken: String, limit: Float): JSONObject
@@ -44,6 +43,9 @@ type Query {
   findCategories(search: String, options: FindAllLimitAndSkip): [Category!]
   countCategories(search: String): Float!
   findOneCategory(id: String!): Category
+  findDocuments(search: String, options: FindAllLimitAndSkip): [DocumentInfo!]
+  countDocuments(search: String): Float!
+  findDocument(id: String!): DocumentInfo
 }
 
 # Cat Object
@@ -377,15 +379,6 @@ input RegularEntrySearch {
   tobaccoMarkName: String
 }
 
-type AccessToken {
-  accessToken: String!
-}
-
-input LoginInput {
-  username: String!
-  password: String!
-}
-
 # Glossary Item Object
 type GlossaryItem {
   # Glossary Item ID
@@ -579,13 +572,27 @@ type Category {
   subcategory: String!
 }
 
+# Category Object
+type DocumentInfo {
+  # String of MongoDB ObjectId
+  id: ID!
+
+  # Name of document
+  name: String!
+
+  # Key of file in S3 bucket
+  fileKey: String!
+
+  # Description of document
+  description: String!
+}
+
 type Mutation {
   createCat(newCat: CreateCatDto!): Cat!
   createEntry(createEntryInput: CreateEntryInput!): Entry!
   createEntries(entries: [CreateEntryInput]!): [Entry!]!
   updateEntry(updatedFields: UpdateEntryInput!, id: String!): Entry
   deleteEntry(id: String!): Entry
-  register(registerInput: RegisterInput!): String
   signUserOut(username: String!): JSONObject
   confirmUserSignUp(username: String!): JSONObject
   disableUser(username: String!): JSONObject
@@ -611,6 +618,9 @@ type Mutation {
   createCategory(category: CreateCategoryInput!): Category!
   updateCategory(updatedFields: UpdateCategoryInput!, id: String!): Category
   deleteCategory(id: String!): Category
+  createDocument(newDocument: CreateDocumentInput!): DocumentInfo!
+  updateDocument(updatedFields: UpdateDocumentInput!, id: String!): DocumentInfo
+  deleteDocument(id: String!): DocumentInfo
 }
 
 input CreateCatDto {
@@ -1135,14 +1145,6 @@ input UpdateMoney {
   currency: UpdatePoundsShillingsPence
 }
 
-input RegisterInput {
-  email: String!
-  name: String!
-  password: String!
-  given_name: String!
-  family_name: String!
-}
-
 input CreateGlossaryItemInput {
   # Name of glossary item
   name: String!
@@ -1473,4 +1475,26 @@ input UpdateCategoryInput {
 
   # Subcategory?
   subcategory: String!
+}
+
+input CreateDocumentInput {
+  # Name of document
+  name: String!
+
+  # Key of file in S3 bucket
+  fileKey: String!
+
+  # Description of document
+  description: String!
+}
+
+input UpdateDocumentInput {
+  # Name of document
+  name: String
+
+  # Key of file in S3 bucket
+  fileKey: String
+
+  # Description of document
+  description: String
 }

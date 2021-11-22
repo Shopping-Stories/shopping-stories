@@ -42,6 +42,16 @@ const cache = cacheExchange({
         ImageObject: () => null,
         PurchaseObject: () => null,
     },
+    updates: {
+        Mutation: {
+            deleteDocument(_result, args, cache, _info) {
+                cache.invalidate({
+                    __typename: 'DocumentInfo',
+                    id: args.id as string,
+                });
+            },
+        },
+    },
 });
 
 const client = new Client({

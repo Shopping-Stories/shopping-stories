@@ -19,7 +19,23 @@ export default class ItemService {
         selectedFields: Object,
         search?: string,
     ): Promise<Item[]> {
+        if (!!search) {
+            return ItemModel.find(getMongoTextSearchObject(search), {
+                ...selectedFields,
+                score: { $meta: 'textScore' },
+            })
+                .skip(skip)
+                .limit(limit)
+                .sort({
+                    score: { $meta: 'textScore' },
+                    item: 'asc',
+                    _id: 'asc',
+                })
+                .lean<Item[]>()
+                .exec();
+        }
         return ItemModel.find(getMongoTextSearchObject(search), selectedFields)
+            .sort({ item: 'asc', _id: 'asc' })
             .skip(skip)
             .limit(limit)
             .lean<Item[]>()

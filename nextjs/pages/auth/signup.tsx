@@ -1,12 +1,13 @@
 import AuthSkeleton from '@components/AuthSkeleton';
 import MuiNextLink from '@components/MuiNextLink';
+import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import TextFieldWithHide from '@components/TextFieldWithHide';
 import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Container from '@mui/material/Container';
 import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Auth } from 'aws-amplify';
 import { useFormik } from 'formik';
@@ -144,109 +145,48 @@ const SignUpPage: NextPage = () => {
         <AuthSkeleton formikForm={signUpForm}>
             <FormGroup>
                 <Typography variant="h2">Sign Up</Typography>
-                <TextField
+                <TextFieldWithFormikValidation
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="username"
                     label="Username"
-                    value={signUpForm.values.username}
-                    onChange={signUpForm.handleChange}
-                    error={
-                        signUpForm.touched.username &&
-                        Boolean(signUpForm.errors.username)
-                    }
-                    helperText={
-                        signUpForm.touched.username &&
-                        signUpForm.errors.username
-                    }
+                    fieldName="username"
+                    formikForm={signUpForm}
                 />
-                <TextField
+                <TextFieldWithFormikValidation
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="email"
                     label="Email"
                     type="email"
-                    value={signUpForm.values.email}
-                    onChange={signUpForm.handleChange}
-                    error={
-                        signUpForm.touched.email &&
-                        Boolean(signUpForm.errors.email)
-                    }
-                    helperText={
-                        signUpForm.touched.email && signUpForm.errors.email
-                    }
+                    fieldName="email"
+                    formikForm={signUpForm}
                 />
-                <TextField
+                <TextFieldWithFormikValidation
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="firstName"
                     label="First name"
-                    value={signUpForm.values.firstName}
-                    onChange={signUpForm.handleChange}
-                    error={
-                        signUpForm.touched.firstName &&
-                        Boolean(signUpForm.errors.firstName)
-                    }
-                    helperText={
-                        signUpForm.touched.firstName &&
-                        signUpForm.errors.firstName
-                    }
+                    fieldName="firstName"
+                    formikForm={signUpForm}
                 />
-                <TextField
+                <TextFieldWithFormikValidation
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="lastName"
                     label="Last name"
-                    value={signUpForm.values.lastName}
-                    onChange={signUpForm.handleChange}
-                    error={
-                        signUpForm.touched.lastName &&
-                        Boolean(signUpForm.errors.lastName)
-                    }
-                    helperText={
-                        signUpForm.touched.lastName &&
-                        signUpForm.errors.lastName
-                    }
+                    fieldName="lastName"
+                    formikForm={signUpForm}
                 />
-                <TextField
+                <TextFieldWithHide
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="password"
                     label="Password"
-                    type="password"
-                    value={signUpForm.values.password}
-                    onChange={signUpForm.handleChange}
-                    error={
-                        signUpForm.touched.password &&
-                        Boolean(signUpForm.errors.password)
-                    }
-                    helperText={
-                        signUpForm.touched.password &&
-                        signUpForm.errors.password
-                    }
+                    formikForm={signUpForm}
+                    fieldName="password"
                 />
-                <TextField
+                <TextFieldWithHide
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="confirmPassword"
                     label="Confirm Password"
-                    type="password"
-                    value={signUpForm.values.confirmPassword}
-                    onChange={signUpForm.handleChange}
-                    error={
-                        signUpForm.touched.confirmPassword &&
-                        Boolean(signUpForm.errors.confirmPassword)
-                    }
-                    helperText={
-                        signUpForm.touched.confirmPassword &&
-                        signUpForm.errors.confirmPassword
-                    }
+                    formikForm={signUpForm}
+                    fieldName="confirmPassword"
                 />
                 <Snackbar
                     open={openError}

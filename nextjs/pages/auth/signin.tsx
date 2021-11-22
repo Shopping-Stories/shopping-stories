@@ -1,14 +1,15 @@
 import AuthSkeleton from '@components/AuthSkeleton';
 import MuiNextLink from '@components/MuiNextLink';
+import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import TextFieldWithHide from '@components/TextFieldWithHide';
 import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
-import Divider from '@mui/material/Divider';
 import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Auth } from 'aws-amplify';
 import { useFormik } from 'formik';
@@ -94,42 +95,20 @@ const SignInPage: NextPage = () => {
         <AuthSkeleton formikForm={signInForm}>
             <FormGroup>
                 <Typography variant="h2">Sign In</Typography>
-                <TextField
+                <TextFieldWithFormikValidation
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="username"
                     label="Username"
-                    value={signInForm.values.username}
-                    onChange={signInForm.handleChange}
-                    error={
-                        signInForm.touched.username &&
-                        Boolean(signInForm.errors.username)
-                    }
-                    helperText={
-                        signInForm.touched.username &&
-                        signInForm.errors.username
-                    }
+                    formikForm={signInForm}
+                    fieldName="username"
                 />
-                <TextField
+                <TextFieldWithHide
                     fullWidth
-                    margin="dense"
-                    variant="standard"
                     name="password"
                     label="Password"
-                    type="password"
-                    value={signInForm.values.password}
-                    onChange={signInForm.handleChange}
-                    error={
-                        signInForm.touched.password &&
-                        Boolean(signInForm.errors.password)
-                    }
-                    helperText={
-                        signInForm.touched.password &&
-                        signInForm.errors.password
-                    }
+                    formikForm={signInForm}
+                    fieldName="password"
                 />
-
                 <FormHelperText error={!!error}>{error}</FormHelperText>
                 <Snackbar
                     open={openError}

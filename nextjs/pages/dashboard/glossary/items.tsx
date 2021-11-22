@@ -16,8 +16,8 @@ import TextField from '@mui/material/TextField';
 import { Storage } from 'aws-amplify';
 import { GlossaryItem } from 'client/formikSchemas';
 import {
-    deleteGlossaryItemDef,
-    searchGlossaryItemsDef,
+    DeleteGlossaryItemDef,
+    FetchGlossaryItemsDef,
 } from 'client/graphqlDefs';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
@@ -46,7 +46,7 @@ const GlossaryItemsDashboardPage: NextPage = () => {
     const { groups, loading } = useAuth('/', [Roles.Admin]);
     // const [_createItemResult, createItem] = useMutation(createItemDef);
     // const [_updateItesmResult, updateItem] = useMutation(updateItemDef);
-    const [_deleteItemResult, deleteItem] = useMutation(deleteGlossaryItemDef);
+    const [_deleteItemResult, deleteItem] = useMutation(DeleteGlossaryItemDef);
     const [search, setSearch] = useState<string>('');
     const [itemToDelete, setItemToDelete] = useState<ItemToDelete | null>(null);
     const [reQuery, setReQuery] = useState<Boolean>(true);
@@ -165,7 +165,7 @@ const GlossaryItemsDashboardPage: NextPage = () => {
                         }}
                     >
                         <ItemGlossaryPaginationTable
-                            queryDef={searchGlossaryItemsDef}
+                            queryDef={FetchGlossaryItemsDef}
                             onEditClick={(id: string) => {
                                 router.push(`/dashboard/glossary/update/${id}`);
                             }}

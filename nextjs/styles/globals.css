@@ -3,6 +3,7 @@
   --secondary: #606C38;
   --background-color: #BB9467;
   --secondary-bg: #FFE6A7;
+  --secondary-bg-translucent: #ffe6a785;
   --button: #335C67;
 }
 
@@ -10,6 +11,7 @@
   --secondary: #606C38;
   --background-color: #333;
   --secondary-bg: #414141;
+  --secondary-bg-translucent: #4141417a;
   --button: #335C67;
 }
 

@@ -13,7 +13,7 @@ import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import { entryFields } from 'client/graphqlDefs';
+import { EntryFields } from 'client/graphqlDefs';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
@@ -30,7 +30,7 @@ query entriesQuery($search: String, $options: FindAllLimitAndSkip) {
   }
   count: countEntries(search: $search)
 }
-${entryFields}
+${EntryFields}
 `;
 
 const deleteEntryDef = `
@@ -39,7 +39,7 @@ mutation deleteEntry($id: String!) {
     ...entryFields
   }
 }
-${entryFields}
+${EntryFields}
 `;
 
 const searchSchema = yup.object({
