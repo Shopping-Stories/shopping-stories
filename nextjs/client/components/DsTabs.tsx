@@ -21,9 +21,9 @@ const useStyles = makeStyles({
     field: {
         marginTop: 20,
         marginBottom: 20,
-        display: 'block'
-    }
-})
+        display: 'block',
+    },
+});
 
 function TabPanel(props: TabPanelProps) {
     const { children, value, index, ...other } = props;
@@ -53,15 +53,15 @@ function a11yProps(index: number) {
 }
 
 export default function BasicTabs() {
-    const classes = useStyles()
-    const [enter, setEnter] = useState('')
+    const classes = useStyles();
+    const [enter, setEnter] = useState('');
 
     const handleSubmit = (e: any) => {
-        e.preventDefault()
-        if(enter){
-            console.log(enter)
+        e.preventDefault();
+        if (enter) {
+            console.log(enter);
         }
-    }
+    };
 
     const [value, setValue] = React.useState(0);
     const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -84,21 +84,18 @@ export default function BasicTabs() {
             </Box>
 
             <TabPanel value={value} index={0}>
-                <form noValidate autoComplete='off' onSubmit={handleSubmit}>
-                <TextField
-                    onChange={(e) => setEnter(e.target.value)}
-                    className={classes.field}
-                    id="outlined-basic"
-                    label="Enter"
-                    variant="outlined"
-                    fullWidth
-                />
-                <Button
-                type="submit"
-                variant="contained"
-                >
-                    Search
-                </Button>
+                <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+                    <TextField
+                        onChange={(e) => setEnter(e.target.value)}
+                        className={classes.field}
+                        id="outlined-basic"
+                        label="Enter"
+                        variant="outlined"
+                        fullWidth
+                    />
+                    <Button type="submit" variant="contained">
+                        Search
+                    </Button>
                 </form>
             </TabPanel>
 

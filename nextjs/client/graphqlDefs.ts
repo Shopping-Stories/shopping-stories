@@ -150,7 +150,6 @@ fragment glossaryItemFields on  GlossaryItem {
 }
 `;
 
-
 export const CreateGlossaryItemDef = `
 mutation($item: CreateGlossaryItemInput!) {
   createGlossaryItem(newGlossaryItem: $item) {
@@ -195,7 +194,7 @@ query($id: String!) {
   }
 }
 ${GlossaryItemFields}
-`
+`;
 
 export const DocumentFields = `
 fragment documentFields on DocumentInfo {
@@ -241,4 +240,35 @@ mutation deleteDocument($id: String!) {
   }
 }
 ${DocumentFields}
+`;
+
+export const FetchPeopleQuery = `
+query FetchPeople($search: String!, $options: FindAllLimitAndSkip) {
+  people: findPeople(search: $search, options: $options) {
+    id
+    firstName
+    lastName
+    name: fullName
+  }
+}
+`;
+
+export const FetchPlacesQuery = `
+query searchPlaces($search: String!, $options: FindAllLimitAndSkip) {
+  places: findPlaces(search: $search, options: $options) {
+    id
+    name: location
+  }
+}
+`;
+
+export const FetchTobaccoMarks = `
+query FetchMarks($search: String!, $options: FindAllLimitAndSkip) {
+  marks: findTobaccoMarks(search: $search, options: $options) {
+    id
+    markID: id
+    # markName: description
+    markName: tobaccoMarkId
+  }
+}
 `;

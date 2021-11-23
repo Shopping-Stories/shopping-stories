@@ -7,29 +7,30 @@ import Button from '@mui/material/Button';
 const useStyles = makeStyles({
     field: {
         margin: 20,
-        display: 'block'
-    }
-})
-export default function TobaccoEntryForm(){
-    const classes = useStyles()
-    const [reel, setReel] = useState('')
-    const [storeOwner, setStoreOwner] = useState('')
-    const [folioYear, setFolioYear] = useState('')
-    const [folioPage, setFolioPage] = useState('')
-    const [entryID, setEntryID] = useState('')
-    const [accountHolder, setAccountHolder] = useState('')
-    const [people, setPeople] = useState('')
-    const [places, setPlaces] = useState('')
-    const [commodity, setCommodity] = useState('')
-    const [colony, setColony] = useState('')
-    const [entryDescription, setEntryDescription] = useState('')
-    const [tobaccoMarkName, setTobaccoMarkName] = useState('')
-    const [noteNumber, setNoteNumber] = useState('')
-    const [moneyType, setMoneyType] = useState('')
+        display: 'block',
+    },
+});
+export default function TobaccoEntryForm() {
+    const classes = useStyles();
+    const [reel, setReel] = useState('');
+    const [storeOwner, setStoreOwner] = useState('');
+    const [folioYear, setFolioYear] = useState('');
+    const [folioPage, setFolioPage] = useState('');
+    const [entryID, setEntryID] = useState('');
+    const [accountHolder, setAccountHolder] = useState('');
+    const [people, setPeople] = useState('');
+    const [places, setPlaces] = useState('');
+    const [commodity, setCommodity] = useState('');
+    const [colony, setColony] = useState('');
+    const [entryDescription, setEntryDescription] = useState('');
+    const [tobaccoMarkName, setTobaccoMarkName] = useState('');
+    const [noteNumber, setNoteNumber] = useState('');
+    const [moneyType, setMoneyType] = useState('');
 
     const handleSubmit = (e: any) => {
-        e.preventDefault()
-        if( reel ||
+        e.preventDefault();
+        if (
+            reel ||
             storeOwner ||
             folioYear ||
             folioPage ||
@@ -42,14 +43,29 @@ export default function TobaccoEntryForm(){
             entryDescription ||
             tobaccoMarkName ||
             noteNumber ||
-            moneyType){
-            console.log(reel, storeOwner, folioYear, folioPage, entryID, accountHolder, people, places,
-                commodity, colony, entryDescription, tobaccoMarkName, noteNumber, moneyType)
+            moneyType
+        ) {
+            console.log(
+                reel,
+                storeOwner,
+                folioYear,
+                folioPage,
+                entryID,
+                accountHolder,
+                people,
+                places,
+                commodity,
+                colony,
+                entryDescription,
+                tobaccoMarkName,
+                noteNumber,
+                moneyType,
+            );
         }
-    }
+    };
     return (
         <>
-            <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+            <form noValidate autoComplete="off" onSubmit={handleSubmit}>
                 <TextField
                     onChange={(e) => setReel(e.target.value)}
                     className={classes.field}
@@ -150,13 +166,10 @@ export default function TobaccoEntryForm(){
                     label="Money Type"
                     variant="outlined"
                 />
-                <Button
-                type="submit"
-                variant="contained"
-                >
+                <Button type="submit" variant="contained">
                     Search
                 </Button>
             </form>
         </>
-    )
+    );
 }

@@ -8,25 +8,30 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
-import { GlossaryItem, glossaryItemSchema } from 'client/formikSchemas';
-import { FetchGlossaryItemDef, UpdateGlossaryItemDef } from 'client/graphqlDefs';
+import { glossaryItemSchema } from 'client/formikSchemas';
+import {
+    FetchGlossaryItemDef,
+    UpdateGlossaryItemDef,
+} from 'client/graphqlDefs';
+import { GlossaryItem } from 'client/types';
+import { GlossaryItemQueryResult } from 'client/urqlConfig';
 import { cloneWithoutTypename } from 'client/util';
 import { useFormik } from 'formik';
 import { merge } from 'lodash';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useMutation, useQuery } from 'urql';
 import backgrounds from 'styles/backgrounds.module.css';
-import { GlossaryItemQueryResult } from 'client/urqlConfig';
+import { useMutation, useQuery } from 'urql';
 
 const UpdateGlossaryItem: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
-    const [findGlossaryItemResult, _findGlossaryItem] = useQuery<GlossaryItemQueryResult>({
-        query: FetchGlossaryItemDef,
-        variables: { id },
-    });
+    const [findGlossaryItemResult, _findGlossaryItem] =
+        useQuery<GlossaryItemQueryResult>({
+            query: FetchGlossaryItemDef,
+            variables: { id },
+        });
     const glossaryItem = findGlossaryItemResult?.data?.item;
     const [_updateGlossaryItemResult, updateGlossaryItem] = useMutation(
         UpdateGlossaryItemDef,
@@ -66,7 +71,7 @@ const UpdateGlossaryItem: NextPage = () => {
         }
     }, [glossaryItem]);
 
-    type UpdateGlossaryItemType = Omit<GlossaryItem, "id">
+    type UpdateGlossaryItemType = Omit<GlossaryItem, 'id'>;
 
     const updateForm = useFormik<UpdateGlossaryItemType>({
         enableReinitialize: true,
@@ -80,8 +85,7 @@ const UpdateGlossaryItem: NextPage = () => {
                 // find the File corresponding to the filename
                 // in imageKey
                 const imageFile = imageFiles.find(
-                    (imageFile: File) =>
-                        imageFile.name === image.imageKey,
+                    (imageFile: File) => imageFile.name === image.imageKey,
                 );
 
                 try {
@@ -220,7 +224,11 @@ const UpdateGlossaryItem: NextPage = () => {
                                 />
                             </Grid>
                         </Grid>
-                        <LoadingButton loading={loading} variant="contained" type="submit">
+                        <LoadingButton
+                            loading={loading}
+                            variant="contained"
+                            type="submit"
+                        >
                             Submit
                         </LoadingButton>
                     </form>

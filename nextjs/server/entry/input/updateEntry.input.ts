@@ -238,8 +238,8 @@ export class UpdateDate {
     @Field(() => Int, { description: 'month of date', nullable: true })
     month?: number;
 
-    @Field(() => String, { description: 'year of date', nullable: true })
-    year?: string;
+    @Field(() => Int, { description: 'year of date', nullable: true })
+    year?: number;
 
     @Field(() => Date, { description: 'complete date', nullable: true })
     fullDate?: Date;

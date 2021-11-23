@@ -1,4 +1,9 @@
-import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
+import {
+    getModelForClass,
+    modelOptions,
+    prop,
+    index,
+} from '@typegoose/typegoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, ObjectType } from 'type-graphql';
 
@@ -6,6 +11,11 @@ export type CategoriesDocument = Category & Document;
 
 @ObjectType({ description: 'Category Object' })
 @modelOptions({ schemaOptions: { timestamps: true } })
+@index(
+    { '$**': 'text' },
+    // @ts-ignore
+    { name: 'search_index' },
+)
 export class Category {
     @Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
     public get id(): string {

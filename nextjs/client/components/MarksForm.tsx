@@ -1,37 +1,28 @@
-import Autocomplete from '@mui/material/Autocomplete';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import { FetchTobaccoMarks } from 'client/graphqlDefs';
+import { Mark, OptionsType } from 'client/types';
 import { FieldArray, FormikProvider } from 'formik';
 import debounce from 'lodash/debounce';
 import { useCallback, useState } from 'react';
 import { useQuery } from 'urql';
-
-const queryDef = `
-query searchPeople($search: String!, $options: FindAllLimitAndSkip) {
-  marks: findTobaccoMarks(search: $search, options: $options) {
-    id
-    markID: id
-    markName: description
-    # tobaccoMarkId
-  }
-}
-`;
+import TobaccoMarkAutocomplete from './TobaccoMarkAutocomplete';
 
 const MarkForm = ({ formikForm }: any) => {
-    interface OptionsType {
-        limit: number | null;
-        skip: number | null;
-    }
-
     const [search, setSearch] = useState<string>('');
 
     const [options, _setOptions] = useState<OptionsType>({
         limit: 10,
         skip: null,
     });
+    interface MarkQuery {
+        marks: Mark[];
+    }
 
-    const [{ data }, _executeQuery] = useQuery({
-        query: queryDef,
+    const [{ data }, _executeQuery] = useQuery<MarkQuery>({
+        query: FetchTobaccoMarks,
         variables: { options, search },
     });
 
@@ -41,7 +32,7 @@ const MarkForm = ({ formikForm }: any) => {
         debounce((search: string, index: number) => {
             setSearch(search);
             formikForm.setFieldValue(`tobaccoEntry.marks.${index}.markID`, '');
-        }, 500),
+        }, 250),
         [],
     );
 
@@ -50,134 +41,55 @@ const MarkForm = ({ formikForm }: any) => {
             <FieldArray
                 name="tobaccoEntry.marks"
                 render={(arrayHelpers: any) => {
-                    // const [inputValue, setInputValue] = useState<string>('');
                     const refs = formikForm.values?.tobaccoEntry?.marks;
-                    const touched = formikForm.touched?.tobaccoEntry?.marks;
-                    const errors = formikForm.errors?.tobaccoEntry?.marks;
-                    const atLeastOneError =
-                        touched &&
-                        errors &&
-                        touched.length > 0 &&
-                        errors.length > 0;
 
                     return (
-                        <div>
+                        <Stack spacing={2}>
                             {refs && refs.length > 0
-                                ? refs.map((ref: any, index: number) => {
-                                      let isError = false;
-                                      let errorMessage: any;
-                                      if (atLeastOneError) {
-                                          isError =
-                                              typeof errors[index] !==
-                                              'undefined';
-                                          errorMessage =
-                                              touched[index] && errors[index];
-                                      }
-
+                                ? refs.map((_: any, index: number) => {
                                       return (
-                                          formikForm.values.tobaccoEntry
-                                              .marks && (
-                                              <div key={index}>
-                                                  <Autocomplete
-                                                      value={
-                                                          formikForm.values
-                                                              .tobaccoEntry
-                                                              .marks[index]
-                                                      }
-                                                      onChange={(
-                                                          _,
-                                                          newValue,
-                                                      ) => {
-                                                          formikForm.setFieldValue(
-                                                              `tobaccoEntry.marks.${index}.markName`,
-                                                              newValue.markName,
-                                                          );
-                                                          formikForm.setFieldValue(
-                                                              `tobaccoEntry.marks.${index}.markID`,
-                                                              newValue.markID,
-                                                          );
-                                                      }}
-                                                      onInputChange={(
-                                                          _,
-                                                          newSearch,
-                                                      ) => delayedTobaccoMarkSearch(newSearch, index)}
-                                                      options={marksOptions}
-                                                      getOptionLabel={(
-                                                          option: any,
-                                                      ) =>
-                                                          option.markName || ''
-                                                      }
-                                                      isOptionEqualToValue={(
-                                                          option: any,
-                                                          value: any,
-                                                      ) =>
-                                                          option.markName ===
-                                                              value.markName ||
-                                                          true
-                                                      }
-                                                      freeSolo
-                                                      renderOption={(
-                                                          props: any,
-                                                          option: any,
-                                                      ) => {
-                                                          return (
-                                                              <li
-                                                                  {...props}
-                                                                  key={
-                                                                      option.markID
-                                                                  }
-                                                              >
-                                                                  {option.markName ||
-                                                                      ''}
-                                                              </li>
-                                                          );
-                                                      }}
-                                                      renderInput={(params) => (
-                                                          <TextField
-                                                              {...params}
-                                                              fullWidth
-                                                              margin="dense"
-                                                              variant="standard"
-                                                              name={`tobaccoEntry.marks.${index}.markName`}
-                                                              label={`mark name`}
-                                                              value={
-                                                                  ref?.markName
-                                                              }
-                                                              onChange={
-                                                                  formikForm.handleChange
-                                                              }
-                                                              error={
-                                                                  isError &&
-                                                                  Boolean(
-                                                                      errorMessage?.markName,
-                                                                  )
-                                                              }
-                                                              helperText={
-                                                                  errorMessage?.markName
-                                                              }
-                                                          />
-                                                      )}
-                                                  />
-                                                  <br />
+                                          <Stack
+                                              spacing={2}
+                                              direction="row"
+                                              key={index}
+                                          >
+                                              <TobaccoMarkAutocomplete
+                                                  fieldName={`tobaccoEntry.marks.${index}`}
+                                                  index={index}
+                                                  label={`Mark ${index}`}
+                                                  labelOptions={marksOptions}
+                                                  search={
+                                                      delayedTobaccoMarkSearch
+                                                  }
+                                                  formikForm={formikForm}
+                                              />
+                                              <div
+                                                  style={{
+                                                      display: 'flex',
+                                                      alignItems: 'center',
+                                                  }}
+                                              >
                                                   <Button
                                                       variant="contained"
                                                       type="button"
+                                                      startIcon={<DeleteIcon />}
                                                       onClick={() =>
                                                           arrayHelpers.remove(
                                                               index,
                                                           )
                                                       }
                                                   >
-                                                      remove from list
+                                                      remove
                                                   </Button>
                                               </div>
-                                          )
+                                          </Stack>
                                       );
                                   })
                                 : null}
                             <Button
                                 variant="contained"
                                 type="button"
+                                startIcon={<AddCircleIcon />}
                                 onClick={() =>
                                     arrayHelpers.push({
                                         markName: '',
@@ -185,9 +97,9 @@ const MarkForm = ({ formikForm }: any) => {
                                     })
                                 }
                             >
-                                Add Mark
+                                Add
                             </Button>
-                        </div>
+                        </Stack>
                     );
                 }}
             />

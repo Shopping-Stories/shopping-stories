@@ -1,101 +1,108 @@
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
+import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 const ItemsOrServicesVariantsForm = ({
     formikForm,
     prevPrevIdx,
     prevIdx,
 }: any) => {
-    return formikForm.values.itemEntries[prevPrevIdx].itemsOrServices[prevIdx].variants && (
-        <FormikProvider value={formikForm}>
-            <FieldArray
-                name={`itemEntries.${prevPrevIdx}.itemsOrServices.${prevIdx}.variants`}
-                render={(arrayHelpers: any) => {
-                    const refs =
-                        formikForm.values.itemEntries[prevPrevIdx].itemsOrServices[
-                            prevIdx
-                        ].variants;
-                    const touched = formikForm.touched.itemEntries;
-                    const errors = formikForm.errors.itemEntries;
-                    const atLeastOneError =
-                        touched &&
-                        errors &&
-                        touched.length > 0 &&
-                        errors.length > 0 &&
-                        touched.itemsEntries[prevPrevIdx] &&
-                        touched.itemsEntries[prevPrevIdx].itemsOrServices &&
-                        touched.itemsEntries[prevPrevIdx].itemsOrServices.length > 0 &&
-                        touched.itemsEntries[prevPrevIdx].itemsOrServices[prevIdx] &&
-                        touched.itemsEntries[prevPrevIdx].itemsOrServices[prevIdx].length > 0 &&
-                        touched.itemsEntries[prevPrevIdx].itemsOrServices[prevIdx].variants &&
-                        touched.itemsEntries[prevPrevIdx].itemsOrServices[prevIdx].variants.length > 0;
+    return (
+        formikForm.values.itemEntries[prevPrevIdx].itemsOrServices[prevIdx]
+            .variants && (
+            <FormikProvider value={formikForm}>
+                <FieldArray
+                    name={`itemEntries.${prevPrevIdx}.itemsOrServices.${prevIdx}.variants`}
+                    render={(arrayHelpers: any) => {
+                        const refs =
+                            formikForm.values.itemEntries[prevPrevIdx]
+                                .itemsOrServices[prevIdx].variants;
 
-                    return (
-                        <div>
-                            {refs && refs.length > 0
-                                ? refs.map((ref: any, index: number) => {
-                                      let isError = false;
-                                      let errorMessage: any;
-                                      if (atLeastOneError) {
-                                          isError =
-                                              typeof errors[index] !==
-                                              'undefined';
-                                          errorMessage =
-                                              touched[index] && errors[index];
-                                      }
-
-                                      return (
-                                          formikForm.values.itemEntries[
-                                              prevPrevIdx
-                                          ].itemsOrServices[prevIdx]
-                                              .variants && (
-                                              <div key={index}>
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevPrevIdx}.itemsOrServices.${prevIdx}.variants.${index}`}
-                                                      label={`Name`}
-                                                      value={ref}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(errorMessage)
-                                                      }
-                                                      helperText={errorMessage}
-                                                  />
-                                                  <br />
-                                                  <Button
-                                                      variant="contained"
-                                                      type="button"
-                                                      onClick={() =>
-                                                          arrayHelpers.remove(
-                                                              index,
-                                                          )
-                                                      }
+                        return (
+                            <Grid container spacing={2}>
+                                {refs && refs.length > 0
+                                    ? refs.map((_: any, index: number) => {
+                                          return (
+                                              formikForm.values.itemEntries[
+                                                  prevPrevIdx
+                                              ].itemsOrServices[prevIdx]
+                                                  .variants && (
+                                                  <Grid
+                                                      item
+                                                      xs={12}
+                                                      sm={6}
+                                                      key={index}
                                                   >
-                                                      remove from list
-                                                  </Button>
-                                              </div>
-                                          )
-                                      );
-                                  })
-                                : null}
-                            <Button
-                                variant="contained"
-                                type="button"
-                                onClick={() => arrayHelpers.push('')} // insert an empty string at a position
-                            >
-                                Add Variant
-                            </Button>
-                        </div>
-                    );
-                }}
-            />
-        </FormikProvider>
+                                                      <Card
+                                                          sx={{
+                                                              backgroundColor:
+                                                                  'var(--secondary-bg)',
+                                                          }}
+                                                      >
+                                                          <CardContent>
+                                                              <Stack
+                                                                  spacing={2}
+                                                              >
+                                                                  <Typography>
+                                                                      Variant{' '}
+                                                                      {index.toString()}
+                                                                  </Typography>
+                                                                  <TextFieldWithFormikValidation
+                                                                      name={`itemEntries.${prevPrevIdx}.itemsOrServices.${prevIdx}.variants.${index}`}
+                                                                      label={`Variant ${index}`}
+                                                                      formikForm={
+                                                                          formikForm
+                                                                      }
+                                                                      fieldName={`itemEntries.${prevPrevIdx}.itemsOrServices.${prevIdx}.variants.${index}`}
+                                                                  />
+                                                                  <Button
+                                                                      variant="contained"
+                                                                      startIcon={
+                                                                          <DeleteIcon />
+                                                                      }
+                                                                      type="button"
+                                                                      onClick={() =>
+                                                                          arrayHelpers.remove(
+                                                                              index,
+                                                                          )
+                                                                      }
+                                                                  >
+                                                                      remove
+                                                                      variant{' '}
+                                                                      {index}
+                                                                  </Button>
+                                                              </Stack>
+                                                          </CardContent>
+                                                      </Card>
+                                                  </Grid>
+                                              )
+                                          );
+                                      })
+                                    : null}
+
+                                <Grid item xs={12}>
+                                    <Button
+                                        startIcon={<AddCircleIcon />}
+                                        variant="contained"
+                                        type="button"
+                                        onClick={() => arrayHelpers.push('')}
+                                    >
+                                        Add Variant
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        );
+                    }}
+                />
+            </FormikProvider>
+        )
     );
 };
 

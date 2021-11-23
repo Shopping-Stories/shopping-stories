@@ -1,8 +1,15 @@
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CardHeader from '@mui/material/CardHeader';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
 import ItemsMentionedForm from './ItemsMentionedForm';
 import ItemsOrServicesForm from './itemsOrSevicesForm';
+import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 const CreateItemEntryFrom = ({ formikForm }: any) => {
     return (
@@ -11,111 +18,110 @@ const CreateItemEntryFrom = ({ formikForm }: any) => {
                 <FieldArray
                     name="itemEntries"
                     render={(arrayHelpers: any) => {
-                        // const [inputValue, setInputValue] = useState<string>('');
                         const refs = formikForm.values.itemEntries;
-                        const touched = formikForm.touched.itemEntries;
-                        const errors = formikForm.errors.itemEntries;
-                        const atLeastOneError =
-                            touched &&
-                            errors &&
-                            touched.length > 0 &&
-                            errors.length > 0;
 
                         return (
-                            <div>
+                            <Stack spacing={2}>
+                                <Typography component="h2">
+                                    Item Entries
+                                </Typography>
                                 {refs && refs.length > 0
-                                    ? refs.map((ref: any, index: number) => {
-                                          let isError = false;
-                                          let errorMessage: any;
-                                          if (atLeastOneError) {
-                                              isError =
-                                                  typeof errors[index] !==
-                                                  'undefined';
-                                              errorMessage =
-                                                  touched[index] &&
-                                                  errors[index];
-                                          }
-
+                                    ? refs.map((_: any, index: number) => {
                                           return (
                                               formikForm.values.itemEntries && (
-                                                  <div key={index}>
-                                                      <TextField
+                                                  <Stack
+                                                      spacing={2}
+                                                      key={index}
+                                                  >
+                                                      <Typography component="h2">
+                                                          Item Entry {index}
+                                                      </Typography>
+                                                      <TextFieldWithFormikValidation
                                                           fullWidth
-                                                          margin="dense"
-                                                          variant="standard"
                                                           name={`itemEntries.${index}.perOrder`}
                                                           label={`Amount Per Order`}
-                                                          value={ref?.perOrder}
                                                           type="number"
                                                           inputProps={{
                                                               min: 0,
                                                           }}
-                                                          onChange={
-                                                              formikForm.handleChange
+                                                          formikForm={
+                                                              formikForm
                                                           }
-                                                          error={
-                                                              isError &&
-                                                              Boolean(
-                                                                  errorMessage?.perOrder,
-                                                              )
-                                                          }
-                                                          helperText={
-                                                              errorMessage?.perOrder
-                                                          }
+                                                          fieldName={`itemEntries.${index}.perOrder`}
                                                       />
-                                                      <TextField
+                                                      <TextFieldWithFormikValidation
                                                           fullWidth
-                                                          margin="dense"
-                                                          variant="standard"
                                                           name={`itemEntries.${index}.percentage`}
                                                           label={`Percentage`}
-                                                          value={
-                                                              ref?.percentage
-                                                          }
                                                           type="number"
                                                           inputProps={{
                                                               min: 0,
                                                           }}
-                                                          onChange={
-                                                              formikForm.handleChange
-                                                          }
-                                                          error={
-                                                              isError &&
-                                                              Boolean(
-                                                                  errorMessage?.percentage,
-                                                              )
-                                                          }
-                                                          helperText={
-                                                              errorMessage?.percentage
-                                                          }
-                                                      />
-
-                                                      <ItemsOrServicesForm
                                                           formikForm={
                                                               formikForm
                                                           }
-                                                          prevIdx={index}
+                                                          fieldName={`itemEntries.${index}.percentage`}
                                                       />
-                                                      <ItemsMentionedForm
-                                                          formikForm={
-                                                              formikForm
-                                                          }
-                                                          prevIdx={index}
-                                                      />
-
-                                                      <br />
-                                                      <Button
-                                                          variant="contained"
-                                                          type="button"
-                                                          onClick={() =>
-                                                              arrayHelpers.remove(
-                                                                  index,
-                                                              )
-                                                          }
+                                                      <Card
+                                                          sx={{
+                                                              backgroundColor:
+                                                                  'var(--secondary-bg)',
+                                                          }}
                                                       >
-                                                          remove from list
-                                                      </Button>
-                                                  </div>
+                                                          <CardHeader title="Items or Services" />
+                                                          <CardContent>
+                                                              <ItemsOrServicesForm
+                                                                  formikForm={
+                                                                      formikForm
+                                                                  }
+                                                                  prevIdx={
+                                                                      index
+                                                                  }
+                                                              />
+                                                          </CardContent>
+                                                      </Card>
+                                                      <Card
+                                                          sx={{
+                                                              backgroundColor:
+                                                                  'var(--secondary-bg)',
+                                                          }}
+                                                      >
+                                                          <CardHeader title="Mentioned Items" />
+                                                          <CardContent>
+                                                              <ItemsMentionedForm
+                                                                  formikForm={
+                                                                      formikForm
+                                                                  }
+                                                                  prevIdx={
+                                                                      index
+                                                                  }
+                                                              />
+                                                          </CardContent>
+                                                      </Card>
+                                                      <div
+                                                          style={{
+                                                              display: 'flex',
+                                                              alignItems:
+                                                                  'center',
+                                                          }}
+                                                      >
+                                                          <Button
+                                                              variant="contained"
+                                                              startIcon={
+                                                                  <DeleteIcon />
+                                                              }
+                                                              type="button"
+                                                              onClick={() =>
+                                                                  arrayHelpers.remove(
+                                                                      index,
+                                                                  )
+                                                              }
+                                                          >
+                                                              remove entry{' '}
+                                                              {index}
+                                                          </Button>
+                                                      </div>
+                                                  </Stack>
                                               )
                                           );
                                       })
@@ -123,6 +129,7 @@ const CreateItemEntryFrom = ({ formikForm }: any) => {
                                 <Button
                                     variant="contained"
                                     type="button"
+                                    startIcon={<AddCircleIcon />}
                                     onClick={() =>
                                         arrayHelpers.push({
                                             perOrder: 0,
@@ -132,9 +139,9 @@ const CreateItemEntryFrom = ({ formikForm }: any) => {
                                         })
                                     }
                                 >
-                                    Add Item or Service
+                                    Add
                                 </Button>
-                            </div>
+                            </Stack>
                         );
                     }}
                 />

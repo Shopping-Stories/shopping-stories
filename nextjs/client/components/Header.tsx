@@ -3,14 +3,14 @@ import MuiNextLink from '@components/MuiNextLink';
 import Navbar from '@components/Navbar';
 import SideDrawer from '@components/SideDrawer';
 import useAuth, { isInGroup } from '@hooks/useAuth.hook';
-import Home from '@mui/icons-material/Home';
 import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
-import IconButton from '@mui/material/IconButton';
+import Fab from '@mui/material/Fab';
 import Toolbar from '@mui/material/Toolbar';
 import { styled } from '@mui/system';
 import { Roles } from 'config/constants.config';
-import _ from 'lodash';
+import { isEqual, uniqWith } from 'lodash';
+import Image from 'next/image';
 import { Fragment, useEffect, useState } from 'react';
 
 export interface NavLink {
@@ -39,7 +39,7 @@ const Header = () => {
     const authLink = !isLoggedIn
         ? { title: `sign in`, path: `/auth` }
         : { title: `sign out`, path: `/signout` };
-    const uniqueNavLinks = _.uniqWith([authLink, ...navLinks], _.isEqual);
+    const uniqueNavLinks = uniqWith([authLink, ...navLinks], isEqual);
 
     useEffect(() => {
         const updateLinks = () => {
@@ -64,17 +64,15 @@ const Header = () => {
                                 justifyContent: 'space-between',
                             }}
                         >
-                            <IconButton edge="start" aria-label="home">
+                            <Fab aria-label="home">
                                 <MuiNextLink activeClassName="active" href="/">
-                                    <Home
-                                        sx={{
-                                            color: (theme: any) =>
-                                                theme.palette.common.white,
-                                        }}
-                                        fontSize="large"
+                                    <Image
+                                        alt="logo image"
+                                        src={'/HR_logo.png'}
+                                        layout="fill"
                                     />
                                 </MuiNextLink>
-                            </IconButton>
+                            </Fab>
                             <Navbar navLinks={uniqueNavLinks} />
                             <SideDrawer navLinks={uniqueNavLinks} />
                         </Container>

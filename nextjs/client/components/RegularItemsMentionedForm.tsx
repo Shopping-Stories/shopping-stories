@@ -1,7 +1,12 @@
-
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
+import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 const RegularItemsMentionedForm = ({ formikForm }: any) => {
     return (
@@ -9,121 +14,87 @@ const RegularItemsMentionedForm = ({ formikForm }: any) => {
             <FieldArray
                 name={`regularEntry.itemsMentioned`}
                 render={(arrayHelpers: any) => {
-                    const refs =
-                        formikForm.values.regularEntry.itemsMentioned;
-                    const touched = formikForm.touched.itemEntries;
-                    const errors = formikForm.errors.itemEntries;
-                    const atLeastOneError =
-                        touched &&
-                        errors &&
-                        touched.length > 0 &&
-                        errors.length > 0 &&
-                        touched.regularEntry &&
-                        touched.regularEntry.itemsMentioned &&
-                        touched.regularEntry.itemsMentioned.length > 0;
+                    const refs = formikForm.values.regularEntry.itemsMentioned;
 
                     return (
-                        <div>
+                        <Stack spacing={2}>
                             {refs && refs.length > 0
-                                ? refs.map((ref: any, index: number) => {
-                                      let isError = false;
-                                      let errorMessage: any;
-                                      if (atLeastOneError) {
-                                          isError =
-                                              typeof errors[index] !==
-                                              'undefined';
-                                          errorMessage =
-                                              touched[index] && errors[index];
-                                      }
-
+                                ? refs.map((_: any, index: number) => {
                                       return (
-                                          formikForm.values.regularEntry
-                                              .itemsMentioned && (
-                                              <div key={index}>
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`regularEntry.itemsMentioned.${index}.quantity`}
-                                                      label={`quantity`}
-                                                      value={ref?.quantity}
-                                                      type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.quantity,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.quantity
-                                                      }
-                                                  />
+                                          <Card key={index}>
+                                              <CardContent>
+                                                  <Stack spacing={2}>
+                                                      <Typography>
+                                                          Mentioned Item{' '}
+                                                          {index.toString()}
+                                                      </Typography>
+                                                      <TextFieldWithFormikValidation
+                                                          fullWidth
+                                                          name={`regularEntry.itemsMentioned.${index}.quantity`}
+                                                          label={`Quantity`}
+                                                          type="number"
+                                                          inputProps={{
+                                                              min: 0,
+                                                          }}
+                                                          formikForm={
+                                                              formikForm
+                                                          }
+                                                          fieldName={`regularEntry.itemsMentioned.${index}.quantity`}
+                                                      />
 
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`regularEntry.itemsMentioned.${index}.qualifier`}
-                                                      label={`Qualifier`}
-                                                      value={ref?.qualifier}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.qualifier,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.qualifier
-                                                      }
-                                                  />
+                                                      <TextFieldWithFormikValidation
+                                                          fullWidth
+                                                          name={`regularEntry.itemsMentioned.${index}.qualifier`}
+                                                          label={`Qualifier`}
+                                                          formikForm={
+                                                              formikForm
+                                                          }
+                                                          fieldName={`regularEntry.itemsMentioned.${index}.qualifier`}
+                                                      />
 
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`regularEntry.itemsMentioned.${index}.item`}
-                                                      label={`Item`}
-                                                      value={ref?.item}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.item,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.item
-                                                      }
-                                                  />
-                                                  <br />
-                                                  <Button
-                                                      variant="contained"
-                                                      type="button"
-                                                      onClick={() =>
-                                                          arrayHelpers.remove(
-                                                              index,
-                                                          )
-                                                      }
-                                                  >
-                                                      remove from list
-                                                  </Button>
-                                              </div>
-                                          )
+                                                      <TextFieldWithFormikValidation
+                                                          fullWidth
+                                                          name={`regularEntry.itemsMentioned.${index}.item`}
+                                                          label={`Item`}
+                                                          formikForm={
+                                                              formikForm
+                                                          }
+                                                          fieldName={`regularEntry.itemsMentioned.${index}.item`}
+                                                      />
+
+                                                      <div
+                                                          style={{
+                                                              display: 'flex',
+                                                              alignItems:
+                                                                  'center',
+                                                          }}
+                                                      >
+                                                          <Button
+                                                              variant="contained"
+                                                              type="button"
+                                                              startIcon={
+                                                                  <DeleteIcon />
+                                                              }
+                                                              onClick={() =>
+                                                                  arrayHelpers.remove(
+                                                                      index,
+                                                                  )
+                                                              }
+                                                          >
+                                                              remove mentioned
+                                                              item {index}
+                                                          </Button>
+                                                      </div>
+                                                  </Stack>
+                                              </CardContent>
+                                          </Card>
                                       );
                                   })
                                 : null}
                             <Button
                                 variant="contained"
                                 type="button"
+                                startIcon={<AddCircleIcon />}
                                 onClick={() =>
                                     arrayHelpers.push({
                                         quantity: 0,
@@ -132,9 +103,9 @@ const RegularItemsMentionedForm = ({ formikForm }: any) => {
                                     })
                                 }
                             >
-                                Add Mentioned Item
+                                Add
                             </Button>
-                        </div>
+                        </Stack>
                     );
                 }}
             />

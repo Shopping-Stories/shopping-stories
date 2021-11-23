@@ -3,7 +3,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
-import { GlossaryItem } from 'client/formikSchemas';
+import { GlossaryItem } from 'client/types';
 import { useEffect, useState } from 'react';
 import CardActions from '@mui/material/CardActions';
 import MuiNextLink from './MuiNextLink';
@@ -41,7 +41,7 @@ const GlossaryItemIndexCard = (props: GlossaryItemIndexCardProps) => {
     }, [item.images]);
 
     return (
-        <Card sx={{height:"100%"}}>
+        <Card sx={{ height: '100%' }}>
             <CardActionArea href={`/glossary/item/${item.id}`}>
                 <CardHeader title={item.name} />
                 {item.images.length > 0 && imageURL && (

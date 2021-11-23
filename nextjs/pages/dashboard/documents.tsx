@@ -24,19 +24,17 @@ import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import { Storage } from 'aws-amplify';
 import {
-    CreateDocument,
     CreateDocumentSchema,
-    DocumentInfo,
     searchSchema,
-    SearchType,
-    UpdateDocumentSchema
+    UpdateDocumentSchema,
 } from 'client/formikSchemas';
 import {
     CreateDocumentDef,
     DeleteDocumentDef,
     FetchDocumentsDef,
-    UpdateDocumentDef
+    UpdateDocumentDef,
 } from 'client/graphqlDefs';
+import { CreateDocument, DocumentInfo, SearchType } from 'client/types';
 import { handlePromise, processStorageList } from 'client/util';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';

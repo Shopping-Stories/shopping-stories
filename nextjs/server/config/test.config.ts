@@ -11,12 +11,7 @@ import { DocToObject } from '../middleware/misc.middleware';
 
 const getGraphQLServer = async () => {
     const schema = await buildSchema({
-        resolvers: [
-            HelloResolver,
-            CatResolver,
-            EntryResolver,
-            AdminResolver,
-        ],
+        resolvers: [HelloResolver, CatResolver, EntryResolver, AdminResolver],
         scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],
         authChecker: JWTAuthChecker,
         globalMiddlewares: [DocToObject],

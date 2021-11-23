@@ -1,6 +1,13 @@
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Stack } from '@mui/material';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
+import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 const EntryNotesFrom = ({ formikForm }: any) => {
     return (
@@ -8,143 +15,86 @@ const EntryNotesFrom = ({ formikForm }: any) => {
             <FieldArray
                 name="tobaccoEntry.notes"
                 render={(arrayHelpers: any) => {
-                    // const [inputValue, setInputValue] = useState<string>('');
                     const refs = formikForm.values?.tobaccoEntry?.notes;
-                    const touched = formikForm.touched?.tobaccoEntry?.notes;
-                    const errors = formikForm.errors?.tobaccoEntry?.notes;
-                    const atLeastOneError =
-                        touched &&
-                        errors &&
-                        touched.length > 0 &&
-                        errors.length > 0;
 
                     return (
-                        <div>
+                        <Stack spacing={2}>
                             {refs && refs.length > 0
-                                ? refs.map((ref: any, index: number) => {
-                                      let isError = false;
-                                      let errorMessage: any;
-                                      if (atLeastOneError) {
-                                          isError =
-                                              typeof errors[index] !==
-                                              'undefined';
-                                          errorMessage =
-                                              touched[index] && errors[index];
-                                      }
-
+                                ? refs.map((_: any, index: number) => {
                                       return (
-                                          formikForm.values?.tobaccoEntry
-                                              ?.notes && (
-                                              <div key={index}>
-                                                  <TextField
+                                          <Card key={index}>
+                                              <CardContent>
+                                                  <Typography>
+                                                      Entry Note {index}
+                                                  </Typography>
+
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.notes.${index}.noteNum`}
                                                       label={`Note number`}
-                                                      value={ref?.noteNum}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.noteNum,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.noteNum
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.notes.${index}.noteNum`}
                                                   />
-
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.notes.${index}.totalWeight`}
                                                       label={`Total Weight`}
-                                                      value={ref?.totalWeight}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.totalWeight,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.totalWeight
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.notes.${index}.totalWeight`}
                                                   />
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.notes.${index}.barrelWeight`}
                                                       label={`Barrel Weight`}
-                                                      value={ref?.barrelWeight}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.barrelWeight,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.barrelWeight
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.notes.${index}.barrelWeight`}
                                                   />
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.notes.${index}.tobaccoWeight`}
                                                       label={`Tobacco Weight`}
-                                                      value={ref?.tobaccoWeight}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.tobaccoWeight,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.tobaccoWeight
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.notes.${index}.tobaccoWeight`}
                                                   />
-                                                  <br />
+                                              </CardContent>
+                                              <CardActions>
                                                   <Button
                                                       variant="contained"
                                                       type="button"
+                                                      startIcon={<DeleteIcon />}
                                                       onClick={() =>
                                                           arrayHelpers.remove(
                                                               index,
                                                           )
                                                       }
                                                   >
-                                                      remove from list
+                                                      remove
                                                   </Button>
-                                              </div>
-                                          )
+                                              </CardActions>
+                                          </Card>
                                       );
                                   })
                                 : null}
                             <Button
                                 variant="contained"
                                 type="button"
+                                startIcon={<AddCircleIcon />}
                                 onClick={() =>
                                     arrayHelpers.push({
                                         noteNum: -1,
@@ -156,7 +106,7 @@ const EntryNotesFrom = ({ formikForm }: any) => {
                             >
                                 Add Note
                             </Button>
-                        </div>
+                        </Stack>
                     );
                 }}
             />

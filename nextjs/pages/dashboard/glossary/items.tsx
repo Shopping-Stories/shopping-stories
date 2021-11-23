@@ -14,7 +14,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import { Storage } from 'aws-amplify';
-import { GlossaryItem } from 'client/formikSchemas';
+import { GlossaryItem } from 'client/types';
 import {
     DeleteGlossaryItemDef,
     FetchGlossaryItemsDef,
@@ -69,7 +69,7 @@ const GlossaryItemsDashboardPage: NextPage = () => {
             if (res.error) {
             } else {
                 const images = res.data.deletedItem.images.map(
-                    (image: GlossaryItem["images"][0]) => image.imageKey,
+                    (image: GlossaryItem['images'][0]) => image.imageKey,
                 );
                 setReQuery(true);
 

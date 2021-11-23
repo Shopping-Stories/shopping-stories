@@ -12,7 +12,7 @@ const TextFieldWithFormikValidation = (props: Props) => {
     return (
         <TextField
             margin="dense"
-            variant="standard"
+            variant="filled"
             {...textFieldProps}
             value={formikForm.values[fieldName]}
             onChange={formikForm.handleChange}

@@ -161,7 +161,7 @@ export async function advancedSearch(searchObj: any) {
     if (searchObj.accountHolderName != undefined) {
         searchString += searchObj.accountHolderName.trim().toString();
     }
-    if ((searchObj.date != undefined) && (searchObj.date2 != undefined)) {
+    if (searchObj.date != undefined && searchObj.date2 != undefined) {
         let date = new Date(searchObj.date);
         let date2 = new Date(searchObj.date2);
         console.log(date, date2);
@@ -185,17 +185,24 @@ export async function advancedSearch(searchObj: any) {
         if (entry.items != undefined) {
             let entryItems = entry.items.toString();
 
-            temp['itemEntries.itemsOrServices.item'] = { $regex: new RegExp(entryItems, 'i') };
+            temp['itemEntries.itemsOrServices.item'] = {
+                $regex: new RegExp(entryItems, 'i'),
+            };
         }
         if (entry.category != undefined) {
-            temp['itemEntries.itemsOrServices.category'] = entry.category.toString();
+            temp['itemEntries.itemsOrServices.category'] =
+                entry.category.toString();
         }
         if (entry.subcategory != undefined) {
-            temp['itemEntries.itemsOrServices.subcategory'] = entry.subcategory.toString();
+            temp['itemEntries.itemsOrServices.subcategory'] =
+                entry.subcategory.toString();
         }
         if (entry.variant != undefined) {
             let variantString = entry.variant.toString();
-            temp['itemEntries.itemsOrServices.variants'] = { $regex: variantString, $options: 'i' };
+            temp['itemEntries.itemsOrServices.variants'] = {
+                $regex: variantString,
+                $options: 'i',
+            };
         }
         console.log(entry);
     }
@@ -208,14 +215,20 @@ export async function advancedSearch(searchObj: any) {
         }
         if (entry.tobaccoMarkName != undefined) {
             let name = entry.tobaccoMarkName.toString();
-            temp['tobaccoEntry.marks.markName'] = { $regex: name, $options: 'ix' };
+            temp['tobaccoEntry.marks.markName'] = {
+                $regex: name,
+                $options: 'ix',
+            };
         }
         if (entry.noteNumber != undefined) {
             temp['tobaccoEntry.notes.noteNum'] = entry.noteNumber;
         }
         if (entry.moneyType != undefined) {
             let money = entry.moneyType.toString();
-            temp['tobaccoEntry.money.moneyType'] = { $regex: money, $options: 'ix' };
+            temp['tobaccoEntry.money.moneyType'] = {
+                $regex: money,
+                $options: 'ix',
+            };
         }
     }
     if (searchObj.regularEntry != null) {
@@ -223,11 +236,17 @@ export async function advancedSearch(searchObj: any) {
         console.log(entry);
         if (entry.entryDescription != undefined) {
             let description = entry.entryDescription.toString();
-            temp['regularEntry.entry'] = { $regex: description, $options: 'ix' };
+            temp['regularEntry.entry'] = {
+                $regex: description,
+                $options: 'ix',
+            };
         }
         if (entry.tobaccoMarkName != undefined) {
             let name = entry.tobaccoMarkName.toString();
-            temp['regularEntry.tobaccoMarks.markName'] = { $regex: name, $options: 'ix' };
+            temp['regularEntry.tobaccoMarks.markName'] = {
+                $regex: name,
+                $options: 'ix',
+            };
         }
     }
 
@@ -383,19 +402,18 @@ async function placesIDs(entry: any) {
         } catch {
             placeID = null;
         }
-        if(placeID === null){
-            let object = {
-                name: temp
-          };
-          res[i] = object;
-        }else{
+        if (placeID === null) {
             let object = {
                 name: temp,
-                id : placeID
+            };
+            res[i] = object;
+        } else {
+            let object = {
+                name: temp,
+                id: placeID,
             };
             res[i] = object;
         }
-        
     }
     return res;
 }
@@ -421,13 +439,12 @@ async function peopleIDs(entry: any) {
         if (
             temp.toUpperCase().includes('FNU') ||
             temp.toUpperCase().includes('LNU') ||
-            temp.toUpperCase().includes('CASH') || 
-            temp === "" ||
-            temp === " "
+            temp.toUpperCase().includes('CASH') ||
+            temp === '' ||
+            temp === ' '
         ) {
             let object = {
-                name: temp
-                
+                name: temp,
             };
             res[i] = object;
         } else {
@@ -451,7 +468,7 @@ async function peopleIDs(entry: any) {
             };
             res[i] = object;
         }
-        
+
         //console.log(res[i]);
     }
     //console.log(res);
@@ -513,7 +530,7 @@ async function makeAccountHolderObject(entryObj: any) {
             debitOrCredit,
             accountHolderID: accID,
         };
-        if(accID === null){
+        if (accID === null) {
             delete res.accountHolderID;
         }
         return res;
@@ -560,7 +577,6 @@ async function newDateObject(day: any, month: any, year: any) {
         }
         if (year == 0 || year == '') {
             year = 1760;
-
         } else {
             res = new Date(Number(year), Number(month - 1), Number(day));
         }
@@ -770,7 +786,7 @@ async function calculateTobaccoMoney(MoneyEntry: any, colony: any, money: any) {
         let caskQuantity = 0;
         let caskCost = { pounds: 0, shilling: 0, pence: 0 };
         let poundsOfTobacco = 0;
-        console.log("pounds of tobacco val at begininng : "+poundsOfTobacco);
+        console.log('pounds of tobacco val at begininng : ' + poundsOfTobacco);
         let tobaccoRate: any = '';
         let workingString = brokenMoney[i].toUpperCase();
         let moneyName = ''; //to hold the name of what is being traded for other then currency and sterling
@@ -795,17 +811,16 @@ async function calculateTobaccoMoney(MoneyEntry: any, colony: any, money: any) {
                 moneyName.charAt(0).toUpperCase() +
                 moneyName.slice(1).toLowerCase();
         } else {
-            if(colonyName != ''){
+            if (colonyName != '') {
                 moneyName = colonyName;
-            }
-            else{
-                moneyName = " ";
+            } else {
+                moneyName = ' ';
             }
         }
         if (workingString.includes('&')) {
             let tempString = workingString.split('&');
             for (i = 0; i < tempString.length; i++) {
-                console.log("pounds of tobacco val : "+poundsOfTobacco);
+                console.log('pounds of tobacco val : ' + poundsOfTobacco);
                 if (tempString[i].includes('AT')) {
                     let tempArray = tempString[i].split('AT');
                     poundsOfTobacco = Number(tempArray[0]);
@@ -846,7 +861,7 @@ async function calculateTobaccoMoney(MoneyEntry: any, colony: any, money: any) {
                 }
             }
         } else {
-            console.log("pounds of tobacco val in else : "+poundsOfTobacco);
+            console.log('pounds of tobacco val in else : ' + poundsOfTobacco);
             if (workingString.includes('AT')) {
                 console.log('IN AT');
                 let tempArray = workingString.split('AT');
@@ -869,7 +884,7 @@ async function calculateTobaccoMoney(MoneyEntry: any, colony: any, money: any) {
 
                 //console.log(tobaccoSoldFor);
             } else if (workingString.includes(',')) {
-                console.log("pounds of tobacco val COMMA: "+poundsOfTobacco);
+                console.log('pounds of tobacco val COMMA: ' + poundsOfTobacco);
                 let tempArray = workingString.split(',');
                 poundsOfTobacco = Number(tempArray[0]);
                 tobaccoRate = await moneyConversion(tempArray[1].trim());
@@ -878,17 +893,19 @@ async function calculateTobaccoMoney(MoneyEntry: any, colony: any, money: any) {
                     tobaccoRate,
                 );
             } else if (!workingString.includes('CASK')) {
-                console.log("pounds of tobacco val CASK: "+poundsOfTobacco);
+                console.log('pounds of tobacco val CASK: ' + poundsOfTobacco);
                 console.log(workingString);
-                poundsOfTobacco = Number(workingString.replace(/[^0-9]/g, ""));
-                if(isNaN(poundsOfTobacco)){
+                poundsOfTobacco = Number(workingString.replace(/[^0-9]/g, ''));
+                if (isNaN(poundsOfTobacco)) {
                     poundsOfTobacco = 1;
                 }
                 console.log(money, poundsOfTobacco);
                 tobaccoRate = await calculateUnitCost(money, poundsOfTobacco);
                 tobaccoSoldFor = money;
             }
-            console.log("pounds of tobacco val middle of else: "+poundsOfTobacco);
+            console.log(
+                'pounds of tobacco val middle of else: ' + poundsOfTobacco,
+            );
             if (workingString.includes('CASK')) {
                 if (workingString.includes('FOR')) {
                     workingString = workingString.split('CASK').shift().trim();
@@ -905,10 +922,12 @@ async function calculateTobaccoMoney(MoneyEntry: any, colony: any, money: any) {
                     };
                 }
             }
-            console.log("pounds of tobacco val at end of else: "+poundsOfTobacco);
+            console.log(
+                'pounds of tobacco val at end of else: ' + poundsOfTobacco,
+            );
         }
-        console.log("pounds of tobacco val : "+poundsOfTobacco);
-        
+        console.log('pounds of tobacco val : ' + poundsOfTobacco);
+
         let moneyInfo = {
             moneyType: moneyName,
             tobaccoAmount: poundsOfTobacco,
@@ -917,7 +936,7 @@ async function calculateTobaccoMoney(MoneyEntry: any, colony: any, money: any) {
             tobaccoSold: tobaccoSoldFor,
             casksSoldForEach: caskCost,
         };
-        if(moneyInfo != null){
+        if (moneyInfo != null) {
             res.push(moneyInfo);
         }
         //res[i] = moneyInfo;
@@ -967,7 +986,7 @@ async function updatedTobaccoEntry(entryObj: any, money: any) {
     let entryInfo = '';
     let tobaccoShavedOff = 0;
     let noteCount = 0;
-    console.log("tobacco off: "+tobaccoShavedOff);
+    console.log('tobacco off: ' + tobaccoShavedOff);
     for (let i = 0; i < brokenEntry.length; i++) {
         console.log(brokenEntry[i]);
         if (brokenEntry[i].toUpperCase().includes('[MONEY]')) {
@@ -1002,19 +1021,19 @@ async function updatedTobaccoEntry(entryObj: any, money: any) {
                 tempMarkInfo = await tempMarkInfo[0].split(':');
                 let finalMarkName = tempMarkInfo[1].trim();
                 let finalMarkID = await findTMid(tempMarkInfo[1].trim());
-                if(finalMarkID === null){
+                if (finalMarkID === null) {
                     let markInfo = {
-                        markName : finalMarkName
+                        markName: finalMarkName,
                     };
                     markArray.push(markInfo);
-                }else{
+                } else {
                     let markInfo = {
-                        markName : finalMarkName,
-                        markID : finalMarkID
+                        markName: finalMarkName,
+                        markID: finalMarkID,
                     };
                     markArray.push(markInfo);
                 }
-                
+
                 tempNoteInfo = tempNoteInfo.split('{');
 
                 for (let j = 1; j < tempNoteInfo.length; j++) {
@@ -1033,7 +1052,7 @@ async function updatedTobaccoEntry(entryObj: any, money: any) {
                 }
             }
         } else if (brokenEntry[i].toUpperCase().includes('OFF')) {
-            console.log("IN OFF SECTION:   " + brokenEntry[i]);
+            console.log('IN OFF SECTION:   ' + brokenEntry[i]);
             let workingString = brokenEntry[i]
                 .toUpperCase()
                 .replace(/[^0-9]/g, '')
@@ -1043,7 +1062,7 @@ async function updatedTobaccoEntry(entryObj: any, money: any) {
             entryInfo += brokenEntry[i].replace(/[^\s*0-9a-zA-Z]/, '');
         }
     }
-    console.log("tobacco off at end: "+tobaccoShavedOff);
+    console.log('tobacco off at end: ' + tobaccoShavedOff);
 
     let finishedRes = {
         entry: entryInfo.toString().trim(),
@@ -1122,14 +1141,13 @@ async function updatedItemEntry(entryObj: any) {
         }
 
         mainItemString = mainItemString.trim().split(',');
-        console.log(mainItemString + " length: " + mainItemString.length);
+        console.log(mainItemString + ' length: ' + mainItemString.length);
         let item: any = {};
         let item2: any = {};
         let ignoreFlag = 0;
-        if(mainItemString.length === 1){
+        if (mainItemString.length === 1) {
             ignoreFlag = 1;
-        }
-        else if (mainItemString.length > 6) {
+        } else if (mainItemString.length > 6) {
             let itemCosts: any = await moneyConversion(
                 mainItemString[mainItemString.length - 1],
             );
@@ -1221,14 +1239,13 @@ async function updatedItemEntry(entryObj: any) {
         } else {
             item.quantity = Number(mainItemString[0]);
         }
-        if(ignoreFlag === 0){
+        if (ignoreFlag === 0) {
             mainItems.push(item);
-            if(item2 !== null){
+            if (item2 !== null) {
                 mainItems.push(item2);
             }
         }
 
-        
         itemFormat.itemsOrServices = mainItems;
         itemFormat.itemsMentioned = miniItems;
 
@@ -1258,7 +1275,6 @@ async function updatedRegEntry(entryObj: any) {
         finalEntry += entry[0];
         for (let i = 1; i < entry.length; i++) {
             if (entry[i].replace(/\s+/g, '').includes('TM:')) {
-                
                 let TMstring = entry[i];
 
                 TMstring = entry[i].split(']');
@@ -1266,7 +1282,7 @@ async function updatedRegEntry(entryObj: any) {
                 TMstring = TMstring[0];
                 TMstring = TMstring.split(':').pop().trim();
                 console.log(`TM NAME: ${TMstring}`);
-                
+
                 let finalString = TMstring;
                 TMstring = TMstring.trim().split(' ')[0];
                 TMstring = TMstring.replace(/^0+/, '');
@@ -1277,23 +1293,19 @@ async function updatedRegEntry(entryObj: any) {
                 } catch (exception_var) {
                     tempID = null;
                 } finally {
-                    if(tempID === null){
-                        let tempObject = {
-                            markName: finalString
-                        };
-                        tmArray.push(tempObject);
-                    }
-                    else {
+                    if (tempID === null) {
                         let tempObject = {
                             markName: finalString,
-                            markID : tempID
+                        };
+                        tmArray.push(tempObject);
+                    } else {
+                        let tempObject = {
+                            markName: finalString,
+                            markID: tempID,
                         };
                         tmArray.push(tempObject);
                     }
-                    
                 }
-
-                
             } else {
                 let itemString = entry[i];
                 itemString = itemString.split(']').shift();
@@ -1306,10 +1318,9 @@ async function updatedRegEntry(entryObj: any) {
                         qualifier: tempItemString[1],
                         item: tempItemString[2],
                     };
-                    if(tempItemString.length === 3){
+                    if (tempItemString.length === 3) {
                         res.itemsMentioned.push(temp);
                     }
-                    
                 }
             }
         }

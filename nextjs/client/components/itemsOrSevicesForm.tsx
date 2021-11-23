@@ -1,8 +1,14 @@
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
 import ItemsOrServicesVariantsForm from './ItemsOrServicesVariants';
+import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
     return (
@@ -12,319 +18,214 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                 render={(arrayHelpers: any) => {
                     const refs =
                         formikForm.values.itemEntries[prevIdx].itemsOrServices;
-                    const touched = formikForm.touched.itemEntries;
-                    const errors = formikForm.errors.itemEntries;
-                    const atLeastOneError =
-                        touched &&
-                        errors &&
-                        touched.length > 0 &&
-                        errors.length > 0 &&
-                        touched.itemsEntries[prevIdx] &&
-                        touched.itemsEntries[prevIdx].itemsOrServices &&
-                        touched.itemsEntries[prevIdx].itemsOrServices.length > 0;
 
                     return (
-                        <div>
+                        <Stack spacing={2}>
                             {refs && refs.length > 0
-                                ? refs.map((ref: any, index: number) => {
-                                      let isError = false;
-                                      let errorMessage: any;
-                                      if (atLeastOneError) {
-                                          isError =
-                                              typeof errors[index] !==
-                                              'undefined';
-                                          errorMessage =
-                                              touched[index] && errors[index];
-                                      }
-
+                                ? refs.map((_: any, index: number) => {
                                       return (
                                           formikForm.values.itemEntries[prevIdx]
                                               .itemsOrServices && (
-                                              <div key={index}>
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.quantity`}
-                                                      label={`quantity`}
-                                                      value={ref?.quantity}
-                                                      type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.quantity,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.quantity
-                                                      }
-                                                  />
+                                              <Card key={index}>
+                                                  <CardContent>
+                                                      <Stack spacing={2}>
+                                                          <Typography>
+                                                              Item or Service{' '}
+                                                              {index.toString()}
+                                                          </Typography>
+                                                          <TextFieldWithFormikValidation
+                                                              fullWidth
+                                                              name={`itemEntries.${prevIdx}.itemsOrServices.${index}.quantity`}
+                                                              label={`Quantity`}
+                                                              type="number"
+                                                              inputProps={{
+                                                                  min: 0,
+                                                              }}
+                                                              formikForm={
+                                                                  formikForm
+                                                              }
+                                                              fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.quantity`}
+                                                          />
+                                                          <TextFieldWithFormikValidation
+                                                              fullWidth
+                                                              name={`itemEntries.${prevIdx}.itemsOrServices.${index}.qualifier`}
+                                                              label={`Qualifier`}
+                                                              formikForm={
+                                                                  formikForm
+                                                              }
+                                                              fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.qualifier`}
+                                                          />
 
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.qualifier`}
-                                                      label={`Qualifier`}
-                                                      value={ref?.qualifier}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.qualifier,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.qualifier
-                                                      }
-                                                  />
+                                                          <TextFieldWithFormikValidation
+                                                              fullWidth
+                                                              name={`itemEntries.${prevIdx}.itemsOrServices.${index}.item`}
+                                                              label={`Item`}
+                                                              formikForm={
+                                                                  formikForm
+                                                              }
+                                                              fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.item`}
+                                                          />
 
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.item`}
-                                                      label={`Item`}
-                                                      value={ref?.item}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.item,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.item
-                                                      }
-                                                  />
+                                                          <TextFieldWithFormikValidation
+                                                              fullWidth
+                                                              name={`itemEntries.${prevIdx}.itemsOrServices.${index}.category`}
+                                                              label={`Category`}
+                                                              formikForm={
+                                                                  formikForm
+                                                              }
+                                                              fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.category`}
+                                                          />
 
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.category`}
-                                                      label={`category`}
-                                                      value={ref?.category}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.category,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.category
-                                                      }
-                                                  />
+                                                          <TextFieldWithFormikValidation
+                                                              fullWidth
+                                                              name={`itemEntries.${prevIdx}.itemsOrServices.${index}.subcategory`}
+                                                              label={`Subcategory`}
+                                                              formikForm={
+                                                                  formikForm
+                                                              }
+                                                              fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.subcategory`}
+                                                          />
+                                                          <Grid
+                                                              container
+                                                              spacing={2}
+                                                          >
+                                                              <Grid
+                                                                  item
+                                                                  xs={12}
+                                                                  sm={6}
+                                                              >
+                                                                  <Typography>
+                                                                      Unit Cost
+                                                                  </Typography>
+                                                                  <TextFieldWithFormikValidation
+                                                                      fullWidth
+                                                                      type="number"
+                                                                      inputProps={{
+                                                                          min: 0,
+                                                                      }}
+                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.pounds`}
+                                                                      label={`Pounds`}
+                                                                      formikForm={
+                                                                          formikForm
+                                                                      }
+                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.pounds`}
+                                                                  />
+                                                                  <TextFieldWithFormikValidation
+                                                                      fullWidth
+                                                                      type="number"
+                                                                      inputProps={{
+                                                                          min: 0,
+                                                                      }}
+                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.shilling`}
+                                                                      label={`Shilling`}
+                                                                      formikForm={
+                                                                          formikForm
+                                                                      }
+                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.shilling`}
+                                                                  />
+                                                                  <TextFieldWithFormikValidation
+                                                                      fullWidth
+                                                                      type="number"
+                                                                      inputProps={{
+                                                                          min: 0,
+                                                                      }}
+                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.pence`}
+                                                                      label={`Pence`}
+                                                                      formikForm={
+                                                                          formikForm
+                                                                      }
+                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.pence`}
+                                                                  />
+                                                              </Grid>
 
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.subcategory`}
-                                                      label={`Subcategory`}
-                                                      value={ref?.subcategory}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.subcategory,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.subcategory
-                                                      }
-                                                  />
+                                                              <Grid
+                                                                  item
+                                                                  xs={12}
+                                                                  sm={6}
+                                                              >
+                                                                  <Typography>
+                                                                      Item Cost
+                                                                  </Typography>
+                                                                  <TextFieldWithFormikValidation
+                                                                      fullWidth
+                                                                      type="number"
+                                                                      inputProps={{
+                                                                          min: 0,
+                                                                      }}
+                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.pounds`}
+                                                                      label={`Pounds`}
+                                                                      formikForm={
+                                                                          formikForm
+                                                                      }
+                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.pounds`}
+                                                                  />
+                                                                  <TextFieldWithFormikValidation
+                                                                      fullWidth
+                                                                      type="number"
+                                                                      inputProps={{
+                                                                          min: 0,
+                                                                      }}
+                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.shilling`}
+                                                                      label={`Shilling`}
+                                                                      formikForm={
+                                                                          formikForm
+                                                                      }
+                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.shilling`}
+                                                                  />
+                                                                  <TextFieldWithFormikValidation
+                                                                      fullWidth
+                                                                      type="number"
+                                                                      inputProps={{
+                                                                          min: 0,
+                                                                      }}
+                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.pence`}
+                                                                      label={`Pence`}
+                                                                      formikForm={
+                                                                          formikForm
+                                                                      }
+                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.pence`}
+                                                                  />
+                                                              </Grid>
+                                                          </Grid>
 
-                                                  <Typography component="div" variant='h2'>
-                                                      Unit Cost
-                                                  </Typography>
+                                                          <ItemsOrServicesVariantsForm
+                                                              formikForm={
+                                                                  formikForm
+                                                              }
+                                                              prevPrevIdx={
+                                                                  prevIdx
+                                                              }
+                                                              prevIdx={index}
+                                                          />
 
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.pounds`}
-                                                      label={`Pounds`}
-                                                      value={
-                                                          ref?.unitCost.pounds
-                                                      }
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.unitCost
-                                                                  .pounds,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.unitCost
-                                                              .pounds
-                                                      }
-                                                  />
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.shilling`}
-                                                      label={`Shilling`}
-                                                      value={
-                                                          ref?.unitCost.shilling
-                                                      }
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.unitCost
-                                                                  .shilling,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.unitCost
-                                                              .shilling
-                                                      }
-                                                  />
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.pence`}
-                                                      label={`Pence`}
-                                                      value={
-                                                          ref?.unitCost.pence
-                                                      }
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.unitCost
-                                                                  .pence,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.unitCost
-                                                              .pence
-                                                      }
-                                                  />
-                                                  <Typography component="div" variant="h2">
-                                                      Item Cost
-                                                  </Typography>
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.pounds`}
-                                                      label={`Pounds`}
-                                                      value={
-                                                          ref?.itemCost.pounds
-                                                      }
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.itemCost
-                                                                  .pounds,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.itemCost
-                                                              .pounds
-                                                      }
-                                                  />
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.shilling`}
-                                                      label={`Shilling`}
-                                                      value={
-                                                          ref?.itemCost.shilling
-                                                      }
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.itemCost
-                                                                  .shilling,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.itemCost
-                                                              .shilling
-                                                      }
-                                                  />
-                                                  <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.pence`}
-                                                      label={`Pence`}
-                                                      value={
-                                                          ref?.itemCost.pence
-                                                      }
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.itemCost
-                                                                  .pence,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.itemCost
-                                                              .pence
-                                                      }
-                                                  />
-
-                                                  <ItemsOrServicesVariantsForm
-                                                      formikForm={formikForm}
-                                                      prevPrevIdx={prevIdx}
-                                                      prevIdx={index}
-                                                  />
-
-                                                  <br />
-                                                  <Button
-                                                      variant="contained"
-                                                      type="button"
-                                                      onClick={() =>
-                                                          arrayHelpers.remove(
-                                                              index,
-                                                          )
-                                                      }
-                                                  >
-                                                      remove from list
-                                                  </Button>
-                                              </div>
+                                                          <div
+                                                              style={{
+                                                                  display:
+                                                                      'flex',
+                                                                  alignItems:
+                                                                      'center',
+                                                              }}
+                                                          >
+                                                              <Button
+                                                                  variant="contained"
+                                                                  type="button"
+                                                                  startIcon={
+                                                                      <DeleteIcon />
+                                                                  }
+                                                                  onClick={() =>
+                                                                      arrayHelpers.remove(
+                                                                          index,
+                                                                      )
+                                                                  }
+                                                              >
+                                                                  remove item or
+                                                                  service{' '}
+                                                                  {index}
+                                                              </Button>
+                                                          </div>
+                                                      </Stack>
+                                                  </CardContent>
+                                              </Card>
                                           )
                                       );
                                   })
@@ -332,6 +233,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                             <Button
                                 variant="contained"
                                 type="button"
+                                startIcon={<AddCircleIcon />}
                                 onClick={() =>
                                     arrayHelpers.push({
                                         quantity: 0,
@@ -355,7 +257,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                             >
                                 add Item or Service
                             </Button>
-                        </div>
+                        </Stack>
                     );
                 }}
             />

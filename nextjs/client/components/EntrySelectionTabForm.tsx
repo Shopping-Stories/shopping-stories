@@ -1,11 +1,12 @@
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import { useEffect, useState } from 'react';
+import { PaperStyles } from 'styles/styles';
 import CreateItemEntryFrom from './CreateItemEntryForm';
-import CreateTobaccoEntryFrom from './CreateTobaccoEntryForm';
 import CreateRegularEntryFrom from './CreateRegularEntryForm';
+import CreateTobaccoEntryFrom from './CreateTobaccoEntryForm';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -20,39 +21,41 @@ const TabPanel = (props: TabPanelProps) => {
         <div
             role="tabpanel"
             hidden={value !== index}
-            id={`vertical-tabpanel-${index}`}
-            aria-labelledby={`vertical-tab-${index}`}
+            id={`tabpanel-${index}`}
+            aria-labelledby={`tab-${index}`}
             {...other}
         >
-            {value === index && (
-                <Box sx={{ p: 3 }}>
-                    <Typography component="div">{children}</Typography>
-                </Box>
-            )}
+            {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
         </div>
     );
 };
 
 const a11yProps = (index: number) => {
     return {
-        id: `vertical-tab-${index}`,
-        'aria-controls': `vertical-tabpanel-${index}`,
+        id: `tab-${index}`,
+        'aria-controls': `tabpanel-${index}`,
     };
 };
 
-const EntrySelectionTabForm = ({ formikForm }: any) => {
-    const [tabIndex, setTabIndex] = useState(0);
+const EntrySelectionTabForm = ({
+    formikForm,
+    initialIndex,
+}: {
+    formikForm: any;
+    initialIndex?: number;
+}) => {
+    const [tabIndex, setTabIndex] = useState(initialIndex || 0);
 
     const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
     };
 
     useEffect(() => {
-        if (tabIndex == 0) {
+        if (tabIndex === 0) {
             formikForm.setFieldValue('itemEntries', []);
             formikForm.setFieldValue('tobaccoEntry', null);
             formikForm.setFieldValue('regularEntry', null);
-        } else if (tabIndex == 1) {
+        } else if (tabIndex === 1) {
             formikForm.setFieldValue('itemEntries', null);
             formikForm.setFieldValue('regularEntry', null);
             formikForm.setFieldValue('tobaccoEntry', {
@@ -62,7 +65,7 @@ const EntrySelectionTabForm = ({ formikForm }: any) => {
                 notes: [],
                 money: [],
             });
-        } else if (tabIndex == 2) {
+        } else if (tabIndex === 2) {
             formikForm.setFieldValue('tobaccoEntry', null);
             formikForm.setFieldValue('itemEntries', null);
             formikForm.setFieldValue('regularEntry', {
@@ -74,33 +77,26 @@ const EntrySelectionTabForm = ({ formikForm }: any) => {
     }, [tabIndex]);
 
     return (
-        <Box
-            sx={{
-                flexGrow: 1,
-                bgcolor: 'background.paper',
-                display: 'flex',
-            }}
-        >
-            <Tabs
-                orientation="vertical"
-                variant="scrollable"
-                value={tabIndex}
-                onChange={handleChange}
-                aria-label="Vertical tabs example"
-                sx={{ borderRight: 1, borderColor: 'divider' }}
-            >
-                <Tab label="Item One" {...a11yProps(0)} />
-                <Tab label="Item Two" {...a11yProps(1)} />
-                <Tab label="Item Three" {...a11yProps(2)} />
+        <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+            <Tabs value={tabIndex} onChange={handleChange} centered>
+                <Tab label="Item Entries" {...a11yProps(0)} />
+                <Tab label="Tobacco Entry" {...a11yProps(1)} />
+                <Tab label="Regular Entry" {...a11yProps(2)} />
             </Tabs>
             <TabPanel value={tabIndex} index={0}>
-                <CreateItemEntryFrom formikForm={formikForm} />
+                <Paper sx={PaperStyles}>
+                    <CreateItemEntryFrom formikForm={formikForm} />
+                </Paper>
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
-                <CreateTobaccoEntryFrom formikForm={formikForm} />
+                <Paper sx={PaperStyles}>
+                    <CreateTobaccoEntryFrom formikForm={formikForm} />
+                </Paper>
             </TabPanel>
             <TabPanel value={tabIndex} index={2}>
-                <CreateRegularEntryFrom formikForm={formikForm} />
+                <Paper sx={PaperStyles}>
+                    <CreateRegularEntryFrom formikForm={formikForm} />
+                </Paper>
             </TabPanel>
         </Box>
     );

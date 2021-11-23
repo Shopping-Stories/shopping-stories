@@ -1,6 +1,8 @@
 import {
     getModelForClass,
-    modelOptions, prop
+    index,
+    modelOptions,
+    prop,
 } from '@typegoose/typegoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, Int, ObjectType } from 'type-graphql';
@@ -257,17 +259,6 @@ export class PeoplePlacesObject {
     @Field(() => ID, { description: 'words', nullable: true })
     id: ObjectId;
 }
-/*
-export const EntryUnion = createUnionType({
-	name: 'EntryUnion',
-	types: () => [ItemEntry, TobaccoEntryObject],
-	resolveType(value) {
-		if (typeof value.Money !== undefined) {
-			return ItemEntry;
-		}
-		return TobaccoEntryObject;
-	},
-});*/
 
 @ObjectType('DateObject', { description: 'Single Date' })
 export class DateObject {
@@ -328,7 +319,7 @@ export class AccHolderObject {
     @Field(() => String, {
         description:
             'ID of the accountholder to reference in peoples master list',
-        defaultValue: null
+        defaultValue: null,
     })
     accountHolderID: ObjectId | null;
 }
@@ -337,6 +328,21 @@ export class AccHolderObject {
 @modelOptions({
     schemaOptions: { timestamps: true },
 })
+@index(
+    {
+        'accountHolder.accountFirstName': 'text',
+        'accountHolder.accountLastName': 'text',
+        'itemEntry.itemsMentioned.item': 'text',
+        'itemEntry.itemsOrServices.item': 'text',
+        'people.name': 'text',
+        'places.name': 'text',
+        'regularEntry.entry': 'text',
+        'regularEntry.itemsMentioned.item': 'text',
+        'tobaccoEntry.entry': 'text',
+    },
+    // @ts-ignore
+    { name: 'search_index' },
+)
 export class Entry {
     @Field(() => ID, { description: 'String of MongoDB ObjectId' })
     public get id(): string {
