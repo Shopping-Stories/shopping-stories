@@ -46,10 +46,12 @@ const Home: NextPage = () => {
                             padding: '1rem',
                         }}
                     >
-                        <Typography align="center" variant="h2" component="div">
+                        <Typography align="center" variant="h2" component="div"
+                        sx={{ fontFamily: 'Merriweather' }}>
                             Welcome to
                         </Typography>
-                        <Typography align="center" variant="h1" component="div">
+                        <Typography align="center" variant="h1" component="div"
+                        sx={{ fontWeight: 'regular', fontFamily: 'Merriweather' }}>
                             Shopping Stories
                         </Typography>
                     </Grid>

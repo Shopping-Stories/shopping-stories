@@ -32,7 +32,7 @@ a {
   text-decoration: underline;
 }
 
-/* p {
+ p {
   font-size: 1rem;
   color: inherit;
   font-family: Merriweather;
@@ -53,14 +53,24 @@ i {
   color: inherit;
   font-family: Merriweather;
   text-align: left;
-} */
+} 
 
-/* h1 {
+h1 {
   font-size: 2rem;
   letter-spacing: 5px;
   color: #030300e7;
   font-weight: bold;
   font-family: Merriweather;
+  text-shadow: 1px 1px 1px #335C67, 2px 2px 1px #335C67;
+  text-align: center;
+}
+h5 {
+  font-size: 3rem;
+  letter-spacing: 5px;
+  color: #030300e7;
+  font-weight: bold;
+  font-family: Merriweather;
+  text-shadow: 1px 1px 1px #335C67, 2px 2px 1px #335C67;
   text-align: center;
 }
 
@@ -89,10 +99,11 @@ h2 {
   font-size: 1.5rem;
   letter-spacing: 5px;
   color: #030300e7;
-  font-weight: lighter;
+  font-weight: medium;
+  text-shadow: 1px 1px 1px #335C67, 2px 2px 1px #335C67;
   font-family: Merriweather;
   text-align: center;
-} */
+} 
 
 * {
   box-sizing: border-box;

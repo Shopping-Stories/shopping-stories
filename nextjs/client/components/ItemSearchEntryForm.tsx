@@ -10,7 +10,7 @@ const useStyles = makeStyles({
         display: 'block',
     },
 });
-export default function RegularEntryForm() {
+export default function ItemSearchEntryForm() {
     const classes = useStyles();
     const [reel, setReel] = useState('');
     const [storeOwner, setStoreOwner] = useState('');
@@ -22,8 +22,11 @@ export default function RegularEntryForm() {
     const [places, setPlaces] = useState('');
     const [commodity, setCommodity] = useState('');
     const [colony, setColony] = useState('');
-    const [entryDescription, setEntryDescription] = useState('');
-    const [tobaccoMarkName, setTobaccoMarkName] = useState('');
+    const [perOrder, setPerOrder] = useState('');
+    const [itemName, setItemName] = useState('');
+    const [cat, setCat] = useState('');
+    const [subCat, setSubCat] = useState('');
+    const [varient, setVarient] = useState('');
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
@@ -38,8 +41,11 @@ export default function RegularEntryForm() {
             places ||
             commodity ||
             colony ||
-            entryDescription ||
-            tobaccoMarkName
+            perOrder ||
+            itemName ||
+            cat ||
+            subCat ||
+            varient
         ) {
             console.log(
                 reel,
@@ -52,8 +58,11 @@ export default function RegularEntryForm() {
                 places,
                 commodity,
                 colony,
-                entryDescription,
-                tobaccoMarkName,
+                perOrder,
+                itemName,
+                cat,
+                subCat,
+                varient,
             );
         }
     };
@@ -132,18 +141,39 @@ export default function RegularEntryForm() {
                     variant="outlined"
                 />
                 <TextField
-                    onChange={(e) => setEntryDescription(e.target.value)}
+                    required
+                    onChange={(e) => setPerOrder(e.target.value)}
                     className={classes.field}
-                    id="outlined-multiline-static"
-                    label="Entry Description"
-                    multiline
-                    rows={4}
+                    id="outlined-required"
+                    label="Per Order (Yes or No)"
+                    defaultValue="1 for Yes, 0 for no"
                 />
                 <TextField
-                    onChange={(e) => setTobaccoMarkName(e.target.value)}
+                    onChange={(e) => setItemName(e.target.value)}
                     className={classes.field}
                     id="outlined-basic"
-                    label="Tobacco Mark Name"
+                    label="Item Name"
+                    variant="outlined"
+                />
+                <TextField
+                    onChange={(e) => setCat(e.target.value)}
+                    className={classes.field}
+                    id="outlined-basic"
+                    label="Category"
+                    variant="outlined"
+                />
+                <TextField
+                    onChange={(e) => setSubCat(e.target.value)}
+                    className={classes.field}
+                    id="outlined-basic"
+                    label="Sub-Category"
+                    variant="outlined"
+                />
+                <TextField
+                    onChange={(e) => setVarient(e.target.value)}
+                    className={classes.field}
+                    id="outlined-basic"
+                    label="Varient"
                     variant="outlined"
                 />
                 <Button type="submit" variant="contained">

@@ -7,9 +7,10 @@ import Button from '@mui/material/Button';
 import { makeStyles } from '@mui/styles';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
-import RegularEntryForm from './RegularEntryForm';
-import ItemEntryForm from './ItemEntryForm';
-import TobaccoEntryForm from './TobaccoEntryForm';
+import RegularSearchEntryForm from './RegularSearchEntryForm';
+import ItemSearchEntryForm from './ItemSearchEntryForm';
+import TobaccoSearchEntryForm from './TobaccoSearchEntryForm';
+
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -100,15 +101,15 @@ export default function BasicTabs() {
             </TabPanel>
 
             <TabPanel value={value} index={1}>
-                <RegularEntryForm />
+                <RegularSearchEntryForm />
             </TabPanel>
 
             <TabPanel value={value} index={2}>
-                <ItemEntryForm />
+                <ItemSearchEntryForm />
             </TabPanel>
 
             <TabPanel value={value} index={3}>
-                <TobaccoEntryForm />
+                <TobaccoSearchEntryForm />
             </TabPanel>
         </Box>
     );

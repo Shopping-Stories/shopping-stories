@@ -157,8 +157,8 @@ export default function VerticalTabs() {
                             <Image
                                 src={'/FXCO_Research_01.jpg'}
                                 layout="responsive"
-                                width={1.6}
-                                height={0.8}
+                                width={2}
+                                height={1}
                             />
                             <Box
                                 alignItems="center"

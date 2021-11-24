@@ -27,7 +27,7 @@ const AboutPage: NextPage = () => {
                         padding: '1rem',
                     }}
                 >
-                    About Page
+                    <h5>About Page</h5>
                     <AboutNav />
                 </Paper>
             </div>

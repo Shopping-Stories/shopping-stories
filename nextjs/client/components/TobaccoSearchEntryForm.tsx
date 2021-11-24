@@ -10,7 +10,7 @@ const useStyles = makeStyles({
         display: 'block',
     },
 });
-export default function TobaccoEntryForm() {
+export default function TobaccoSearchEntryForm() {
     const classes = useStyles();
     const [reel, setReel] = useState('');
     const [storeOwner, setStoreOwner] = useState('');
