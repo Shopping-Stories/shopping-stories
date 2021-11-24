@@ -1,14 +1,13 @@
 import 'reflect-metadata';
 import { getMongooseFromFields } from 'server/config/utils';
 import { FindAllLimitAndSkip } from 'server/findAllArgs.input';
-import { advancedSearch } from 'server/spreadsheet/spreadsheet.service';
 import {
     Arg,
     Info,
     Mutation,
     Query,
     Resolver,
-    UseMiddleware,
+    UseMiddleware
 } from 'type-graphql';
 import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 import { Entry } from './entry.schema';
@@ -21,7 +20,7 @@ import { UpdateEntryInput } from './input/updateEntry.input';
 export default class EntryResolver {
     // @UseMiddleware(Auth, ResolveTime)
     @UseMiddleware(ResolveTime, ConnectDB)
-    @Query((_returns) => [Entry], {
+    @Query(() => [Entry], {
         nullable: true,
         description: 'Search all Entries in the database',
     })
@@ -40,21 +39,31 @@ export default class EntryResolver {
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
-    @Query((_returns) => [Object], {
+    @Query(() => [Entry], {
         nullable: true,
         description: 'Search all Entries in the database',
     })
     async advancedFindEntries(
-        // @Arg('options', { nullable: true })
-        // { limit, skip }: FindAllLimitAndSkip,
+        @Arg('options', { nullable: true })
+        { limit, skip }: FindAllLimitAndSkip,
         @Arg('search', { nullable: true }) search: AdvancedSearchInput,
-        // @Info() info: any,
-    ): Promise<any> {
-        return advancedSearch(search);
+    ): Promise<Entry[]> {
+        return EntryService.advancedSearch(search, limit, skip);
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
-    @Query((_returns) => Number)
+    @Query(() => Number, {
+        nullable: true,
+        description: 'Search all Entries in the database',
+    })
+    async advancedCountEntries(
+        @Arg('search', { nullable: true }) search: AdvancedSearchInput,
+    ): Promise<number> {
+        return EntryService.advancedSearch(search, 1, 1, true);
+    }
+
+    @UseMiddleware(ResolveTime, ConnectDB)
+    @Query(() => Number)
     async countEntries(
         @Arg('search', { nullable: true }) search: string,
     ): Promise<number> {
@@ -62,7 +71,7 @@ export default class EntryResolver {
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
-    @Query((_returns) => Entry, {
+    @Query(() => Entry, {
         nullable: true,
         description: 'Find an entry by id',
     })
@@ -71,7 +80,7 @@ export default class EntryResolver {
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
-    @Mutation((_returns) => Entry)
+    @Mutation(() => Entry)
     async createEntry(
         @Arg('createEntryInput') createEntryInput: CreateEntryInput,
     ) {
@@ -79,7 +88,7 @@ export default class EntryResolver {
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
-    @Mutation((_returns) => [Entry])
+    @Mutation(() => [Entry])
     async createEntries(
         @Arg('entries', (_type) => [CreateEntryInput], { nullable: 'items' })
         entries: CreateEntryInput[],
@@ -88,7 +97,7 @@ export default class EntryResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
-    @Mutation((_returns) => Entry, { nullable: true })
+    @Mutation(() => Entry, { nullable: true })
     async updateEntry(
         @Arg('id') id: string,
         @Arg('updatedFields') updatedFields: UpdateEntryInput,
@@ -102,7 +111,7 @@ export default class EntryResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
-    @Mutation((_returns) => Entry, { nullable: true })
+    @Mutation(() => Entry, { nullable: true })
     async deleteEntry(
         @Arg('id') id: string,
         @Info() info: any,
