@@ -174,8 +174,8 @@ export async function advancedSearch(searchObj: any) {
         searchString += searchObj.places;
     }
     if (searchObj.colony != undefined) {
-        let colony = searchObj.colony;
-        temp['money.colony'] = { $regex: colony, $option: 'i' };
+        let colony = searchObj.colony.toString();
+        temp['money.colony'] = { $regex: new RegExp(colony, 'i') };
     }
     if (searchObj.itemEntry != null) {
         let entry = searchObj.itemEntry;
