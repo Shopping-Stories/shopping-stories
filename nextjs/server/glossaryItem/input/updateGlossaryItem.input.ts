@@ -24,17 +24,20 @@ export class UpdateGlossaryItemInput {
     qualifiers?: string;
 
     @Field({
-        nullable: true, description: 'description of the cultural context surrounding the item',
+        nullable: true,
+        description: 'description of the cultural context surrounding the item',
     })
     culturalContext?: string;
 
     @Field({
-        nullable: true, description: "citations form information used in this item's details",
+        nullable: true,
+        description: "citations form information used in this item's details",
     })
     citations?: string;
 
     @Field(() => [UpdateImageObject], {
-        nullable: true, description: 'images of item',
+        nullable: true,
+        description: 'images of item',
     })
     images?: UpdateImageObject[];
 }
@@ -71,7 +74,8 @@ export class UpdatePurchaseObject {
 @InputType({ description: 'Image Information' })
 class UpdateImageObject {
     @Field({
-        nullable: true, description: 'string of filename of image in the S3 Bucket',
+        nullable: true,
+        description: 'string of filename of image in the S3 Bucket',
     })
     imageKey?: string;
 
@@ -91,7 +95,8 @@ class UpdateImageObject {
     caption?: string;
 
     @Field({
-        nullable: true, description: 'citation about the collection the image is in',
+        nullable: true,
+        description: 'citation about the collection the image is in',
     })
     collectionCitation?: string;
 

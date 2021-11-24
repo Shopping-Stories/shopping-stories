@@ -1,7 +1,8 @@
 import { S3ProviderListOutput } from '@aws-amplify/storage';
 import { CognitoConfig } from 'config/constants.config';
 
-export const cloneWithoutTypename = (obj: any) => JSON.parse(JSON.stringify(obj), omitTypename);
+export const cloneWithoutTypename = (obj: any) =>
+    JSON.parse(JSON.stringify(obj), omitTypename);
 
 export const omitTypename = (key: string, value: any) =>
     key === '__typename' ? undefined : value;

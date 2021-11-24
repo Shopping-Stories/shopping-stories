@@ -17,10 +17,7 @@ const AuthSkeleton = (props: Props) => {
             <div className={backgrounds.imageBackground}>
                 <Header />
                 <Container maxWidth="sm">
-                    <Paper
-                        variant="outlined"
-                        sx={styles}
-                    >
+                    <Paper variant="outlined" sx={styles}>
                         <form onSubmit={props.formikForm.handleSubmit}>
                             {props.children}
                         </form>

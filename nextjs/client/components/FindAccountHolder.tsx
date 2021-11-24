@@ -39,7 +39,7 @@ const FindAccountHolder = ({ formikForm }: any) => {
         debounce((search: string) => {
             setSearch(search);
             formikForm.setFieldValue(`accountHolder.accountHolderID`, '');
-        }, 500),
+        }, 250),
         [],
     );
 
@@ -50,15 +50,19 @@ const FindAccountHolder = ({ formikForm }: any) => {
                 id: formikForm.values.accountHolder.accountHolderID,
             }}
             onChange={(_event: any, newValue: any) => {
-                formikForm.setFieldValue(
-                    `accountHolder.accountHolderID`,
-                    newValue.id,
-                );
-                setSearch(newValue.name);
+                if (newValue) {
+                    formikForm.setFieldValue(
+                        `accountHolder.accountHolderID`,
+                        newValue.id,
+                    );
+                    setSearch(newValue.name);
+                }
             }}
-            onInputChange={(_, newSearch: string) =>
-                delayedPersonSearch(newSearch)
-            }
+            onInputChange={(_, newSearch: string, reason) => {
+                if (reason !== 'reset') {
+                    delayedPersonSearch(newSearch);
+                }
+            }}
             options={peopleOptions}
             getOptionLabel={(option: any) => option.name || ''}
             isOptionEqualToValue={(option: any, value: any) =>

@@ -16,7 +16,6 @@ const GlossaryItemForm = (props: ImageFormProps) => {
 
     return (
         <FormikProvider value={formikForm}>
-
             <FieldArray
                 name="images"
                 render={(arrayHelpers: any) => {
@@ -28,12 +27,12 @@ const GlossaryItemForm = (props: ImageFormProps) => {
                             {refs && refs.length > 0
                                 ? refs.map((_: any, index: number) => (
                                       <GlossaryImageFormBody
-                                      key={index}
-                                      formikForm={formikForm}
-                                      arrayHelpers={arrayHelpers}
-                                      index={index}
-                                      handleImage={handleImage}
-                                      removeImage={removeImage}
+                                          key={index}
+                                          formikForm={formikForm}
+                                          arrayHelpers={arrayHelpers}
+                                          index={index}
+                                          handleImage={handleImage}
+                                          removeImage={removeImage}
                                       />
                                   ))
                                 : null}
@@ -54,7 +53,7 @@ const GlossaryItemForm = (props: ImageFormProps) => {
                                     })
                                 }
                             >
-                                Add <Add/>
+                                Add <Add />
                             </Button>
                         </Stack>
                     );

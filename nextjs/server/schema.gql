@@ -982,7 +982,7 @@ input UpdateDate {
   month: Int
 
   # year of date
-  year: String
+  year: Int
 
   # complete date
   fullDate: DateTime

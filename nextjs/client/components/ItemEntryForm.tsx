@@ -7,31 +7,31 @@ import Button from '@mui/material/Button';
 const useStyles = makeStyles({
     field: {
         margin: 20,
-        display: 'block'
-    }
-})
-export default function ItemEntryForm(){
-    const classes = useStyles()
-    const [reel, setReel] = useState('')
-    const [storeOwner, setStoreOwner] = useState('')
-    const [folioYear, setFolioYear] = useState('')
-    const [folioPage, setFolioPage] = useState('')
-    const [entryID, setEntryID] = useState('')
-    const [accountHolder, setAccountHolder] = useState('')
-    const [people, setPeople] = useState('')
-    const [places, setPlaces] = useState('')
-    const [commodity, setCommodity] = useState('')
-    const [colony, setColony] = useState('')
-    const [perOrder, setPerOrder] = useState('')
-    const [itemName, setItemName] = useState('')
-    const [cat, setCat] = useState('')
-    const [subCat, setSubCat] = useState('')
-    const [varient, setVarient] = useState('')
-
+        display: 'block',
+    },
+});
+export default function ItemEntryForm() {
+    const classes = useStyles();
+    const [reel, setReel] = useState('');
+    const [storeOwner, setStoreOwner] = useState('');
+    const [folioYear, setFolioYear] = useState('');
+    const [folioPage, setFolioPage] = useState('');
+    const [entryID, setEntryID] = useState('');
+    const [accountHolder, setAccountHolder] = useState('');
+    const [people, setPeople] = useState('');
+    const [places, setPlaces] = useState('');
+    const [commodity, setCommodity] = useState('');
+    const [colony, setColony] = useState('');
+    const [perOrder, setPerOrder] = useState('');
+    const [itemName, setItemName] = useState('');
+    const [cat, setCat] = useState('');
+    const [subCat, setSubCat] = useState('');
+    const [varient, setVarient] = useState('');
 
     const handleSubmit = (e: any) => {
-        e.preventDefault()
-        if( reel ||
+        e.preventDefault();
+        if (
+            reel ||
             storeOwner ||
             folioYear ||
             folioPage ||
@@ -45,14 +45,30 @@ export default function ItemEntryForm(){
             itemName ||
             cat ||
             subCat ||
-            varient){
-            console.log(reel, storeOwner, folioYear, folioPage, entryID, accountHolder, people, places,
-                commodity, colony, perOrder, itemName, cat, subCat, varient)
+            varient
+        ) {
+            console.log(
+                reel,
+                storeOwner,
+                folioYear,
+                folioPage,
+                entryID,
+                accountHolder,
+                people,
+                places,
+                commodity,
+                colony,
+                perOrder,
+                itemName,
+                cat,
+                subCat,
+                varient,
+            );
         }
-    }
+    };
     return (
         <>
-            <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+            <form noValidate autoComplete="off" onSubmit={handleSubmit}>
                 <TextField
                     onChange={(e) => setReel(e.target.value)}
                     className={classes.field}
@@ -160,13 +176,10 @@ export default function ItemEntryForm(){
                     label="Varient"
                     variant="outlined"
                 />
-                <Button
-                type="submit"
-                variant="contained"
-                >
+                <Button type="submit" variant="contained">
                     Search
                 </Button>
             </form>
         </>
-    )
+    );
 }

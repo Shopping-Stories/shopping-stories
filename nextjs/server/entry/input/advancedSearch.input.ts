@@ -64,7 +64,7 @@ export class AdvancedSearchInput {
 
     @Field({ nullable: true })
     date?: Date;
-    
+
     @Field({ nullable: true })
     date2?: Date;
 
@@ -80,7 +80,7 @@ export class AdvancedSearchInput {
     @Field({ nullable: true })
     colony?: string;
 
-    @Field(() => ItemEntrySearch, { nullable: true, defaultValue: null  })
+    @Field(() => ItemEntrySearch, { nullable: true, defaultValue: null })
     itemEntry: ItemEntrySearch | null;
 
     @Field(() => TobaccoEntrySearch, { nullable: true, defaultValue: null })

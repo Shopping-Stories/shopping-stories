@@ -1,6 +1,13 @@
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Stack } from '@mui/material';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
+import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 const EntryMoneyFrom = ({ formikForm }: any) => {
     return (
@@ -9,381 +16,183 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                 name="tobaccoEntry.money"
                 render={(arrayHelpers: any) => {
                     const refs = formikForm.values?.tobaccoEntry?.money;
-                    const touched = formikForm.touched?.tobaccoEntry?.money;
-                    const errors = formikForm.errors?.tobaccoEntry?.money;
-                    const atLeastOneError =
-                        touched &&
-                        errors &&
-                        touched.length > 0 &&
-                        errors.length > 0;
 
                     return (
-                        <div>
+                        <Stack spacing={2}>
                             {refs && refs.length > 0
-                                ? refs.map((ref: any, index: number) => {
-                                      let isError = false;
-                                      let errorMessage: any;
-                                      if (atLeastOneError) {
-                                          isError =
-                                              typeof errors[index] !==
-                                              'undefined';
-                                          errorMessage =
-                                              touched[index] && errors[index];
-                                      }
-
+                                ? refs.map((_: any, index: number) => {
                                       return (
-                                          formikForm.values?.tobaccoEntry
-                                              ?.money && (
-                                              <div key={index}>
-                                                  <TextField
+                                          <Card key={index}>
+                                              <CardContent>
+                                                  <Typography variant="subtitle1">
+                                                      Money Note {index}
+                                                  </Typography>
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.moneyType`}
-                                                      label={`Type of Money`}
-                                                      value={ref?.moneyType}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.moneyType,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.moneyType
-                                                      }
+                                                      label={`Type of money`}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.moneyType`}
                                                   />
-
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.tobaccoAmount`}
-                                                      label={`Amount of Tobacco`}
-                                                      value={ref?.tobaccoAmount}
+                                                      label={`Amount of tobacco`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.tobaccoAmount,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.tobaccoAmount
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.tobaccoAmount`}
                                                   />
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.casksInTransaction`}
-                                                      label={`Barrel Weight`}
-                                                      value={
-                                                          ref?.casksInTransaction
-                                                      }
+                                                      label={`Casks in the transaction`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.casksInTransaction,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.casksInTransaction
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.casksInTransaction`}
                                                   />
-                                                  <TextField
+
+                                                  <Typography variant="subtitle2">
+                                                      Rate for tobacco
+                                                  </Typography>
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.rateForTobacco.pounds`}
-                                                      label={`Rate for Tobacco: Pounds`}
-                                                      value={
-                                                          ref?.rateForTobacco
-                                                              .pounds
-                                                      }
+                                                      label={`Pounds`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.rateForTobacco
-                                                                  .pounds,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage
-                                                              ?.rateForTobacco
-                                                              .pounds
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.rateForTobacco.pounds`}
                                                   />
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.rateForTobacco.shilling`}
-                                                      label={`Rate for Tobacco: shilling`}
-                                                      value={
-                                                          ref?.rateForTobacco
-                                                              .shilling
-                                                      }
+                                                      label={`Shilling`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.rateForTobacco
-                                                                  .shilling,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage
-                                                              ?.rateForTobacco
-                                                              .shilling
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.rateForTobacco.shilling`}
                                                   />
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.rateForTobacco.pence`}
-                                                      label={`Rate for Tobacco: pence`}
-                                                      value={
-                                                          ref?.rateForTobacco
-                                                              .pence
-                                                      }
+                                                      label={`Pence`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.rateForTobacco
-                                                                  .pence,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage
-                                                              ?.rateForTobacco
-                                                              .pence
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.rateForTobacco.pence`}
                                                   />
 
-                                                  <TextField
+                                                  <Typography variant="subtitle2">
+                                                      Tobacco sold (money)
+                                                  </Typography>
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.tobaccoSold.pounds`}
-                                                      label={`Tobacco Sold: Pounds`}
-                                                      value={
-                                                          ref?.tobaccoSold
-                                                              .pounds
-                                                      }
+                                                      label={`Pounds`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.tobaccoSold
-                                                                  .pounds,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage
-                                                              ?.tobaccoSold
-                                                              .pounds
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.tobaccoSold.pounds`}
                                                   />
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.tobaccoSold.shilling`}
-                                                      label={`Rate for Tobacco: shilling`}
-                                                      value={
-                                                          ref?.tobaccoSold
-                                                              .shilling
-                                                      }
+                                                      label={`Shilling`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.tobaccoSold
-                                                                  .shilling,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage
-                                                              ?.tobaccoSold
-                                                              .shilling
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.tobaccoSold.shilling`}
                                                   />
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.tobaccoSold.pence`}
-                                                      label={`Tobacco Sold: pence`}
-                                                      value={
-                                                          ref?.tobaccoSold.pence
-                                                      }
+                                                      label={`Pence`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.tobaccoSold
-                                                                  .pence,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage
-                                                              ?.tobaccoSold
-                                                              .pence
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.tobaccoSold.pence`}
                                                   />
 
-                                                  <TextField
+                                                  <Typography variant="subtitle2">
+                                                      Casks sold for each
+                                                  </Typography>
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.casksSoldForEach.pounds`}
-                                                      label={`Casks Sold for Each: Pounds`}
-                                                      value={
-                                                          ref?.casksSoldForEach
-                                                              .pounds
-                                                      }
+                                                      label={`Pounds`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.casksSoldForEach
-                                                                  .pounds,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage
-                                                              ?.casksSoldForEach
-                                                              .pounds
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.casksSoldForEach.pounds`}
                                                   />
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.casksSoldForEach.shilling`}
-                                                      label={`Casks Sold for Each: shilling`}
-                                                      value={
-                                                          ref?.casksSoldForEach
-                                                              .shilling
-                                                      }
+                                                      label={`Shilling`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.casksSoldForEach
-                                                                  .shilling,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage
-                                                              ?.casksSoldForEach
-                                                              .shilling
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.casksSoldForEach.shilling`}
                                                   />
-                                                  <TextField
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`tobaccoEntry.money.${index}.casksSoldForEach.pence`}
-                                                      label={`Casks Sold for Each: pence`}
-                                                      value={
-                                                          ref?.casksSoldForEach
-                                                              .pence
-                                                      }
+                                                      label={`Pence`}
                                                       type="number"
-                                                      inputProps={{ min: 0 }}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage
-                                                                  ?.casksSoldForEach
-                                                                  .pence,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage
-                                                              ?.casksSoldForEach
-                                                              .pence
-                                                      }
+                                                      inputProps={{
+                                                          min: 0,
+                                                      }}
+                                                      formikForm={formikForm}
+                                                      fieldName={`tobaccoEntry.money.${index}.casksSoldForEach.pence`}
                                                   />
-                                                  <br />
-                                                  <Button
-                                                      variant="contained"
-                                                      type="button"
-                                                      onClick={() =>
-                                                          arrayHelpers.remove(
-                                                              index,
-                                                          )
-                                                      }
-                                                  >
-                                                      remove from list
-                                                  </Button>
-                                              </div>
-                                          )
+
+                                                  <CardActions>
+                                                      <Button
+                                                          variant="contained"
+                                                          type="button"
+                                                          startIcon={
+                                                              <DeleteIcon />
+                                                          }
+                                                          onClick={() =>
+                                                              arrayHelpers.remove(
+                                                                  index,
+                                                              )
+                                                          }
+                                                      >
+                                                          remove
+                                                      </Button>
+                                                  </CardActions>
+                                              </CardContent>
+                                          </Card>
                                       );
                                   })
                                 : null}
                             <Button
                                 variant="contained"
                                 type="button"
+                                startIcon={<AddCircleIcon />}
                                 onClick={() =>
                                     arrayHelpers.push({
                                         moneyType: '',
@@ -407,9 +216,9 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                     })
                                 }
                             >
-                                Add Note
+                                Add
                             </Button>
-                        </div>
+                        </Stack>
                     );
                 }}
             />

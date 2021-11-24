@@ -1,6 +1,10 @@
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
+import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 const LedgerReferencesForm = ({ formikForm }: any) => {
     return (
@@ -8,58 +12,51 @@ const LedgerReferencesForm = ({ formikForm }: any) => {
             <FieldArray
                 name="ledgerRefs"
                 render={(arrayHelpers: any) => {
-                    const refs = formikForm.values.ledgerRefs;
-                    const touched = formikForm.touched.ledgerRefs;
-                    const errors = formikForm.errors.ledgerRefs;
-                    const atLeastOneError =
-                        touched &&
-                        errors &&
-                        touched.length > 0 &&
-                        errors.length > 0;
+                    const refs: string[] = formikForm.values.ledgerRefs;
 
                     return (
-                        <div>
+                        <Stack spacing={2}>
+                            <Typography component="h2">
+                                Ledger References
+                            </Typography>
                             {refs && refs.length > 0
-                                ? refs.map((ref: string, index: number) => {
-                                      let isError = false;
-                                      let errorMessage = '';
-                                      if (atLeastOneError) {
-                                          isError =
-                                              typeof errors[index] !==
-                                              'undefined';
-                                          errorMessage =
-                                              touched[index] && errors[index];
-                                      }
-
+                                ? refs.map((_, index) => {
                                       return (
-                                          formikForm.values.folioRefs && (
-                                              <div key={index}>
-                                                  <TextField
+                                          formikForm.values.ledgerRefs && (
+                                              <Stack
+                                                  key={index}
+                                                  direction="row"
+                                                  spacing={2}
+                                              >
+                                                  <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
                                                       name={`ledgerRefs.${index}`}
                                                       label={`Ledger ${index}`}
-                                                      value={ref}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={isError}
-                                                      helperText={errorMessage}
+                                                      formikForm={formikForm}
+                                                      fieldName={`ledgerRefs.${index}`}
                                                   />
-                                                  <br />
-                                                  <Button
-                                                      variant="contained"
-                                                      type="button"
-                                                      onClick={() =>
-                                                          arrayHelpers.remove(
-                                                              index,
-                                                          )
-                                                      }
+                                                  <div
+                                                      style={{
+                                                          display: 'flex',
+                                                          alignItems: 'center',
+                                                      }}
                                                   >
-                                                      remove from list
-                                                  </Button>
-                                              </div>
+                                                      <Button
+                                                          variant="contained"
+                                                          startIcon={
+                                                              <DeleteIcon />
+                                                          }
+                                                          type="button"
+                                                          onClick={() =>
+                                                              arrayHelpers.remove(
+                                                                  index,
+                                                              )
+                                                          }
+                                                      >
+                                                          remove
+                                                      </Button>
+                                                  </div>
+                                              </Stack>
                                           )
                                       );
                                   })
@@ -67,11 +64,12 @@ const LedgerReferencesForm = ({ formikForm }: any) => {
                             <Button
                                 variant="contained"
                                 type="button"
-                                onClick={() => arrayHelpers.push('')} // insert an empty string at a position
+                                startIcon={<AddCircleIcon />}
+                                onClick={() => arrayHelpers.push('')}
                             >
-                                Add a Ledger Reference
+                                Add
                             </Button>
-                        </div>
+                        </Stack>
                     );
                 }}
             />

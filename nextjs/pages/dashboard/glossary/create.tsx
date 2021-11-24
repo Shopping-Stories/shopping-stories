@@ -60,8 +60,7 @@ const CreateGlossaryItemPage: NextPage = () => {
                 // find the File corresponding to the filename
                 // in imageKey
                 const imageFile = imageFiles.find(
-                    (imageFile: File) =>
-                        imageFile.name === image.imageKey,
+                    (imageFile: File) => imageFile.name === image.imageKey,
                 );
 
                 try {

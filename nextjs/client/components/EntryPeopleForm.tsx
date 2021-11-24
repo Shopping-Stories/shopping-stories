@@ -1,28 +1,17 @@
-import Autocomplete from '@mui/material/Autocomplete';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { FetchPeopleQuery } from 'client/graphqlDefs';
+import { OptionsType, PersonOrPlace } from 'client/types';
 import { FieldArray, FormikProvider } from 'formik';
 import debounce from 'lodash/debounce';
 import { useCallback, useState } from 'react';
 import { useQuery } from 'urql';
-
-const queryDef = `
-query searchPeople($search: String!, $options: FindAllLimitAndSkip) {
-  people: findPeople(search: $search, options: $options) {
-    id
-    firstName
-    lastName
-    name: fullName
-  }
-}
-`;
+import PeoplePlacesAutocomplete from './PeoplePlacesAutocomplete';
 
 const EntryPeopleForm = ({ formikForm }: any) => {
-    interface OptionsType {
-        limit: number | null;
-        skip: number | null;
-    }
-
     const [search, setSearch] = useState<string>('');
 
     const [options, _setOptions] = useState<OptionsType>({
@@ -30,8 +19,12 @@ const EntryPeopleForm = ({ formikForm }: any) => {
         skip: null,
     });
 
-    const [{ data }, _executeQuery] = useQuery({
-        query: queryDef,
+    interface FetchPeopleQuery {
+        people: PersonOrPlace[];
+    }
+
+    const [{ data }, _executeQuery] = useQuery<FetchPeopleQuery>({
+        query: FetchPeopleQuery,
         variables: { options, search },
     });
 
@@ -41,7 +34,7 @@ const EntryPeopleForm = ({ formikForm }: any) => {
         debounce((search: string, index: number) => {
             setSearch(search);
             formikForm.setFieldValue(`people.${index}.id`, '');
-        }, 500),
+        }, 250),
         [],
     );
 
@@ -50,159 +43,56 @@ const EntryPeopleForm = ({ formikForm }: any) => {
             <FieldArray
                 name="people"
                 render={(arrayHelpers: any) => {
-                    // const [inputValue, setInputValue] = useState<string>('');
                     const refs = formikForm.values.people;
-                    const touched = formikForm.touched.people;
-                    const errors = formikForm.errors.people;
-                    const atLeastOneError =
-                        touched &&
-                        errors &&
-                        touched.length > 0 &&
-                        errors.length > 0;
-
                     return (
-                        <div>
+                        <Stack spacing={2}>
+                            <Typography component="h2">People</Typography>
                             {refs && refs.length > 0
-                                ? refs.map((ref: any, index: number) => {
-                                      let isError = false;
-                                      let errorMessage: any;
-                                      if (atLeastOneError) {
-                                          isError =
-                                              typeof errors[index] !==
-                                              'undefined';
-                                          errorMessage =
-                                              touched[index] && errors[index];
-                                      }
-
-                                      return (
-                                          formikForm.values.people && (
-                                              <div key={index}>
-                                                  <Autocomplete
-                                                      value={
-                                                          formikForm.values
-                                                              .people[index]
-                                                      }
-                                                      onChange={(
-                                                          _,
-                                                          newValue,
-                                                      ) => {
-                                                          formikForm.setFieldValue(
-                                                              `people.${index}.name`,
-                                                              newValue.name,
-                                                          );
-                                                          formikForm.setFieldValue(
-                                                              `people.${index}.id`,
-                                                              newValue.id,
-                                                          );
-                                                      }}
-                                                      onInputChange={(
-                                                          _,
-                                                          newSearch,
-                                                      ) =>
-                                                          delayedPersonSearch(
-                                                              newSearch,
-                                                              index,
-                                                          )
-                                                      }
-                                                      options={peopleOptions}
-                                                      getOptionLabel={(
-                                                          option: any,
-                                                      ) => option.name || ''}
-                                                      isOptionEqualToValue={(
-                                                          option: any,
-                                                          value: any,
-                                                      ) =>
-                                                          option.name ===
-                                                              value.name || true
-                                                      }
-                                                      freeSolo
-                                                      renderOption={(
-                                                          props: any,
-                                                          option: any,
-                                                      ) => {
-                                                          return (
-                                                              <li
-                                                                  {...props}
-                                                                  key={
-                                                                      option.id
-                                                                  }
-                                                              >
-                                                                  {option.name ||
-                                                                      ''}
-                                                              </li>
-                                                          );
-                                                      }}
-                                                      renderInput={(params) => (
-                                                          <TextField
-                                                              {...params}
-                                                              fullWidth
-                                                              margin="dense"
-                                                              variant="standard"
-                                                              name={`people.${index}.name`}
-                                                              label={`Name`}
-                                                              value={ref?.name}
-                                                              onChange={
-                                                                  formikForm.handleChange
-                                                              }
-                                                              error={
-                                                                  isError &&
-                                                                  Boolean(
-                                                                      errorMessage?.name,
-                                                                  )
-                                                              }
-                                                              helperText={
-                                                                  errorMessage?.name
-                                                              }
-                                                          />
-                                                      )}
-                                                  />
-                                                  {/* <TextField
-                                                      fullWidth
-                                                      margin="dense"
-                                                      variant="standard"
-                                                      name={`people.${index}.id`}
-                                                      label={`ID`}
-                                                      value={ref?.id}
-                                                      onChange={
-                                                          formikForm.handleChange
-                                                      }
-                                                      error={
-                                                          isError &&
-                                                          Boolean(
-                                                              errorMessage?.id,
-                                                          )
-                                                      }
-                                                      helperText={
-                                                          errorMessage?.id
-                                                      }
-                                                  /> */}
-                                                  <br />
-                                                  <Button
-                                                      variant="contained"
-                                                      type="button"
-                                                      onClick={() =>
-                                                          arrayHelpers.remove(
-                                                              index,
-                                                          )
-                                                      }
-                                                  >
-                                                      remove from list
-                                                  </Button>
-                                              </div>
-                                          )
-                                      );
-                                  })
+                                ? refs.map((_: any, index: number) => (
+                                      <Stack
+                                          key={index}
+                                          direction="row"
+                                          spacing={2}
+                                      >
+                                          <PeoplePlacesAutocomplete
+                                              formikForm={formikForm}
+                                              fieldName={`people.${index}`}
+                                              index={index}
+                                              label={`Person ${index}`}
+                                              labelOptions={peopleOptions}
+                                              search={delayedPersonSearch}
+                                          />
+                                          <div
+                                              style={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                              }}
+                                          >
+                                              <Button
+                                                  variant="contained"
+                                                  startIcon={<DeleteIcon />}
+                                                  type="button"
+                                                  onClick={() =>
+                                                      arrayHelpers.remove(index)
+                                                  }
+                                              >
+                                                  remove
+                                              </Button>
+                                          </div>
+                                      </Stack>
+                                  ))
                                 : null}
                             <Button
                                 variant="contained"
                                 type="button"
+                                startIcon={<AddCircleIcon />}
                                 onClick={() =>
                                     arrayHelpers.push({ name: '', id: '' })
-                                } // insert an empty string at a position
+                                }
                             >
-                                Add Person
+                                Add
                             </Button>
-                        </div>
+                        </Stack>
                     );
                 }}
             />

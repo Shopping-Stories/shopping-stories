@@ -26,8 +26,9 @@ const AboutPage: NextPage = () => {
                         margin: '3rem',
                         padding: '1rem',
                     }}
-                >About Page
-                <AboutNav />
+                >
+                    About Page
+                    <AboutNav />
                 </Paper>
             </div>
         </>

@@ -13,7 +13,7 @@ const SideDrawer = ({ navLinks }: { navLinks: NavLink[] }) => {
         right: false,
     });
 
-    const toggleDrawer = (anchor: any, open: any) => (event: any) => {
+    const toggleDrawer = (anchor: string, open: boolean) => (event: any) => {
         if (
             event.type === 'keydown' &&
             (event.key === 'Tab' || event.key === 'Shift')
@@ -24,7 +24,7 @@ const SideDrawer = ({ navLinks }: { navLinks: NavLink[] }) => {
         setState({ ...state, [anchor]: open });
     };
 
-    const list = (anchor: any) => (
+    const list = (anchor: string) => (
         <Box
             sx={{ minWidth: '10rem', marginTop: `auto`, marginBottom: `auto` }}
             role="presentation"

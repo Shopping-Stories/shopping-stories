@@ -1,4 +1,9 @@
-import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
+import {
+    getModelForClass,
+    index,
+    modelOptions,
+    prop,
+} from '@typegoose/typegoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, ObjectType } from 'type-graphql';
 
@@ -12,6 +17,11 @@ export type PersonDocument = Person & Document;
         toObject: { virtuals: true },
     },
 })
+@index(
+    { firstName: 'text', lastName: 'text', prefix: 'text', suffix: 'text' },
+    // @ts-ignore
+    { name: 'search_index' },
+)
 export class Person {
     @Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })
     public get id(): string {

@@ -6,7 +6,7 @@ import Container from '@mui/material/Container';
 import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { GlossaryItem, OptionsType } from 'client/formikSchemas';
+import { GlossaryItem, OptionsType } from 'client/types';
 import { FetchGlossaryItemsDef } from 'client/graphqlDefs';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';

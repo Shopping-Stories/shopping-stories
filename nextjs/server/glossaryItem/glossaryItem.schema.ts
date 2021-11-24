@@ -1,4 +1,9 @@
-import { getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
+import {
+    getModelForClass,
+    modelOptions,
+    prop,
+    index,
+} from '@typegoose/typegoose';
 import mongoose, { Document } from 'mongoose';
 import { Field, ID, ObjectType } from 'type-graphql';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,6 +14,11 @@ export type GlossaryItemDocument = GlossaryItem & Document;
 @modelOptions({
     schemaOptions: { timestamps: true, collection: 'glossaryItems' },
 })
+@index(
+    { name: 'text', category: 'text', subcategory: 'text' },
+    // @ts-ignore
+    { name: 'search_index' },
+)
 export class GlossaryItem {
     @Field(() => ID, { description: 'Glossary Item ID' })
     public get id(): string {

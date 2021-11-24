@@ -1,6 +1,6 @@
 import { makeOperation } from '@urql/core';
 import { Auth } from 'aws-amplify';
-import { GlossaryItem } from './formikSchemas';
+import { GlossaryItem } from './types';
 import { handlePromise } from './util';
 
 export const addAuthToOperation = ({ authState, operation }: any) => {

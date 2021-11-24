@@ -11,13 +11,9 @@ import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import { Storage } from 'aws-amplify';
-import {
-    DocumentInfo,
-    OptionsType,
-    searchSchema,
-    SearchType
-} from 'client/formikSchemas';
+import { searchSchema } from 'client/formikSchemas';
 import { FetchDocumentsDef } from 'client/graphqlDefs';
+import { DocumentInfo, OptionsType, SearchType } from 'client/types';
 import { handlePromise } from 'client/util';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
@@ -94,7 +90,6 @@ const DocumentsPage: NextPage = () => {
         setPage(0);
         updateQuery(0);
     }, [search]);
-
 
     useEffect(() => {
         if (!router.query.page) {

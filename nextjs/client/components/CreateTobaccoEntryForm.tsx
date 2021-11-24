@@ -1,58 +1,66 @@
-import TextField from '@mui/material/TextField';
+import CardHeader from '@mui/material/CardHeader';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Stack from '@mui/material/Stack';
 import EntryMoneyForm from './EntryMoneyForm';
 import EntryNotesFrom from './EntryNotesForm';
 import MarkForm from './MarksForm';
+import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 const CreateTobaccoEntryFrom = ({ formikForm }: any) => {
     const ref = formikForm.values.tobaccoEntry;
-    const touched = formikForm.touched;
-    const errors = formikForm.errors;
-    const atLeastOneError =
-        touched && errors && touched?.tobaccoEntry && errors?.tobaccoEntry;
-    let isError = false;
-    let errorMessage: any;
-    if (atLeastOneError) {
-        isError = typeof errors !== 'undefined';
-        errorMessage = touched && errors;
-    }
     return (
         <div>
-            {ref
-                ? formikForm.values.tobaccoEntry && (
-                      <div>
-                          <TextField
-                              fullWidth
-                              margin="dense"
-                              variant="standard"
-                              name={`tobaccoEntry.entry`}
-                              label={`Entry`}
-                              value={ref?.entry}
-                              onChange={formikForm.handleChange}
-                              error={isError && Boolean(errorMessage?.entry)}
-                              helperText={errorMessage?.entry}
-                          />
-                          <TextField
-                              fullWidth
-                              margin="dense"
-                              variant="standard"
-                              name={`tobaccoEntry.tobaccoShaved`}
-                              label={`Tobacco Shaved`}
-                              value={ref?.tobaccoShaved}
-                              type="number"
-                              inputProps={{ min: 0 }}
-                              onChange={formikForm.handleChange}
-                              error={
-                                  isError &&
-                                  Boolean(errorMessage?.tobaccoShaved)
-                              }
-                              helperText={errorMessage?.tobaccoShaved}
-                          />
-                          <MarkForm formikForm={formikForm} />
-                          <EntryNotesFrom formikForm={formikForm} />
-                          <EntryMoneyForm formikForm={formikForm} />
-                      </div>
-                  )
-                : null}
+            {ref ? (
+                <Stack spacing={2}>
+                    <TextFieldWithFormikValidation
+                        fullWidth
+                        name={`tobaccoEntry.entry`}
+                        label={`Entry`}
+                        formikForm={formikForm}
+                        fieldName={`tobaccoEntry.entry`}
+                    />
+                    <TextFieldWithFormikValidation
+                        fullWidth
+                        name={`tobaccoEntry.tobaccoShaved`}
+                        label={`Tobacco Shaved`}
+                        type="number"
+                        inputProps={{ min: 0 }}
+                        formikForm={formikForm}
+                        fieldName={`tobaccoEntry.tobaccoShaved`}
+                    />
+                    <Card
+                        sx={{
+                            backgroundColor: 'var(--secondary-bg)',
+                        }}
+                    >
+                        <CardHeader title="Tobacco Marks" />
+                        <CardContent>
+                            <MarkForm formikForm={formikForm} />
+                        </CardContent>
+                    </Card>
+                    <Card
+                        sx={{
+                            backgroundColor: 'var(--secondary-bg)',
+                        }}
+                    >
+                        <CardHeader title="Entry Notes" />
+                        <CardContent>
+                            <EntryNotesFrom formikForm={formikForm} />
+                        </CardContent>
+                    </Card>
+                    <Card
+                        sx={{
+                            backgroundColor: 'var(--secondary-bg)',
+                        }}
+                    >
+                        <CardHeader title="Money" />
+                        <CardContent>
+                            <EntryMoneyForm formikForm={formikForm} />
+                        </CardContent>
+                    </Card>
+                </Stack>
+            ) : null}
         </div>
     );
 };
