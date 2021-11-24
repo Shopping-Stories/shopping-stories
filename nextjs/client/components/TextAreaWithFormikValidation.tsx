@@ -1,53 +1,28 @@
-import FormControlLabel, {
-    FormControlLabelProps,
-} from '@mui/material/FormControlLabel';
-import FormHelperText from '@mui/material/FormHelperText';
-import TextareaAutosize, {
-    TextareaAutosizeProps,
-} from '@mui/material/TextareaAutosize';
+import { TextFieldProps } from '@mui/material/TextField';
+import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 interface TextAreaFormikProps {
     formikForm: any;
     fieldName: string;
     name: string;
     label: string;
-    formControlLabelProps?: Omit<FormControlLabelProps, 'label' | 'control'>;
 }
 
-type TextAreaProps = TextareaAutosizeProps & TextAreaFormikProps;
+type TextAreaProps = TextFieldProps & TextAreaFormikProps;
 
 const TextAreaWithFormikValidation = (props: TextAreaProps) => {
-    const { formikForm, fieldName, name, label, ...textAreaProps } = props;
+    const { formikForm, ...otherProps } = props;
 
     return (
-        <>
-            <FormControlLabel
-                labelPlacement="top"
-                {...props.formControlLabelProps}
-                control={
-                    <TextareaAutosize
-                        style={{
-                            width: '100%',
-                            maxWidth: '100%',
-                        }}
-                        name={name}
-                        minRows={5}
-                        {...textAreaProps}
-                        value={formikForm.values[fieldName]}
-                        onChange={formikForm.handleChange}
-                    />
-                }
-                label={label}
+        <div>
+            <TextFieldWithFormikValidation
+                fullWidth
+                multiline
+                minRows={5}
+                {...otherProps}
+                formikForm={formikForm}
             />
-            <FormHelperText
-                error={
-                    formikForm.touched[fieldName] &&
-                    Boolean(formikForm.errors[fieldName])
-                }
-            >
-                {formikForm.touched[fieldName] && formikForm.errors[fieldName]}
-            </FormHelperText>
-        </>
+        </div>
     );
 };
 

@@ -1,5 +1,6 @@
 import Autocomplete from '@mui/material/Autocomplete';
 import { Mark } from 'client/types';
+import { get } from 'lodash';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 interface MarkAutocompleteProps {
@@ -16,10 +17,10 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
     const nameField = `${fieldName}.markName`;
     const idField = `${fieldName}.markID`;
 
-    console.log(formikForm.values[fieldName], fieldName);
     return (
         <Autocomplete
             sx={{ width: '100%' }}
+            value={get(formikForm.values, fieldName)}
             onChange={(_, newValue: any) => {
                 if (newValue) {
                     console.log(newValue);
@@ -51,6 +52,7 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
                     {...params}
                     fullWidth
                     label={label}
+                    name={nameField}
                     formikForm={formikForm}
                     fieldName={nameField}
                 />

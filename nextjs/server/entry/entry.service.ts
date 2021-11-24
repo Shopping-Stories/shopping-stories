@@ -228,9 +228,9 @@ export class EntryService {
 
         if (count) {
             if (indexFlag === 1) {
-                return EntryModel.count(temp).exec();
+                return EntryModel.countDocuments(temp).exec();
             } else {
-                return EntryModel.count(temp).exec();
+                return EntryModel.countDocuments(temp).exec();
             }
         }
 

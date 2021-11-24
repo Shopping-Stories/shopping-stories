@@ -14,30 +14,37 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { createEntrySchema, entryInitialValues } from 'client/formikSchemas';
+import { createEntrySchema } from 'client/formikSchemas';
 import { EntryFields } from 'client/graphqlDefs';
 import { Entry } from 'client/types';
 import { useFormik } from 'formik';
-import { NextPage } from 'next';
-import { useRouter } from 'next/router';
 import { PaperStyles } from 'styles/styles';
 import { useMutation } from 'urql';
 
-const createEntryDef = `
-mutation createEntry($entry: CreateEntryInput!) {
-  createEntry(createEntryInput: $entry) {
+interface EntryUpdateFormProps {
+    initialValues: Entry;
+    tabIndex: number;
+    viewEntries: boolean;
+    id: string;
+    setViewEntries: any;
+}
+
+const updateEntryDef = `
+mutation updateEntry($id: String!, $updates: UpdateEntryInput!) {
+  updateEntry(id: $id, updatedFields: $updates) {
     ...entryFields
-  }
+}
 }
 ${EntryFields}
 `;
 
-const CreateEntryPage: NextPage = () => {
-    const router = useRouter();
-    const [_createEntryResult, createEntry] = useMutation(createEntryDef);
+const EntryUpdateForm = (props: EntryUpdateFormProps) => {
+    const { tabIndex, viewEntries, initialValues, id } = props;
+    const [_updateEntryResult, updateEntry] = useMutation(updateEntryDef);
 
-    const createForm = useFormik<Entry>({
-        initialValues: entryInitialValues,
+    const updateForm = useFormik<Entry>({
+        enableReinitialize: true,
+        initialValues: initialValues,
         validationSchema: createEntrySchema,
         onSubmit: async (values, { resetForm }) => {
             const entry = JSON.parse(JSON.stringify(values));
@@ -78,18 +85,17 @@ const CreateEntryPage: NextPage = () => {
                 delete entry.dateInfo.fullDate;
             }
 
-            const res = await createEntry({
-                entry,
+            const res = await updateEntry({
+                id,
+                updates: entry,
             });
 
             if (res.error) {
             } else {
-                router.push('/entries');
                 resetForm();
             }
         },
     });
-
     return (
         <ColorBackground>
             <Header />
@@ -99,7 +105,7 @@ const CreateEntryPage: NextPage = () => {
                     ...PaperStyles,
                 }}
             >
-                <form onSubmit={createForm.handleSubmit}>
+                <form onSubmit={updateForm.handleSubmit}>
                     <Grid container justifyContent="center" spacing={4}>
                         <Grid item xs={12} md={6}>
                             <Typography component="h2">
@@ -110,49 +116,49 @@ const CreateEntryPage: NextPage = () => {
                                     fullWidth
                                     name="accountHolder.accountFirstName"
                                     label="First Name"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="accountHolder.accountFirstName"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="accountHolder.accountLastName"
                                     label="Last Name"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="accountHolder.accountLastName"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="accountHolder.prefix"
                                     label="Prefix"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="accountHolder.prefix"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="accountHolder.suffix"
                                     label="Suffix"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="accountHolder.suffix"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="accountHolder.profession"
                                     label="Profession"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="accountHolder.profession"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="accountHolder.location"
                                     label="Location"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="accountHolder.location"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="accountHolder.reference"
                                     label="Reference"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="accountHolder.reference"
                                 />
                                 <TextFieldWithFormikValidation
@@ -161,10 +167,10 @@ const CreateEntryPage: NextPage = () => {
                                     type="number"
                                     inputProps={{ max: 1, min: -1 }}
                                     label="Debit or Credit?"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="accountHolder.debitOrCredit"
                                 />
-                                <FindAccountHolder formikForm={createForm} />
+                                <FindAccountHolder formikForm={updateForm} />
                             </Stack>
                             <Divider />
                             <Typography component="h2">Date Info</Typography>
@@ -175,7 +181,7 @@ const CreateEntryPage: NextPage = () => {
                                     label="Day"
                                     type="number"
                                     inputProps={{ min: 1, max: 31 }}
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="dateInfo.day"
                                 />
                                 <TextFieldWithFormikValidation
@@ -184,7 +190,7 @@ const CreateEntryPage: NextPage = () => {
                                     label="Month"
                                     type="number"
                                     inputProps={{ min: 1, max: 12 }}
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="dateInfo.month"
                                 />
                                 <TextFieldWithFormikValidation
@@ -192,7 +198,7 @@ const CreateEntryPage: NextPage = () => {
                                     name="dateInfo.year"
                                     label="Year"
                                     type="number"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="dateInfo.year"
                                 />
                                 <TextFieldWithFormikValidation
@@ -201,25 +207,25 @@ const CreateEntryPage: NextPage = () => {
                                     InputProps={{
                                         startAdornment: <span></span>,
                                     }}
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     label="Full Date"
                                     fieldName="dateInfo.fullDate"
                                 />
                                 <Paper sx={PaperStyles}>
                                     <FolioReferencesForm
-                                        formikForm={createForm}
+                                        formikForm={updateForm}
                                     />
                                 </Paper>
                                 <Paper sx={PaperStyles}>
                                     <LedgerReferencesForm
-                                        formikForm={createForm}
+                                        formikForm={updateForm}
                                     />
                                 </Paper>
                                 <Paper sx={PaperStyles}>
-                                    <EntryPeopleForm formikForm={createForm} />
+                                    <EntryPeopleForm formikForm={updateForm} />
                                 </Paper>
                                 <Paper sx={PaperStyles}>
-                                    <EntryPlacesForm formikForm={createForm} />
+                                    <EntryPlacesForm formikForm={updateForm} />
                                 </Paper>
                             </Stack>
                         </Grid>
@@ -230,49 +236,49 @@ const CreateEntryPage: NextPage = () => {
                                     fullWidth
                                     name="meta.ledger"
                                     label="Ledger"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="meta.ledger"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="meta.reel"
                                     label="Reel"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="meta.reel"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="meta.owner"
                                     label="Owner"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="meta.owner"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="meta.store"
                                     label="Store"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="meta.store"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="meta.year"
                                     label="Year"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="meta.year"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="meta.folioPage"
                                     label="Folio Page"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="meta.folioPage"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="meta.entryID"
                                     label="Entry ID"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="meta.entryID"
                                 />
                                 <TextAreaWithFormikValidation
@@ -280,7 +286,7 @@ const CreateEntryPage: NextPage = () => {
                                     label="Comments"
                                     fieldName="meta.comments"
                                     placeholder="Comments about the entry"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                 />
                                 <Divider />
                                 <TextAreaWithFormikValidation
@@ -288,28 +294,28 @@ const CreateEntryPage: NextPage = () => {
                                     label="Original Entry Text"
                                     fieldName="entry"
                                     placeholder="Text of the original entry"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                 />
                                 <Divider />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="money.commodity"
                                     label="Money Commodity"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="money.commodity"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="money.colony"
                                     label="Type of money (what colony it is from)"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="money.colony"
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="money.quantity"
                                     label="Quantity of Money"
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="money.quantity"
                                 />
                                 <Divider />
@@ -320,7 +326,7 @@ const CreateEntryPage: NextPage = () => {
                                     label="Pounds"
                                     type="number"
                                     inputProps={{ min: 0 }}
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="money.currency.pounds"
                                 />
                                 <TextFieldWithFormikValidation
@@ -329,7 +335,7 @@ const CreateEntryPage: NextPage = () => {
                                     label="Shilling"
                                     type="number"
                                     inputProps={{ min: 0 }}
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="money.currency.shilling"
                                 />
                                 <TextFieldWithFormikValidation
@@ -338,7 +344,7 @@ const CreateEntryPage: NextPage = () => {
                                     label="Pence"
                                     type="number"
                                     inputProps={{ min: 0 }}
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="money.currency.pence"
                                 />
                                 <Divider />
@@ -349,7 +355,7 @@ const CreateEntryPage: NextPage = () => {
                                     label="Pounds"
                                     type="number"
                                     inputProps={{ min: 0 }}
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="money.sterling.pounds"
                                 />
                                 <TextFieldWithFormikValidation
@@ -358,7 +364,7 @@ const CreateEntryPage: NextPage = () => {
                                     label="Shilling"
                                     type="number"
                                     inputProps={{ min: 0 }}
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="money.sterling.shilling"
                                 />
                                 <TextFieldWithFormikValidation
@@ -367,14 +373,24 @@ const CreateEntryPage: NextPage = () => {
                                     label="Pence"
                                     type="number"
                                     inputProps={{ min: 0 }}
-                                    formikForm={createForm}
+                                    formikForm={updateForm}
                                     fieldName="money.sterling.pence"
                                 />
                             </Stack>
                         </Grid>
-                        <Grid item xs={12}>
-                            <EntrySelectionTabForm formikForm={createForm} />
-                        </Grid>
+                        {!viewEntries && (
+                            <Button onClick={() => props.setViewEntries(true)}>
+                                View Subentries
+                            </Button>
+                        )}
+                        {viewEntries && (
+                            <Grid item xs={12}>
+                                <EntrySelectionTabForm
+                                    formikForm={updateForm}
+                                    initialIndex={tabIndex}
+                                />
+                            </Grid>
+                        )}
                     </Grid>
                     <Button variant="contained" type="submit">
                         Submit
@@ -385,4 +401,4 @@ const CreateEntryPage: NextPage = () => {
     );
 };
 
-export default CreateEntryPage;
+export default EntryUpdateForm;

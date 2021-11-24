@@ -1,5 +1,6 @@
 import Autocomplete from '@mui/material/Autocomplete';
 import { PersonOrPlace } from 'client/types';
+import { get } from 'lodash';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
 interface PeoplePlacesAutocompleteProps {
@@ -19,7 +20,7 @@ const PeoplePlacesAutocomplete = (props: PeoplePlacesAutocompleteProps) => {
     return (
         <Autocomplete
             sx={{ width: '100%' }}
-            value={formikForm.values[fieldName]}
+            value={get(formikForm.values, fieldName)}
             onChange={(_, newValue: any) => {
                 if (newValue) {
                     formikForm.setFieldValue(nameField, newValue.name);

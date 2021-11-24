@@ -3,11 +3,10 @@ import Paper from '@mui/material/Paper';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { useEffect, useState } from 'react';
-import { PaperStyles } from 'styles/styles';
-import CreateItemEntryFrom from './CreateItemEntryForm';
-import CreateRegularEntryFrom from './CreateRegularEntryForm';
-import CreateTobaccoEntryFrom from './CreateTobaccoEntryForm';
+import ItemEntrySearch from './ItemEntrySearch';
+import RegularEntrySearch from './RegularEntrySearch';
 import TabPanel from './TabPanel';
+import TobaccoEntrySearch from './TobaccoEntrySearch';
 
 const a11yProps = (index: number) => {
     return {
@@ -16,14 +15,8 @@ const a11yProps = (index: number) => {
     };
 };
 
-const EntrySelectionTabForm = ({
-    formikForm,
-    initialIndex,
-}: {
-    formikForm: any;
-    initialIndex?: number;
-}) => {
-    const [tabIndex, setTabIndex] = useState(initialIndex || 0);
+const AdvancedSearchTabForm = ({ formikForm }: { formikForm: any }) => {
+    const [tabIndex, setTabIndex] = useState(0);
 
     const handleChange = (_: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
@@ -31,31 +24,35 @@ const EntrySelectionTabForm = ({
 
     useEffect(() => {
         if (tabIndex === 0) {
-            if (!Boolean(formikForm.values.itemEntries)) {
-                formikForm.setFieldValue('itemEntries', []);
+            if (!Boolean(formikForm.values.itemEntry)) {
+                formikForm.setFieldValue('itemEntry', {
+                    perOrder: -1,
+                    items: '',
+                    category: '',
+                    subcategory: '',
+                    variant: '',
+                });
             }
             formikForm.setFieldValue('tobaccoEntry', null);
             formikForm.setFieldValue('regularEntry', null);
         } else if (tabIndex === 1) {
-            formikForm.setFieldValue('itemEntries', null);
+            formikForm.setFieldValue('itemEntry', null);
             formikForm.setFieldValue('regularEntry', null);
             if (!Boolean(formikForm.values.tobaccoEntry)) {
                 formikForm.setFieldValue('tobaccoEntry', {
-                    entry: '',
-                    tobaccoShaved: 0,
-                    marks: [],
-                    notes: [],
-                    money: [],
+                    description: '',
+                    tobaccoMarkName: '',
+                    noteNumber: -1,
+                    moneyType: '',
                 });
             }
         } else if (tabIndex === 2) {
             formikForm.setFieldValue('tobaccoEntry', null);
-            formikForm.setFieldValue('itemEntries', null);
+            formikForm.setFieldValue('itemEntry', null);
             if (!Boolean(formikForm.values.regularEntry)) {
                 formikForm.setFieldValue('regularEntry', {
-                    entry: '',
-                    tobaccoMarks: [],
-                    itemsMentioned: [],
+                    entryDescription: '',
+                    tobaccoMarkName: '',
                 });
             }
         }
@@ -64,27 +61,27 @@ const EntrySelectionTabForm = ({
     return (
         <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
             <Tabs value={tabIndex} onChange={handleChange} centered>
-                <Tab label="Item Entries" {...a11yProps(0)} />
+                <Tab label="Item Entry" {...a11yProps(0)} />
                 <Tab label="Tobacco Entry" {...a11yProps(1)} />
                 <Tab label="Regular Entry" {...a11yProps(2)} />
             </Tabs>
             <TabPanel value={tabIndex} index={0}>
-                <Paper sx={PaperStyles}>
-                    <CreateItemEntryFrom formikForm={formikForm} />
+                <Paper sx={{ p: '1rem' }}>
+                    <ItemEntrySearch formikForm={formikForm} />
                 </Paper>
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
-                <Paper sx={PaperStyles}>
-                    <CreateTobaccoEntryFrom formikForm={formikForm} />
+                <Paper sx={{ p: '1rem' }}>
+                    <TobaccoEntrySearch formikForm={formikForm} />
                 </Paper>
             </TabPanel>
             <TabPanel value={tabIndex} index={2}>
-                <Paper sx={PaperStyles}>
-                    <CreateRegularEntryFrom formikForm={formikForm} />
+                <Paper sx={{ p: '1rem' }}>
+                    <RegularEntrySearch formikForm={formikForm} />
                 </Paper>
             </TabPanel>
         </Box>
     );
 };
 
-export default EntrySelectionTabForm;
+export default AdvancedSearchTabForm;

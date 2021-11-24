@@ -38,7 +38,7 @@ const CreateItemEntryFrom = ({ formikForm }: any) => {
                                                       </Typography>
                                                       <TextFieldWithFormikValidation
                                                           fullWidth
-                                                          name={`itemEntries.${index}.perOrder`}
+                                                          name={`itemEntries[${index}].perOrder`}
                                                           label={`Amount Per Order`}
                                                           type="number"
                                                           inputProps={{
@@ -47,11 +47,11 @@ const CreateItemEntryFrom = ({ formikForm }: any) => {
                                                           formikForm={
                                                               formikForm
                                                           }
-                                                          fieldName={`itemEntries.${index}.perOrder`}
+                                                          fieldName={`itemEntries[${index}].perOrder`}
                                                       />
                                                       <TextFieldWithFormikValidation
                                                           fullWidth
-                                                          name={`itemEntries.${index}.percentage`}
+                                                          name={`itemEntries[${index}].percentage`}
                                                           label={`Percentage`}
                                                           type="number"
                                                           inputProps={{
@@ -60,7 +60,7 @@ const CreateItemEntryFrom = ({ formikForm }: any) => {
                                                           formikForm={
                                                               formikForm
                                                           }
-                                                          fieldName={`itemEntries.${index}.percentage`}
+                                                          fieldName={`itemEntries[${index}].percentage`}
                                                       />
                                                       <Card
                                                           sx={{

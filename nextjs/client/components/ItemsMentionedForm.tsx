@@ -12,7 +12,7 @@ const ItemsMentionedForm = ({ formikForm, prevIdx }: any) => {
     return (
         <FormikProvider value={formikForm}>
             <FieldArray
-                name={`itemEntries.${prevIdx}.itemsMentioned`}
+                name={`itemEntries[${prevIdx}].itemsMentioned`}
                 render={(arrayHelpers: any) => {
                     const refs =
                         formikForm.values.itemEntries[prevIdx].itemsMentioned;
@@ -33,7 +33,7 @@ const ItemsMentionedForm = ({ formikForm, prevIdx }: any) => {
                                                           </Typography>
                                                           <TextFieldWithFormikValidation
                                                               fullWidth
-                                                              name={`itemEntries.${prevIdx}.itemsMentioned.${index}.quantity`}
+                                                              name={`itemEntries[${prevIdx}].itemsMentioned[${index}].quantity`}
                                                               label={`Quantity`}
                                                               type="number"
                                                               inputProps={{
@@ -42,27 +42,27 @@ const ItemsMentionedForm = ({ formikForm, prevIdx }: any) => {
                                                               formikForm={
                                                                   formikForm
                                                               }
-                                                              fieldName={`itemEntries.${prevIdx}.itemsMentioned.${index}.quantity`}
+                                                              fieldName={`itemEntries[${prevIdx}].itemsMentioned[${index}].quantity`}
                                                           />
 
                                                           <TextFieldWithFormikValidation
                                                               fullWidth
-                                                              name={`itemEntries.${prevIdx}.itemsMentioned.${index}.qualifier`}
+                                                              name={`itemEntries[${prevIdx}].itemsMentioned[${index}].qualifier`}
                                                               label={`Qualifier`}
                                                               formikForm={
                                                                   formikForm
                                                               }
-                                                              fieldName={`itemEntries.${prevIdx}.itemsMentioned.${index}.qualifier`}
+                                                              fieldName={`itemEntries[${prevIdx}].itemsMentioned[${index}].qualifier`}
                                                           />
 
                                                           <TextFieldWithFormikValidation
                                                               fullWidth
-                                                              name={`itemEntries.${prevIdx}.itemsMentioned.${index}.item`}
+                                                              name={`itemEntries[${prevIdx}].itemsMentioned[${index}].item`}
                                                               label={`Item`}
                                                               formikForm={
                                                                   formikForm
                                                               }
-                                                              fieldName={`itemEntries.${prevIdx}.itemsMentioned.${index}.item`}
+                                                              fieldName={`itemEntries[${prevIdx}].itemsMentioned[${index}].item`}
                                                           />
 
                                                           <div

@@ -30,7 +30,7 @@ const RegularItemsMentionedForm = ({ formikForm }: any) => {
                                                       </Typography>
                                                       <TextFieldWithFormikValidation
                                                           fullWidth
-                                                          name={`regularEntry.itemsMentioned.${index}.quantity`}
+                                                          name={`regularEntry.itemsMentioned[${index}].quantity`}
                                                           label={`Quantity`}
                                                           type="number"
                                                           inputProps={{
@@ -39,27 +39,27 @@ const RegularItemsMentionedForm = ({ formikForm }: any) => {
                                                           formikForm={
                                                               formikForm
                                                           }
-                                                          fieldName={`regularEntry.itemsMentioned.${index}.quantity`}
+                                                          fieldName={`regularEntry.itemsMentioned[${index}].quantity`}
                                                       />
 
                                                       <TextFieldWithFormikValidation
                                                           fullWidth
-                                                          name={`regularEntry.itemsMentioned.${index}.qualifier`}
+                                                          name={`regularEntry.itemsMentioned[${index}].qualifier`}
                                                           label={`Qualifier`}
                                                           formikForm={
                                                               formikForm
                                                           }
-                                                          fieldName={`regularEntry.itemsMentioned.${index}.qualifier`}
+                                                          fieldName={`regularEntry.itemsMentioned[${index}].qualifier`}
                                                       />
 
                                                       <TextFieldWithFormikValidation
                                                           fullWidth
-                                                          name={`regularEntry.itemsMentioned.${index}.item`}
+                                                          name={`regularEntry.itemsMentioned[${index}].item`}
                                                           label={`Item`}
                                                           formikForm={
                                                               formikForm
                                                           }
-                                                          fieldName={`regularEntry.itemsMentioned.${index}.item`}
+                                                          fieldName={`regularEntry.itemsMentioned[${index}].item`}
                                                       />
 
                                                       <div

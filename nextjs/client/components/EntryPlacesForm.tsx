@@ -32,7 +32,7 @@ const EntryPlacesForm = ({ formikForm }: any) => {
     const delayedPlacesSearch = useCallback(
         debounce((search: string, index: number) => {
             setSearch(search);
-            formikForm.setFieldValue(`places.${index}.id`, '');
+            formikForm.setFieldValue(`places[${index}].id`, '');
         }, 250),
         [],
     );
@@ -55,7 +55,7 @@ const EntryPlacesForm = ({ formikForm }: any) => {
                                       >
                                           <PeoplePlacesAutocomplete
                                               formikForm={formikForm}
-                                              fieldName={`places.${index}`}
+                                              fieldName={`places[${index}]`}
                                               index={index}
                                               label={`Place ${index}`}
                                               labelOptions={placesOptions}

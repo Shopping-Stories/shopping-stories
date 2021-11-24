@@ -29,32 +29,32 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                   </Typography>
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.moneyType`}
+                                                      name={`tobaccoEntry.money[${index}].moneyType`}
                                                       label={`Type of money`}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.moneyType`}
+                                                      fieldName={`tobaccoEntry.money[${index}].moneyType`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.tobaccoAmount`}
+                                                      name={`tobaccoEntry.money[${index}].tobaccoAmount`}
                                                       label={`Amount of tobacco`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.tobaccoAmount`}
+                                                      fieldName={`tobaccoEntry.money[${index}].tobaccoAmount`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.casksInTransaction`}
+                                                      name={`tobaccoEntry.money[${index}].casksInTransaction`}
                                                       label={`Casks in the transaction`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.casksInTransaction`}
+                                                      fieldName={`tobaccoEntry.money[${index}].casksInTransaction`}
                                                   />
 
                                                   <Typography variant="subtitle2">
@@ -62,36 +62,36 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                   </Typography>
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.rateForTobacco.pounds`}
+                                                      name={`tobaccoEntry.money[${index}].rateForTobacco.pounds`}
                                                       label={`Pounds`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.rateForTobacco.pounds`}
+                                                      fieldName={`tobaccoEntry.money[${index}].rateForTobacco.pounds`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.rateForTobacco.shilling`}
+                                                      name={`tobaccoEntry.money[${index}].rateForTobacco.shilling`}
                                                       label={`Shilling`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.rateForTobacco.shilling`}
+                                                      fieldName={`tobaccoEntry.money[${index}].rateForTobacco.shilling`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.rateForTobacco.pence`}
+                                                      name={`tobaccoEntry.money[${index}].rateForTobacco.pence`}
                                                       label={`Pence`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.rateForTobacco.pence`}
+                                                      fieldName={`tobaccoEntry.money[${index}].rateForTobacco.pence`}
                                                   />
 
                                                   <Typography variant="subtitle2">
@@ -99,36 +99,36 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                   </Typography>
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.tobaccoSold.pounds`}
+                                                      name={`tobaccoEntry.money[${index}].tobaccoSold.pounds`}
                                                       label={`Pounds`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.tobaccoSold.pounds`}
+                                                      fieldName={`tobaccoEntry.money[${index}].tobaccoSold.pounds`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.tobaccoSold.shilling`}
+                                                      name={`tobaccoEntry.money[${index}].tobaccoSold.shilling`}
                                                       label={`Shilling`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.tobaccoSold.shilling`}
+                                                      fieldName={`tobaccoEntry.money[${index}].tobaccoSold.shilling`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.tobaccoSold.pence`}
+                                                      name={`tobaccoEntry.money[${index}].tobaccoSold.pence`}
                                                       label={`Pence`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.tobaccoSold.pence`}
+                                                      fieldName={`tobaccoEntry.money[${index}].tobaccoSold.pence`}
                                                   />
 
                                                   <Typography variant="subtitle2">
@@ -136,36 +136,36 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                   </Typography>
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.casksSoldForEach.pounds`}
+                                                      name={`tobaccoEntry.money[${index}].casksSoldForEach.pounds`}
                                                       label={`Pounds`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.casksSoldForEach.pounds`}
+                                                      fieldName={`tobaccoEntry.money[${index}].casksSoldForEach.pounds`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.casksSoldForEach.shilling`}
+                                                      name={`tobaccoEntry.money[${index}].casksSoldForEach.shilling`}
                                                       label={`Shilling`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.casksSoldForEach.shilling`}
+                                                      fieldName={`tobaccoEntry.money[${index}].casksSoldForEach.shilling`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.money.${index}.casksSoldForEach.pence`}
+                                                      name={`tobaccoEntry.money[${index}].casksSoldForEach.pence`}
                                                       label={`Pence`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.money.${index}.casksSoldForEach.pence`}
+                                                      fieldName={`tobaccoEntry.money[${index}].casksSoldForEach.pence`}
                                                   />
 
                                                   <CardActions>

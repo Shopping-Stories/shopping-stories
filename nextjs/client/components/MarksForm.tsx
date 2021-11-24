@@ -31,7 +31,7 @@ const MarkForm = ({ formikForm }: any) => {
     const delayedTobaccoMarkSearch = useCallback(
         debounce((search: string, index: number) => {
             setSearch(search);
-            formikForm.setFieldValue(`tobaccoEntry.marks.${index}.markID`, '');
+            formikForm.setFieldValue(`tobaccoEntry.marks[${index}].markID`, '');
         }, 250),
         [],
     );
@@ -54,7 +54,7 @@ const MarkForm = ({ formikForm }: any) => {
                                               key={index}
                                           >
                                               <TobaccoMarkAutocomplete
-                                                  fieldName={`tobaccoEntry.marks.${index}`}
+                                                  fieldName={`tobaccoEntry.marks[${index}]`}
                                                   index={index}
                                                   label={`Mark ${index}`}
                                                   labelOptions={marksOptions}

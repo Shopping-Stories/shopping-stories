@@ -14,7 +14,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
     return (
         <FormikProvider value={formikForm}>
             <FieldArray
-                name={`itemEntries.${prevIdx}.itemsOrServices`}
+                name={`itemEntries[${prevIdx}].itemsOrServices`}
                 render={(arrayHelpers: any) => {
                     const refs =
                         formikForm.values.itemEntries[prevIdx].itemsOrServices;
@@ -35,7 +35,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                           </Typography>
                                                           <TextFieldWithFormikValidation
                                                               fullWidth
-                                                              name={`itemEntries.${prevIdx}.itemsOrServices.${index}.quantity`}
+                                                              name={`itemEntries[${prevIdx}].itemsOrServices[${index}].quantity`}
                                                               label={`Quantity`}
                                                               type="number"
                                                               inputProps={{
@@ -44,46 +44,46 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                               formikForm={
                                                                   formikForm
                                                               }
-                                                              fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.quantity`}
+                                                              fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].quantity`}
                                                           />
                                                           <TextFieldWithFormikValidation
                                                               fullWidth
-                                                              name={`itemEntries.${prevIdx}.itemsOrServices.${index}.qualifier`}
+                                                              name={`itemEntries[${prevIdx}].itemsOrServices[${index}].qualifier`}
                                                               label={`Qualifier`}
                                                               formikForm={
                                                                   formikForm
                                                               }
-                                                              fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.qualifier`}
+                                                              fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].qualifier`}
                                                           />
 
                                                           <TextFieldWithFormikValidation
                                                               fullWidth
-                                                              name={`itemEntries.${prevIdx}.itemsOrServices.${index}.item`}
+                                                              name={`itemEntries[${prevIdx}].itemsOrServices[${index}].item`}
                                                               label={`Item`}
                                                               formikForm={
                                                                   formikForm
                                                               }
-                                                              fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.item`}
+                                                              fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].item`}
                                                           />
 
                                                           <TextFieldWithFormikValidation
                                                               fullWidth
-                                                              name={`itemEntries.${prevIdx}.itemsOrServices.${index}.category`}
+                                                              name={`itemEntries[${prevIdx}].itemsOrServices[${index}].category`}
                                                               label={`Category`}
                                                               formikForm={
                                                                   formikForm
                                                               }
-                                                              fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.category`}
+                                                              fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].category`}
                                                           />
 
                                                           <TextFieldWithFormikValidation
                                                               fullWidth
-                                                              name={`itemEntries.${prevIdx}.itemsOrServices.${index}.subcategory`}
+                                                              name={`itemEntries[${prevIdx}].itemsOrServices[${index}].subcategory`}
                                                               label={`Subcategory`}
                                                               formikForm={
                                                                   formikForm
                                                               }
-                                                              fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.subcategory`}
+                                                              fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].subcategory`}
                                                           />
                                                           <Grid
                                                               container
@@ -103,12 +103,12 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       inputProps={{
                                                                           min: 0,
                                                                       }}
-                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.pounds`}
+                                                                      name={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.pounds`}
                                                                       label={`Pounds`}
                                                                       formikForm={
                                                                           formikForm
                                                                       }
-                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.pounds`}
+                                                                      fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.pounds`}
                                                                   />
                                                                   <TextFieldWithFormikValidation
                                                                       fullWidth
@@ -116,12 +116,12 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       inputProps={{
                                                                           min: 0,
                                                                       }}
-                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.shilling`}
+                                                                      name={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.shilling`}
                                                                       label={`Shilling`}
                                                                       formikForm={
                                                                           formikForm
                                                                       }
-                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.shilling`}
+                                                                      fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.shilling`}
                                                                   />
                                                                   <TextFieldWithFormikValidation
                                                                       fullWidth
@@ -129,12 +129,12 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       inputProps={{
                                                                           min: 0,
                                                                       }}
-                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.pence`}
+                                                                      name={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.pence`}
                                                                       label={`Pence`}
                                                                       formikForm={
                                                                           formikForm
                                                                       }
-                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.unitCost.pence`}
+                                                                      fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.pence`}
                                                                   />
                                                               </Grid>
 
@@ -152,12 +152,12 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       inputProps={{
                                                                           min: 0,
                                                                       }}
-                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.pounds`}
+                                                                      name={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.pounds`}
                                                                       label={`Pounds`}
                                                                       formikForm={
                                                                           formikForm
                                                                       }
-                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.pounds`}
+                                                                      fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.pounds`}
                                                                   />
                                                                   <TextFieldWithFormikValidation
                                                                       fullWidth
@@ -165,12 +165,12 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       inputProps={{
                                                                           min: 0,
                                                                       }}
-                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.shilling`}
+                                                                      name={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.shilling`}
                                                                       label={`Shilling`}
                                                                       formikForm={
                                                                           formikForm
                                                                       }
-                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.shilling`}
+                                                                      fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.shilling`}
                                                                   />
                                                                   <TextFieldWithFormikValidation
                                                                       fullWidth
@@ -178,12 +178,12 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       inputProps={{
                                                                           min: 0,
                                                                       }}
-                                                                      name={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.pence`}
+                                                                      name={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.pence`}
                                                                       label={`Pence`}
                                                                       formikForm={
                                                                           formikForm
                                                                       }
-                                                                      fieldName={`itemEntries.${prevIdx}.itemsOrServices.${index}.itemCost.pence`}
+                                                                      fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.pence`}
                                                                   />
                                                               </Grid>
                                                           </Grid>

@@ -82,7 +82,7 @@ export interface DateInfo {
     day: number;
     month: number;
     year: number;
-    fullDate: Date | '';
+    fullDate: string;
 }
 
 export interface ItemMentioned {
@@ -154,4 +154,36 @@ export interface Entry {
         currency: PoundsShillingPence;
         sterling: PoundsShillingPence;
     };
+}
+
+export interface AdvancedSearch {
+    reel: string;
+    storeOwner: string;
+    folioYear: string;
+    folioPage: string;
+    entryID: string;
+    accountHolderName: string;
+    date: string;
+    date2: string;
+    people: string;
+    places: string;
+    commodity: string;
+    colony: string;
+    itemEntry: {
+        perOrder: number;
+        items: string;
+        category: string;
+        subcategory: string;
+        variant: string;
+    } | null;
+    tobaccoEntry: {
+        description: string;
+        tobaccoMarkName: string;
+        noteNumber: number;
+        moneyType: string;
+    } | null;
+    regularEntry: {
+        entryDescription: string;
+        tobaccoMarkName: string;
+    } | null;
 }

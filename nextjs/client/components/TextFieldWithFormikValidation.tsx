@@ -1,4 +1,5 @@
 import TextField, { TextFieldProps } from '@mui/material/TextField';
+import { get } from 'lodash';
 
 interface TextFieldFormikProps {
     formikForm: any;
@@ -9,19 +10,21 @@ type Props = TextFieldProps & TextFieldFormikProps;
 
 const TextFieldWithFormikValidation = (props: Props) => {
     const { formikForm, fieldName, ...textFieldProps } = props;
+
     return (
         <TextField
             margin="dense"
             variant="filled"
-            {...textFieldProps}
-            value={formikForm.values[fieldName]}
+            value={get(formikForm.values, fieldName)}
             onChange={formikForm.handleChange}
+            {...textFieldProps}
             error={
-                formikForm.touched[fieldName] &&
-                Boolean(formikForm.errors[fieldName])
+                get(formikForm.touched, fieldName) &&
+                Boolean(get(formikForm.errors, fieldName))
             }
             helperText={
-                formikForm.touched[fieldName] && formikForm.errors[fieldName]
+                get(formikForm.touched, fieldName) &&
+                get(formikForm.errors, fieldName)
             }
         />
     );

@@ -27,15 +27,15 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
     const { index, formikForm, arrayHelpers } = props;
     const prefix = 'images';
     const fieldNames = {
-        name: `${prefix}.${index}.name`,
-        imageKey: `${prefix}.${index}.imageKey`,
-        material: `${prefix}.${index}.material`,
-        dimensions: `${prefix}.${index}.dimensions`,
-        date: `${prefix}.${index}.date`,
-        caption: `${prefix}.${index}.caption`,
-        collectionCitation: `${prefix}.${index}.collectionCitation`,
-        url: `${prefix}.${index}.url`,
-        license: `${prefix}.${index}.license`,
+        name: `${prefix}[${index}].name`,
+        imageKey: `${prefix}[${index}].imageKey`,
+        material: `${prefix}[${index}].material`,
+        dimensions: `${prefix}[${index}].dimensions`,
+        date: `${prefix}[${index}].date`,
+        caption: `${prefix}[${index}].caption`,
+        collectionCitation: `${prefix}[${index}].collectionCitation`,
+        url: `${prefix}[${index}].url`,
+        license: `${prefix}[${index}].license`,
     };
 
     const [image, setImage] = useState<any>(null);

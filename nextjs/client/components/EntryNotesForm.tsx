@@ -30,47 +30,47 @@ const EntryNotesFrom = ({ formikForm }: any) => {
 
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.notes.${index}.noteNum`}
+                                                      name={`tobaccoEntry.notes[${index}].noteNum`}
                                                       label={`Note number`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.notes.${index}.noteNum`}
+                                                      fieldName={`tobaccoEntry.notes[${index}].noteNum`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.notes.${index}.totalWeight`}
+                                                      name={`tobaccoEntry.notes[${index}].totalWeight`}
                                                       label={`Total Weight`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.notes.${index}.totalWeight`}
+                                                      fieldName={`tobaccoEntry.notes[${index}].totalWeight`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.notes.${index}.barrelWeight`}
+                                                      name={`tobaccoEntry.notes[${index}].barrelWeight`}
                                                       label={`Barrel Weight`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.notes.${index}.barrelWeight`}
+                                                      fieldName={`tobaccoEntry.notes[${index}].barrelWeight`}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`tobaccoEntry.notes.${index}.tobaccoWeight`}
+                                                      name={`tobaccoEntry.notes[${index}].tobaccoWeight`}
                                                       label={`Tobacco Weight`}
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
                                                       }}
                                                       formikForm={formikForm}
-                                                      fieldName={`tobaccoEntry.notes.${index}.tobaccoWeight`}
+                                                      fieldName={`tobaccoEntry.notes[${index}].tobaccoWeight`}
                                                   />
                                               </CardContent>
                                               <CardActions>

@@ -29,7 +29,7 @@ const RegularMarkForm = ({ formikForm }: any) => {
         debounce((search: string, index: number) => {
             setSearch(search);
             formikForm.setFieldValue(
-                `regularEntry.tobaccoMarks.${index}.markID`,
+                `regularEntry.tobaccoMarks[${index}].markID`,
                 '',
             );
         }, 500),
@@ -54,7 +54,7 @@ const RegularMarkForm = ({ formikForm }: any) => {
                                               key={index}
                                           >
                                               <TobaccoMarkAutocomplete
-                                                  fieldName={`regularEntry.tobaccoMarks.${index}`}
+                                                  fieldName={`regularEntry.tobaccoMarks[${index}]`}
                                                   index={index}
                                                   label={`Mark ${index}`}
                                                   labelOptions={marksOptions}

@@ -75,7 +75,18 @@ const UpdateGlossaryItem: NextPage = () => {
 
     const updateForm = useFormik<UpdateGlossaryItemType>({
         enableReinitialize: true,
-        initialValues: initialValues,
+        initialValues: {
+            name: '',
+            description: '',
+            origin: '',
+            use: '',
+            category: '',
+            subcategory: '',
+            qualifiers: '',
+            culturalContext: '',
+            citations: '',
+            images: [] as any,
+        },
         validationSchema: glossaryItemSchema,
         onSubmit: async (values, { resetForm }) => {
             let errorUploadingImage = false;

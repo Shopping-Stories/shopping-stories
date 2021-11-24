@@ -6,15 +6,29 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import { AdvancedSearch } from 'client/types';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 import ParsingResultTableRow from './ParsingResultTableRow';
 import TablePaginationActions from './TablePaginationActions';
 
+interface EntryPaginationTable {
+    queryDef: string;
+    search: string;
+    advanced: AdvancedSearch;
+    isAdvancedSearch: boolean;
+    onEditClick: any;
+    onDeleteClick: any;
+    setReQuery: any;
+    reQuery: boolean;
+}
+
 const EntryPaginationTable = (props: any) => {
     const {
         queryDef,
         search,
+        advanced,
+        isAdvancedSearch,
         onEditClick,
         onDeleteClick,
         setReQuery,
@@ -35,7 +49,9 @@ const EntryPaginationTable = (props: any) => {
 
     const [{ data }, executeQuery] = useQuery({
         query: queryDef,
-        variables: { options, search },
+        variables: isAdvancedSearch
+            ? { options, advanced }
+            : { options, search },
     });
 
     useEffect(() => {

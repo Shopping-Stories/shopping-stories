@@ -30,10 +30,10 @@ const FolioReferencesForm = ({ formikForm }: any) => {
                                               >
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`folioRefs.${index}`}
+                                                      name={`folioRefs[${index}]`}
                                                       label={`Reference ${index}`}
                                                       formikForm={formikForm}
-                                                      fieldName={`folioRefs.${index}`}
+                                                      fieldName={`folioRefs[${index}]`}
                                                   />
                                                   <div
                                                       style={{

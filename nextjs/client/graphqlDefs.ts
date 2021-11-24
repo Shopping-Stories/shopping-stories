@@ -272,3 +272,23 @@ query FetchMarks($search: String!, $options: FindAllLimitAndSkip) {
   }
 }
 `;
+
+export const SearchEntryDef = `
+query entriesQuery($search: String, $options: FindAllLimitAndSkip) {
+  rows: findEntries(search: $search, options: $options) {
+  	...entryFields
+  }
+  count: countEntries(search: $search)
+}
+${EntryFields}
+`;
+
+export const AdvancedSearchEntryDef = `
+query AdvancedSearch($advanced: AdvancedSearchInput, $options: FindAllLimitAndSkip) {
+  rows: advancedFindEntries(search: $advanced, options: $options) {
+    ...entryFields
+  }
+  count: advancedCountEntries(search: $advanced)
+}
+${EntryFields}
+`

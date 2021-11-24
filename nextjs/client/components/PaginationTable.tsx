@@ -43,7 +43,7 @@ const PaginationTable = <T extends unknown>(props: PaginationTableProps<T>) => {
         count: number;
     }
 
-    const [{ data }, updateQuery] = useQuery<QueryType>({
+    const [{ data, fetching }, updateQuery] = useQuery<QueryType>({
         query: queryDef,
         variables: { options, search },
     });

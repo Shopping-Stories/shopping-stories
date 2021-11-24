@@ -22,11 +22,10 @@ const defaultNavLinks: NavLink[] = [
     { title: `home`, path: `/` },
     { title: `about`, path: `/about` },
     { title: `search`, path: `/entries` },
-    { title: `Database`, path: `/databasesearch` },
 ];
 
 const adminNavLinks: NavLink[] = [
-    { title: `admin page`, path: `/dashboard/admin` },
+    { title: `settings`, path: `/dashboard/admin` },
 ];
 
 const Offset = styled('div')(
@@ -37,7 +36,7 @@ const Header = () => {
     const [navLinks, setNavLinks] = useState<NavLink[]>(defaultNavLinks);
     const { groups, isLoggedIn } = useAuth();
     const authLink = !isLoggedIn
-        ? { title: `sign in`, path: `/auth` }
+        ? { title: `sign in`, path: `/auth/signin` }
         : { title: `sign out`, path: `/signout` };
     const uniqueNavLinks = uniqWith([authLink, ...navLinks], isEqual);
 

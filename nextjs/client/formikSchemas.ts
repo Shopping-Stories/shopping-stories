@@ -67,7 +67,7 @@ export const entryInitialValues = {
         day: -1,
         month: -1,
         year: -1,
-        fullDate: '' as const,
+        fullDate: new Date(100, 0, 1).toISOString().substring(0, 10),
     },
     folioRefs: [],
     ledgerRefs: [],
@@ -246,4 +246,36 @@ export const createEntrySchema = yup.object({
         currency: poundShillingPence,
         sterling: poundShillingPence,
     }),
+});
+
+export const advancedSearchSchema = yup.object({
+    reel: yup.string(),
+    storeOwner: yup.string(),
+    folioYear: yup.string(),
+    folioPage: yup.string(),
+    entryID: yup.string(),
+    accountHolderName: yup.string(),
+    date: yup.date(),
+    date2: yup.date(),
+    people: yup.string(),
+    places: yup.string(),
+    commodity: yup.string(),
+    colony: yup.string(),
+    itemEntry: yup.object({
+        perOrder: yup.number(),
+        items: yup.string(),
+        category: yup.string(),
+        subcategory: yup.string(),
+        variant: yup.string(),
+    }).nullable(),
+    tobaccoEntry: yup.object({
+        description: yup.string(),
+        tobaccoMarkName: yup.string(),
+        noteNumber: yup.number(),
+        moneyType: yup.string(),
+    }).nullable(),
+    regularEntry: yup.object({
+        entryDescription: yup.string(),
+        tobaccoMarkName: yup.string(),
+    }).nullable(),
 });

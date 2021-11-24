@@ -19,7 +19,7 @@ const ItemsOrServicesVariantsForm = ({
             .variants && (
             <FormikProvider value={formikForm}>
                 <FieldArray
-                    name={`itemEntries.${prevPrevIdx}.itemsOrServices.${prevIdx}.variants`}
+                    name={`itemEntries[${prevPrevIdx}].itemsOrServices[${prevIdx}].variants`}
                     render={(arrayHelpers: any) => {
                         const refs =
                             formikForm.values.itemEntries[prevPrevIdx]
@@ -55,12 +55,12 @@ const ItemsOrServicesVariantsForm = ({
                                                                       {index.toString()}
                                                                   </Typography>
                                                                   <TextFieldWithFormikValidation
-                                                                      name={`itemEntries.${prevPrevIdx}.itemsOrServices.${prevIdx}.variants.${index}`}
+                                                                      name={`itemEntries[${prevPrevIdx}].itemsOrServices[${prevIdx}].variants[${index}]`}
                                                                       label={`Variant ${index}`}
                                                                       formikForm={
                                                                           formikForm
                                                                       }
-                                                                      fieldName={`itemEntries.${prevPrevIdx}.itemsOrServices.${prevIdx}.variants.${index}`}
+                                                                      fieldName={`itemEntries[${prevPrevIdx}].itemsOrServices[${prevIdx}].variants[${index}]`}
                                                                   />
                                                                   <Button
                                                                       variant="contained"

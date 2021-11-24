@@ -30,10 +30,10 @@ const LedgerReferencesForm = ({ formikForm }: any) => {
                                               >
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
-                                                      name={`ledgerRefs.${index}`}
+                                                      name={`ledgerRefs[${index}]`}
                                                       label={`Ledger ${index}`}
                                                       formikForm={formikForm}
-                                                      fieldName={`ledgerRefs.${index}`}
+                                                      fieldName={`ledgerRefs[${index}]`}
                                                   />
                                                   <div
                                                       style={{
