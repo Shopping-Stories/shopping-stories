@@ -12,8 +12,6 @@ export const omitTypename = (key: string, value: any) =>
 export const cloneWithoutTypename = (obj: any) =>
     JSON.parse(JSON.stringify(obj), omitTypename);
 
-
-
 /**
  * Takes a promise and resolves it returning
  * a tuple with the resolved promise

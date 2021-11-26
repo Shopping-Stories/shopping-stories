@@ -9,11 +9,12 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { RegularEntry } from 'client/types';
+import { Fragment, useState } from 'react';
 import { ItemsMentionedTable } from './ItemEntrySubTables';
 import TobaccoMarksSubTable from './TobaccoMarksSubTable';
 
-const RegularEntryTable = (props: any) => {
+const RegularEntryTable = (props: { regularEntry: RegularEntry }) => {
     const { regularEntry } = props;
 
     return (
@@ -22,9 +23,11 @@ const RegularEntryTable = (props: any) => {
                 Regular Entry
             </Typography>
             <Table size="small" aria-label="purchases">
-                <TableHead component="td">
-                    <TableCell />
-                    <TableCell>Entry</TableCell>
+                <TableHead>
+                    <TableRow>
+                        <TableCell />
+                        <TableCell>Entry</TableCell>
+                    </TableRow>
                 </TableHead>
                 <TableBody>
                     <RegularEntryRow regularEntry={regularEntry} />
@@ -34,11 +37,11 @@ const RegularEntryTable = (props: any) => {
     );
 };
 
-const RegularEntryRow = ({ regularEntry }: any) => {
+const RegularEntryRow = ({ regularEntry }: { regularEntry: RegularEntry }) => {
     const [open, setOpen] = useState(false);
 
     return (
-        <>
+        <Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>
                     <IconButton
@@ -53,30 +56,40 @@ const RegularEntryRow = ({ regularEntry }: any) => {
                         )}
                     </IconButton>
                 </TableCell>
-                <TableCell>{regularEntry?.entry}</TableCell>
+                <TableCell>
+                    {regularEntry?.entry ? regularEntry.entry : ''}
+                </TableCell>
             </TableRow>
             <TableRow>
                 <TableCell
                     style={{ paddingBottom: 0, paddingTop: 0 }}
-                    colSpan={6}
+                    colSpan={4}
                 >
                     <Collapse in={open} timeout="auto">
-                        {!!regularEntry && (
-                            <>
-                                <TobaccoMarksSubTable
-                                    tobaccoMarks={regularEntry?.tobaccoMarks}
-                                />
-                                <ItemsMentionedTable
-                                    itemsMentioned={
-                                        regularEntry?.itemsMentioned
-                                    }
-                                />
-                            </>
+                        {regularEntry && (
+                            <Fragment>
+                                {regularEntry.tobaccoMarks &&
+                                regularEntry.tobaccoMarks.length > 0 ? (
+                                    <TobaccoMarksSubTable
+                                        tobaccoMarks={
+                                            regularEntry?.tobaccoMarks
+                                        }
+                                    />
+                                ) : null}
+                                {regularEntry.itemsMentioned &&
+                                regularEntry.itemsMentioned.length > 0 ? (
+                                    <ItemsMentionedTable
+                                        itemsMentioned={
+                                            regularEntry?.itemsMentioned
+                                        }
+                                    />
+                                ) : null}
+                            </Fragment>
                         )}
                     </Collapse>
                 </TableCell>
             </TableRow>
-        </>
+        </Fragment>
     );
 };
 

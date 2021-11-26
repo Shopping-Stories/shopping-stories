@@ -13,7 +13,7 @@ import { ItemEntry } from 'client/types';
 import { Fragment, useState } from 'react';
 import {
     ItemsMentionedTable,
-    ItemsOrServicesTable
+    ItemsOrServicesTable,
 } from './ItemEntrySubTables';
 
 const ItemEntriesTable = (props: { itemEntries: ItemEntry[] }) => {
@@ -28,9 +28,11 @@ const ItemEntriesTable = (props: { itemEntries: ItemEntry[] }) => {
                     </Typography>
                     <Table size="small" aria-label="purchases">
                         <TableHead>
-                            <TableCell />
-                            <TableCell>Per-Order</TableCell>
-                            <TableCell>Percentage</TableCell>
+                            <TableRow>
+                                <TableCell colSpan={1} />
+                                <TableCell>Per-Order</TableCell>
+                                <TableCell>Percentage</TableCell>
+                            </TableRow>
                         </TableHead>
                         <TableBody>
                             {itemEntries.map((entry, i) => (
@@ -70,7 +72,7 @@ const ItemEntryRow = (props: { itemEntry: ItemEntry }) => {
             <TableRow>
                 <TableCell
                     style={{ paddingBottom: 0, paddingTop: 0 }}
-                    colSpan={6}
+                    colSpan={12}
                 >
                     <Collapse in={open} timeout="auto">
                         {itemEntry && (

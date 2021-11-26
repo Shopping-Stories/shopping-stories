@@ -8,12 +8,17 @@ interface RegularEntrySearchProps {
 
 const RegularEntrySearch = ({ formikForm }: RegularEntrySearchProps) => {
     const ref = formikForm.values.regularEntry;
-    const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'));
+    const isSmallerThanMd = useMediaQuery((theme: any) =>
+        theme.breakpoints.down('md'),
+    );
 
     return (
         <div>
             {ref ? (
-                <Stack direction={isSmallerThanMd ? "column" : "row"} spacing={2}>
+                <Stack
+                    direction={isSmallerThanMd ? 'column' : 'row'}
+                    spacing={2}
+                >
                     <TextFieldWithFormikValidation
                         name={`regularEntry.entryDescription`}
                         label={`Description`}

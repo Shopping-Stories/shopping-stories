@@ -5,6 +5,7 @@ import TextAreaWithFormikValidation from '@components/TextAreaWithFormikValidati
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import useAuth from '@hooks/useAuth.hook';
 import LoadingButton from '@mui/lab/LoadingButton';
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -119,6 +120,11 @@ const CreateGlossaryItemPage: NextPage = () => {
             >
                 <form onSubmit={createForm.handleSubmit}>
                     <Grid container justifyContent="center" spacing={4}>
+                        <Grid item xs={12}>
+                            <Button href="/dashboard/glossary/items">
+                                Back to management panel
+                            </Button>
+                        </Grid>
                         <Grid item xs={12} md={4}>
                             <Typography component="h2">Item Details</Typography>
                             <Stack spacing={2}>

@@ -13,9 +13,17 @@ interface PaginationRowProps<T> {
     onDeleteClick: (doc: T) => void;
 }
 
-const PaginationTableRow = <T extends unknown>(props: PaginationRowProps<T>) => {
-    const { row, onEditClick, onDeleteClick, isAdmin, isAdminOrModerator, cellValues } =
-        props;
+const PaginationTableRow = <T extends unknown>(
+    props: PaginationRowProps<T>,
+) => {
+    const {
+        row,
+        onEditClick,
+        onDeleteClick,
+        isAdmin,
+        isAdminOrModerator,
+        cellValues,
+    } = props;
 
     return (
         <TableRow>

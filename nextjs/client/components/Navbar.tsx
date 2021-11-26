@@ -6,6 +6,7 @@ import { NavLink } from 'client/types';
 import { signOut } from 'client/util';
 import { useRouter } from 'next/router';
 import { ButtonStyles } from 'styles/styles';
+import { ThemeSwitch } from './ThemeSwitch';
 
 interface NavBarProps {
     navLinks: NavLink[];
@@ -50,6 +51,7 @@ const Navbar = ({ navLinks, isLoggedIn }: NavBarProps) => {
                     </Button>
                 )}
             </Stack>
+            <ThemeSwitch />
         </Toolbar>
     );
 };

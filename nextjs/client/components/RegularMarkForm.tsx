@@ -3,7 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { FetchTobaccoMarks } from 'client/graphqlDefs';
-import { OptionsType } from 'client/types';
+import { OptionsType, RegularEntry } from 'client/types';
 import { FieldArray, FormikProvider } from 'formik';
 import debounce from 'lodash/debounce';
 import { useCallback, useState } from 'react';
@@ -41,12 +41,13 @@ const RegularMarkForm = ({ formikForm }: any) => {
             <FieldArray
                 name="regularEntry.tobaccoMarks"
                 render={(arrayHelpers: any) => {
-                    const refs = formikForm.values?.regularEntry?.tobaccoMarks;
+                    const refs: RegularEntry['tobaccoMarks'] =
+                        formikForm.values?.regularEntry?.tobaccoMarks;
 
                     return (
                         <Stack spacing={2}>
                             {refs && refs.length > 0
-                                ? refs.map((_: any, index: number) => {
+                                ? refs.map((_, index) => {
                                       return (
                                           <Stack
                                               spacing={2}

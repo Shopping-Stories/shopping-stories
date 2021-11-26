@@ -18,6 +18,7 @@ import { createEntrySchema } from 'client/formikSchemas';
 import { EntryFields } from 'client/graphqlDefs';
 import { Entry } from 'client/types';
 import { useFormik } from 'formik';
+import { Dispatch, SetStateAction } from 'react';
 import { PaperStyles } from 'styles/styles';
 import { useMutation } from 'urql';
 
@@ -26,7 +27,7 @@ interface EntryUpdateFormProps {
     tabIndex: number;
     viewEntries: boolean;
     id: string;
-    setViewEntries: any;
+    setViewEntries: Dispatch<SetStateAction<boolean>>;
 }
 
 const updateEntryDef = `
@@ -47,16 +48,16 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
         initialValues: initialValues,
         validationSchema: createEntrySchema,
         onSubmit: async (values, { resetForm }) => {
-            const entry = JSON.parse(JSON.stringify(values));
+            const entry: Entry = JSON.parse(JSON.stringify(values));
 
-            entry.people.map((person: any) => {
+            entry.people.map((person) => {
                 if (!Boolean(person.id)) {
                     delete person.id;
                 }
                 return person;
             });
 
-            entry.places.map((place: any) => {
+            entry.places.map((place) => {
                 if (!Boolean(place.id)) {
                     delete place.id;
                 }
@@ -64,7 +65,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
             });
 
             if (entry.regularEntry) {
-                entry.regularEntry.tobaccoMarks.map((mark: any) => {
+                entry.regularEntry.tobaccoMarks.map((mark) => {
                     if (!Boolean(mark.markID)) {
                         delete mark.markID;
                     }
@@ -73,7 +74,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
             }
 
             if (entry.tobaccoEntry) {
-                entry.tobaccoEntry.marks.map((mark: any) => {
+                entry.tobaccoEntry.marks.map((mark) => {
                     if (!Boolean(mark.markID)) {
                         delete mark.markID;
                     }
@@ -82,7 +83,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
             }
 
             if (!Boolean(entry.dateInfo.fullDate)) {
-                delete entry.dateInfo.fullDate;
+                delete (entry as any).dateInfo.fullDate;
             }
 
             const res = await updateEntry({
@@ -107,6 +108,9 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
             >
                 <form onSubmit={updateForm.handleSubmit}>
                     <Grid container justifyContent="center" spacing={4}>
+                        <Grid item xs={12}>
+                            <Button href="/entries/">Back entry list</Button>
+                        </Grid>
                         <Grid item xs={12} md={6}>
                             <Typography component="h2">
                                 Account Holder Info

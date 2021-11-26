@@ -8,12 +8,17 @@ interface ItemEntrySearchProps {
 
 const ItemEntrySearch = ({ formikForm }: ItemEntrySearchProps) => {
     const ref = formikForm.values.itemEntry;
-    const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'));
+    const isSmallerThanMd = useMediaQuery((theme: any) =>
+        theme.breakpoints.down('md'),
+    );
 
     return (
         <div>
             {ref ? (
-                <Stack direction={isSmallerThanMd ? "column" : "row"} spacing={2}>
+                <Stack
+                    direction={isSmallerThanMd ? 'column' : 'row'}
+                    spacing={2}
+                >
                     <TextFieldWithFormikValidation
                         name={`itemEntry.items`}
                         label={`Item Name`}

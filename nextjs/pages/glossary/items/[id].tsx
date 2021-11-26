@@ -1,20 +1,22 @@
+import ColorBackground from '@components/ColorBackground';
 import GlossaryItemImageCard from '@components/GlossaryItemImageCard';
 import Header from '@components/Header';
 import InfoSection from '@components/InfoSection';
+import LoadingPage from '@components/LoadingPage';
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
-import { GlossaryItem } from 'client/types';
 import { FetchGlossaryItemDef } from 'client/graphqlDefs';
+import { GlossaryItem } from 'client/types';
 import { GlossaryItemQueryResult } from 'client/urqlConfig';
 import { handlePromise, processStorageList } from 'client/util';
 import { pickBy } from 'lodash';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import backgrounds from 'styles/backgrounds.module.css';
 import { useQuery } from 'urql';
 
 const ItemGlossaryPage: NextPage = () => {
@@ -75,11 +77,7 @@ const ItemGlossaryPage: NextPage = () => {
     }, [findGlossaryItemResult.data]);
 
     if (findGlossaryItemResult.fetching) {
-        return (
-            <div>
-                <Header />
-            </div>
-        );
+        return <LoadingPage />;
     } else if (findGlossaryItemResult.data) {
         const {
             name,
@@ -107,7 +105,7 @@ const ItemGlossaryPage: NextPage = () => {
         const cleanedObject = pickBy(data, (value, _) => Boolean(value));
 
         return (
-            <div className={backgrounds.colorBackground}>
+            <ColorBackground>
                 <Header />
                 <Paper
                     sx={{
@@ -117,6 +115,11 @@ const ItemGlossaryPage: NextPage = () => {
                     }}
                 >
                     <Grid container justifyContent="center" spacing={4}>
+                        <Grid item xs={12}>
+                            <Button href="/glossary/items/">
+                                Back item glossary
+                            </Button>
+                        </Grid>
                         <Grid item xs={12}>
                             <Typography variant="h2">{name}</Typography>
                         </Grid>
@@ -154,10 +157,10 @@ const ItemGlossaryPage: NextPage = () => {
                         </Grid>
                     </Grid>
                 </Paper>
-            </div>
+            </ColorBackground>
         );
     } else {
-        // router.push('/glossary');
+        router.replace('/404');
         return <>error</>;
     }
 };

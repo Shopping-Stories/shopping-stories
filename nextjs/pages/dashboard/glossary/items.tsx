@@ -17,7 +17,7 @@ import { Storage } from 'aws-amplify';
 import { searchSchema } from 'client/formikSchemas';
 import {
     DeleteGlossaryItemDef,
-    FetchGlossaryItemsDef
+    FetchGlossaryItemsDef,
 } from 'client/graphqlDefs';
 import { GlossaryItem, SearchType } from 'client/types';
 import { Roles } from 'config/constants.config';

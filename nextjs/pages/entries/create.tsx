@@ -109,6 +109,9 @@ const CreateEntryPage: NextPage = () => {
             >
                 <form onSubmit={createForm.handleSubmit}>
                     <Grid container justifyContent="center" spacing={4}>
+                        <Grid item xs={12}>
+                            <Button href="/entries/">Back entry list</Button>
+                        </Grid>
                         <Grid item xs={12} md={6}>
                             <Typography component="h2">
                                 Account Holder Info

@@ -1,6 +1,8 @@
+import { Roles } from 'config/constants.config';
 import 'reflect-metadata';
 import {
     Arg,
+    Authorized,
     Info,
     Mutation,
     Query,
@@ -51,12 +53,14 @@ export default class ItemResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => Item)
     async createItem(@Arg('item') newItem: CreateItemInput): Promise<Item> {
         return ItemService.create(newItem);
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin, Roles.Moderator])
     @Mutation((_returns) => Item, { nullable: true })
     async updateItem(
         @Arg('id') id: string,
@@ -71,6 +75,7 @@ export default class ItemResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => Item, { nullable: true })
     async deleteItem(
         @Arg('id') id: string,

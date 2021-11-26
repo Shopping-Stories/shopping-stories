@@ -1,23 +1,24 @@
-import Head from 'next/head';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import { CacheProvider } from '@emotion/react';
-import createEmotionCache from '../styles/createEmotionCache';
+import { createTheme, PaletteMode, useMediaQuery } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
 import { authExchange } from '@urql/exchange-auth';
 import { cacheExchange } from '@urql/exchange-graphcache';
 import { Auth, Storage } from 'aws-amplify';
+import { ColorModeContext } from 'client/ThemeMode';
 import type { AppProps } from 'next/app';
-import { Client, dedupExchange, fetchExchange, Provider } from 'urql';
-import { AmplifyOptions, S3Options } from '../client/util';
-import '../styles/globals.css';
-import { createTheme, PaletteMode, useMediaQuery } from '@mui/material';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import Head from 'next/head';
+import { useEffect, useMemo, useState } from 'react';
 import { getDesignTokens } from 'styles/theme';
+import { Client, dedupExchange, fetchExchange, Provider } from 'urql';
 import {
     addAuthToOperation,
     didAuthError,
-    getAuth,
+    getAuth
 } from '../client/urqlConfig';
+import { AmplifyOptions, S3Options } from '../client/util';
+import createEmotionCache from '../styles/createEmotionCache';
+import '../styles/globals.css';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -72,17 +73,6 @@ Auth.configure(AmplifyOptions);
 
 Storage.configure(S3Options);
 
-const ColorModeContext = createContext<{
-    toggleColorMode: () => void;
-    mode: PaletteMode;
-}>({
-    toggleColorMode: () => undefined,
-    mode: 'light',
-});
-
-export const useColorMode = () => {
-    return useContext(ColorModeContext);
-};
 
 function App({
     Component,

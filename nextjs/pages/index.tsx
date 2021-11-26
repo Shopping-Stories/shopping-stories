@@ -1,71 +1,63 @@
+import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { Fragment, useState } from 'react';
-import backgrounds from 'styles/backgrounds.module.css';
-import { useColorMode } from './_app';
 
 const Home: NextPage = () => {
-    const [toggleOn, setToggle] = useState<boolean>(false);
-    const { toggleColorMode } = useColorMode();
-
     return (
-        <Fragment>
-            <div className={backgrounds.imageBackground}>
-                <Head>
-                    <title>Shopping Stories</title>
-                    <meta
-                        name="description"
-                        content="Revealing Colonial History"
-                    />
-                    <link rel="icon" href="/favicon.ico" />
-                </Head>
+        <ColorBackground>
+            <Head>
+                <title>Shopping Stories</title>
+                <meta name="description" content="Revealing Colonial History" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
 
-                <Header />
+            <Header />
+            <Grid
+                container
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justifyContent="center"
+                margin="auto"
+            >
                 <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    margin="auto"
+                    item
+                    md={4}
+                    sm={8}
+                    xs={10}
+                    component={Paper}
+                    sx={{
+                        backgroundColor: `var(--secondary-bg-translucent)`,
+                        margin: '3rem',
+                        padding: '1rem',
+                    }}
                 >
-                    <Grid
-                        item
-                        md={4}
-                        sm={8}
-                        xs={10}
-                        component={Paper}
+                    <Typography
+                        align="center"
+                        variant="h2"
+                        component="div"
+                        sx={{ fontFamily: 'Merriweather' }}
+                    >
+                        Welcome to
+                    </Typography>
+                    <Typography
+                        align="center"
+                        variant="h1"
+                        component="div"
                         sx={{
-                            backgroundColor: `var(--secondary-bg-translucent)`,
-                            margin: '3rem',
-                            padding: '1rem',
+                            fontWeight: 'regular',
+                            fontFamily: 'Merriweather',
                         }}
                     >
-                        <Typography align="center" variant="h2" component="div"
-                        sx={{ fontFamily: 'Merriweather' }}>
-                            Welcome to
-                        </Typography>
-                        <Typography align="center" variant="h1" component="div"
-                        sx={{ fontWeight: 'regular', fontFamily: 'Merriweather' }}>
-                            Shopping Stories
-                        </Typography>
-                    </Grid>
+                        Shopping Stories
+                    </Typography>
                 </Grid>
-
-                <Switch
-                    checked={toggleOn}
-                    onChange={() => {
-                        setToggle(!toggleOn);
-                        toggleColorMode();
-                    }}
-                />
-            </div>
-        </Fragment>
+            </Grid>
+        </ColorBackground>
     );
 };
 

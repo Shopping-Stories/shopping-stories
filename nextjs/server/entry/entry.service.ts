@@ -67,7 +67,6 @@ export class EntryService {
         skip: number,
         count?: boolean,
     ): Promise<Entry[] | number> {
-        console.log(searchObj);
         //advanced search
         //need to pull fields supplied from the search input
         //if the field is apart of the entry text index, add it to the search string, else
@@ -80,7 +79,6 @@ export class EntryService {
         let indexFlag = 0;
         let temp: any = {};
         if (searchObj.people) {
-            console.log('people undefined');
             searchString += searchObj.people.toString();
         }
         if (searchObj.reel) {
@@ -109,7 +107,6 @@ export class EntryService {
         if (searchObj.date != undefined && searchObj.date2 != undefined) {
             let date = new Date(searchObj.date);
             let date2 = new Date(searchObj.date2);
-            console.log(date, date2);
             temp['dateInfo.fullDate'] = { $gte: date, $lt: date2 };
         }
         if (searchObj.people) {
@@ -149,11 +146,9 @@ export class EntryService {
                     $options: 'i',
                 };
             }
-            console.log(entry);
         }
         if (searchObj.tobaccoEntry) {
             let entry = searchObj.tobaccoEntry;
-            console.log(entry);
             if (entry.description) {
                 let description = entry.description.toString();
                 temp['tobaccoEntry.entry'] = {
@@ -181,7 +176,6 @@ export class EntryService {
         }
         if (searchObj.regularEntry) {
             let entry = searchObj.regularEntry;
-            console.log(entry);
             if (entry.entryDescription) {
                 let description = entry.entryDescription.toString();
                 temp['regularEntry.entry'] = {
@@ -198,7 +192,6 @@ export class EntryService {
             }
         }
 
-        console.log(searchString);
         if (searchString !== '') {
             let searchJson = {
                 $search: searchString,
@@ -207,7 +200,6 @@ export class EntryService {
             indexFlag = 1;
         }
 
-        console.log(temp);
         //general fields
         //fields Reel, StoreOwner, FolioYear,FolioPage,Entry ID, Account holder name (one field),
         //Date using date picker, people, places, commodity, colony
@@ -235,7 +227,6 @@ export class EntryService {
         }
 
         if (indexFlag === 1) {
-            console.log('using index');
             return EntryModel.find(temp, {
                 score: { $meta: 'textScore' },
             })
@@ -244,7 +235,6 @@ export class EntryService {
                 .limit(limit)
                 .lean<Entry[]>();
         } else {
-            console.log('not using index');
             return EntryModel.find(temp)
                 .skip(skip)
                 .limit(limit)

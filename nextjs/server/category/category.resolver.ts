@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import {
     Arg,
+    Authorized,
     Info,
     Mutation,
     Query,
@@ -14,6 +15,7 @@ import { CreateCategoryInput } from './input/createCategory.input';
 import { UpdateCategoryInput } from './input/updateCategory.input';
 import { Category } from './category.schema';
 import CategoryService from './category.service';
+import { Roles } from 'config/constants.config';
 
 @Resolver((_of) => Category)
 export default class CategoryResolver {
@@ -51,6 +53,7 @@ export default class CategoryResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => Category)
     async createCategory(
         @Arg('category') newCategory: CreateCategoryInput,
@@ -59,6 +62,7 @@ export default class CategoryResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin, Roles.Moderator])
     @Mutation((_returns) => Category, { nullable: true })
     async updateCategory(
         @Arg('id') id: string,
@@ -73,6 +77,7 @@ export default class CategoryResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => Category, { nullable: true })
     async deleteCategory(
         @Arg('id') id: string,

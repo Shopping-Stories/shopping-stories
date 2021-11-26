@@ -1,6 +1,8 @@
+import { Roles } from 'config/constants.config';
 import 'reflect-metadata';
 import {
     Arg,
+    Authorized,
     Info,
     Mutation,
     Query,
@@ -51,6 +53,7 @@ export default class PlaceResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => Place)
     async createPlace(
         @Arg('place') newPlace: CreatePlaceInput,
@@ -59,6 +62,7 @@ export default class PlaceResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin, Roles.Moderator])
     @Mutation((_returns) => Place, { nullable: true })
     async updatePlace(
         @Arg('id') id: string,
@@ -73,6 +77,7 @@ export default class PlaceResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => Place, { nullable: true })
     async deletePlace(
         @Arg('id') id: string,

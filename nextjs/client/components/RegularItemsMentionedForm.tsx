@@ -5,6 +5,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { ItemMentioned } from 'client/types';
 import { FieldArray, FormikProvider } from 'formik';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
@@ -14,12 +15,13 @@ const RegularItemsMentionedForm = ({ formikForm }: any) => {
             <FieldArray
                 name={`regularEntry.itemsMentioned`}
                 render={(arrayHelpers: any) => {
-                    const refs = formikForm.values.regularEntry.itemsMentioned;
+                    const refs: ItemMentioned[] =
+                        formikForm.values.regularEntry.itemsMentioned;
 
                     return (
                         <Stack spacing={2}>
                             {refs && refs.length > 0
-                                ? refs.map((_: any, index: number) => {
+                                ? refs.map((_, index) => {
                                       return (
                                           <Card key={index}>
                                               <CardContent>

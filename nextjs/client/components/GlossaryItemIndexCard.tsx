@@ -26,7 +26,7 @@ const GlossaryItemIndexCard = (props: GlossaryItemIndexCardProps) => {
             }
             return '';
         } catch (error: any) {
-            console.log(error.message);
+            console.error(error.message);
             return '';
         }
     };

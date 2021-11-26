@@ -24,13 +24,13 @@ import { Storage } from 'aws-amplify';
 import {
     CreateDocumentSchema,
     searchSchema,
-    UpdateDocumentSchema
+    UpdateDocumentSchema,
 } from 'client/formikSchemas';
 import {
     CreateDocumentDef,
     DeleteDocumentDef,
     FetchDocumentsDef,
-    UpdateDocumentDef
+    UpdateDocumentDef,
 } from 'client/graphqlDefs';
 import { CreateDocument, DocumentInfo, SearchType } from 'client/types';
 import { handlePromise, processStorageList } from 'client/util';
@@ -207,7 +207,7 @@ const ManagePlacesPage: NextPage = () => {
             }
 
             if (res.error) {
-                console.log(res.error);
+                console.error(res.error);
             } else {
                 handleCloseUpdate();
                 resetForm();
@@ -235,7 +235,7 @@ const ManagePlacesPage: NextPage = () => {
                 }
             }
             if (res.error) {
-                console.log(res.error);
+                console.error(res.error);
             } else {
                 handleCloseDelete();
             }

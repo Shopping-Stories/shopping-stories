@@ -9,10 +9,12 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { TobaccoEntry } from 'client/types';
+import { isNumber, isString } from 'lodash';
+import { Fragment, useState } from 'react';
 import { MarksTable, MoneyTable, NotesTable } from './TobaccoEntrySubTables';
 
-const TobaccoEntryTable = (props: any) => {
+const TobaccoEntryTable = (props: { tobaccoEntry: TobaccoEntry }) => {
     const { tobaccoEntry } = props;
     const columnNames = ['Entry', 'Tobacco Shaved'];
 
@@ -23,10 +25,12 @@ const TobaccoEntryTable = (props: any) => {
             </Typography>
             <Table size="small" aria-label="purchases">
                 <TableHead component="td">
-                    <TableCell />
-                    {columnNames.map((name: string, i: number) => (
-                        <TableCell key={i}>{name}</TableCell>
-                    ))}
+                    <TableRow>
+                        <TableCell />
+                        {columnNames.map((name: string, i: number) => (
+                            <TableCell key={i}>{name}</TableCell>
+                        ))}
+                    </TableRow>
                 </TableHead>
                 <TableBody>
                     <TobaccoEntryRow tobaccoEntry={tobaccoEntry} />
@@ -36,12 +40,12 @@ const TobaccoEntryTable = (props: any) => {
     );
 };
 
-const TobaccoEntryRow = ({ tobaccoEntry }: any) => {
+const TobaccoEntryRow = ({ tobaccoEntry }: { tobaccoEntry: TobaccoEntry }) => {
     const [open, setOpen] = useState(false);
 
     const columnValues = [tobaccoEntry?.entry, tobaccoEntry?.tobaccoShaved];
     return (
-        <>
+        <Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>
                     <IconButton
@@ -56,9 +60,11 @@ const TobaccoEntryRow = ({ tobaccoEntry }: any) => {
                         )}
                     </IconButton>
                 </TableCell>
-                {columnValues.map((value: string, i: number) => (
-                    <TableCell key={i}>{value}</TableCell>
-                ))}
+                {columnValues.map((value, i) =>
+                    isNumber(value) || isString(value) ? (
+                        <TableCell key={i}>{value}</TableCell>
+                    ) : null,
+                )}
             </TableRow>
             <TableRow>
                 <TableCell
@@ -66,17 +72,32 @@ const TobaccoEntryRow = ({ tobaccoEntry }: any) => {
                     colSpan={6}
                 >
                     <Collapse in={open} timeout="auto">
-                        {!!tobaccoEntry && (
-                            <>
-                                <MarksTable marks={tobaccoEntry?.marks} />
-                                <MoneyTable money={tobaccoEntry?.money} />
-                                <NotesTable notes={tobaccoEntry?.notes} />
-                            </>
+                        {tobaccoEntry && (
+                            <Fragment>
+                                {tobaccoEntry.marks &&
+                                    tobaccoEntry.marks.length > 0 && (
+                                        <MarksTable
+                                            marks={tobaccoEntry?.marks}
+                                        />
+                                    )}
+                                {tobaccoEntry.money &&
+                                    tobaccoEntry.money.length > 0 && (
+                                        <MoneyTable
+                                            money={tobaccoEntry?.money}
+                                        />
+                                    )}
+                                {tobaccoEntry.notes &&
+                                    tobaccoEntry.notes.length > 0 && (
+                                        <NotesTable
+                                            notes={tobaccoEntry?.notes}
+                                        />
+                                    )}
+                            </Fragment>
                         )}
                     </Collapse>
                 </TableCell>
             </TableRow>
-        </>
+        </Fragment>
     );
 };
 

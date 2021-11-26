@@ -1,4 +1,5 @@
 import Delete from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Button from '@mui/material/Button';
@@ -8,6 +9,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import { Entry } from 'client/types';
 import { Fragment, useState } from 'react';
+import ArrayTable from './ArrayTable';
 import ItemEntriesTable from './ItemEntriesTable';
 import RegularEntryTable from './RegularEntryTable';
 import TobaccoEntryTable from './TobaccoEntryTable';
@@ -21,7 +23,14 @@ interface EntryTableRowProps {
     isAdminOrModerator?: boolean;
 }
 const ParsingResultTableRow = (props: EntryTableRowProps) => {
-    const { row, index, onEditClick, onDeleteClick, isAdmin, isAdminOrModerator } = props;
+    const {
+        row,
+        index,
+        onEditClick,
+        onDeleteClick,
+        isAdmin,
+        isAdminOrModerator,
+    } = props;
     const [open, setOpen] = useState(false);
 
     const columnValues: any[] = [
@@ -33,7 +42,7 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
         row?.accountHolder?.location,
         row?.accountHolder?.profession,
         row?.accountHolder?.reference,
-        row?.accountHolder?.accountHolderID,
+        // row?.accountHolder?.accountHolderID,
         row?.dateInfo?.day,
         row?.dateInfo?.month,
         row?.dateInfo?.year,
@@ -73,21 +82,20 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
                         )}
                     </IconButton>
                 </TableCell>
-                {index && (
-                    <TableCell component="td" scope="row">
-                        {index}
-                    </TableCell>
-                )}
+                {index !== undefined ? (
+                    <TableCell align="center">{index}</TableCell>
+                ) : null}
                 {onEditClick && isAdminOrModerator ? (
                     <TableCell>
                         <Button
                             variant="contained"
+                            startIcon={<EditIcon />}
                             onClick={() => onEditClick(row)}
                         >
                             Edit
                         </Button>
                     </TableCell>
-                ): null}
+                ) : null}
                 {onDeleteClick && isAdmin ? (
                     <TableCell>
                         <Button
@@ -98,16 +106,21 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
                             Delete
                         </Button>
                     </TableCell>
-                ): null}
+                ) : null}
                 {columnValues.map((value, i: number) => (
-                    <TableCell key={i} align="right">
+                    <TableCell key={i} align="justify">
                         {value}
                     </TableCell>
                 ))}
             </TableRow>
             <TableRow>
                 <TableCell
-                    style={{ paddingBottom: 0, paddingTop: 0 }}
+                    style={{}}
+                    sx={{
+                        verticalAlign: 'top',
+                        paddingBottom: 0,
+                        paddingTop: 0,
+                    }}
                     colSpan={6}
                 >
                     <Collapse in={open} timeout="auto" unmountOnExit>
@@ -126,6 +139,48 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
                         )}
                     </Collapse>
                 </TableCell>
+                {row.people && row.people.length > 0 && (
+                    <TableCell sx={{ verticalAlign: 'top' }}>
+                        <Collapse in={open} timeout="auto" unmountOnExit>
+                            <ArrayTable
+                                headerName="People"
+                                headRowLabel="Name"
+                                values={row.people}
+                            />
+                        </Collapse>
+                    </TableCell>
+                )}
+                {row.places && row.places.length > 0 && (
+                    <TableCell sx={{ verticalAlign: 'top' }}>
+                        <Collapse in={open} timeout="auto" unmountOnExit>
+                            <ArrayTable
+                                headerName="Places"
+                                headRowLabel="Name"
+                                values={row.places}
+                            />
+                        </Collapse>
+                    </TableCell>
+                )}
+                {row.ledgerRefs && row.ledgerRefs.length > 0 && (
+                    <TableCell sx={{ verticalAlign: 'top' }}>
+                        <Collapse in={open} timeout="auto" unmountOnExit>
+                            <ArrayTable
+                                headRowLabel="Ledger References"
+                                values={row.ledgerRefs}
+                            />
+                        </Collapse>
+                    </TableCell>
+                )}
+                {row.folioRefs && row.folioRefs.length > 0 && (
+                    <TableCell sx={{ verticalAlign: 'top' }}>
+                        <Collapse in={open} timeout="auto" unmountOnExit>
+                            <ArrayTable
+                                headRowLabel="Folio References"
+                                values={row.folioRefs}
+                            />
+                        </Collapse>
+                    </TableCell>
+                )}
             </TableRow>
         </Fragment>
     );

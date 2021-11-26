@@ -38,7 +38,7 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
         license: `${prefix}[${index}].license`,
     };
 
-    const [image, setImage] = useState<any>(null);
+    const [image, setImage] = useState<string | null>(null);
 
     const onImageChange = (input: { files: File | File[] }) => {
         if (!isArray(input.files)) {
@@ -69,8 +69,8 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
 
                 if (!listErr && fileList) {
                     const { files: images } = processStorageList(fileList);
-                    const imageKeys: string[] = images.map(
-                        (image: any) => image.key.split('/')[1],
+                    const imageKeys = images.map(
+                        (image) => image.key.split('/')[1],
                     );
 
                     const key = formikForm.values.images[index].imageKey;
@@ -196,7 +196,6 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
                             formikForm.values.images[index].imageKey;
                         props.removeImage(prevImage);
                         arrayHelpers.remove(index);
-                        console.log(formikForm.values.images);
                     }}
                 >
                     Remove <Remove />

@@ -111,7 +111,7 @@ export interface ItemEntry {
 
 export interface TobaccoEntry {
     entry: string;
-    marks: { markID?: string; markName: string };
+    marks: { markID?: string; markName: string }[];
     notes: {
         noteNum: number;
         totalWeight: number;

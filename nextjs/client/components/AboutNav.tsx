@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Link from 'next/link';
 import Image from 'next/image';
-import styles from "styles/About.module.css"
+import styles from 'styles/About.module.css';
 import { useState } from 'react';
 
 interface TabPanelProps {
@@ -154,7 +154,9 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1 className={styles.about}>About History Revealed</h1>
+                            <h1 className={styles.about}>
+                                About History Revealed
+                            </h1>
                             <Image
                                 src={'/FXCO_Research_01.jpg'}
                                 layout="responsive"
@@ -178,7 +180,9 @@ export default function VerticalTabs() {
                             </Box>
                             <p className={styles.about}>
                                 <Link href="https://www.historyrevealed.co/">
-                                    <a className={styles.about}>History Revealed, Inc.</a>
+                                    <a className={styles.about}>
+                                        History Revealed, Inc.
+                                    </a>
                                 </Link>{' '}
                                 is an independent, 501(c)(3) non-profit,
                                 historical research organization.
@@ -223,7 +227,9 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1 className={styles.about}>The Shopping Stories Project</h1>
+                            <h1 className={styles.about}>
+                                The Shopping Stories Project
+                            </h1>
                             <Image
                                 src={'/C_1760_001D_John Glassford.jpg'}
                                 layout="responsive"
@@ -335,7 +341,9 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1 className={styles.about}>People, Places, and Things</h1>
+                            <h1 className={styles.about}>
+                                People, Places, and Things
+                            </h1>
                             <h2 className={styles.about}>
                                 The Power of the 18th-Century Ledgers of John
                                 Glassford & Company
@@ -368,7 +376,9 @@ export default function VerticalTabs() {
                                 such as rum, sugar, salt, cloth, and hardware,
                                 as well as slaves.{' '}
                                 <Link href="https://findingaids.loc.gov/db/search/xq/searchMfer02.xq?_id=loc.mss.eadmss.ms998016&_faSection=overview&_faSubsection=did&_dmdid=">
-                                    <a className={styles.about}>The John Glassford & Company Papers</a>
+                                    <a className={styles.about}>
+                                        The John Glassford & Company Papers
+                                    </a>
                                 </Link>
                                 , owned by the Library of Congress, detail the
                                 daily transactions of the company and include
@@ -389,7 +399,9 @@ export default function VerticalTabs() {
                                 in Colchester and Alexandria from 1758-1769. In
                                 the second phase,{' '}
                                 <Link href="https://www.historyrevealed.co/">
-                                    <a className={styles.about}>History Revealed, Inc.</a>
+                                    <a className={styles.about}>
+                                        History Revealed, Inc.
+                                    </a>
                                 </Link>{' '}
                                 (HRI), worked with the University of Central
                                 Florida (UCF) on a community partnership grant
@@ -398,7 +410,9 @@ export default function VerticalTabs() {
                                 Colchester store ledger through essays published
                                 on the website,{' '}
                                 <Link href="https://projects.cah.ucf.edu/economyofgoods/">
-                                    <a className={styles.about}>Economy of Goods</a>
+                                    <a className={styles.about}>
+                                        Economy of Goods
+                                    </a>
                                 </Link>
                                 . In addition, HRI posted transcription
                                 challenges on{' '}
@@ -443,7 +457,9 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1 className={styles.about}>The Transcription and Database Process</h1>
+                            <h1 className={styles.about}>
+                                The Transcription and Database Process
+                            </h1>
                             <Image
                                 src={'/shutterstock_445572439.jpg'}
                                 layout="responsive"
@@ -455,7 +471,9 @@ export default function VerticalTabs() {
                                 transcriptions is challenging. What started as
                                 eleven ledgers from the{' '}
                                 <Link href="https://www.loc.gov/item/mm78022939/">
-                                    <a className={styles.about}>John Glassford & Company</a>
+                                    <a className={styles.about}>
+                                        John Glassford & Company
+                                    </a>
                                 </Link>{' '}
                                 records found on six microfilm reels turned into
                                 nearly 4,400 transcription files through the
@@ -569,7 +587,9 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1 className={styles.about}>Ledgers: The Basics</h1>
+                            <h1 className={styles.about}>
+                                Ledgers: The Basics
+                            </h1>
                             <Image
                                 src={'/shutterstock_48906238.jpg'}
                                 layout="responsive"
@@ -617,7 +637,9 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1 className={styles.about}>Purchases and Payments</h1>
+                            <h1 className={styles.about}>
+                                Purchases and Payments
+                            </h1>
                             <Image
                                 src={'/shutterstock_19824082.jpg'}
                                 layout="responsive"
@@ -789,11 +811,14 @@ export default function VerticalTabs() {
                     >
                         <Typography>
                             <p className={styles.about}>
-                                <i className={styles.about}>High Life Below Stairs,</i> John Collet,
-                                London, England, 1763, oil on canvas, accession
-                                #1991-175, A&B, image #TC2000-887. Courtesy of
-                                The Colonial Williamsburg Foundation, Gift of
-                                Mrs. Cora Ginsburg.
+                                <i className={styles.about}>
+                                    High Life Below Stairs,
+                                </i>{' '}
+                                John Collet, London, England, 1763, oil on
+                                canvas, accession #1991-175, A&B, image
+                                #TC2000-887. Courtesy of The Colonial
+                                Williamsburg Foundation, Gift of Mrs. Cora
+                                Ginsburg.
                             </p>
                             <p className={styles.about}>
                                 <i className={styles.about}>

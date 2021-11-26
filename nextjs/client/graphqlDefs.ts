@@ -291,7 +291,7 @@ query AdvancedSearch($advanced: AdvancedSearchInput, $options: FindAllLimitAndSk
   count: advancedCountEntries(search: $advanced)
 }
 ${EntryFields}
-`
+`;
 
 export const CategoryFieldsDef = `
 fragment categoryFields on Category {
@@ -338,7 +338,6 @@ mutation deleteCategory($id: String!) {
 }
 ${CategoryFieldsDef}
 `;
-
 
 export const ItemFields = `
 fragment itemsFields on  Item {

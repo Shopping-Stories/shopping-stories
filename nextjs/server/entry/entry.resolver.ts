@@ -1,13 +1,15 @@
+import { Roles } from 'config/constants.config';
 import 'reflect-metadata';
 import { getMongooseFromFields } from 'server/config/utils';
 import { FindAllLimitAndSkip } from 'server/findAllArgs.input';
 import {
     Arg,
+    Authorized,
     Info,
     Mutation,
     Query,
     Resolver,
-    UseMiddleware
+    UseMiddleware,
 } from 'type-graphql';
 import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
 import { Entry } from './entry.schema';
@@ -80,6 +82,7 @@ export default class EntryResolver {
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
+    @Authorized([Roles.Admin])
     @Mutation(() => Entry)
     async createEntry(
         @Arg('createEntryInput') createEntryInput: CreateEntryInput,
@@ -88,6 +91,7 @@ export default class EntryResolver {
     }
 
     @UseMiddleware(ResolveTime, ConnectDB)
+    @Authorized([Roles.Admin])
     @Mutation(() => [Entry])
     async createEntries(
         @Arg('entries', (_type) => [CreateEntryInput], { nullable: 'items' })
@@ -97,6 +101,7 @@ export default class EntryResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin, Roles.Moderator])
     @Mutation(() => Entry, { nullable: true })
     async updateEntry(
         @Arg('id') id: string,
@@ -111,6 +116,7 @@ export default class EntryResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation(() => Entry, { nullable: true })
     async deleteEntry(
         @Arg('id') id: string,

@@ -87,7 +87,7 @@ const SignUpPage: NextPage = () => {
                 });
                 router.push(`/auth/signup/code?username=${user.getUsername()}`);
             } catch (error: any) {
-                console.log('error signing up ->:', error);
+                console.error('error signing up ->:', error);
                 if (error.message !== undefined) {
                     const includesUser = error.message
                         .toLowerCase()

@@ -1,6 +1,8 @@
+import { Roles } from 'config/constants.config';
 import 'reflect-metadata';
 import {
     Arg,
+    Authorized,
     Info,
     Mutation,
     Query,
@@ -51,6 +53,7 @@ export default class TobaccoMarkResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => TobaccoMark)
     async createTobaccoMark(
         @Arg('tobaccoMark') newTobaccoMark: CreateTobaccoMarkInput,
@@ -59,6 +62,7 @@ export default class TobaccoMarkResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin, Roles.Moderator])
     @Mutation((_returns) => TobaccoMark, { nullable: true })
     async updateTobaccoMark(
         @Arg('id') id: string,
@@ -73,6 +77,7 @@ export default class TobaccoMarkResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => TobaccoMark, { nullable: true })
     async deleteTobaccoMark(
         @Arg('id') id: string,

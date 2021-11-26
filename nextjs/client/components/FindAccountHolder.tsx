@@ -49,7 +49,7 @@ const FindAccountHolder = ({ formikForm }: any) => {
                 name: search,
                 id: formikForm.values.accountHolder.accountHolderID,
             }}
-            onChange={(_event: any, newValue: any) => {
+            onChange={(_, newValue: any) => {
                 if (newValue) {
                     formikForm.setFieldValue(
                         `accountHolder.accountHolderID`,
@@ -69,7 +69,7 @@ const FindAccountHolder = ({ formikForm }: any) => {
                 option.name === value.name || true
             }
             freeSolo
-            renderOption={(props: any, option: any) => {
+            renderOption={(props, option: any) => {
                 return (
                     <li {...props} key={option.id}>
                         {option.name || ''}

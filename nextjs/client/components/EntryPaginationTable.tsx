@@ -16,10 +16,10 @@ import TablePaginationActions from './TablePaginationActions';
 interface EntryPaginationTable {
     queryDef: string;
     search: string;
-    advanced: AdvancedSearch;
+    advanced: AdvancedSearch | null;
     isAdvancedSearch: boolean;
-    onEditClick: any;
-    onDeleteClick: any;
+    onEditClick: (row: Entry) => void;
+    onDeleteClick: (row: Entry) => void;
     setReQuery: Dispatch<SetStateAction<boolean>>;
     setIsLoading: Dispatch<SetStateAction<boolean>>;
     reQuery: boolean;
@@ -28,7 +28,7 @@ interface EntryPaginationTable {
     setRows: Dispatch<SetStateAction<Entry[]>>;
 }
 
-const EntryPaginationTable = (props: any) => {
+const EntryPaginationTable = (props: EntryPaginationTable) => {
     const {
         queryDef,
         search,
@@ -51,7 +51,12 @@ const EntryPaginationTable = (props: any) => {
         skip: null,
     });
 
-    const [{ data, fetching }, executeQuery] = useQuery({
+    interface EntryQueryResult {
+        rows: (Entry & { id: string })[];
+        count: number;
+    }
+
+    const [{ data, fetching }, executeQuery] = useQuery<EntryQueryResult>({
         query: queryDef,
         variables: isAdvancedSearch
             ? { options, advanced }
@@ -80,7 +85,7 @@ const EntryPaginationTable = (props: any) => {
 
     useEffect(() => {
         if (setRows !== undefined) {
-            setRows(data?.rows);
+            setRows(data?.rows || []);
         }
     }, [data?.rows]);
 
@@ -92,7 +97,7 @@ const EntryPaginationTable = (props: any) => {
         _event: React.MouseEvent<HTMLButtonElement> | null,
         newPage: number,
     ) => {
-        setOptions((prevOpts: any) => ({
+        setOptions((prevOpts) => ({
             ...prevOpts,
             limit: rowsPerPage,
             skip: newPage * rowsPerPage,
@@ -106,7 +111,7 @@ const EntryPaginationTable = (props: any) => {
         const newRowsPerPage = parseInt(event.target.value, 10);
         setRowsPerPage(newRowsPerPage);
         setPage(0);
-        setOptions((prevOpts: any) => ({
+        setOptions((prevOpts) => ({
             ...prevOpts,
             limit: newRowsPerPage,
             skip: 0,
@@ -114,36 +119,36 @@ const EntryPaginationTable = (props: any) => {
     };
 
     const columnNames = [
-        'Account Holder First Name',
-        'Account Holder Last Name',
-        'Account Holder Prefix',
-        'Account Holder Suffix',
+        'First Name',
+        'Last Name',
+        'Prefix',
+        'Suffix',
         'Debt or Credit',
         'Location',
-        'Account Holder Profession',
-        'Account Holder Reference',
-        'Account Holder ID',
+        'Profession',
+        'Reference',
+        // 'Account Holder ID',
         'Day',
         'Month',
         'Year',
         'Date',
-        'EntryID (Meta)',
-        'Ledger (Meta)',
-        'Reel (Meta)',
-        'FolioPage (Meta)',
+        'EntryID',
+        'Ledger',
+        'Reel',
+        'FolioPage',
         'Owner',
         'Store',
         'Year',
         'Comments',
-        'Money.Colony',
-        'Money.Quantity',
-        'Money.Commodity',
-        'Money.Currency.Pounds',
-        'Money.Currency.Shilling',
-        'Money.Currency.Pence',
-        'Money.Sterling.Pounds',
-        'Money.Sterling.Shilling',
-        'Money.Sterling.Pence',
+        'Colony',
+        'Quantity',
+        'Commodity',
+        'Currency Pounds',
+        'Currency Shilling',
+        'Currency Pence',
+        'Sterling Pounds',
+        'Sterling Shilling',
+        'Sterling Pence',
     ];
 
     return (
@@ -155,24 +160,48 @@ const EntryPaginationTable = (props: any) => {
                     aria-label="custom pagination table"
                 >
                     <TableHead>
-                        {fetching ? (
-                            <TableRow>
-                                <TableCell sx={{ columnSpan: 'all' }}>
-                                    <LinearProgress />
-                                </TableCell>
-                            </TableRow>
-                        ) : null}
+                        <TableRow>
+                            <TableCell />
+                            {isAdminOrModerator ? <TableCell /> : null}
+                            {isAdmin ? <TableCell /> : null}
+                            <TableCell colSpan={4} align="center">
+                                Account Holder Information
+                            </TableCell>
+                            <TableCell colSpan={4} align="center">
+                                Account Holder Information
+                            </TableCell>
+                            <TableCell colSpan={4} align="center">
+                                Date Information
+                            </TableCell>
+                            <TableCell colSpan={4} align="center">
+                                Meta Information
+                            </TableCell>
+                            <TableCell colSpan={4} align="center">
+                                Meta Information
+                            </TableCell>
+                            <TableCell colSpan={3} align="center">
+                                Money Information
+                            </TableCell>
+                            <TableCell colSpan={3} align="center">
+                                Money Information
+                            </TableCell>
+                            <TableCell colSpan={3} align="center">
+                                Money Information
+                            </TableCell>
+                        </TableRow>
                         <TableRow>
                             <TableCell />
                             {isAdminOrModerator ? <TableCell /> : null}
                             {isAdmin ? <TableCell /> : null}
                             {columnNames.map((name: string, i: number) => (
-                                <TableCell key={i}>{name}</TableCell>
+                                <TableCell align="center" key={i}>
+                                    {name}
+                                </TableCell>
                             ))}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row: any) => (
+                        {rows.map((row) => (
                             <ParsingResultTableRow
                                 onDeleteClick={onDeleteClick}
                                 onEditClick={onEditClick}

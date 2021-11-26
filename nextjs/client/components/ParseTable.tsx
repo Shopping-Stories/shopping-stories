@@ -5,83 +5,117 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { Entry } from 'client/types';
+import { Fragment } from 'react';
 import ParsingResultTableRow from './ParsingResultTableRow';
 
 interface ParseTableProps {
-    entries: null | any[];
+    entries: null | Entry[];
 }
 
 const ParseTable = (props: ParseTableProps) => {
     const { entries } = props;
 
     const columnNames = [
-        'Account Holder First Name',
-        'Account Holder Last Name',
-        'Account Holder Prefix',
-        'Account Holder Suffix',
+        'First Name',
+        'Last Name',
+        'Prefix',
+        'Suffix',
         'Debt or Credit',
         'Location',
-        'Account Holder Profession',
-        'Account Holder Reference',
-        'Account Holder ID',
+        'Profession',
+        'Reference',
+        // 'Account Holder ID',
         'Day',
         'Month',
         'Year',
         'Date',
-        'EntryID (Meta)',
-        'Ledger (Meta)',
-        'Reel (Meta)',
-        'FolioPage (Meta)',
+        'EntryID',
+        'Ledger',
+        'Reel',
+        'FolioPage',
         'Owner',
         'Store',
         'Year',
         'Comments',
-        'Money.Colony',
-        'Money.Quantity',
-        'Money.Commodity',
-        'Money.Currency.Pounds',
-        'Money.Currency.Shilling',
-        'Money.Currency.Pence',
-        'Money.Sterling.Pounds',
-        'Money.Sterling.Shilling',
-        'Money.Sterling.Pence',
+        'Colony',
+        'Quantity',
+        'Commodity',
+        'Currency Pounds',
+        'Currency Shilling',
+        'Currency Pence',
+        'Sterling Pounds',
+        'Sterling Shilling',
+        'Sterling Pence',
     ];
 
     return (
-        <>
+        <Fragment>
             {entries && (
-                <TableContainer component={Paper} sx={{ maxHeight: '80%' }}>
-                    <Table
-                        stickyHeader
-                        sx={{ minWidth: '20%' }}
-                        aria-label="simple table"
-                    >
-                        <TableHead>
-                            <TableRow>
-                                <TableCell />
-                                <TableCell>Index</TableCell>
-                                {columnNames.map((name: string, i: number) => (
-                                    <TableCell key={i} align="right">
-                                        {name}
+                <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                    <TableContainer sx={{ minHeight: '80%' }}>
+                        <Table
+                            sx={{ minWidth: '100vh' }}
+                            stickyHeader
+                            aria-label="custom pagination table"
+                        >
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell />
+                                    <TableCell />
+                                    <TableCell colSpan={4} align="center">
+                                        Account Holder Information
                                     </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {entries.map((row: any, i: number) => {
-                                return (
-                                    <ParsingResultTableRow
-                                        index={i}
-                                        row={row}
-                                        key={i}
-                                    />
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                                    <TableCell colSpan={4} align="center">
+                                        Account Holder Information
+                                    </TableCell>
+                                    <TableCell colSpan={4} align="center">
+                                        Date Information
+                                    </TableCell>
+                                    <TableCell colSpan={4} align="center">
+                                        Meta Information
+                                    </TableCell>
+                                    <TableCell colSpan={4} align="center">
+                                        Meta Information
+                                    </TableCell>
+                                    <TableCell colSpan={3} align="center">
+                                        Money Information
+                                    </TableCell>
+                                    <TableCell colSpan={3} align="center">
+                                        Money Information
+                                    </TableCell>
+                                    <TableCell colSpan={3} align="center">
+                                        Money Information
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell />
+                                    <TableCell>Index</TableCell>
+                                    {columnNames.map(
+                                        (name: string, i: number) => (
+                                            <TableCell align="center" key={i}>
+                                                {name}
+                                            </TableCell>
+                                        ),
+                                    )}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {entries.map((row, i) => {
+                                    return (
+                                        <ParsingResultTableRow
+                                            index={i + 1}
+                                            row={row}
+                                            key={i}
+                                        />
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Paper>
             )}
-        </>
+        </Fragment>
     );
 };
 

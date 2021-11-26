@@ -3,7 +3,7 @@ import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
 import Paper from '@mui/material/Paper';
 import { NextPage } from 'next';
-import styles from "styles/About.module.css"
+import styles from 'styles/About.module.css';
 
 const AboutPage: NextPage = () => {
     return (

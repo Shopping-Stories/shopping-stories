@@ -17,7 +17,12 @@ import Stack from '@mui/material/Stack';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { Auth } from 'aws-amplify';
-import { changeEmailCodeSchema, changeEmailSchema, changeNamesSchema, changePasswordSchema } from 'client/formikSchemas';
+import {
+    changeEmailCodeSchema,
+    changeEmailSchema,
+    changeNamesSchema,
+    changePasswordSchema,
+} from 'client/formikSchemas';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { Fragment, useEffect, useState } from 'react';
@@ -114,7 +119,7 @@ const AdminDashboardPage: NextPage = () => {
         },
     });
 
-        const confirmChangeEmail = useFormik<{ code: string}>({
+    const confirmChangeEmail = useFormik<{ code: string }>({
         initialValues: {
             code: '',
         },
@@ -123,8 +128,11 @@ const AdminDashboardPage: NextPage = () => {
             setError('');
             setIsLoading(true);
             try {
-                await Auth.verifyCurrentUserAttributeSubmit("email", values.code);
-                setSuccessMessage("Successfully updated your email")
+                await Auth.verifyCurrentUserAttributeSubmit(
+                    'email',
+                    values.code,
+                );
+                setSuccessMessage('Successfully updated your email');
                 setSuccessOpen(true);
                 setCodeSent(false);
                 resetForm();
@@ -337,7 +345,11 @@ const AdminDashboardPage: NextPage = () => {
                                             </LoadingButton>
                                         </form>
                                     ) : (
-                                        <form onSubmit={confirmChangeEmail.handleSubmit}>
+                                        <form
+                                            onSubmit={
+                                                confirmChangeEmail.handleSubmit
+                                            }
+                                        >
                                             <TextFieldWithFormikValidation
                                                 fullWidth
                                                 name="code"

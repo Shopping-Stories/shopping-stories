@@ -7,6 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { NavLink } from 'client/types';
 import { Roles } from 'config/constants.config';
 import { isEqual, uniqWith } from 'lodash';
+import { useRouter } from 'next/router';
 import { Fragment } from 'react';
 import { PaperStyles } from 'styles/styles';
 
@@ -30,19 +31,22 @@ interface DashBoardPageSkeletonProps {
 }
 
 const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
+    const router = useRouter()
     const isSmallerThanMd = useMediaQuery((theme: any) =>
-        theme.breakpoints.down('md'),
+    theme.breakpoints.down('md'),
     );
     const isAdmin = isInGroup(Roles.Admin, props.groups);
     const isModerator = isInGroup(Roles.Moderator, props.groups);
     const isNotAdminOrModerator = !(isAdmin || isModerator);
 
     const links = isAdmin
-        ? uniqWith([...adminLinks, ...sideLinks], isEqual)
+    ? uniqWith([...adminLinks, ...sideLinks], isEqual)
         : sideLinks;
 
-    return (
-        <Fragment>
+    const currentPageIndex = links.findIndex((link) => link.path === router.route)
+
+        return (
+            <Fragment>
             <Grid container>
                 {isNotAdminOrModerator ? null : isSmallerThanMd ? (
                     <Grid item xs={12}>
@@ -52,7 +56,7 @@ const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
                                 ...PaperStyles,
                             }}
                         >
-                            <DashBoardTabs links={links} />
+                            <DashBoardTabs pageIndex={currentPageIndex} links={links} />
                         </Paper>
                     </Grid>
                 ) : (

@@ -65,7 +65,8 @@ const UpdateEntryPage: NextPage = () => {
     if (findEntryResult.fetching || loading) {
         return <LoadingPage />;
     } else if (findEntryResult.error) {
-        console.log(findEntryResult.error);
+        console.error(findEntryResult.error);
+        router.replace('/404');
         return <>error</>;
     } else {
         return (

@@ -1,3 +1,4 @@
+import ColorBackground from '@components/ColorBackground';
 import GlossaryItemForm from '@components/GlossaryImageForm';
 import Header from '@components/Header';
 import LoadingPage from '@components/LoadingPage';
@@ -5,6 +6,7 @@ import TextAreaWithFormikValidation from '@components/TextAreaWithFormikValidati
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import useAuth from '@hooks/useAuth.hook';
 import LoadingButton from '@mui/lab/LoadingButton';
+import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -24,7 +26,6 @@ import { merge } from 'lodash';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import backgrounds from 'styles/backgrounds.module.css';
 import { useMutation, useQuery } from 'urql';
 
 const UpdateGlossaryItem: NextPage = () => {
@@ -142,15 +143,13 @@ const UpdateGlossaryItem: NextPage = () => {
     });
 
     if (findGlossaryItemResult.fetching || authLoading) {
-        return (
-            <LoadingPage />
-        );
+        return <LoadingPage />;
     } else if (findGlossaryItemResult.error) {
-        router.push('/dashboard/glossary/items');
+        router.replace('/dashboard/glossary/items');
         return <>error</>;
     } else {
         return (
-            <div className={backgrounds.colorBackground}>
+            <ColorBackground>
                 <Header />
                 <Paper
                     sx={{
@@ -161,6 +160,11 @@ const UpdateGlossaryItem: NextPage = () => {
                 >
                     <form onSubmit={updateForm.handleSubmit}>
                         <Grid container justifyContent="center" spacing={4}>
+                            <Grid item xs={12}>
+                                <Button href="/dashboard/glossary/items">
+                                    Back to management panel
+                                </Button>
+                            </Grid>
                             <Grid item xs={12} md={4}>
                                 <Typography component="h2">
                                     Item Details
@@ -247,7 +251,7 @@ const UpdateGlossaryItem: NextPage = () => {
                         </LoadingButton>
                     </form>
                 </Paper>
-            </div>
+            </ColorBackground>
         );
     }
 };

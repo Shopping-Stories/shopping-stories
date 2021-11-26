@@ -11,6 +11,7 @@ import { signOut } from 'client/util';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { ButtonStyles } from 'styles/styles';
+import { ThemeSwitch } from './ThemeSwitch';
 
 interface SideDrawerProps {
     navLinks: NavLink[];
@@ -42,6 +43,7 @@ const SideDrawer = ({ navLinks, isLoggedIn }: SideDrawerProps) => {
             onKeyDown={toggleDrawer(anchor, false)}
         >
             <Stack alignItems="center" spacing={2}>
+                <ThemeSwitch />
                 {navLinks.map(({ title, path }, i) => (
                     <Typography
                         variant="button"

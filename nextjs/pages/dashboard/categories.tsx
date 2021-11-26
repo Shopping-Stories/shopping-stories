@@ -17,13 +17,13 @@ import Stack from '@mui/material/Stack';
 import {
     createCategorySchema,
     searchSchema,
-    updatePersonSchema
+    updatePersonSchema,
 } from 'client/formikSchemas';
 import {
     CreateCategoryDef,
     DeleteCategoryDef,
     SearchCategoryDef,
-    UpdateCategoryDef
+    UpdateCategoryDef,
 } from 'client/graphqlDefs';
 import { Category, SearchType } from 'client/types';
 import { cloneWithoutTypename } from 'client/util';

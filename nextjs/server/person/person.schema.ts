@@ -28,8 +28,7 @@ export class Person {
         return `${this._id}`; // Converts type ObjectId of _id to String
     }
 
-    public set id(_) {
-    }
+    public set id(_) {}
 
     readonly _id?: ObjectId;
 

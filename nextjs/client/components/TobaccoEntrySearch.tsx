@@ -8,12 +8,17 @@ interface TobaccoEntrySearchProps {
 
 const TobaccoEntrySearch = ({ formikForm }: TobaccoEntrySearchProps) => {
     const ref = formikForm.values.tobaccoEntry;
-    const isSmallerThanMd = useMediaQuery((theme: any) => theme.breakpoints.down('md'));
+    const isSmallerThanMd = useMediaQuery((theme: any) =>
+        theme.breakpoints.down('md'),
+    );
 
     return (
         <div>
             {ref ? (
-                <Stack direction={isSmallerThanMd ? "column" : "row"} spacing={2}>
+                <Stack
+                    direction={isSmallerThanMd ? 'column' : 'row'}
+                    spacing={2}
+                >
                     <TextFieldWithFormikValidation
                         name={`tobaccoEntry.description`}
                         label={`Description`}

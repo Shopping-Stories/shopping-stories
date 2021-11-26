@@ -1,6 +1,8 @@
+import { Roles } from 'config/constants.config';
 import 'reflect-metadata';
 import {
     Arg,
+    Authorized,
     FieldResolver,
     Info,
     Mutation,
@@ -53,6 +55,7 @@ export default class PersonResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => Person)
     async createPerson(
         @Arg('person') newPerson: CreatePersonInput,
@@ -66,6 +69,7 @@ export default class PersonResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin, Roles.Moderator])
     @Mutation((_returns) => Person, { nullable: true })
     async updatePerson(
         @Arg('id') id: string,
@@ -80,6 +84,7 @@ export default class PersonResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => Person, { nullable: true })
     async deletePerson(
         @Arg('id') id: string,

@@ -439,7 +439,5 @@ export const changeEmailSchema = yup.object({
 });
 
 export const changeEmailCodeSchema = yup.object({
-    code: yup
-        .string()
-        .required('A code is required'),
+    code: yup.string().required('A code is required'),
 });

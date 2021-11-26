@@ -23,7 +23,6 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
             value={get(formikForm.values, fieldName)}
             onChange={(_, newValue: any) => {
                 if (newValue) {
-                    console.log(newValue);
                     formikForm.setFieldValue(nameField, newValue.markName);
                     formikForm.setFieldValue(idField, newValue.markID);
                 }

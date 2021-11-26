@@ -23,7 +23,9 @@ const ActionDialog = (props: ActionDialogProps) => {
             <form onSubmit={onSubmit}>
                 <DialogContent>{props.children}</DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={onClose}>Cancel</Button>
+                    <Button variant="contained" onClick={onClose}>
+                        Cancel
+                    </Button>
                     <LoadingButton
                         type="submit"
                         variant="contained"

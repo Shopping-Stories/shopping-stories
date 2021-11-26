@@ -5,15 +5,22 @@ import Header from '@components/Header';
 import LoadingPage from '@components/LoadingPage';
 import ParseTable from '@components/ParseTable';
 import useAuth from '@hooks/useAuth.hook';
+import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Typography } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
+import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { Roles } from 'config/constants.config';
 import { NextPage } from 'next';
 import { useState } from 'react';
 import { PaperStylesSecondary } from 'styles/styles';
 import { useMutation } from 'urql';
+import { styled } from '@mui/material/styles';
 import xlsx from 'xlsx';
 
 const parseSheetDef = `
@@ -30,6 +37,13 @@ const createEntriesDef = `
 	}
 `;
 
+const Item = styled(Paper)(({ theme }) => ({
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+}));
+
 const ImportPage: NextPage = () => {
     const { groups, loading } = useAuth('/', [Roles.Admin]);
     const [_parseResponse, parseSheet] = useMutation(parseSheetDef);
@@ -40,6 +54,8 @@ const ImportPage: NextPage = () => {
     const [entries, setEntries] = useState<any>(null);
     const [_requestErrors, _setRequestErrors] = useState<any>(null);
     const [parseErrors, setParseErrors] = useState<any>(null);
+    const [openError, setErrorOpen] = useState(false);
+    const [error, setError] = useState('');
 
     const convertFileToJSON = async () => {
         if (file === null || !file) {
@@ -63,10 +79,15 @@ const ImportPage: NextPage = () => {
             });
 
             const res: any = await parseSheet({ spreadsheet: sheets });
+            if (res.error) {
+                console.error(res.error);
+                setError('An error occurred during the upload to the parser.');
+                setErrorOpen(true);
+            }
             setEntries([...res?.data?.entries]);
-            console.log({ entries: res?.data?.entries });
             updateParseErrors(res?.data?.entries);
             setIsLoading(false);
+            console.log({ entries: res?.data?.entries });
         };
     };
 
@@ -78,7 +99,11 @@ const ImportPage: NextPage = () => {
                     message: entry.errorMessage,
                 }))
                 .filter((entry: any) => entry.message);
-            setParseErrors([...errors]);
+            // setParseErrors([...errors]);
+            if (errors.length > 0) {
+                setError('Error(s) occurred parsing the sheet');
+                setErrorOpen(true);
+            }
         }
     };
 
@@ -89,12 +114,38 @@ const ImportPage: NextPage = () => {
             delete entry.errorMessage;
             return entry;
         });
-        createEntries({ entries: entriesWithoutError }).then((res: any) => {
-            setParseErrors(null);
-            setIsCreatingEntries(false);
-            console.log({ res });
-        });
+        createEntries({ entries: entriesWithoutError })
+            .then(() => {
+                setParseErrors(null);
+                setIsCreatingEntries(false);
+            })
+            .catch((err: any) => {
+                console.error(err);
+                setErrorOpen(true);
+                setError('The import into the database failed');
+            });
     };
+
+    const handleErrorClose = (
+        _: React.SyntheticEvent | React.MouseEvent,
+        reason?: string,
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setErrorOpen(false);
+    };
+
+    const closeSnackBarButton = (
+        <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={handleErrorClose}
+        >
+            <CloseIcon fontSize="small" />
+        </IconButton>
+    );
 
     if (loading) {
         return <LoadingPage />;
@@ -104,50 +155,82 @@ const ImportPage: NextPage = () => {
         <ColorBackground>
             <Header />
             <DashboardPageSkeleton groups={groups}>
-                <Paper sx={PaperStylesSecondary}>
-                    <Stack spacing={2} direction="row">
-                        <FileInput
-                            label="import spreadsheet"
-                            accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                            onChange={({ files }: any) => setFile(files)}
-                        />
-                        <LoadingButton
-                            loading={isLoading}
-                            onClick={convertFileToJSON}
-                            variant="contained"
-                            sx={{
-                                margin: '1rem 5rem',
-                            }}
-                        >
-                            Parse File
-                        </LoadingButton>
-                    </Stack>
-                </Paper>
-                <Paper sx={PaperStylesSecondary}>
-                    <ParseTable entries={entries} />
+                <Container maxWidth="xs">
+                    <Paper sx={PaperStylesSecondary}>
+                        <Grid container justifyContent="center" spacing={2}>
+                            <Grid item>
+                                <FileInput
+                                    label="import spreadsheet"
+                                    accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                    onChange={({ files }: any) =>
+                                        setFile(files)
+                                    }
+                                />
+                            </Grid>
+                            <Grid item>
+                                <LoadingButton
+                                    loading={isLoading}
+                                    onClick={convertFileToJSON}
+                                    variant="contained"
+                                    sx={{
+                                        margin: '1rem 5rem',
+                                    }}
+                                >
+                                    Parse Sheet
+                                </LoadingButton>
+                            </Grid>
+                        </Grid>
+                    </Paper>
+                </Container>
+                {entries ? (
+                    <Paper sx={PaperStylesSecondary}>
+                        <ParseTable entries={entries} />
+                    </Paper>
+                ) : null}
+                <Container maxWidth="sm">
                     {!!parseErrors && parseErrors.length > 0 && (
-                        <Stack>
+                        <Stack spacing={2}>
                             {parseErrors.map((error: any, i: number) => (
-                                <Typography key={i}>
-                                    Entry {error.index} had the error:{' '}
-                                    {error.message}
-                                </Typography>
+                                <Item key={i}>
+                                    <Typography>
+                                        Entry {error.index + 1} had the error:{' '}
+                                        {error.message}
+                                    </Typography>
+                                </Item>
                             ))}
                         </Stack>
                     )}
-                    <LoadingButton
-                        variant="contained"
-                        onClick={handleUploadLoadToDatabase}
-                        loading={isCreatingEntries}
-                        disabled={
-                            (!!parseErrors && parseErrors.length > 0) ||
-                            !entries
-                        }
-                    >
-                        Confirm Import into Database
-                    </LoadingButton>
-                </Paper>
+                </Container>
+                <Container maxWidth="xs">
+                    <Paper sx={PaperStylesSecondary}>
+                        <Grid container justifyContent="center" spacing={2}>
+                            <Grid item>
+                                <LoadingButton
+                                    variant="contained"
+                                    onClick={handleUploadLoadToDatabase}
+                                    loading={isCreatingEntries}
+                                    disabled={
+                                        (!!parseErrors &&
+                                            parseErrors.length > 0) ||
+                                        !entries
+                                    }
+                                >
+                                    Confirm Import into Database
+                                </LoadingButton>
+                            </Grid>
+                        </Grid>
+                    </Paper>
+                </Container>
             </DashboardPageSkeleton>
+
+            <Snackbar
+                open={openError}
+                autoHideDuration={6000}
+                onClose={handleErrorClose}
+                action={closeSnackBarButton}
+            >
+                <Alert severity="error">{error}</Alert>
+            </Snackbar>
         </ColorBackground>
     );
 };

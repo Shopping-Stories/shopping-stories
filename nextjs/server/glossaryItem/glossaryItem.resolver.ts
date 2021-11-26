@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import {
     Arg,
+    Authorized,
     Info,
     Mutation,
     Query,
@@ -14,6 +15,7 @@ import { CreateGlossaryItemInput } from './input/createGlossaryItem.input';
 import { FindAllLimitAndSkip } from '../findAllArgs.input';
 import { UpdateGlossaryItemInput } from './input/updateGlossaryItem.input';
 import { getMongooseFromFields } from 'server/config/utils';
+import { Roles } from 'config/constants.config';
 
 @Resolver((_of) => GlossaryItem)
 export default class GlossaryItemResolver {
@@ -51,6 +53,7 @@ export default class GlossaryItemResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => GlossaryItem)
     async createGlossaryItem(
         @Arg('newGlossaryItem') newItem: CreateGlossaryItemInput,
@@ -59,6 +62,7 @@ export default class GlossaryItemResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => GlossaryItem, { nullable: true })
     async updateGlossaryItem(
         @Arg('id') id: string,
@@ -73,6 +77,7 @@ export default class GlossaryItemResolver {
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)
+    @Authorized([Roles.Admin])
     @Mutation((_returns) => GlossaryItem, { nullable: true })
     async deleteGlossaryItem(
         @Arg('id') id: string,
