@@ -1,4 +1,4 @@
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import ActionDialog from '@components/ActionDialog';
 import AdvancedSearchTabForm from '@components/AdvancedSearchTabForm';
 import ColorBackground from '@components/ColorBackground';
 import EntryPaginationTable from '@components/EntryPaginationTable';
@@ -6,15 +6,12 @@ import Header from '@components/Header';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import useAuth, { isInGroup } from '@hooks/useAuth.hook';
 import AddCircle from '@mui/icons-material/AddCircle';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
@@ -35,7 +32,7 @@ import { useFormik } from 'formik';
 import { cloneDeep } from 'lodash';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { PaperStyles } from 'styles/styles';
 import { useMutation } from 'urql';
 import xlsx from 'xlsx';
@@ -66,6 +63,7 @@ const ManagePlacesPage: NextPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [rows, setRows] = useState<Entry[]>([]);
+    const [deleting, setDeleting] = useState(false);
 
     const handleOpenDelete = () => {
         setOpenDelete(true);
@@ -75,19 +73,27 @@ const ManagePlacesPage: NextPage = () => {
         setOpenDelete(false);
     };
 
-    const handleItemDelete = async () => {
+    const handleItemDelete = async (
+        e?: FormEvent<HTMLFormElement> | undefined,
+    ) => {
+        if (e) {
+            e.preventDefault();
+        }
         if (placeToDelete) {
+            setDeleting(true);
             const id = placeToDelete.id;
             const res = await deletePlace({ id });
             if (res.error) {
+                console.error(res.error);
             } else {
                 setReQuery(true);
                 handleCloseDelete();
             }
+            setDeleting(false);
         }
     };
 
-    const formik = useFormik<SearchType>({
+    const searchForm = useFormik<SearchType>({
         initialValues: {
             search: '',
         },
@@ -174,7 +180,7 @@ const ManagePlacesPage: NextPage = () => {
                                         }
                                     />
                                 }
-                                label="Advanced?"
+                                label="Advanced"
                             />
                             <FormGroup>
                                 {isAdvancedSearch ? (
@@ -283,12 +289,12 @@ const ManagePlacesPage: NextPage = () => {
                                         </LoadingButton>
                                     </Box>
                                 ) : (
-                                    <form onSubmit={formik.handleSubmit}>
+                                    <form onSubmit={searchForm.handleSubmit}>
                                         <TextFieldWithFormikValidation
                                             fullWidth
                                             name="search"
                                             label="Search"
-                                            formikForm={formik}
+                                            formikForm={searchForm}
                                             fieldName="search"
                                         />
                                         <LoadingButton
@@ -364,18 +370,19 @@ const ManagePlacesPage: NextPage = () => {
                     </Stack>
                 </Paper>
             </Container>
-            <Dialog open={openDelete} onClose={handleCloseDelete}>
-                <DialogTitle>Confirm deletion of entry</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to delete this entry
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDelete}>Cancel</Button>
-                    <Button onClick={handleItemDelete}>Submit</Button>
-                </DialogActions>
-            </Dialog>
+
+            {/* Delete Dialog */}
+            <ActionDialog
+                isOpen={openDelete}
+                onClose={handleCloseDelete}
+                isSubmitting={deleting}
+                onSubmit={handleItemDelete}
+                title={`Confirm delete of entry`}
+            >
+                <DialogContentText>
+                    Are you sure you want to delete this entry
+                </DialogContentText>
+            </ActionDialog>
         </ColorBackground>
     );
 };

@@ -261,23 +261,29 @@ export const advancedSearchSchema = yup.object({
     places: yup.string(),
     commodity: yup.string(),
     colony: yup.string(),
-    itemEntry: yup.object({
-        perOrder: yup.number(),
-        items: yup.string(),
-        category: yup.string(),
-        subcategory: yup.string(),
-        variant: yup.string(),
-    }).nullable(),
-    tobaccoEntry: yup.object({
-        description: yup.string(),
-        tobaccoMarkName: yup.string(),
-        noteNumber: yup.number(),
-        moneyType: yup.string(),
-    }).nullable(),
-    regularEntry: yup.object({
-        entryDescription: yup.string(),
-        tobaccoMarkName: yup.string(),
-    }).nullable(),
+    itemEntry: yup
+        .object({
+            perOrder: yup.number(),
+            items: yup.string(),
+            category: yup.string(),
+            subcategory: yup.string(),
+            variant: yup.string(),
+        })
+        .nullable(),
+    tobaccoEntry: yup
+        .object({
+            description: yup.string(),
+            tobaccoMarkName: yup.string(),
+            noteNumber: yup.number(),
+            moneyType: yup.string(),
+        })
+        .nullable(),
+    regularEntry: yup
+        .object({
+            entryDescription: yup.string(),
+            tobaccoMarkName: yup.string(),
+        })
+        .nullable(),
 });
 
 export const createCategorySchema = yup.object({
@@ -402,4 +408,38 @@ export const updateTobaccoMarkSchema = yup.object({
     warehouse: yup.string(),
     whoRepresents: yup.string(),
     whoUnder: yup.string(),
+});
+
+export const changePasswordSchema = yup.object({
+    password: yup
+        .string()
+        .matches(
+            /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).+$/,
+            'A password must contain at least 1 uppercase character, 1 lowercase character, and at least 1 digit',
+        )
+        .min(8, 'A password must be at least 8 characters long')
+        .required('A password is required'),
+    confirmPassword: yup
+        .string()
+        .oneOf([yup.ref('password'), null], 'Passwords must match')
+        .required('Password confirmation is required'),
+    oldPassword: yup.string().required('Current password is required'),
+});
+
+export const changeNamesSchema = yup.object({
+    family_name: yup.string().required('Last name is required'),
+    given_name: yup.string().required('First name is required'),
+});
+
+export const changeEmailSchema = yup.object({
+    email: yup
+        .string()
+        .email('Please enter a valid email')
+        .required('An email is required'),
+});
+
+export const changeEmailCodeSchema = yup.object({
+    code: yup
+        .string()
+        .required('A code is required'),
 });

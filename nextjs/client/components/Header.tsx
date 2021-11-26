@@ -22,6 +22,7 @@ const defaultNavLinks: NavLink[] = [
 ];
 
 const adminNavLinks: NavLink[] = [
+    { title: `transcripts`, path: `/documents` },
     { title: `settings`, path: `/dashboard/settings` },
 ];
 
@@ -32,7 +33,7 @@ const Offset = styled('div')(
 const Header = () => {
     const [navLinks, setNavLinks] = useState<NavLink[]>(defaultNavLinks);
     const { groups, isLoggedIn } = useAuth();
-    const authLinks = isLoggedIn ? [{ title: `transcripts`, path: `/documents` }] : [];
+    const authLinks = isLoggedIn ? adminNavLinks : [];
     const uniqueNavLinks = uniqWith([...navLinks, ...authLinks], isEqual);
 
     useEffect(() => {

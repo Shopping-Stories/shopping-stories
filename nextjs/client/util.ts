@@ -3,12 +3,27 @@ import { Auth } from 'aws-amplify';
 import { CognitoConfig } from 'config/constants.config';
 import { NextRouter } from 'next/router';
 
-export const cloneWithoutTypename = (obj: any) =>
-    JSON.parse(JSON.stringify(obj), omitTypename);
-
+// Filter to remove the property __typename from an object
 export const omitTypename = (key: string, value: any) =>
     key === '__typename' ? undefined : value;
 
+// Filters out any properties with the key __typename
+// from the object
+export const cloneWithoutTypename = (obj: any) =>
+    JSON.parse(JSON.stringify(obj), omitTypename);
+
+
+
+/**
+ * Takes a promise and resolves it returning
+ * a tuple with the resolved promise
+ * or and error
+ *
+ * This function can be used to help
+ * prevent try catch hell
+ * @param promise
+ * @returns
+ */
 export const handlePromise = async <T>(
     promise: Promise<T>,
 ): Promise<[T | null, Error | null]> => {
@@ -19,6 +34,15 @@ export const handlePromise = async <T>(
     }
 };
 
+/**
+ * Takes the list resulting from listing files in an S3 bucket
+ * and processes them into files and folders.
+ *
+ * This code was found in the Amplify documentation here:
+ * https://docs.amplify.aws/lib/storage/list/q/platform/js/#public-level-list
+ * @param result List from the Amplify's Storage.list method
+ * @returns
+ */
 export const processStorageList = (result: S3ProviderListOutput) => {
     let files: any[] = [];
     let folders = new Set<any>();
@@ -34,6 +58,10 @@ export const processStorageList = (result: S3ProviderListOutput) => {
     });
     return { files, folders };
 };
+
+/**
+ * Settings used for S3 and cognito
+ */
 
 export const S3Options: any = {
     AWSS3: {
@@ -72,12 +100,24 @@ export const AmplifyOptions: any = {
     // },
 };
 
+/**
+ * Sign user out of application
+ * @param router Router to redirect after sign out
+ */
 export const signOut = (router: NextRouter) => {
     Auth.signOut()
         .then(() => router.push('/'))
         .catch(() => router.push('/'));
 };
 
+/**
+ * This code was found in one of the comments here
+ * https://stackoverflow.com/questions/19098797/fastest-way-to-flatten-un-flatten-nested-json-objects
+ *
+ * Flattens a nested object
+ * @param data
+ * @returns flattened object
+ */
 export const flatten = (data: any) => {
     var result: any = {};
     function recurse(cur: any, prop: any) {

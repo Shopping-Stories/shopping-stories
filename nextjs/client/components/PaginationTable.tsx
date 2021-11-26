@@ -108,7 +108,7 @@ const PaginationTable = <T extends unknown>(props: PaginationTableProps<T>) => {
 
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer sx={{ maxHeight: '150vh' }}>
+            <TableContainer sx={{ maxHeight: '100vh' }}>
                 <Table sx={{ minWidth: '100vh' }} stickyHeader>
                     <TableHead>{headerRow}</TableHead>
                     <TableBody>

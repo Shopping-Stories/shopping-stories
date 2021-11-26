@@ -1,5 +1,7 @@
 import Header from '@components/Header';
+import LoadingPage from '@components/LoadingPage';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import useAuth from '@hooks/useAuth.hook';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -70,6 +72,7 @@ interface QueryDocuments {
 
 const DocumentsPage: NextPage = () => {
     const router = useRouter();
+    const { loading: loadingAuth } = useAuth('/');
     const [loading, setLoading] = useState<boolean>(false);
     const [search, setSearch] = useState<string>('');
     const [page, setPage] = useState(0);
@@ -102,7 +105,7 @@ const DocumentsPage: NextPage = () => {
         }
     }, [router.query.page]);
 
-    const formik = useFormik<SearchType>({
+    const searchForm = useFormik<SearchType>({
         initialValues: {
             search: '',
         },
@@ -143,6 +146,10 @@ const DocumentsPage: NextPage = () => {
         updateQuery(newPage);
     };
 
+    if (loadingAuth) {
+        return <LoadingPage />;
+    }
+
     return (
         <div className={backgrounds.colorBackground}>
             <Header />
@@ -156,13 +163,13 @@ const DocumentsPage: NextPage = () => {
                         }}
                     >
                         <FormGroup>
-                            <form onSubmit={formik.handleSubmit}>
+                            <form onSubmit={searchForm.handleSubmit}>
                                 <TextFieldWithFormikValidation
                                     fullWidth
                                     name="search"
                                     label="Search"
                                     fieldName="search"
-                                    formikForm={formik}
+                                    formikForm={searchForm}
                                 />
                                 <LoadingButton
                                     variant="contained"

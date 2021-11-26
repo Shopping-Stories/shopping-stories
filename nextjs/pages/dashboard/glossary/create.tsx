@@ -1,7 +1,9 @@
 import GlossaryItemForm from '@components/GlossaryImageForm';
 import Header from '@components/Header';
+import LoadingPage from '@components/LoadingPage';
 import TextAreaWithFormikValidation from '@components/TextAreaWithFormikValidation';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import useAuth from '@hooks/useAuth.hook';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -10,18 +12,20 @@ import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
 import { glossaryItemSchema } from 'client/formikSchemas';
 import { CreateGlossaryItemDef } from 'client/graphqlDefs';
+import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { useMutation } from 'urql';
 import backgrounds from 'styles/backgrounds.module.css';
+import { useMutation } from 'urql';
 
 const CreateGlossaryItemPage: NextPage = () => {
     const router = useRouter();
     const [_createEntryResult, createEntry] = useMutation(
         CreateGlossaryItemDef,
     );
+    const { loading: authLoading } = useAuth('/entries', [Roles.Admin]);
 
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [loading, setIsLoading] = useState<boolean>(false);
@@ -98,6 +102,10 @@ const CreateGlossaryItemPage: NextPage = () => {
             setIsLoading(false);
         },
     });
+
+    if (authLoading) {
+        return <LoadingPage />;
+    }
 
     return (
         <div className={backgrounds.colorBackground}>

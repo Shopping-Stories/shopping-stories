@@ -1,7 +1,9 @@
 import GlossaryItemForm from '@components/GlossaryImageForm';
 import Header from '@components/Header';
+import LoadingPage from '@components/LoadingPage';
 import TextAreaWithFormikValidation from '@components/TextAreaWithFormikValidation';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import useAuth from '@hooks/useAuth.hook';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -16,6 +18,7 @@ import {
 import { GlossaryItem } from 'client/types';
 import { GlossaryItemQueryResult } from 'client/urqlConfig';
 import { cloneWithoutTypename } from 'client/util';
+import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { merge } from 'lodash';
 import { NextPage } from 'next';
@@ -27,6 +30,8 @@ import { useMutation, useQuery } from 'urql';
 const UpdateGlossaryItem: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
+    const { loading: authLoading } = useAuth('/entries', [Roles.Admin]);
+
     const [findGlossaryItemResult, _findGlossaryItem] =
         useQuery<GlossaryItemQueryResult>({
             query: FetchGlossaryItemDef,
@@ -136,11 +141,9 @@ const UpdateGlossaryItem: NextPage = () => {
         },
     });
 
-    if (findGlossaryItemResult.fetching) {
+    if (findGlossaryItemResult.fetching || authLoading) {
         return (
-            <div>
-                <Header />
-            </div>
+            <LoadingPage />
         );
     } else if (findGlossaryItemResult.error) {
         router.push('/dashboard/glossary/items');

@@ -24,7 +24,7 @@ ${EntryFields}
 const UpdateEntryPage: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
-    const { loading } = useAuth('/entries', [Roles.Admin]);
+    const { loading } = useAuth('/entries', [Roles.Admin, Roles.Moderator]);
 
     interface FetchEntry {
         entry: Entry & { id: string };

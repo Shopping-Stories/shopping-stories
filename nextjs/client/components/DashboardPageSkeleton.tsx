@@ -34,6 +34,8 @@ const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
         theme.breakpoints.down('md'),
     );
     const isAdmin = isInGroup(Roles.Admin, props.groups);
+    const isModerator = isInGroup(Roles.Moderator, props.groups);
+    const isNotAdminOrModerator = !(isAdmin || isModerator);
 
     const links = isAdmin
         ? uniqWith([...adminLinks, ...sideLinks], isEqual)
@@ -42,7 +44,7 @@ const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
     return (
         <Fragment>
             <Grid container>
-                {isSmallerThanMd ? (
+                {isNotAdminOrModerator ? null : isSmallerThanMd ? (
                     <Grid item xs={12}>
                         <Paper
                             sx={{
@@ -58,7 +60,10 @@ const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
                         <SideMenu links={links} />
                     </Grid>
                 )}
-                <Grid item xs={isSmallerThanMd ? 12 : 8}>
+                <Grid
+                    item
+                    xs={isSmallerThanMd || isNotAdminOrModerator ? 12 : 8}
+                >
                     {props.children}
                 </Grid>
             </Grid>

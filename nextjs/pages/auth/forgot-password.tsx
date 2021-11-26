@@ -155,16 +155,14 @@ const SignInPage: NextPage = () => {
     }, [user]);
 
     const closeSnackBarButton = (
-        <>
-            <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={handleErrorClose}
-            >
-                <CloseIcon fontSize="small" />
-            </IconButton>
-        </>
+        <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={handleErrorClose}
+        >
+            <CloseIcon fontSize="small" />
+        </IconButton>
     );
 
     return !codeSent ? (

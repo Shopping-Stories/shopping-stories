@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -59,7 +58,7 @@ const AdvancedSearchTabForm = ({ formikForm }: { formikForm: any }) => {
     }, [tabIndex]);
 
     return (
-        <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+        <Paper sx={{ width: '100%', backgroundColor: 'var(--secondary)' }}>
             <Tabs value={tabIndex} onChange={handleChange} centered>
                 <Tab label="Item Entry" {...a11yProps(0)} />
                 <Tab label="Tobacco Entry" {...a11yProps(1)} />
@@ -80,7 +79,7 @@ const AdvancedSearchTabForm = ({ formikForm }: { formikForm: any }) => {
                     <RegularEntrySearch formikForm={formikForm} />
                 </Paper>
             </TabPanel>
-        </Box>
+        </Paper>
     );
 };
 
