@@ -31,22 +31,24 @@ interface DashBoardPageSkeletonProps {
 }
 
 const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
-    const router = useRouter()
+    const router = useRouter();
     const isSmallerThanMd = useMediaQuery((theme: any) =>
-    theme.breakpoints.down('md'),
+        theme.breakpoints.down('md'),
     );
     const isAdmin = isInGroup(Roles.Admin, props.groups);
     const isModerator = isInGroup(Roles.Moderator, props.groups);
     const isNotAdminOrModerator = !(isAdmin || isModerator);
 
     const links = isAdmin
-    ? uniqWith([...adminLinks, ...sideLinks], isEqual)
+        ? uniqWith([...adminLinks, ...sideLinks], isEqual)
         : sideLinks;
 
-    const currentPageIndex = links.findIndex((link) => link.path === router.route)
+    const currentPageIndex = links.findIndex(
+        (link) => link.path === router.route,
+    );
 
-        return (
-            <Fragment>
+    return (
+        <Fragment>
             <Grid container>
                 {isNotAdminOrModerator ? null : isSmallerThanMd ? (
                     <Grid item xs={12}>
@@ -56,7 +58,10 @@ const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
                                 ...PaperStyles,
                             }}
                         >
-                            <DashBoardTabs pageIndex={currentPageIndex} links={links} />
+                            <DashBoardTabs
+                                pageIndex={currentPageIndex}
+                                links={links}
+                            />
                         </Paper>
                     </Grid>
                 ) : (

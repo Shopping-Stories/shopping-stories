@@ -14,7 +14,7 @@ import { Client, dedupExchange, fetchExchange, Provider } from 'urql';
 import {
     addAuthToOperation,
     didAuthError,
-    getAuth
+    getAuth,
 } from '../client/urqlConfig';
 import { AmplifyOptions, S3Options } from '../client/util';
 import createEmotionCache from '../styles/createEmotionCache';
@@ -72,7 +72,6 @@ const client = new Client({
 Auth.configure(AmplifyOptions);
 
 Storage.configure(S3Options);
-
 
 function App({
     Component,

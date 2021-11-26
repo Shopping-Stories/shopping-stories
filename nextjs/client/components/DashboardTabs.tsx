@@ -29,7 +29,13 @@ function LinkTab(props: LinkTabProps) {
     );
 }
 
-const DashBoardTabs = ({ links, pageIndex }: { links: NavLink[], pageIndex: number }) => {
+const DashBoardTabs = ({
+    links,
+    pageIndex,
+}: {
+    links: NavLink[];
+    pageIndex: number;
+}) => {
     const router = useRouter();
     const [value, setValue] = useState(pageIndex);
 
