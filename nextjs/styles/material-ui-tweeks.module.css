@@ -1,0 +1,5 @@
+.solidBackgroundWithMargin {
+    background-color: var(--secondary-bg);
+    margin: 3rem;
+    padding: 1rem;
+}

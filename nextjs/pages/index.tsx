@@ -1,4 +1,4 @@
-import ColorBackground from '@components/ColorBackground';
+import ImageBackground from '@components/ImageBackground';
 import Header from '@components/Header';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -8,7 +8,7 @@ import Head from 'next/head';
 
 const Home: NextPage = () => {
     return (
-        <ColorBackground>
+        <ImageBackground>
             <Head>
                 <title>Shopping Stories</title>
                 <meta name="description" content="Revealing Colonial History" />
@@ -57,7 +57,7 @@ const Home: NextPage = () => {
                     </Typography>
                 </Grid>
             </Grid>
-        </ColorBackground>
+        </ImageBackground>
     );
 };
 
