@@ -28,15 +28,13 @@ export class Person {
         return `${this._id}`; // Converts type ObjectId of _id to String
     }
 
-    readonly _id?: ObjectId;
-
-    @Field(() => String, { description: 'Full name of person' })
-    public get fullName(): string {
-        return `${this.firstName} ${this.lastName}`.trim();
+    public set id(_) {
     }
 
+    readonly _id?: ObjectId;
+
     @prop({ required: true })
-    @Field({ description: 'Variations of given item' })
+    @Field({ nullable: true, description: 'Variations of given item' })
     account: string;
 
     @prop({ default: '' })
@@ -44,11 +42,11 @@ export class Person {
     enslaved: string;
 
     @prop({ required: true })
-    @Field({ description: 'Variations of given item' })
+    @Field({ nullable: true, description: 'Variations of given item' })
     firstName: string;
 
     @prop({ required: true })
-    @Field({ description: 'Variations of given item' })
+    @Field({ nullable: true, description: 'Variations of given item' })
     lastName: string;
 
     @prop({ default: '' })

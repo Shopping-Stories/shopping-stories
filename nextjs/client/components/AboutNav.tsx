@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
@@ -7,6 +6,8 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Link from 'next/link';
 import Image from 'next/image';
+import styles from "styles/About.module.css"
+import { useState } from 'react';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -42,7 +43,7 @@ function a11yProps(index: number) {
 }
 
 export default function VerticalTabs() {
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = useState(0);
 
     const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -153,7 +154,7 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1>About History Revealed</h1>
+                            <h1 className={styles.about}>About History Revealed</h1>
                             <Image
                                 src={'/FXCO_Research_01.jpg'}
                                 layout="responsive"
@@ -175,14 +176,14 @@ export default function VerticalTabs() {
                                 Conducting additional research at the Fairfax
                                 County Historic Records Center.
                             </Box>
-                            <p>
+                            <p className={styles.about}>
                                 <Link href="https://www.historyrevealed.co/">
-                                    <a>History Revealed, Inc.</a>
+                                    <a className={styles.about}>History Revealed, Inc.</a>
                                 </Link>{' '}
                                 is an independent, 501(c)(3) non-profit,
                                 historical research organization.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 We focus on learning more about lesser-known
                                 individuals and groups of people from the past
                                 with a particular emphasis on individuals and
@@ -192,7 +193,7 @@ export default function VerticalTabs() {
                                 dots of information in search of the larger
                                 story of these individuals and groups.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 Because accessibility of our research is
                                 important to us, we engage in crowdsourcing to
                                 aid us and the public in making research
@@ -200,7 +201,7 @@ export default function VerticalTabs() {
                                 publications that showcase not only the data but
                                 also provide historical context and connections.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 We actively seek partnerships with universities,
                                 museums, and other historical organizations to
                                 exchange ideas, suggest solutions, and implement
@@ -222,7 +223,7 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1>The Shopping Stories Project</h1>
+                            <h1 className={styles.about}>The Shopping Stories Project</h1>
                             <Image
                                 src={'/C_1760_001D_John Glassford.jpg'}
                                 layout="responsive"
@@ -244,7 +245,7 @@ export default function VerticalTabs() {
                                 John Glassford account (folio 1), Colchester
                                 store 1760/1761
                             </Box>
-                            <p>
+                            <p className={styles.about}>
                                 Eighteenth-century ledgers detail tabular data:
                                 recording purchases, account holders, and
                                 payments. These transactions are very different
@@ -310,7 +311,7 @@ export default function VerticalTabs() {
                                 she also purchased some kitchen accoutrements,
                                 shoes, hats, and a large blanket.
                             </Box>
-                            <p>
+                            <p className={styles.about}>
                                 To date, most research using ledgers (whether it
                                 be for a store, tradesperson, or individual)
                                 selects the most significant people or specific
@@ -334,8 +335,8 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1>People, Places, and Things</h1>
-                            <h2>
+                            <h1 className={styles.about}>People, Places, and Things</h1>
+                            <h2 className={styles.about}>
                                 The Power of the 18th-Century Ledgers of John
                                 Glassford & Company
                             </h2>
@@ -359,7 +360,7 @@ export default function VerticalTabs() {
                             >
                                 Colchester, Virginia, looks much changed today.
                             </Box>
-                            <p>
+                            <p className={styles.about}>
                                 Scotsman John Glassford controlled a major
                                 portion of the Chesapeake tobacco trade by
                                 establishing stores along the Potomac River
@@ -367,7 +368,7 @@ export default function VerticalTabs() {
                                 such as rum, sugar, salt, cloth, and hardware,
                                 as well as slaves.{' '}
                                 <Link href="https://findingaids.loc.gov/db/search/xq/searchMfer02.xq?_id=loc.mss.eadmss.ms998016&_faSection=overview&_faSubsection=did&_dmdid=">
-                                    <a>The John Glassford & Company Papers</a>
+                                    <a className={styles.about}>The John Glassford & Company Papers</a>
                                 </Link>
                                 , owned by the Library of Congress, detail the
                                 daily transactions of the company and include
@@ -381,14 +382,14 @@ export default function VerticalTabs() {
                                 tenants, hired white workers, and the enslaved
                                 community.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 The first phase of the project involved a
                                 crowd-sourced effort to transcribe 11 ledgers,
                                 with over 4,300 pages from two Virginia stores
                                 in Colchester and Alexandria from 1758-1769. In
                                 the second phase,{' '}
                                 <Link href="https://www.historyrevealed.co/">
-                                    <a>History Revealed, Inc.</a>
+                                    <a className={styles.about}>History Revealed, Inc.</a>
                                 </Link>{' '}
                                 (HRI), worked with the University of Central
                                 Florida (UCF) on a community partnership grant
@@ -397,16 +398,16 @@ export default function VerticalTabs() {
                                 Colchester store ledger through essays published
                                 on the website,{' '}
                                 <Link href="https://projects.cah.ucf.edu/economyofgoods/">
-                                    <a>Economy of Goods</a>
+                                    <a className={styles.about}>Economy of Goods</a>
                                 </Link>
                                 . In addition, HRI posted transcription
                                 challenges on{' '}
                                 <Link href="https://www.facebook.com/HistoryReveal">
-                                    <a>social media</a>
+                                    <a className={styles.about}>social media</a>
                                 </Link>{' '}
                                 and{' '}
                                 <Link href="https://www.historyrevealed.co/blog-1">
-                                    <a>blog posts</a>
+                                    <a className={styles.about}>blog posts</a>
                                 </Link>{' '}
                                 to its website. In addition, interns developed
                                 an index of objects and an index of people and
@@ -417,7 +418,7 @@ export default function VerticalTabs() {
                                 enabling searches by people, places, and objects
                                 contained within these manuscripts.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 These ledgers provide a look at life prior to
                                 the American Revolution, a time of transition as
                                 colonists experienced greater trade restrictions
@@ -442,25 +443,25 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1>The Transcription and Database Process</h1>
+                            <h1 className={styles.about}>The Transcription and Database Process</h1>
                             <Image
                                 src={'/shutterstock_445572439.jpg'}
                                 layout="responsive"
                                 width={1.4}
                                 height={0.8}
                             />
-                            <p>
+                            <p className={styles.about}>
                                 Going from original manuscripts to digital
                                 transcriptions is challenging. What started as
                                 eleven ledgers from the{' '}
                                 <Link href="https://www.loc.gov/item/mm78022939/">
-                                    <a>John Glassford & Company</a>
+                                    <a className={styles.about}>John Glassford & Company</a>
                                 </Link>{' '}
                                 records found on six microfilm reels turned into
                                 nearly 4,400 transcription files through the
                                 efforts of numerous people and partners.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 Students from universities across the country,
                                 as well as a cadre of interested volunteers
                                 participated in transcribing through a
@@ -481,7 +482,7 @@ export default function VerticalTabs() {
                                 went through at least two reviews prior to
                                 inclusion in this database.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 Given the use of abbreviations and unique
                                 pattern of transactions, rather than limit
                                 transcripts to a straightforward duplication of
@@ -499,7 +500,7 @@ export default function VerticalTabs() {
                                 were isolated by quantity, qualifier,
                                 adjective(s), item, and price.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 At present, the database only includes a
                                 sampling of pages from the Colchester store
                                 ledger for 1760-1761. Stay tuned for additional
@@ -522,7 +523,7 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1>A Look at Ledgers</h1>
+                            <h1 className={styles.about}>A Look at Ledgers</h1>
                             <Image
                                 src={'/C_1760_023_ElizabethConnell.jpg'}
                                 layout="responsive"
@@ -544,7 +545,7 @@ export default function VerticalTabs() {
                                 Elizabeth Connell’s purchases and payments
                                 (folio 23), Colchester store 1760/1761
                             </Box>
-                            <p>
+                            <p className={styles.about}>
                                 With no computers and databases to keep track of
                                 inventory and customers, businesses kept ledgers
                                 – books that kept the list of customers, what
@@ -568,14 +569,14 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1>Ledgers: The Basics</h1>
+                            <h1 className={styles.about}>Ledgers: The Basics</h1>
                             <Image
                                 src={'/shutterstock_48906238.jpg'}
                                 layout="responsive"
                                 width={0.5}
                                 height={1}
                             />
-                            <p>
+                            <p className={styles.about}>
                                 Creation of ledgers started with waste books –
                                 similar to receipts. Then, at the conclusion of
                                 every day, all those small transactions were
@@ -588,7 +589,7 @@ export default function VerticalTabs() {
                                 business’s transactions, it could be used as
                                 evidence in court.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 Ledger accounts typically spread out across two
                                 pages: the page on the left side listed all the
                                 purchases (debits) and the page on the right
@@ -616,7 +617,7 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1>Purchases and Payments</h1>
+                            <h1 className={styles.about}>Purchases and Payments</h1>
                             <Image
                                 src={'/shutterstock_19824082.jpg'}
                                 layout="responsive"
@@ -637,7 +638,7 @@ export default function VerticalTabs() {
                             >
                                 Tobacco leaves
                             </Box>
-                            <p>
+                            <p className={styles.about}>
                                 In the 18th-century, while customers could pay
                                 at the time of sale, many people made their
                                 purchases on credit with the intent to pay their
@@ -647,7 +648,7 @@ export default function VerticalTabs() {
                                 everything had value and that was what you paid
                                 or owed even when no money changed hands.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 When looking at the ledger, the more
                                 straightforward page to understand is the debit
                                 or purchases page – what was purchased by the
@@ -662,14 +663,14 @@ export default function VerticalTabs() {
                                 again, the author simply creates a list and
                                 assumes the reader knows it is the same day.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 Purchases included not only goods; the store
                                 acted as a bank lending money, as a place to pay
                                 taxes and fines, payments for services rendered,
                                 or to pay back friends and family. The money
                                 could be either traditional currency or tobacco.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 More challenging to understand is the credit
                                 page – how someone paid their account and what
                                 form that payment came in from cash to tobacco
@@ -687,7 +688,7 @@ export default function VerticalTabs() {
                                 and the conversion rate for each one hundred
                                 pounds of tobacco.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 While ledgers may seem complicated, they become
                                 easier when you see the pattern: a list of
                                 customers with purchase transactions on one page
@@ -707,7 +708,7 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <h1>Acknowledgements</h1>
+                            <h1 className={styles.about}>Acknowledgements</h1>
                             <Image
                                 src={'/FXCO_Research_02.JPG'}
                                 layout="responsive"
@@ -730,17 +731,17 @@ export default function VerticalTabs() {
                                 ledgers requires a visit to the Fairfax County
                                 Historic Records Center.
                             </Box>
-                            <p>
+                            <p className={styles.about}>
                                 Without the help of numerous individuals, we
                                 would not have been able to complete the initial
                                 transcriptions to make this database a reality.
                             </p>
-                            <p>
+                            <p className={styles.about}>
                                 We would especially like to thank the following
                                 for their hard work transcribing and reviewing
                                 the Colchester 1760/1761 ledger:
                             </p>
-                            <b>
+                            <b className={styles.about}>
                                 Krisse Adams, Lori Arbuckle, Michelle Bakels,
                                 Julia Bennett, Laura Braddock, Barry Burr,
                                 Angela Claude, John Crowell Mackie, Rebecca
@@ -755,7 +756,7 @@ export default function VerticalTabs() {
                                 Thurlow, Brett Trace, Nathan Van Buskirk, and
                                 Rachel Williams.
                             </b>
-                            <p>
+                            <p className={styles.about}>
                                 From 2016-2019, numerous undergraduate and
                                 graduate students at the University of Central
                                 Florida explored ways to think about the people,
@@ -767,7 +768,7 @@ export default function VerticalTabs() {
                                 America, 1607-1765; History & Historians; and
                                 Colloquia in Material Culture).
                             </p>
-                            <b>
+                            <b className={styles.about}>
                                 Finally, the Shopping Stories website and
                                 database were developed as part of the
                                 University of Central Florida’s Computer Science
@@ -787,15 +788,15 @@ export default function VerticalTabs() {
                         }}
                     >
                         <Typography>
-                            <p>
-                                <i>High Life Below Stairs,</i> John Collet,
+                            <p className={styles.about}>
+                                <i className={styles.about}>High Life Below Stairs,</i> John Collet,
                                 London, England, 1763, oil on canvas, accession
                                 #1991-175, A&B, image #TC2000-887. Courtesy of
                                 The Colonial Williamsburg Foundation, Gift of
                                 Mrs. Cora Ginsburg.
                             </p>
-                            <p>
-                                <i>
+                            <p className={styles.about}>
+                                <i className={styles.about}>
                                     A map of the most inhabited part of Virginia
                                     containing the whole province of Maryland
                                     with part of Pensilvania [Pennsylvania], New
@@ -805,8 +806,8 @@ export default function VerticalTabs() {
                                 Jefferys, 1755. Courtesy of the Library of
                                 Congress, Geography and Map Division.
                             </p>
-                            <p>
-                                <i>
+                            <p className={styles.about}>
+                                <i className={styles.about}>
                                     Ledger 1760-1761, Colchester, Virginia,
                                     Account of Elizabeth Connell (folio 23)
                                 </i>
@@ -814,8 +815,8 @@ export default function VerticalTabs() {
                                 Courtesy of the Library of Congress, Manuscript
                                 Division.
                             </p>
-                            <p>
-                                <i>
+                            <p className={styles.about}>
+                                <i className={styles.about}>
                                     "Tobacco Production, Virginia, 18th cent.",
                                     Slavery Images: A Visual Record of the
                                     African Slave Trade and Slave Life in the
@@ -823,7 +824,7 @@ export default function VerticalTabs() {
                                 </i>
                                 , accessed October 21, 2020,{' '}
                                 <Link href="http://slaveryimages.org/s/slaveryimages/item/1118">
-                                    <a>
+                                    <a className={styles.about}>
                                         http://slaveryimages.org/s/slaveryimages/item/1118
                                     </a>
                                 </Link>

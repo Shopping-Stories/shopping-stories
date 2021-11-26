@@ -1,20 +1,18 @@
-// import DataGrid from '@components/DataGrid';
+import ColorBackground from '@components/ColorBackground';
+import DashboardPageSkeleton from '@components/DashboardPageSkeleton';
 import FileInput from '@components/FileInput';
 import Header from '@components/Header';
+import LoadingPage from '@components/LoadingPage';
 import ParseTable from '@components/ParseTable';
-import SideMenu from '@components/SideMenu';
 import useAuth from '@hooks/useAuth.hook';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Typography } from '@mui/material';
-import FormGroup from '@mui/material/FormGroup';
-import Grid from '@mui/material/Grid';
-import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { Roles } from 'config/constants.config';
 import { NextPage } from 'next';
 import { useState } from 'react';
-import backgrounds from 'styles/backgrounds.module.css';
+import { PaperStylesSecondary } from 'styles/styles';
 import { useMutation } from 'urql';
 import xlsx from 'xlsx';
 
@@ -99,86 +97,58 @@ const ImportPage: NextPage = () => {
     };
 
     if (loading) {
-        return (
-            <>
-                <Header />
-                <LinearProgress />
-            </>
-        );
+        return <LoadingPage />;
     }
 
     return (
-        <>
-            <div className={backgrounds.colorBackground}>
-                <Header />
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>
-                        <SideMenu groups={groups} />
-                    </Grid>
-                    <Grid item xs={8}>
-                        <Paper
+        <ColorBackground>
+            <Header />
+            <DashboardPageSkeleton groups={groups}>
+                <Paper sx={PaperStylesSecondary}>
+                    <Stack spacing={2} direction="row">
+                        <FileInput
+                            label="import spreadsheet"
+                            accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            onChange={({ files }: any) => setFile(files)}
+                        />
+                        <LoadingButton
+                            loading={isLoading}
+                            onClick={convertFileToJSON}
+                            variant="contained"
                             sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
+                                margin: '1rem 5rem',
                             }}
                         >
-                            <Grid
-                                container
-                                spacing={0}
-                                direction="column"
-                                alignItems="center"
-                                justifyContent="center"
-                            >
-                                <FormGroup>
-                                    <Stack spacing={2} direction="row">
-                                        <FileInput
-                                            label="import spreadsheet"
-                                            accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                            onChange={({ files }: any) =>
-                                                setFile(files)
-                                            }
-                                        />
-                                        <LoadingButton
-                                            loading={isLoading}
-                                            onClick={convertFileToJSON}
-                                            variant="contained"
-                                            sx={{
-                                                margin: '1rem 5rem',
-                                            }}
-                                        >
-                                            Parse File
-                                        </LoadingButton>
-                                    </Stack>
-                                </FormGroup>
-                            </Grid>
-                        </Paper>
-                        <ParseTable entries={entries} />
-                        {!!parseErrors && parseErrors.length > 0 && (
-                            <Stack>
-                                {parseErrors.map((error: any, i: number) => (
-                                    <Typography key={i}>
-                                        Entry {error.index} had the error:{' '}
-                                        {error.message}
-                                    </Typography>
-                                ))}
-                            </Stack>
-                        )}
-                        <LoadingButton
-                            variant="contained"
-                            onClick={handleUploadLoadToDatabase}
-                            loading={isCreatingEntries}
-                            disabled={
-                                (!!parseErrors && parseErrors.length > 0) ||
-                                !entries
-                            }
-                        >
-                            Confirm Import into Database
+                            Parse File
                         </LoadingButton>
-                    </Grid>
-                </Grid>
-            </div>
-        </>
+                    </Stack>
+                </Paper>
+                <Paper sx={PaperStylesSecondary}>
+                    <ParseTable entries={entries} />
+                    {!!parseErrors && parseErrors.length > 0 && (
+                        <Stack>
+                            {parseErrors.map((error: any, i: number) => (
+                                <Typography key={i}>
+                                    Entry {error.index} had the error:{' '}
+                                    {error.message}
+                                </Typography>
+                            ))}
+                        </Stack>
+                    )}
+                    <LoadingButton
+                        variant="contained"
+                        onClick={handleUploadLoadToDatabase}
+                        loading={isCreatingEntries}
+                        disabled={
+                            (!!parseErrors && parseErrors.length > 0) ||
+                            !entries
+                        }
+                    >
+                        Confirm Import into Database
+                    </LoadingButton>
+                </Paper>
+            </DashboardPageSkeleton>
+        </ColorBackground>
     );
 };
 

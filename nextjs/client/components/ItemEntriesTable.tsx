@@ -9,41 +9,47 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { ItemEntry } from 'client/types';
+import { Fragment, useState } from 'react';
 import {
     ItemsMentionedTable,
-    ItemsOrServicesTable,
+    ItemsOrServicesTable
 } from './ItemEntrySubTables';
 
-const ItemEntriesTable = (props: any) => {
+const ItemEntriesTable = (props: { itemEntries: ItemEntry[] }) => {
     const { itemEntries } = props;
 
     return (
-        <Box sx={{ margin: 1 }}>
-            <Typography variant="h6" gutterBottom component="div">
-                Item Entries
-            </Typography>
-            <Table size="small" aria-label="purchases">
-                <TableHead>
-                    <TableCell />
-                    <TableCell>PerOrder</TableCell>
-                    <TableCell>Percentage</TableCell>
-                </TableHead>
-                <TableBody>
-                    {itemEntries.map((entry: any, i: number) => (
-                        <ItemEntryRow itemEntry={entry} key={i} />
-                    ))}
-                </TableBody>
-            </Table>
-        </Box>
+        <Fragment>
+            {itemEntries ? (
+                <Box sx={{ margin: 1 }}>
+                    <Typography variant="h6" gutterBottom component="div">
+                        Item Entries
+                    </Typography>
+                    <Table size="small" aria-label="purchases">
+                        <TableHead>
+                            <TableCell />
+                            <TableCell>Per-Order</TableCell>
+                            <TableCell>Percentage</TableCell>
+                        </TableHead>
+                        <TableBody>
+                            {itemEntries.map((entry, i) => (
+                                <ItemEntryRow itemEntry={entry} key={i} />
+                            ))}
+                        </TableBody>
+                    </Table>
+                </Box>
+            ) : null}
+        </Fragment>
     );
 };
 
-const ItemEntryRow = ({ itemEntry }: any) => {
+const ItemEntryRow = (props: { itemEntry: ItemEntry }) => {
+    const { itemEntry } = props;
     const [open, setOpen] = useState(false);
 
     return (
-        <>
+        <Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>
                     <IconButton
@@ -58,8 +64,8 @@ const ItemEntryRow = ({ itemEntry }: any) => {
                         )}
                     </IconButton>
                 </TableCell>
-                <TableCell>{itemEntry?.perOrder}</TableCell>
-                <TableCell>{itemEntry?.percentage}</TableCell>
+                <TableCell>{itemEntry.perOrder}</TableCell>
+                <TableCell>{itemEntry.percentage}</TableCell>
             </TableRow>
             <TableRow>
                 <TableCell
@@ -67,20 +73,20 @@ const ItemEntryRow = ({ itemEntry }: any) => {
                     colSpan={6}
                 >
                     <Collapse in={open} timeout="auto">
-                        {!!itemEntry && (
-                            <>
+                        {itemEntry && (
+                            <Fragment>
                                 <ItemsOrServicesTable
-                                    itemsOrServices={itemEntry?.itemsOrServices}
+                                    itemsOrServices={itemEntry.itemsOrServices}
                                 />
                                 <ItemsMentionedTable
-                                    itemsMentioned={itemEntry?.itemsMentioned}
+                                    itemsMentioned={itemEntry.itemsMentioned}
                                 />
-                            </>
+                            </Fragment>
                         )}
                     </Collapse>
                 </TableCell>
             </TableRow>
-        </>
+        </Fragment>
     );
 };
 

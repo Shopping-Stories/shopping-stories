@@ -1,7 +1,7 @@
 import { Field, InputType } from 'type-graphql';
 
 @InputType()
-export class CreatePersonInput extends Object {
+export class CreatePersonInput {
     @Field({ nullable: true, description: 'Variations of given item' })
     account?: string;
 

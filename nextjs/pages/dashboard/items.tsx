@@ -1,149 +1,93 @@
-// import DataGrid from '@components/DataGrid';
+import ActionDialog from '@components/ActionDialog';
+import ColorBackground from '@components/ColorBackground';
+import DashboardPageSkeleton from '@components/DashboardPageSkeleton';
 import Header from '@components/Header';
-import ItemsPaginationTable from '@components/ItemsPaginationTable';
-import SideMenu from '@components/SideMenu';
-import useAuth from '@hooks/useAuth.hook';
+import LoadingPage from '@components/LoadingPage';
+import PaginationTable from '@components/PaginationTable';
+import PaginationTableHead from '@components/PaginationTableHead';
+import PaginationTableRow from '@components/PaginationTableRow';
+import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import useAuth, { isInGroup } from '@hooks/useAuth.hook';
+import AddCircle from '@mui/icons-material/AddCircle';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import FormGroup from '@mui/material/FormGroup';
-import Grid from '@mui/material/Grid';
-import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
-// import LoadingButton from '@mui/lab/LoadingButton';
-// import TextareaAutosize from '@mui/material/TextareaAutosize';
-import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import {
+    createItemSchema,
+    searchSchema,
+    updateItemSchema,
+} from 'client/formikSchemas';
+import {
+    CreateItemDef,
+    DeleteItemDef,
+    SearchItemsDef,
+    UpdateItemDef,
+} from 'client/graphqlDefs';
+import { Item, SearchType } from 'client/types';
+import { cloneWithoutTypename } from 'client/util';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
-import { useState } from 'react';
-import backgrounds from 'styles/backgrounds.module.css';
+import { FormEvent, useState } from 'react';
+import { PaperStylesSecondary } from 'styles/styles';
 import { useMutation } from 'urql';
-import * as yup from 'yup';
-
-const itemFields = `
-fragment itemsFields on  Item {
-  id
-  item
-  variants
-}
-`;
-
-const createItemDef = `
-mutation createItem($item: CreateItemInput!) {
-  createItem(item: $item) {
-    ...itemsFields
-  }
-}
-${itemFields}
-`;
-
-const searchItemsDef = `
-query itemsQuery($search: String, $options: FindAllLimitAndSkip) {
-  rows: findItems(search: $search, options: $options) {
-  	...itemsFields
-  }
-  count: countItems(search: $search)
-}
-${itemFields}
-`;
-
-const updateItemDef = `
-mutation updateItem($id: String!, $updates: UpdateItemInput!) {
-  updateItem(id: $id, updatedFields: $updates) {
-    ...itemsFields
-  }
-}
-${itemFields}
-`;
-const deleteItemDef = `
-mutation deleteItem($id: String!) {
-  deleteItem(id: $id) {
-    ...itemsFields
-  }
-}
-${itemFields}
-`;
-
-const validationSchema = yup.object({
-    search: yup.string(),
-});
-
-const createItemSchema = yup.object({
-    item: yup.string().required('Item name is required'),
-    variants: yup.string(),
-});
-
-const updateItemSchema = yup.object({
-    item: yup.string(),
-    variants: yup.string(),
-});
 
 const ManageItemsPage: NextPage = () => {
-    const { groups, loading } = useAuth('/', [Roles.Admin]);
-    const [_createItemResult, createItem] = useMutation(createItemDef);
-    const [_updateItesmResult, updateItem] = useMutation(updateItemDef);
-    const [_deleteItemResult, deleteItem] = useMutation(deleteItemDef);
+    const { groups, loading } = useAuth('/', [Roles.Admin, Roles.Moderator]);
+    const isAdmin = isInGroup(Roles.Admin, groups);
+    const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
+
+    const [_createItemResult, createItem] = useMutation<Item>(CreateItemDef);
+    const [_updateItemResult, updateItem] = useMutation<Item>(UpdateItemDef);
+    const [_deleteItemResult, deleteItem] = useMutation<Item>(DeleteItemDef);
+
     const [search, setSearch] = useState<string>('');
+    const [itemToDelete, setItemToDelete] = useState<Item | null>(null);
+
+    const [reQuery, setReQuery] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [creating, setCreating] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [updating, setUpdating] = useState(false);
+    const [rows, setRows] = useState<Item[]>([]);
+
     const [openUpdate, setOpenUpdate] = useState<boolean>(false);
-    const [itemToDelete, setItemToDelete] = useState<{
-        id: string;
-        item: string;
-    } | null>(null);
-    const [reQuery, setReQuery] = useState<Boolean>(false);
-
-    const handleOpenUpdate = () => {
-        setOpenUpdate(true);
-    };
-
-    const handleCloseUpdate = () => {
-        setOpenUpdate(false);
-    };
+    const handleOpenUpdate = () => setOpenUpdate(true);
+    const handleCloseUpdate = () => setOpenUpdate(false);
 
     const [openDelete, setOpenDelete] = useState<boolean>(false);
-
-    const handleOpenDelete = () => {
-        setOpenDelete(true);
-    };
-
-    const handleCloseDelete = () => {
-        setOpenDelete(false);
-    };
+    const handleOpenDelete = () => setOpenDelete(true);
+    const handleCloseDelete = () => setOpenDelete(false);
 
     const [openCreate, setOpenCreate] = useState<boolean>(false);
+    const handleOpenCreate = () => setOpenCreate(true);
+    const handleCloseCreate = () => setOpenCreate(false);
 
-    const handleOpenCreate = () => {
-        setOpenCreate(true);
-    };
-
-    const handleCloseCreate = () => {
-        setOpenCreate(false);
-    };
-
-    const createForm = useFormik({
+    const createForm = useFormik<Omit<Item, 'id'>>({
         initialValues: {
             item: '',
             variants: '',
         },
         validationSchema: createItemSchema,
         onSubmit: async (values, { resetForm }) => {
-            // do your stuff
+            setCreating(true);
             const res = await createItem({
                 item: values,
             });
             if (res.error) {
+                console.error(res.error);
             } else {
                 setReQuery(true);
                 handleCloseCreate();
                 resetForm();
             }
+            setCreating(false);
         },
     });
 
-    const updateForm = useFormik({
+    const updateForm = useFormik<Item>({
         initialValues: {
             id: '',
             item: '',
@@ -151,7 +95,7 @@ const ManageItemsPage: NextPage = () => {
         },
         validationSchema: updateItemSchema,
         onSubmit: async (values, { resetForm }) => {
-            // do your stuff
+            setUpdating(true);
             const res = await updateItem({
                 id: values.id,
                 updates: {
@@ -160,243 +104,193 @@ const ManageItemsPage: NextPage = () => {
                 },
             });
             if (res.error) {
+                console.error(res.error);
             } else {
                 handleCloseUpdate();
                 resetForm();
             }
+            setUpdating(false);
         },
     });
 
-    const handleItemDelete = async () => {
+    const handleItemDelete = async (
+        e?: FormEvent<HTMLFormElement> | undefined,
+    ) => {
+        if (e) {
+            e.preventDefault();
+        }
         if (itemToDelete) {
+            setDeleting(true);
             const id = itemToDelete.id;
             const res = await deleteItem({ id });
             if (res.error) {
+                console.error(res.error);
             } else {
                 setReQuery(true);
                 handleCloseDelete();
             }
+            setDeleting(false);
         }
     };
 
-    const formik = useFormik({
+    const searchForm = useFormik<SearchType>({
         initialValues: {
             search: '',
         },
-        validationSchema: validationSchema,
-        onSubmit: (values: any) => {
+        validationSchema: searchSchema,
+        onSubmit: (values) => {
+            setReQuery(true);
             setSearch(values.search);
         },
     });
 
     if (loading) {
-        return (
-            <>
-                <Header />
-                <LinearProgress />
-            </>
-        );
+        return <LoadingPage />;
     }
 
     return (
-        <>
-            <div className={backgrounds.colorBackground}>
-                <Header />
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>
-                        <SideMenu groups={groups} />
-                    </Grid>
-                    <Grid item xs={8}>
-                        <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
-                            <Button
+        <ColorBackground>
+            <Header />
+            <DashboardPageSkeleton groups={groups}>
+                <Paper sx={PaperStylesSecondary}>
+                    <form onSubmit={searchForm.handleSubmit}>
+                        <Stack spacing={2}>
+                            <TextFieldWithFormikValidation
+                                fullWidth
+                                name="search"
+                                fieldName="search"
+                                label="Search"
+                                formikForm={searchForm}
+                            />
+
+                            <LoadingButton
+                                loading={isLoading}
                                 variant="contained"
-                                onClick={handleOpenCreate}
+                                fullWidth
+                                type="submit"
                             >
-                                Create new item
-                            </Button>
-                            <FormGroup>
-                                <form onSubmit={formik.handleSubmit}>
-                                    <TextField
-                                        fullWidth
-                                        name="search"
-                                        label="Search"
-                                        value={formik.values.search}
-                                        onChange={formik.handleChange}
-                                        error={
-                                            formik.touched.search &&
-                                            Boolean(formik.errors.search)
-                                        }
-                                        helperText={
-                                            formik.touched.search &&
-                                            formik.errors.search
-                                        }
-                                    />
-                                    <Button
-                                        // loading={isLoading}
-                                        // onClick={handl}
-                                        variant="contained"
-                                        fullWidth
-                                        type="submit"
-                                    >
-                                        Search
-                                    </Button>
-                                </form>
-                            </FormGroup>
-                        </Paper>
-                        {/* <ParseTable entries={entries} /> */}
-                        <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
-                            <ItemsPaginationTable
-                                queryDef={searchItemsDef}
-                                onEditClick={(row: any) => {
-                                    updateForm.setFieldValue('id', row.id);
-                                    updateForm.setFieldValue('item', row.item);
-                                    updateForm.setFieldValue(
-                                        'variants',
-                                        row.variants,
-                                    );
-                                    handleOpenUpdate();
-                                }}
-                                onDeleteClick={async (row: any) => {
-                                    setItemToDelete({
-                                        item: row.item,
-                                        id: row.id,
-                                    });
-                                    handleOpenDelete();
-                                }}
-                                search={search}
-                                reQuery={reQuery}
-                                setReQuery={setReQuery}
-                            />
-                        </Paper>
-                    </Grid>
-                </Grid>
-                <Dialog open={openUpdate} onClose={handleCloseUpdate}>
-                    <DialogTitle>Edit Item</DialogTitle>
-                    <form onSubmit={updateForm.handleSubmit}>
-                        <DialogContent>
-                            <DialogContentText>
-                                Update any of the fields and submit.
-                            </DialogContentText>
-                            <TextField
-                                fullWidth
-                                autoFocus
-                                margin="dense"
-                                variant="standard"
-                                name="item"
-                                label="Item"
-                                value={updateForm.values.item}
-                                onChange={updateForm.handleChange}
-                                error={
-                                    updateForm.touched.item &&
-                                    Boolean(updateForm.errors.item)
-                                }
-                                helperText={
-                                    updateForm.touched.item &&
-                                    updateForm.errors.item
-                                }
-                            />
-                            <TextField
-                                fullWidth
-                                margin="dense"
-                                variant="standard"
-                                name="variants"
-                                label="variants"
-                                value={updateForm.values.variants}
-                                onChange={updateForm.handleChange}
-                                error={
-                                    updateForm.touched.variants &&
-                                    Boolean(updateForm.errors.variants)
-                                }
-                                helperText={
-                                    updateForm.touched.variants &&
-                                    updateForm.errors.variants
-                                }
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseUpdate}>Cancel</Button>
-                            <Button type="submit">Submit</Button>
-                        </DialogActions>
+                                Search
+                            </LoadingButton>
+                        </Stack>
                     </form>
-                </Dialog>
-                <Dialog open={openCreate} onClose={handleCloseCreate}>
-                    <DialogTitle>Add Item</DialogTitle>
-                    <form onSubmit={createForm.handleSubmit}>
-                        <DialogContent>
-                            <DialogContentText>
-                                Create a new Item
-                            </DialogContentText>
-                            <TextField
-                                fullWidth
-                                autoFocus
-                                margin="dense"
-                                variant="standard"
-                                name="item"
-                                label="Item"
-                                value={createForm.values.item}
-                                onChange={createForm.handleChange}
-                                error={
-                                    createForm.touched.item &&
-                                    Boolean(createForm.errors.item)
-                                }
-                                helperText={
-                                    createForm.touched.item &&
-                                    createForm.errors.item
-                                }
-                            />
-                            <TextField
-                                fullWidth
-                                margin="dense"
-                                variant="standard"
-                                name="variants"
-                                label="variants"
-                                value={createForm.values.variants}
-                                onChange={createForm.handleChange}
-                                error={
-                                    createForm.touched.variants &&
-                                    Boolean(createForm.errors.variants)
-                                }
-                                helperText={
-                                    createForm.touched.variants &&
-                                    createForm.errors.variants
-                                }
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseCreate}>Cancel</Button>
-                            <Button type="submit">Submit</Button>
-                        </DialogActions>
-                    </form>
-                </Dialog>
-                <Dialog open={openDelete} onClose={handleCloseDelete}>
-                    <DialogTitle>
-                        Confirm Delete of {itemToDelete && itemToDelete.item}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            Are you sure you want to delete{' '}
-                            {itemToDelete && itemToDelete.item}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseDelete}>Cancel</Button>
-                        <Button onClick={handleItemDelete}>Submit</Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        </>
+                </Paper>
+                <Paper sx={PaperStylesSecondary}>
+                    <Stack spacing={2}>
+                        {isAdmin ? (
+                            <div>
+                                <Button
+                                    startIcon={<AddCircle />}
+                                    variant="contained"
+                                    onClick={handleOpenCreate}
+                                >
+                                    Create
+                                </Button>
+                            </div>
+                        ) : null}
+                        <PaginationTable
+                            queryDef={SearchItemsDef}
+                            search={search}
+                            setRows={setRows}
+                            reQuery={reQuery}
+                            setReQuery={setReQuery}
+                            setIsLoading={setIsLoading}
+                            headerRow={
+                                <PaginationTableHead
+                                    isAdmin={isAdmin}
+                                    isAdminOrModerator={isAdminOrModerator}
+                                    labels={['Item', 'Variants']}
+                                />
+                            }
+                            bodyRows={rows.map((row, i: number) => (
+                                <PaginationTableRow
+                                    key={i}
+                                    row={row}
+                                    isAdmin={isAdmin}
+                                    cellValues={[row.item, row.variants]}
+                                    isAdminOrModerator={isAdminOrModerator}
+                                    onEditClick={(row) => {
+                                        updateForm.setValues(
+                                            cloneWithoutTypename(row),
+                                        );
+                                        handleOpenUpdate();
+                                    }}
+                                    onDeleteClick={async (row) => {
+                                        setItemToDelete(row);
+                                        handleOpenDelete();
+                                    }}
+                                />
+                            ))}
+                        />
+                    </Stack>
+                </Paper>
+            </DashboardPageSkeleton>
+
+            {/* Edit Dialog */}
+            <ActionDialog
+                isOpen={openUpdate}
+                onClose={handleCloseUpdate}
+                isSubmitting={updating}
+                onSubmit={updateForm.handleSubmit}
+                title={`Edit category`}
+            >
+                <DialogContentText>
+                    Update any of the fields and submit.
+                </DialogContentText>
+                <TextFieldWithFormikValidation
+                    fullWidth
+                    autoFocus
+                    name="item"
+                    label="Item"
+                    fieldName="item"
+                    formikForm={updateForm}
+                />
+                <TextFieldWithFormikValidation
+                    fullWidth
+                    name="variants"
+                    label="Variants"
+                    fieldName="variants"
+                    formikForm={updateForm}
+                />
+            </ActionDialog>
+
+            {/* Create Dialog */}
+            <ActionDialog
+                isOpen={openCreate}
+                onClose={handleCloseCreate}
+                isSubmitting={creating}
+                onSubmit={createForm.handleSubmit}
+                title={`Create Item`}
+            >
+                <DialogContentText>Create a new Item</DialogContentText>
+                <TextFieldWithFormikValidation
+                    fullWidth
+                    autoFocus
+                    name="item"
+                    label="Item"
+                    fieldName="item"
+                    formikForm={createForm}
+                />
+                <TextFieldWithFormikValidation
+                    fullWidth
+                    name="variants"
+                    label="Variants"
+                    fieldName="variants"
+                    formikForm={createForm}
+                />
+            </ActionDialog>
+
+            {/* Delete Dialog */}
+            <ActionDialog
+                isOpen={openDelete}
+                onClose={handleCloseDelete}
+                isSubmitting={deleting}
+                onSubmit={handleItemDelete}
+                title={`Confirm Delete of ${itemToDelete?.item || ''}`}
+            >
+                Are you sure you want to delete{' '}
+                {itemToDelete && itemToDelete.item}
+            </ActionDialog>
+        </ColorBackground>
     );
 };
 

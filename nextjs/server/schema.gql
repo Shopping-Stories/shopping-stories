@@ -480,20 +480,17 @@ type Person {
   # String of MongoDB ObjectId
   id: ID!
 
-  # Full name of person
-  fullName: String!
-
   # Variations of given item
-  account: String!
+  account: String
 
   # Variations of given item
   enslaved: String
 
   # Variations of given item
-  firstName: String!
+  firstName: String
 
   # Variations of given item
-  lastName: String!
+  lastName: String
 
   # Variations of given item
   gender: String
@@ -522,6 +519,7 @@ type Person {
 
   # Variations of given item
   variations: String
+  fullName: String!
 }
 
 # TobaccoMark Object

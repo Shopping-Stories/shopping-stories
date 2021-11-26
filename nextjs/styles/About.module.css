@@ -1,0 +1,78 @@
+.about a {
+  color: rgb(11, 184, 228);
+  text-decoration: underline;
+}
+
+.about p {
+  font-size: 1rem;
+  color: inherit;
+  font-family: Merriweather;
+  text-align: left;
+}
+
+.about b {
+  font-size: 1rem;
+  color: inherit;
+  font-family: Merriweather;
+  font-weight: bold;
+  text-align: left;
+}
+
+.about i {
+  font-size: 1rem;
+  font-style: 'italic';
+  color: inherit;
+  font-family: Merriweather;
+  text-align: left;
+}
+
+.about h1 {
+  font-size: 2rem;
+  letter-spacing: 5px;
+  color: #030300e7;
+  font-weight: bold;
+  font-family: Merriweather;
+  text-shadow: 1px 1px 1px #335C67, 2px 2px 1px #335C67;
+  text-align: center;
+}
+
+.about h5 {
+  font-size: 3rem;
+  letter-spacing: 5px;
+  color: #030300e7;
+  font-weight: bold;
+  font-family: Merriweather;
+  text-shadow: 1px 1px 1px #335C67, 2px 2px 1px #335C67;
+  text-align: center;
+}
+
+.about h4 {
+  font-size: 2rem;
+  letter-spacing: 5px;
+  color: #FEFAE0;
+  text-shadow: 1px 1px 1px #335C67, 2px 2px 1px #335C67;
+  font-family: Merriweather;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.about h3 {
+  font-size: 3rem;
+  letter-spacing: 5px;
+  line-height: 1.6;
+  text-shadow: 1px 1px 1px #335C67, 2px 2px 1px #335C67;
+  color: #FEFAE0;
+  font-weight: bold;
+  font-family: Merriweather;
+  text-align: center;
+}
+
+.about h2 {
+  font-size: 1.5rem;
+  letter-spacing: 5px;
+  color: #030300e7;
+  font-weight: medium;
+  text-shadow: 1px 1px 1px #335C67, 2px 2px 1px #335C67;
+  font-family: Merriweather;
+  text-align: center;
+}

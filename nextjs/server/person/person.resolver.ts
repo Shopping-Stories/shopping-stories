@@ -1,10 +1,12 @@
 import 'reflect-metadata';
 import {
     Arg,
+    FieldResolver,
     Info,
     Mutation,
     Query,
     Resolver,
+    Root,
     UseMiddleware,
 } from 'type-graphql';
 import { getMongooseFromFields } from '../config/utils';
@@ -56,6 +58,11 @@ export default class PersonResolver {
         @Arg('person') newPerson: CreatePersonInput,
     ): Promise<Person> {
         return PersonService.create(newPerson);
+    }
+
+    @FieldResolver(() => String)
+    fullName(@Root() person: Person): string {
+        return `${person.firstName || ''} ${person.lastName || ''}`.trim();
     }
 
     @UseMiddleware(ConnectDB, ResolveTime)

@@ -1,3 +1,4 @@
+import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -6,32 +7,31 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import { OptionsType } from 'client/types';
 import { cloneWithoutTypename } from 'client/util';
 import * as React from 'react';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 import TablePaginationActions from './TablePaginationActions';
 
-interface OptionsType {
-    limit: number | null;
-    skip: number | null;
-}
-
 interface PaginationTableProps<T> {
     queryDef: string;
     search: string;
     setRows: Dispatch<SetStateAction<T[]>>;
     reQuery?: boolean;
+    setIsLoading?: Dispatch<SetStateAction<boolean>>;
     setReQuery?: Dispatch<SetStateAction<boolean>>;
     headerRow: JSX.Element;
     bodyRows: JSX.Element[];
 }
 
 const PaginationTable = <T extends unknown>(props: PaginationTableProps<T>) => {
-    const { queryDef, search, setRows, headerRow, bodyRows } = props;
+    const { queryDef, search, setRows, headerRow, bodyRows, setIsLoading } =
+        props;
 
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const perPageOptions = [10, 25, 50, 100];
+    const [rowsPerPage, setRowsPerPage] = useState(perPageOptions[0]);
 
     const [options, setOptions] = useState<OptionsType>({
         limit: rowsPerPage,
@@ -56,7 +56,17 @@ const PaginationTable = <T extends unknown>(props: PaginationTableProps<T>) => {
     }, [props.reQuery]);
 
     useEffect(() => {
+        if (setIsLoading !== undefined) {
+            setIsLoading(fetching);
+        }
+    }, [fetching]);
+
+    useEffect(() => {
         setPage(0);
+        setOptions((prevOpts) => ({
+            ...prevOpts,
+            skip: 0,
+        }));
     }, [search]);
 
     const count = data?.count ?? 0;
@@ -99,11 +109,7 @@ const PaginationTable = <T extends unknown>(props: PaginationTableProps<T>) => {
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: '150vh' }}>
-                <Table
-                    sx={{ minWidth: '100vh' }}
-                    stickyHeader
-                    aria-label="custom pagination table"
-                >
+                <Table sx={{ minWidth: '100vh' }} stickyHeader>
                     <TableHead>{headerRow}</TableHead>
                     <TableBody>
                         {bodyRows.map((row) => row)}
@@ -115,8 +121,9 @@ const PaginationTable = <T extends unknown>(props: PaginationTableProps<T>) => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            {fetching ? <LinearProgress /> : null}
             <TablePagination
-                rowsPerPageOptions={[10, 25, 50, 100]}
+                rowsPerPageOptions={perPageOptions}
                 count={count}
                 rowsPerPage={rowsPerPage}
                 page={page}

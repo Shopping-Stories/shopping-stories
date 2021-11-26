@@ -1,133 +1,74 @@
+import ActionDialog from '@components/ActionDialog';
+import ColorBackground from '@components/ColorBackground';
+import DashboardPageSkeleton from '@components/DashboardPageSkeleton';
 import Header from '@components/Header';
-import PlacePaginationTable from '@components/PlacePaginationTable';
-import SideMenu from '@components/SideMenu';
-import useAuth from '@hooks/useAuth.hook';
+import LoadingPage from '@components/LoadingPage';
+import PaginationTable from '@components/PaginationTable';
+import PaginationTableHead from '@components/PaginationTableHead';
+import PaginationTableRow from '@components/PaginationTableRow';
+import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import useAuth, { isInGroup } from '@hooks/useAuth.hook';
+import AddCircle from '@mui/icons-material/AddCircle';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import FormGroup from '@mui/material/FormGroup';
-import Grid from '@mui/material/Grid';
-import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import {
+    createPlaceSchema,
+    searchSchema,
+    updatePlaceSchema,
+} from 'client/formikSchemas';
+import {
+    CreatePlaceDef,
+    DeletePlaceDef,
+    SearchPlacesDef,
+    UpdatePlaceDef,
+} from 'client/graphqlDefs';
+import { Place, SearchType } from 'client/types';
+import { cloneWithoutTypename } from 'client/util';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
-import { useState } from 'react';
-import backgrounds from 'styles/backgrounds.module.css';
+import { FormEvent, useState } from 'react';
+import { PaperStylesSecondary } from 'styles/styles';
 import { useMutation } from 'urql';
-import * as yup from 'yup';
-
-const placeFields = `
-fragment placeFields on Place {
-  id
-  location
-  alias
-  descriptor
-}
-`;
-
-const createPlaceDef = `
-mutation createPlace($place: CreatePlaceInput!) {
-  createPlace(place: $place) {
-    ...placeFields
-  }
-}
-${placeFields}
-`;
-
-const searchPlaceDef = `
-query placesQuery($search: String, $options: FindAllLimitAndSkip) {
-  rows: findPlaces(search: $search, options: $options) {
-  	...placeFields
-  }
-  count: countPlaces(search: $search)
-}
-${placeFields}
-`;
-
-const updatePlaceDef = `
-mutation updatePlace($id: String!, $updates: UpdatePlaceInput!) {
-  updatePlace(id: $id, updatedFields: $updates) {
-    ...placeFields
-  }
-}
-${placeFields}
-`;
-
-const deletePlaceDef = `
-mutation deletePlace($id: String!) {
-  deletePlace(id: $id) {
-    ...placeFields
-  }
-}
-${placeFields}
-`;
-
-const searchSchema = yup.object({
-    search: yup.string(),
-});
-
-const createPlaceSchema = yup.object({
-    location: yup.string().required('Location is required'),
-    alias: yup.string().typeError('Alias must be a string').strict(true),
-    descriptor: yup
-        .string()
-        .typeError('Descriptor must be a string')
-        .strict(true),
-});
-
-const updatePlaceSchema = yup.object({
-    item: yup.string(),
-    category: yup.string(),
-    subcategory: yup.string(),
-});
 
 const ManagePlacesPage: NextPage = () => {
-    const { groups, loading } = useAuth('/', [Roles.Admin]);
-    const [_createPlaceResult, createPlace] = useMutation(createPlaceDef);
-    const [_updatePlaceResult, updatePlace] = useMutation(updatePlaceDef);
-    const [_deletePlaceResult, deletePlace] = useMutation(deletePlaceDef);
+    const { groups, loading } = useAuth('/', [Roles.Admin, Roles.Moderator]);
+    const isAdmin = isInGroup(Roles.Admin, groups);
+    const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
+
+    const [_createPlaceResult, createPlace] =
+        useMutation<Place>(CreatePlaceDef);
+    const [_updatePlaceResult, updatePlace] =
+        useMutation<Place>(UpdatePlaceDef);
+    const [_deletePlaceResult, deletePlace] =
+        useMutation<Place>(DeletePlaceDef);
+
     const [search, setSearch] = useState<string>('');
+    const [placeToDelete, setPlaceToDelete] = useState<Place | null>(null);
+
+    const [reQuery, setReQuery] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [creating, setCreating] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [updating, setUpdating] = useState(false);
+    const [rows, setRows] = useState<Place[]>([]);
+
     const [openUpdate, setOpenUpdate] = useState<boolean>(false);
-    const [placeToDelete, setPlaceToDelete] = useState<{
-        id: string;
-        location: string;
-    } | null>(null);
-    const [reQuery, setReQuery] = useState<Boolean>(false);
-
-    const handleOpenUpdate = () => {
-        setOpenUpdate(true);
-    };
-
-    const handleCloseUpdate = () => {
-        setOpenUpdate(false);
-    };
+    const handleOpenUpdate = () => setOpenUpdate(true);
+    const handleCloseUpdate = () => setOpenUpdate(false);
 
     const [openDelete, setOpenDelete] = useState<boolean>(false);
-
-    const handleOpenDelete = () => {
-        setOpenDelete(true);
-    };
-
-    const handleCloseDelete = () => {
-        setOpenDelete(false);
-    };
+    const handleOpenDelete = () => setOpenDelete(true);
+    const handleCloseDelete = () => setOpenDelete(false);
 
     const [openCreate, setOpenCreate] = useState<boolean>(false);
+    const handleOpenCreate = () => setOpenCreate(true);
+    const handleCloseCreate = () => setOpenCreate(false);
 
-    const handleOpenCreate = () => {
-        setOpenCreate(true);
-    };
-
-    const handleCloseCreate = () => {
-        setOpenCreate(false);
-    };
-
-    const createForm = useFormik({
+    const createForm = useFormik<Omit<Place, 'id'>>({
         initialValues: {
             location: '',
             alias: '',
@@ -135,20 +76,22 @@ const ManagePlacesPage: NextPage = () => {
         },
         validationSchema: createPlaceSchema,
         onSubmit: async (values, { resetForm }) => {
-            // do your stuff
+            setCreating(true);
             const res = await createPlace({
                 place: values,
             });
             if (res.error) {
+                console.error(res.error);
             } else {
                 setReQuery(true);
                 handleCloseCreate();
                 resetForm();
             }
+            setCreating(false);
         },
     });
 
-    const updateForm = useFormik({
+    const updateForm = useFormik<Place>({
         initialValues: {
             id: '',
             location: '',
@@ -157,7 +100,7 @@ const ManagePlacesPage: NextPage = () => {
         },
         validationSchema: updatePlaceSchema,
         onSubmit: async (values, { resetForm }) => {
-            // do your stuff
+            setUpdating(true);
             const res = await updatePlace({
                 id: values.id,
                 updates: {
@@ -167,273 +110,210 @@ const ManagePlacesPage: NextPage = () => {
                 },
             });
             if (res.error) {
+                console.error(res.error);
             } else {
                 handleCloseUpdate();
                 resetForm();
             }
+            setUpdating(false);
         },
     });
 
-    const handleItemDelete = async () => {
+    const handleItemDelete = async (
+        e?: FormEvent<HTMLFormElement> | undefined,
+    ) => {
+        if (e) {
+            e.preventDefault();
+        }
         if (placeToDelete) {
+            setDeleting(true);
             const id = placeToDelete.id;
             const res = await deletePlace({ id });
             if (res.error) {
+                console.error(res.error);
             } else {
                 setReQuery(true);
                 handleCloseDelete();
             }
+            setDeleting(false);
         }
     };
 
-    const formik = useFormik({
+    const searchForm = useFormik<SearchType>({
         initialValues: {
             search: '',
         },
         validationSchema: searchSchema,
-        onSubmit: (values: any) => {
+        onSubmit: (values) => {
+            setReQuery(true);
             setSearch(values.search);
         },
     });
 
     if (loading) {
-        return (
-            <>
-                <Header />
-                <LinearProgress />
-            </>
-        );
+        return <LoadingPage />;
     }
-
     return (
-        <>
-            <div className={backgrounds.colorBackground}>
-                <Header />
-                <Grid container spacing={2}>
-                    <Grid item xs={2}>
-                        <SideMenu groups={groups} />
-                    </Grid>
-                    <Grid item xs={8}>
-                        <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
-                            <Button
+        <ColorBackground>
+            <Header />
+            <DashboardPageSkeleton groups={groups}>
+                <Paper sx={PaperStylesSecondary}>
+                    <form onSubmit={searchForm.handleSubmit}>
+                        <Stack spacing={2}>
+                            <TextFieldWithFormikValidation
+                                fullWidth
+                                name="search"
+                                fieldName="search"
+                                label="Search"
+                                formikForm={searchForm}
+                            />
+
+                            <LoadingButton
+                                loading={isLoading}
                                 variant="contained"
-                                onClick={handleOpenCreate}
+                                fullWidth
+                                type="submit"
                             >
-                                Create new place
-                            </Button>
-                            <FormGroup>
-                                <form onSubmit={formik.handleSubmit}>
-                                    <TextField
-                                        fullWidth
-                                        name="search"
-                                        label="Search"
-                                        value={formik.values.search}
-                                        onChange={formik.handleChange}
-                                        error={
-                                            formik.touched.search &&
-                                            Boolean(formik.errors.search)
-                                        }
-                                        helperText={
-                                            formik.touched.search &&
-                                            formik.errors.search
-                                        }
-                                    />
-                                    <Button
-                                        // loading={isLoading}
-                                        // onClick={handl}
-                                        variant="contained"
-                                        fullWidth
-                                        type="submit"
-                                    >
-                                        Search
-                                    </Button>
-                                </form>
-                            </FormGroup>
-                        </Paper>
-                        {/* <ParseTable entries={entries} /> */}
-                        <Paper
-                            sx={{
-                                backgroundColor: `var(--secondary-bg)`,
-                                margin: '3rem',
-                                padding: '1rem',
-                            }}
-                        >
-                            <PlacePaginationTable
-                                queryDef={searchPlaceDef}
-                                onEditClick={(row: any) => {
-                                    updateForm.setValues(row);
-                                    handleOpenUpdate();
-                                }}
-                                onDeleteClick={async (row: any) => {
-                                    setPlaceToDelete({
-                                        id: row.id,
-                                        location: row.location,
-                                    });
-                                    handleOpenDelete();
-                                }}
-                                search={search}
-                                reQuery={reQuery}
-                                setReQuery={setReQuery}
-                            />
-                        </Paper>
-                    </Grid>
-                </Grid>
-                <Dialog open={openUpdate} onClose={handleCloseUpdate}>
-                    <DialogTitle>Edit location</DialogTitle>
-                    <form onSubmit={updateForm.handleSubmit}>
-                        <DialogContent>
-                            <DialogContentText>
-                                Update any of the fields and submit.
-                            </DialogContentText>
-                            <TextField
-                                fullWidth
-                                autoFocus
-                                margin="dense"
-                                variant="standard"
-                                name="location"
-                                label="Location"
-                                value={updateForm.values.location}
-                                onChange={updateForm.handleChange}
-                                error={
-                                    updateForm.touched.location &&
-                                    Boolean(updateForm.errors.location)
-                                }
-                                helperText={
-                                    updateForm.touched.location &&
-                                    updateForm.errors.location
-                                }
-                            />
-                            <TextField
-                                fullWidth
-                                margin="dense"
-                                variant="standard"
-                                name="alias"
-                                label="Alias"
-                                value={updateForm.values.alias}
-                                onChange={updateForm.handleChange}
-                                error={
-                                    updateForm.touched.alias &&
-                                    Boolean(updateForm.errors.alias)
-                                }
-                                helperText={
-                                    updateForm.touched.alias &&
-                                    updateForm.errors.alias
-                                }
-                            />
-                            <TextField
-                                fullWidth
-                                margin="dense"
-                                variant="standard"
-                                name="descriptor"
-                                label="Descriptor"
-                                value={updateForm.values.descriptor}
-                                onChange={updateForm.handleChange}
-                                error={
-                                    updateForm.touched.descriptor &&
-                                    Boolean(updateForm.errors.descriptor)
-                                }
-                                helperText={
-                                    updateForm.touched.descriptor &&
-                                    updateForm.errors.descriptor
-                                }
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseUpdate}>Cancel</Button>
-                            <Button type="submit">Submit</Button>
-                        </DialogActions>
+                                Search
+                            </LoadingButton>
+                        </Stack>
                     </form>
-                </Dialog>
-                <Dialog open={openCreate} onClose={handleCloseCreate}>
-                    <DialogTitle>Add Category</DialogTitle>
-                    <form onSubmit={createForm.handleSubmit}>
-                        <DialogContent>
-                            <DialogContentText>
-                                Create a new location
-                            </DialogContentText>
-                            <TextField
-                                fullWidth
-                                autoFocus
-                                margin="dense"
-                                variant="standard"
-                                name="location"
-                                label="Location"
-                                value={createForm.values.location}
-                                onChange={createForm.handleChange}
-                                error={
-                                    createForm.touched.location &&
-                                    Boolean(createForm.errors.location)
-                                }
-                                helperText={
-                                    createForm.touched.location &&
-                                    createForm.errors.location
-                                }
-                            />
-                            <TextField
-                                fullWidth
-                                margin="dense"
-                                variant="standard"
-                                name="alias"
-                                label="Alias"
-                                value={createForm.values.alias}
-                                onChange={createForm.handleChange}
-                                error={
-                                    createForm.touched.alias &&
-                                    Boolean(createForm.errors.alias)
-                                }
-                                helperText={
-                                    createForm.touched.alias &&
-                                    createForm.errors.alias
-                                }
-                            />
-                            <TextField
-                                fullWidth
-                                margin="dense"
-                                variant="standard"
-                                name="descriptor"
-                                label="Descriptor"
-                                value={createForm.values.descriptor}
-                                onChange={createForm.handleChange}
-                                error={
-                                    createForm.touched.descriptor &&
-                                    Boolean(createForm.errors.descriptor)
-                                }
-                                helperText={
-                                    createForm.touched.descriptor &&
-                                    createForm.errors.descriptor
-                                }
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseCreate}>Cancel</Button>
-                            <Button type="submit">Submit</Button>
-                        </DialogActions>
-                    </form>
-                </Dialog>
-                <Dialog open={openDelete} onClose={handleCloseDelete}>
-                    <DialogTitle>
-                        Confirm Delete of{' '}
-                        {placeToDelete && placeToDelete.location}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>
-                            Are you sure you want to delete{' '}
-                            {placeToDelete && placeToDelete.location}
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseDelete}>Cancel</Button>
-                        <Button onClick={handleItemDelete}>Submit</Button>
-                    </DialogActions>
-                </Dialog>
-            </div>
-        </>
+                </Paper>
+                <Paper sx={PaperStylesSecondary}>
+                    <Stack spacing={2}>
+                        {isAdmin ? (
+                            <div>
+                                <Button
+                                    startIcon={<AddCircle />}
+                                    variant="contained"
+                                    onClick={handleOpenCreate}
+                                >
+                                    Create
+                                </Button>
+                            </div>
+                        ) : null}
+                        <PaginationTable
+                            queryDef={SearchPlacesDef}
+                            search={search}
+                            setRows={setRows}
+                            reQuery={reQuery}
+                            setReQuery={setReQuery}
+                            setIsLoading={setIsLoading}
+                            headerRow={
+                                <PaginationTableHead
+                                    isAdmin={isAdmin}
+                                    isAdminOrModerator={isAdminOrModerator}
+                                    labels={['Location', 'Alias', 'Descriptor']}
+                                />
+                            }
+                            bodyRows={rows.map((row, i) => (
+                                <PaginationTableRow
+                                    key={i}
+                                    row={row}
+                                    isAdmin={isAdmin}
+                                    cellValues={[
+                                        row.location,
+                                        row.alias,
+                                        row.descriptor,
+                                    ]}
+                                    isAdminOrModerator={isAdminOrModerator}
+                                    onEditClick={(row) => {
+                                        updateForm.setValues(
+                                            cloneWithoutTypename(row),
+                                        );
+                                        handleOpenUpdate();
+                                    }}
+                                    onDeleteClick={async (row) => {
+                                        setPlaceToDelete(row);
+                                        handleOpenDelete();
+                                    }}
+                                />
+                            ))}
+                        />
+                    </Stack>
+                </Paper>
+            </DashboardPageSkeleton>
+
+            {/* Edit Dialog */}
+            <ActionDialog
+                isOpen={openUpdate}
+                onClose={handleCloseUpdate}
+                isSubmitting={updating}
+                onSubmit={updateForm.handleSubmit}
+                title={`Edit Place`}
+            >
+                <DialogContentText>
+                    Update any of the fields and submit.
+                </DialogContentText>
+                <TextFieldWithFormikValidation
+                    fullWidth
+                    autoFocus
+                    name="location"
+                    label="Location"
+                    fieldName="location"
+                    formikForm={updateForm}
+                />
+                <TextFieldWithFormikValidation
+                    fullWidth
+                    name="alias"
+                    label="Alias"
+                    fieldName="alias"
+                    formikForm={updateForm}
+                />
+                <TextFieldWithFormikValidation
+                    fullWidth
+                    name="descriptor"
+                    label="Descriptor"
+                    fieldName="descriptor"
+                    formikForm={updateForm}
+                />
+            </ActionDialog>
+
+            {/* Create Dialog */}
+            <ActionDialog
+                isOpen={openCreate}
+                onClose={handleCloseCreate}
+                isSubmitting={creating}
+                onSubmit={createForm.handleSubmit}
+                title={`Create Place`}
+            >
+                <DialogContentText>Create a new location</DialogContentText>
+                <TextFieldWithFormikValidation
+                    fullWidth
+                    autoFocus
+                    name="location"
+                    label="Location"
+                    fieldName="location"
+                    formikForm={createForm}
+                />
+                <TextFieldWithFormikValidation
+                    fullWidth
+                    name="alias"
+                    label="Alias"
+                    fieldName="alias"
+                    formikForm={createForm}
+                />
+                <TextFieldWithFormikValidation
+                    fullWidth
+                    name="descriptor"
+                    label="Descriptor"
+                    fieldName="descriptor"
+                    formikForm={createForm}
+                />
+            </ActionDialog>
+
+            {/* Delete Dialog */}
+            <ActionDialog
+                isOpen={openDelete}
+                onClose={handleCloseDelete}
+                isSubmitting={deleting}
+                onSubmit={handleItemDelete}
+                title={`Confirm delete of ${placeToDelete?.location}`}
+            >
+                Are you sure you want to delete{' '}
+                {placeToDelete && placeToDelete.location}
+            </ActionDialog>
+        </ColorBackground>
     );
 };
 

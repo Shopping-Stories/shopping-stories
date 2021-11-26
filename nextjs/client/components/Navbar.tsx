@@ -1,9 +1,19 @@
+import MuiNextLink from '@components/MuiNextLink';
+import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
-import { NavLink } from '@components/Header';
-import MuiNextLink from '@components/MuiNextLink';
+import { NavLink } from 'client/types';
+import { signOut } from 'client/util';
+import { useRouter } from 'next/router';
+import { ButtonStyles } from 'styles/styles';
 
-const Navbar = ({ navLinks }: { navLinks: NavLink[] }) => {
+interface NavBarProps {
+    navLinks: NavLink[];
+    isLoggedIn?: boolean;
+}
+
+const Navbar = ({ navLinks, isLoggedIn }: NavBarProps) => {
+    const router = useRouter();
     return (
         <Toolbar
             component="nav"
@@ -12,7 +22,7 @@ const Navbar = ({ navLinks }: { navLinks: NavLink[] }) => {
             }}
         >
             <Stack direction="row" spacing={4}>
-                {navLinks.map(({ title, path }: NavLink, i: number) => (
+                {navLinks.map(({ title, path }, i) => (
                     <MuiNextLink
                         key={`${title}${i}`}
                         href={path}
@@ -22,6 +32,23 @@ const Navbar = ({ navLinks }: { navLinks: NavLink[] }) => {
                         {title}
                     </MuiNextLink>
                 ))}
+                {isLoggedIn ? (
+                    <Button
+                        sx={ButtonStyles}
+                        variant="contained"
+                        onClick={() => signOut(router)}
+                    >
+                        Sign out
+                    </Button>
+                ) : (
+                    <Button
+                        sx={ButtonStyles}
+                        variant="contained"
+                        onClick={() => router.push('/auth/signin')}
+                    >
+                        Sign In
+                    </Button>
+                )}
             </Stack>
         </Toolbar>
     );

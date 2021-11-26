@@ -6,8 +6,10 @@ import FindAccountHolder from '@components/FindAccountHolder';
 import FolioReferencesForm from '@components/FolioRefrencesForm';
 import Header from '@components/Header';
 import LedgerReferencesForm from '@components/LedgerReferencesForm';
+import LoadingPage from '@components/LoadingPage';
 import TextAreaWithFormikValidation from '@components/TextAreaWithFormikValidation';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import useAuth from '@hooks/useAuth.hook';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
@@ -17,6 +19,7 @@ import Typography from '@mui/material/Typography';
 import { createEntrySchema, entryInitialValues } from 'client/formikSchemas';
 import { EntryFields } from 'client/graphqlDefs';
 import { Entry } from 'client/types';
+import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -34,6 +37,7 @@ ${EntryFields}
 
 const CreateEntryPage: NextPage = () => {
     const router = useRouter();
+    const { loading } = useAuth('/entries', [Roles.Admin]);
     const [_createEntryResult, createEntry] = useMutation(createEntryDef);
 
     const createForm = useFormik<Entry>({
@@ -89,6 +93,10 @@ const CreateEntryPage: NextPage = () => {
             }
         },
     });
+
+    if (loading) {
+        return <LoadingPage />;
+    }
 
     return (
         <ColorBackground>

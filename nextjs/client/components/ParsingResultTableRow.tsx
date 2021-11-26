@@ -1,3 +1,4 @@
+import Delete from '@mui/icons-material/Delete';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Button from '@mui/material/Button';
@@ -5,19 +6,22 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { useState } from 'react';
+import { Entry } from 'client/types';
+import { Fragment, useState } from 'react';
 import ItemEntriesTable from './ItemEntriesTable';
 import RegularEntryTable from './RegularEntryTable';
 import TobaccoEntryTable from './TobaccoEntryTable';
 
 interface EntryTableRowProps {
-    row: any;
+    row: Entry;
     index?: number;
     onEditClick?: any;
     onDeleteClick?: any;
+    isAdmin?: boolean;
+    isAdminOrModerator?: boolean;
 }
 const ParsingResultTableRow = (props: EntryTableRowProps) => {
-    const { row, index, onEditClick, onDeleteClick } = props;
+    const { row, index, onEditClick, onDeleteClick, isAdmin, isAdminOrModerator } = props;
     const [open, setOpen] = useState(false);
 
     const columnValues: any[] = [
@@ -54,7 +58,7 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
     ];
 
     return (
-        <>
+        <Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>
                     <IconButton
@@ -74,26 +78,27 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
                         {index}
                     </TableCell>
                 )}
-                {onEditClick && (
+                {onEditClick && isAdminOrModerator ? (
                     <TableCell>
                         <Button
                             variant="contained"
                             onClick={() => onEditClick(row)}
                         >
-                            Edit entry
+                            Edit
                         </Button>
                     </TableCell>
-                )}
-                {onDeleteClick && (
+                ): null}
+                {onDeleteClick && isAdmin ? (
                     <TableCell>
                         <Button
                             variant="contained"
+                            startIcon={<Delete />}
                             onClick={() => onDeleteClick(row)}
                         >
-                            Delete entry
+                            Delete
                         </Button>
                     </TableCell>
-                )}
+                ): null}
                 {columnValues.map((value, i: number) => (
                     <TableCell key={i} align="right">
                         {value}
@@ -122,7 +127,7 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
                     </Collapse>
                 </TableCell>
             </TableRow>
-        </>
+        </Fragment>
     );
 };
 

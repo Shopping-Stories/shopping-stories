@@ -1,14 +1,24 @@
+import MuiNextLink from '@components/MuiNextLink';
+import Menu from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/icons-material/Menu';
-import MuiNextLink from './MuiNextLink';
-import { useState } from 'react';
-import { NavLink } from './Header';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { NavLink } from 'client/types';
+import { signOut } from 'client/util';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { ButtonStyles } from 'styles/styles';
 
-const SideDrawer = ({ navLinks }: { navLinks: NavLink[] }) => {
+interface SideDrawerProps {
+    navLinks: NavLink[];
+    isLoggedIn?: boolean;
+}
+
+const SideDrawer = ({ navLinks, isLoggedIn }: SideDrawerProps) => {
+    const router = useRouter();
     const [state, setState] = useState({
         right: false,
     });
@@ -46,6 +56,23 @@ const SideDrawer = ({ navLinks }: { navLinks: NavLink[] }) => {
                         </MuiNextLink>
                     </Typography>
                 ))}
+                {isLoggedIn ? (
+                    <Button
+                        sx={ButtonStyles}
+                        variant="contained"
+                        onClick={() => signOut(router)}
+                    >
+                        Sign out
+                    </Button>
+                ) : (
+                    <Button
+                        sx={ButtonStyles}
+                        variant="contained"
+                        onClick={() => router.push('/auth/signin')}
+                    >
+                        Sign In
+                    </Button>
+                )}
             </Stack>
         </Box>
     );

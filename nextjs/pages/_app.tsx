@@ -10,7 +10,6 @@ import type { AppProps } from 'next/app';
 import { Client, dedupExchange, fetchExchange, Provider } from 'urql';
 import { AmplifyOptions, S3Options } from '../client/util';
 import '../styles/globals.css';
-import '../styles/amplifyTheme.css';
 import { createTheme, PaletteMode, useMediaQuery } from '@mui/material';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { getDesignTokens } from 'styles/theme';

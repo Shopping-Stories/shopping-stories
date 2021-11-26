@@ -144,6 +144,7 @@ const AdminService = {
             UserPoolId: userPoolId,
             ...(Limit && { Limit }),
             ...(PaginationToken && { PaginationToken }),
+            // ...{ Filter: "username ^= \"andr\""}
         };
 
         logger.info('Attempting to list users');

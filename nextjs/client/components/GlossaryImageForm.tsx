@@ -1,4 +1,4 @@
-import Add from '@mui/icons-material/Add';
+import AddCircle from '@mui/icons-material/AddCircle';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -39,6 +39,7 @@ const GlossaryItemForm = (props: ImageFormProps) => {
                             <Button
                                 variant="contained"
                                 type="button"
+                                startIcon={<AddCircle />}
                                 onClick={() =>
                                     arrayHelpers.push({
                                         imageKey: '',
@@ -53,7 +54,7 @@ const GlossaryItemForm = (props: ImageFormProps) => {
                                     })
                                 }
                             >
-                                Add <Add />
+                                Add
                             </Button>
                         </Stack>
                     );

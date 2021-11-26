@@ -42,7 +42,7 @@ const GlossaryItemIndexCard = (props: GlossaryItemIndexCardProps) => {
 
     return (
         <Card sx={{ height: '100%' }}>
-            <CardActionArea href={`/glossary/item/${item.id}`}>
+            <CardActionArea href={`/glossary/items/${item.id}`}>
                 <CardHeader title={item.name} />
                 {item.images.length > 0 && imageURL && (
                     <CardMedia component="img" image={imageURL} />
@@ -54,7 +54,7 @@ const GlossaryItemIndexCard = (props: GlossaryItemIndexCardProps) => {
                 </CardContent>
             </CardActionArea>
             <CardActions sx={{ justifyContent: 'center' }}>
-                <MuiNextLink href={`/glossary/item/${item.id}`}>
+                <MuiNextLink href={`/glossary/items/${item.id}`}>
                     View Item
                 </MuiNextLink>
             </CardActions>

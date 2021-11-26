@@ -170,7 +170,7 @@ export interface AdvancedSearch {
     commodity: string;
     colony: string;
     itemEntry: {
-        perOrder: number;
+        perOrder?: number;
         items: string;
         category: string;
         subcategory: string;
@@ -179,11 +179,67 @@ export interface AdvancedSearch {
     tobaccoEntry: {
         description: string;
         tobaccoMarkName: string;
-        noteNumber: number;
+        noteNumber?: number;
         moneyType: string;
     } | null;
     regularEntry: {
         entryDescription: string;
         tobaccoMarkName: string;
     } | null;
+}
+export interface NavLink {
+    title: string;
+    path: string;
+}
+
+export interface Category {
+    id: string;
+    item: string;
+    category: string;
+    subcategory: string;
+}
+
+export interface Item {
+    id: string;
+    item: string;
+    variants: string;
+}
+
+export interface Person {
+    id: string;
+    account: string;
+    enslaved: string;
+    firstName: string;
+    lastName: string;
+    gender: string;
+    location: string;
+    prefix: string;
+    suffix: string;
+    profession: string;
+    professionCategory: string;
+    professionQualifier: string;
+    reference: string;
+    store: string;
+    variations: string;
+}
+
+export interface Place {
+    id: string;
+    location: string;
+    alias: string;
+    descriptor: string;
+}
+
+export interface TobaccoMark {
+    id: string;
+    tobaccoMarkId: string;
+    where: string;
+    description: string;
+    image: string;
+    netWeight: string;
+    note: string;
+    notes: string;
+    warehouse: string;
+    whoRepresents: string;
+    whoUnder: string;
 }

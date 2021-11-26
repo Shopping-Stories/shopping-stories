@@ -279,3 +279,127 @@ export const advancedSearchSchema = yup.object({
         tobaccoMarkName: yup.string(),
     }).nullable(),
 });
+
+export const createCategorySchema = yup.object({
+    item: yup.string().required('Item name is required'),
+    category: yup.string().required('Category is required'),
+    subcategory: yup.string().required('Subcategory is required'),
+});
+
+export const updateCategorySchema = yup.object({
+    item: yup.string(),
+    category: yup.string(),
+    subcategory: yup.string(),
+});
+
+export const createItemSchema = yup.object({
+    item: yup.string().required('Item name is required'),
+    variants: yup.string(),
+});
+
+export const updateItemSchema = yup.object({
+    item: yup.string(),
+    variants: yup.string(),
+});
+
+export const createPersonSchema = yup.object({
+    account: yup.string().required('Account is required'),
+    firstName: yup.string().required('First name is required'),
+    lastName: yup.string().required('Last name is required'),
+    enslaved: yup.string().typeError('Enslaved must be a string').strict(true),
+    location: yup.string().typeError('Location must be a string').strict(true),
+    gender: yup.string().typeError('Gender must be a string').strict(true),
+    prefix: yup.string().typeError('Prefix must be a string').strict(true),
+    suffix: yup.string().typeError('Suffix must be a string').strict(true),
+    profession: yup
+        .string()
+        .typeError('Profession must be a string')
+        .strict(true),
+    professionCategory: yup
+        .string()
+        .typeError('Profession Category must be a string')
+        .strict(true),
+    professionQualifier: yup
+        .string()
+        .typeError('Profession Qualifier must be a string')
+        .strict(true),
+    reference: yup
+        .string()
+        .typeError('Reference must be a string')
+        .strict(true),
+    store: yup.string().typeError('Store must be a string').strict(true),
+    variations: yup
+        .string()
+        .typeError('Variations must be a string')
+        .strict(true),
+});
+
+export const updatePersonSchema = yup.object({
+    account: yup.string(),
+    enslaved: yup.string(),
+    firstName: yup.string(),
+    lastName: yup.string(),
+    gender: yup.string(),
+    location: yup.string(),
+    prefix: yup.string(),
+    suffix: yup.string(),
+    profession: yup.string(),
+    professionCategory: yup.string(),
+    professionQualifier: yup.string(),
+    reference: yup.string(),
+    store: yup.string(),
+    variations: yup.string(),
+});
+
+export const createPlaceSchema = yup.object({
+    location: yup.string().required('Location is required'),
+    alias: yup.string().typeError('Alias must be a string').strict(true),
+    descriptor: yup
+        .string()
+        .typeError('Descriptor must be a string')
+        .strict(true),
+});
+
+export const updatePlaceSchema = yup.object({
+    location: yup.string(),
+    alias: yup.string(),
+    descriptor: yup.string(),
+});
+
+export const createTobaccoMarkSchema = yup.object({
+    tobaccoMarkId: yup.string().required('Tobacco Mark ID is required'),
+    warehouse: yup.string().required('Warehouse is required'),
+    description: yup
+        .string()
+        .typeError('Description must be a string')
+        .strict(true),
+    image: yup.string().typeError('Item must be a string').strict(true),
+    netWeight: yup
+        .string()
+        .typeError('Net Weight must be a string')
+        .strict(true),
+    note: yup.string().typeError('Note must be a string').strict(true),
+    notes: yup.string().typeError('Notes must be a string').strict(true),
+    where: yup.string().typeError('Where must be a string').strict(true),
+    whoRepresents: yup
+        .string()
+        .typeError('Who it Represents must be a string')
+        .strict(true),
+    whoUnder: yup
+        .string()
+        .typeError("Who it's under must be a string")
+        .strict(true),
+});
+
+export const updateTobaccoMarkSchema = yup.object({
+    tobaccoMarkId: yup.string(),
+    where: yup.string(),
+    description: yup.string(),
+    image: yup.string(),
+    netWeight: yup.string(),
+    note: yup.string(),
+    notes: yup.string(),
+    warehouse: yup.string(),
+    whoRepresents: yup.string(),
+    whoUnder: yup.string(),
+});

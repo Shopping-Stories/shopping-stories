@@ -1,8 +1,11 @@
 import EntryUpdateForm from '@components/EntryUpdateForm';
+import LoadingPage from '@components/LoadingPage';
+import useAuth from '@hooks/useAuth.hook';
 import { entryInitialValues } from 'client/formikSchemas';
 import { EntryFields } from 'client/graphqlDefs';
 import { Entry } from 'client/types';
 import { cloneWithoutTypename } from 'client/util';
+import { Roles } from 'config/constants.config';
 import { merge } from 'lodash';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -21,6 +24,7 @@ ${EntryFields}
 const UpdateEntryPage: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
+    const { loading } = useAuth('/entries', [Roles.Admin]);
 
     interface FetchEntry {
         entry: Entry & { id: string };
@@ -58,15 +62,15 @@ const UpdateEntryPage: NextPage = () => {
         }
     }, [entry]);
 
-    if (findEntryResult.fetching) {
-        return <div>Fetching {router.query.id}</div>;
+    if (findEntryResult.fetching || loading) {
+        return <LoadingPage />;
     } else if (findEntryResult.error) {
         console.log(findEntryResult.error);
         return <>error</>;
     } else {
         return (
             <div>
-                {initialValues !== null && typeof id === "string" ? (
+                {initialValues !== null && typeof id === 'string' ? (
                     <EntryUpdateForm
                         id={id}
                         initialValues={initialValues}

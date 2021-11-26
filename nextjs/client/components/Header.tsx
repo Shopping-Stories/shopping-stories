@@ -8,24 +8,21 @@ import Container from '@mui/material/Container';
 import Fab from '@mui/material/Fab';
 import Toolbar from '@mui/material/Toolbar';
 import { styled } from '@mui/system';
+import { NavLink } from 'client/types';
 import { Roles } from 'config/constants.config';
 import { isEqual, uniqWith } from 'lodash';
 import Image from 'next/image';
 import { Fragment, useEffect, useState } from 'react';
 
-export interface NavLink {
-    title: string;
-    path: string;
-}
-
 const defaultNavLinks: NavLink[] = [
     { title: `home`, path: `/` },
     { title: `about`, path: `/about` },
     { title: `search`, path: `/entries` },
+    { title: `glossary`, path: `/glossary/items` },
 ];
 
 const adminNavLinks: NavLink[] = [
-    { title: `settings`, path: `/dashboard/admin` },
+    { title: `settings`, path: `/dashboard/settings` },
 ];
 
 const Offset = styled('div')(
@@ -35,10 +32,8 @@ const Offset = styled('div')(
 const Header = () => {
     const [navLinks, setNavLinks] = useState<NavLink[]>(defaultNavLinks);
     const { groups, isLoggedIn } = useAuth();
-    const authLink = !isLoggedIn
-        ? { title: `sign in`, path: `/auth/signin` }
-        : { title: `sign out`, path: `/signout` };
-    const uniqueNavLinks = uniqWith([authLink, ...navLinks], isEqual);
+    const authLinks = isLoggedIn ? [{ title: `transcripts`, path: `/documents` }] : [];
+    const uniqueNavLinks = uniqWith([...navLinks, ...authLinks], isEqual);
 
     useEffect(() => {
         const updateLinks = () => {
@@ -72,8 +67,14 @@ const Header = () => {
                                     />
                                 </MuiNextLink>
                             </Fab>
-                            <Navbar navLinks={uniqueNavLinks} />
-                            <SideDrawer navLinks={uniqueNavLinks} />
+                            <Navbar
+                                navLinks={uniqueNavLinks}
+                                isLoggedIn={isLoggedIn}
+                            />
+                            <SideDrawer
+                                navLinks={uniqueNavLinks}
+                                isLoggedIn={isLoggedIn}
+                            />
                         </Container>
                     </Toolbar>
                 </AppBar>

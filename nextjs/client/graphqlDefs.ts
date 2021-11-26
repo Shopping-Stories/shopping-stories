@@ -207,7 +207,7 @@ fragment documentFields on DocumentInfo {
 
 export const CreateDocumentDef = `
 mutation createDocument($doc: CreateDocumentInput!) {
-  createDocument(newDocument: $doc) {
+  doc: createDocument(newDocument: $doc) {
     ...documentFields
   }
 }
@@ -226,7 +226,7 @@ ${DocumentFields}
 
 export const UpdateDocumentDef = `
 mutation updateDocument($id: String!, $updates: UpdateDocumentInput!) {
-  updateDocument(id: $id, updatedFields: $updates) {
+  doc: updateDocument(id: $id, updatedFields: $updates) {
     ...documentFields
   }
 }
@@ -235,7 +235,7 @@ ${DocumentFields}
 
 export const DeleteDocumentDef = `
 mutation deleteDocument($id: String!) {
-  deleteDocument(id: $id) {
+  doc: deleteDocument(id: $id) {
     ...documentFields
   }
 }
@@ -292,3 +292,251 @@ query AdvancedSearch($advanced: AdvancedSearchInput, $options: FindAllLimitAndSk
 }
 ${EntryFields}
 `
+
+export const CategoryFieldsDef = `
+fragment categoryFields on Category {
+  id
+  item
+  category
+  subcategory
+}
+`;
+
+export const CreateCategoryDef = `
+mutation createCategory($category: CreateCategoryInput!) {
+  createCategory(category: $category) {
+    ...categoryFields
+  }
+}
+${CategoryFieldsDef}
+`;
+
+export const SearchCategoryDef = `
+query CategoriesQuery($search: String, $options: FindAllLimitAndSkip) {
+  rows: findCategories(search: $search, options: $options) {
+  	...categoryFields
+  }
+  count: countCategories(search: $search)
+}
+${CategoryFieldsDef}
+`;
+
+export const UpdateCategoryDef = `
+mutation updateCategory($id: String!, $updates: UpdateCategoryInput!) {
+  updateCategory(id: $id, updatedFields: $updates) {
+    ...categoryFields
+  }
+}
+${CategoryFieldsDef}
+`;
+
+export const DeleteCategoryDef = `
+mutation deleteCategory($id: String!) {
+  deleteCategory(id: $id) {
+    ...categoryFields
+  }
+}
+${CategoryFieldsDef}
+`;
+
+
+export const ItemFields = `
+fragment itemsFields on  Item {
+  id
+  item
+  variants
+}
+`;
+
+export const CreateItemDef = `
+mutation createItem($item: CreateItemInput!) {
+  createItem(item: $item) {
+    ...itemsFields
+  }
+}
+${ItemFields}
+`;
+
+export const SearchItemsDef = `
+query itemsQuery($search: String, $options: FindAllLimitAndSkip) {
+  rows: findItems(search: $search, options: $options) {
+  	...itemsFields
+  }
+  count: countItems(search: $search)
+}
+${ItemFields}
+`;
+
+export const UpdateItemDef = `
+mutation updateItem($id: String!, $updates: UpdateItemInput!) {
+  updateItem(id: $id, updatedFields: $updates) {
+    ...itemsFields
+  }
+}
+${ItemFields}
+`;
+
+export const DeleteItemDef = `
+mutation deleteItem($id: String!) {
+  deleteItem(id: $id) {
+    ...itemsFields
+  }
+}
+${ItemFields}
+`;
+
+export const PersonFields = `
+fragment personFields on Person {
+  id
+  account
+  enslaved
+  firstName
+  lastName
+  gender
+  location
+  prefix
+  suffix
+  profession
+  professionCategory
+  professionQualifier
+  reference
+  store
+  variations
+}
+`;
+
+export const CreatePersonDef = `
+mutation createPerson($person: CreatePersonInput!) {
+  createPerson(person: $person) {
+    ...personFields
+  }
+}
+${PersonFields}
+`;
+
+export const SearchPeopleDef = `
+query peopleQuery($search: String, $options: FindAllLimitAndSkip) {
+  rows: findPeople(search: $search, options: $options) {
+  	...personFields
+  }
+  count: countPeople(search: $search)
+}
+${PersonFields}
+`;
+
+export const UpdatePersonDef = `
+mutation updatePerson($id: String!, $updates: UpdatePersonInput!) {
+  updatePerson(id: $id, updatedFields: $updates) {
+    ...personFields
+  }
+}
+${PersonFields}
+`;
+
+export const DeletePersonDef = `
+mutation deletePerson($id: String!) {
+  deletePerson(id: $id) {
+    ...personFields
+  }
+}
+${PersonFields}
+`;
+
+export const PlaceFields = `
+fragment placeFields on Place {
+  id
+  location
+  alias
+  descriptor
+}
+`;
+
+export const CreatePlaceDef = `
+mutation createPlace($place: CreatePlaceInput!) {
+  createPlace(place: $place) {
+    ...placeFields
+  }
+}
+${PlaceFields}
+`;
+
+export const SearchPlacesDef = `
+query placesQuery($search: String, $options: FindAllLimitAndSkip) {
+  rows: findPlaces(search: $search, options: $options) {
+  	...placeFields
+  }
+  count: countPlaces(search: $search)
+}
+${PlaceFields}
+`;
+
+export const UpdatePlaceDef = `
+mutation updatePlace($id: String!, $updates: UpdatePlaceInput!) {
+  updatePlace(id: $id, updatedFields: $updates) {
+    ...placeFields
+  }
+}
+${PlaceFields}
+`;
+
+export const DeletePlaceDef = `
+mutation deletePlace($id: String!) {
+  deletePlace(id: $id) {
+    ...placeFields
+  }
+}
+${PlaceFields}
+`;
+
+export const TobaccoMarkFields = `
+fragment markFields on TobaccoMark {
+  id
+  description
+  image
+  netWeight
+  note
+  notes
+  tobaccoMarkId
+  warehouse
+  where
+  whoRepresents
+  whoUnder
+}
+`;
+
+export const CreateTobaccoMarkDef = `
+mutation createTobaccoMark($mark: CreateTobaccoMarkInput!) {
+  createTobaccoMark(tobaccoMark: $mark) {
+    ...markFields
+  }
+}
+${TobaccoMarkFields}
+`;
+
+export const SearchTobaccoMarksDef = `
+query tobaccoMarksQuery($search: String, $options: FindAllLimitAndSkip) {
+  rows: findTobaccoMarks(search: $search, options: $options) {
+    ...markFields
+  }
+  count: countTobaccoMarks(search: $search)
+}
+${TobaccoMarkFields}
+`;
+
+export const UpdateTobaccoMarkDef = `
+mutation updateTobaccoMark($id: String!, $updates: UpdateTobaccoMarkInput!) {
+  updateTobaccoMark(id: $id, updatedFields: $updates) {
+    ...markFields
+  }
+}
+${TobaccoMarkFields}
+`;
+
+export const DeleteTobaccoMarkDef = `
+mutation deleteTobaccoMark($id: String!) {
+  deleteTobaccoMark(id: $id) {
+    ...markFields
+  }
+}
+${TobaccoMarkFields}
+`;
