@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from 'styles/About.module.css';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -50,6 +50,7 @@ export default function VerticalTabs() {
     };
 
     return (
+        <div>
         <Box
             sx={{
                 flexGrow: 1,
@@ -160,8 +161,8 @@ export default function VerticalTabs() {
                             <Image
                                 src={'/FXCO_Research_01.jpg'}
                                 layout="responsive"
-                                width={2}
-                                height={1}
+                                width= "100%"
+                                height= "67%"
                             />
                             <Box
                                 alignItems="center"
@@ -230,12 +231,22 @@ export default function VerticalTabs() {
                             <h1 className={styles.about}>
                                 The Shopping Stories Project
                             </h1>
+                            <Box
+                            sx={{
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                            }}>
                             <Image
                                 src={'/C_1760_001D_John Glassford.jpg'}
                                 layout="responsive"
-                                width={1}
-                                height={0.8}
+                                width= "100%"
+                                height= "78%"
                             />
+                            </Box>
                             <Box
                                 alignItems="center"
                                 sx={{
@@ -348,12 +359,22 @@ export default function VerticalTabs() {
                                 The Power of the 18th-Century Ledgers of John
                                 Glassford & Company
                             </h2>
+                            <Box
+                            sx={{
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                            }}>
                             <Image
                                 src={'/ColchesterToday.JPG'}
                                 layout="responsive"
-                                width={1}
-                                height={0.8}
+                                width= "100%"
+                                height= "67%"
                             />
+                            </Box>
                             <Box
                                 alignItems="center"
                                 sx={{
@@ -463,8 +484,8 @@ export default function VerticalTabs() {
                             <Image
                                 src={'/shutterstock_445572439.jpg'}
                                 layout="responsive"
-                                width={1.4}
-                                height={0.8}
+                                width= "100%"
+                                height= "67%"
                             />
                             <p className={styles.about}>
                                 Going from original manuscripts to digital
@@ -532,7 +553,7 @@ export default function VerticalTabs() {
                 </Grid>
             </TabPanel>
             <TabPanel value={value} index={3}>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} alignItems="center" >
                     <Paper
                         sx={{
                             backgroundColor: `var(--secondary-bg)`,
@@ -542,20 +563,29 @@ export default function VerticalTabs() {
                     >
                         <Typography>
                             <h1 className={styles.about}>A Look at Ledgers</h1>
-                            <Image
-                                src={'/C_1760_023_ElizabethConnell.jpg'}
-                                layout="responsive"
-                                width={0.8}
-                                height={1}
-                            />
                             <Box
-                                alignItems="center"
-                                sx={{
+                            sx={{
                                     padding: '1rem',
                                     bgcolor: '#DDA15E',
                                     flexGrow: 0.5,
                                     display: 'flex',
                                     flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    
+                            }}>
+                            <Image
+                                src={'/C_1760_023_ElizabethConnell.jpg'}
+                                layout="responsive"
+                                width= "100%"
+                                height= "100%"
+                            />
+                            </Box>
+                            <Box
+                                sx={{
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
                                     justifyContent: 'center',
                                     fontFamily: `Merriweather`,
                                 }}
@@ -590,12 +620,23 @@ export default function VerticalTabs() {
                             <h1 className={styles.about}>
                                 Ledgers: The Basics
                             </h1>
+                            <Box
+                            sx={{
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    
+                            }}>
                             <Image
                                 src={'/shutterstock_48906238.jpg'}
                                 layout="responsive"
-                                width={0.5}
-                                height={1}
+                                width= "66%"
+                                height= "100%"
                             />
+                            </Box>
                             <p className={styles.about}>
                                 Creation of ledgers started with waste books –
                                 similar to receipts. Then, at the conclusion of
@@ -643,8 +684,8 @@ export default function VerticalTabs() {
                             <Image
                                 src={'/shutterstock_19824082.jpg'}
                                 layout="responsive"
-                                width={0.5}
-                                height={1}
+                                width= "68%"
+                                height= "100%"
                             />
                             <Box
                                 alignItems="center"
@@ -734,8 +775,8 @@ export default function VerticalTabs() {
                             <Image
                                 src={'/FXCO_Research_02.JPG'}
                                 layout="responsive"
-                                width={1.6}
-                                height={1}
+                                width= "100%"
+                                height= "67%"
                             />
                             <Box
                                 alignItems="center"
@@ -859,5 +900,6 @@ export default function VerticalTabs() {
                 </Grid>
             </TabPanel>
         </Box>
+        </div>
     );
 }
