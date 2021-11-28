@@ -1,129 +1,3 @@
-export const EntryFields = `
-fragment items on MentionedItemsObject {
-	quantity
-  qualifier
-  item
-}
-
-fragment money on PoundsShillingsPence {
-  pounds
-  shilling
-  pence
-}
-
-fragment entryFields on Entry {
-  id
-  accountHolder {
-    accountFirstName
-    accountLastName
-    prefix
-    suffix
-    profession
-    location
-    reference
-    debitOrCredit
-    accountHolderID
-  }
-  meta {
-    ledger
-    reel
-    owner
-    store
-    year
-    folioPage
-    entryID
-    comments
-  }
-  dateInfo {
-    day
-    month
-    year
-    fullDate
-  }
-  folioRefs
-  ledgerRefs
-  itemEntries {
-    perOrder
-    percentage
-    itemsOrServices {
-      quantity
-      qualifier
-      variants
-      item
-      category
-      subcategory
-      unitCost {
-        ...money
-      }
-      itemCost {
-        ...money
-      }
-    }
-    itemsMentioned {
-      ...items
-    }
-  }
-  tobaccoEntry {
-    entry
-    marks {
-      markID
-      markName
-    }
-    notes {
-      noteNum
-      totalWeight
-      barrelWeight
-      tobaccoWeight
-    }
-    money {
-      moneyType
-      tobaccoAmount
-      rateForTobacco {
-        ...money
-      }
-      casksInTransaction
-      tobaccoSold{
-        ...money
-      }
-      casksSoldForEach{
-        ...money
-      }
-    }
-    tobaccoShaved
-  }
-  regularEntry {
-    entry
-    tobaccoMarks {
-      markID
-      markName
-    }
-    itemsMentioned {
-      ...items
-    }
-  }
-  people {
-    name
-    id
-  }
-  places {
-    name
-    id
-  }
-  entry
-  money {
-    commodity
-    colony
-    quantity
-    currency {
-      ...money
-    }
-    sterling {
-      ...money
-    }
-  }
-}
-`;
-
 const GlossaryItemFields = `
 fragment glossaryItemFields on  GlossaryItem {
     id
@@ -271,26 +145,6 @@ query FetchMarks($search: String!, $options: FindAllLimitAndSkip) {
     markName: tobaccoMarkId
   }
 }
-`;
-
-export const SearchEntryDef = `
-query entriesQuery($search: String, $options: FindAllLimitAndSkip) {
-  rows: findEntries(search: $search, options: $options) {
-  	...entryFields
-  }
-  count: countEntries(search: $search)
-}
-${EntryFields}
-`;
-
-export const AdvancedSearchEntryDef = `
-query AdvancedSearch($advanced: AdvancedSearchInput, $options: FindAllLimitAndSkip) {
-  rows: advancedFindEntries(search: $advanced, options: $options) {
-    ...entryFields
-  }
-  count: advancedCountEntries(search: $advanced)
-}
-${EntryFields}
 `;
 
 export const CategoryFieldsDef = `
@@ -538,4 +392,168 @@ mutation deleteTobaccoMark($id: String!) {
   }
 }
 ${TobaccoMarkFields}
+`;
+
+export const EntryFields = `
+fragment items on MentionedItemsObject {
+	quantity
+  qualifier
+  item
+}
+
+fragment money on PoundsShillingsPence {
+  pounds
+  shilling
+  pence
+}
+
+fragment entryFields on Entry {
+  id
+  accountHolder {
+    accountFirstName
+    accountLastName
+    prefix
+    suffix
+    profession
+    location
+    reference
+    debitOrCredit
+    accountHolderID
+    populate @include(if: $populate) {
+        ...personFields
+    }
+  }
+  meta {
+    ledger
+    reel
+    owner
+    store
+    year
+    folioPage
+    entryID
+    comments
+  }
+  dateInfo {
+    day
+    month
+    year
+    fullDate
+  }
+  folioRefs
+  ledgerRefs
+  itemEntries {
+    perOrder
+    percentage
+    itemsOrServices {
+      quantity
+      qualifier
+      variants
+      item
+      category
+      subcategory
+      unitCost {
+        ...money
+      }
+      itemCost {
+        ...money
+      }
+    }
+    itemsMentioned {
+      ...items
+    }
+  }
+  tobaccoEntry {
+    entry
+    marks {
+      markID
+      markName
+      populate @include(if: $populate) {
+        ...markFields
+      }
+    }
+    notes {
+      noteNum
+      totalWeight
+      barrelWeight
+      tobaccoWeight
+    }
+    money {
+      moneyType
+      tobaccoAmount
+      rateForTobacco {
+        ...money
+      }
+      casksInTransaction
+      tobaccoSold{
+        ...money
+      }
+      casksSoldForEach{
+        ...money
+      }
+    }
+    tobaccoShaved
+  }
+  regularEntry {
+    entry
+    tobaccoMarks {
+      markID
+      markName
+      populate @include(if: $populate) {
+        ...markFields
+      }
+    }
+    itemsMentioned {
+      ...items
+    }
+  }
+  people {
+    name
+    id
+    populate @include(if: $populate) {
+      ...personFields
+    }
+  }
+  places {
+    name
+    id
+    populate @include(if: $populate) {
+      ...placeFields
+    }
+  }
+  entry
+  money {
+    commodity
+    colony
+    quantity
+    currency {
+      ...money
+    }
+    sterling {
+      ...money
+    }
+  }
+}
+${PersonFields}
+${PlaceFields}
+${TobaccoMarkFields}
+`;
+
+export const SearchEntryDef = `
+query entriesQuery($search: String, $options: FindAllLimitAndSkip, $populate: Boolean!) {
+  rows: findEntries(search: $search, options: $options) {
+  	...entryFields
+  }
+  count: countEntries(search: $search)
+}
+${EntryFields}
+`;
+
+export const AdvancedSearchEntryDef = `
+query AdvancedSearch($advanced: AdvancedSearchInput, $options: FindAllLimitAndSkip, $populate: Boolean!) {
+  rows: advancedFindEntries(search: $advanced, options: $options) {
+    ...entryFields
+  }
+  count: advancedCountEntries(search: $advanced)
+}
+${EntryFields}
 `;

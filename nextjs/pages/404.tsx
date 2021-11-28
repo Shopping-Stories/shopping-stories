@@ -9,18 +9,20 @@ export default function ErrorPage() {
     return (
         <ImageBackground>
             <Header />
-            <Paper
-                sx={{ backgroundColor: 'var(--secondary-bg)', ...PaperStyles }}
-            >
-                <Container>
-                    <Typography variant="h1">404</Typography>
-                    <div>
-                        <Typography variant="h2">
-                            This page could not be found.
-                        </Typography>
-                    </div>
-                </Container>
-            </Paper>
+            <Container maxWidth="md">
+                <Paper
+                    sx={{
+                        backgroundColor: 'var(--secondary-bg-translucent)',
+                        textAlign: 'center',
+                        ...PaperStyles,
+                    }}
+                >
+                    <Typography variant="h2">404</Typography>
+                    <Typography variant="h4">
+                        This page could not be found.
+                    </Typography>
+                </Paper>
+            </Container>
         </ImageBackground>
     );
 }

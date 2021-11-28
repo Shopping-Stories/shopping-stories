@@ -3,6 +3,7 @@ import AdvancedSearchTabForm from '@components/AdvancedSearchTabForm';
 import ColorBackground from '@components/ColorBackground';
 import EntryPaginationTable from '@components/EntryPaginationTable';
 import Header from '@components/Header';
+import LoadingPage from '@components/LoadingPage';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import useAuth, { isInGroup } from '@hooks/useAuth.hook';
 import AddCircle from '@mui/icons-material/AddCircle';
@@ -15,7 +16,6 @@ import DialogContentText from '@mui/material/DialogContentText';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
-import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
@@ -26,7 +26,7 @@ import {
     SearchEntryDef,
 } from 'client/graphqlDefs';
 import { AdvancedSearch, Entry, SearchType } from 'client/types';
-import { flatten } from 'client/util';
+import { cloneWithoutTypename, flatten } from 'client/util';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { cloneDeep } from 'lodash';
@@ -38,7 +38,7 @@ import { useMutation } from 'urql';
 import xlsx from 'xlsx';
 
 const deleteEntryDef = `
-mutation deleteEntry($id: String!) {
+mutation deleteEntry($id: String!, $populate: Boolean!) {
   deleteEntry(id: $id) {
     ...entryFields
   }
@@ -82,7 +82,7 @@ const ManagePlacesPage: NextPage = () => {
         if (placeToDelete) {
             setDeleting(true);
             const id = placeToDelete.id;
-            const res = await deletePlace({ id });
+            const res = await deletePlace({ id, populate: false });
             if (res.error) {
                 console.error(res.error);
             } else {
@@ -138,7 +138,7 @@ const ManagePlacesPage: NextPage = () => {
     const exportRowsToSpreadSheet = () => {
         const XLSX = xlsx;
         const fileName = `export-${Date.now()}`;
-        const flatRows = rows.map((row) => flatten(row));
+        const flatRows = rows.map((row) => flatten(cloneWithoutTypename(row)));
         const workSheet = XLSX.utils.json_to_sheet(flatRows);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, workSheet, fileName);
@@ -146,12 +146,7 @@ const ManagePlacesPage: NextPage = () => {
     };
 
     if (loading) {
-        return (
-            <>
-                <Header />
-                <LinearProgress />
-            </>
-        );
+        return <LoadingPage />;
     }
 
     return (
@@ -377,7 +372,7 @@ const ManagePlacesPage: NextPage = () => {
                 onClose={handleCloseDelete}
                 isSubmitting={deleting}
                 onSubmit={handleItemDelete}
-                title={`Confirm delete of entry`}
+                title={`Confirm deletion of entry`}
             >
                 <DialogContentText>
                     Are you sure you want to delete this entry

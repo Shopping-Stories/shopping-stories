@@ -5,7 +5,12 @@ import 'reflect-metadata';
 import { buildSchema, BuildSchemaOptions } from 'type-graphql';
 import { JWTAuthChecker } from '../../server/middleware/auth.middleware';
 import CatResolver from '../../server/cat/cat.resolver';
-import EntryResolver from '../../server/entry/entry.resolver';
+import EntryResolver, {
+    AccountHolderResolver,
+    EntryMarkResolver,
+    EntryPersonResolver,
+    EntryPlaceResolver,
+} from '../../server/entry/entry.resolver';
 import HelloResolver from '../../server/hello.resolver';
 import { DocToObject } from '../../server/middleware/misc.middleware';
 import AdminResolver from '../../server/admin/admin.resolver';
@@ -43,6 +48,10 @@ const getApolloServerHandler = async () => {
                 PersonResolver,
                 TobaccoMarkResolver,
                 CategoryResolver,
+                AccountHolderResolver,
+                EntryPersonResolver,
+                EntryPlaceResolver,
+                EntryMarkResolver,
             ],
             scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],
             authChecker: JWTAuthChecker,

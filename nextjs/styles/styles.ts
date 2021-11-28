@@ -17,3 +17,12 @@ export const ButtonStyles = {
         },
     },
 };
+
+export const LogoFabStyles = {
+    '&.MuiFab-root': {
+        backgroundColor: 'var(--secondary)',
+        '&:hover': {
+            backgroundColor: 'var(--secondary-hover)',
+        },
+    },
+};

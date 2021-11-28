@@ -1,10 +1,11 @@
-import Header from '@components/Header';
-import LinearProgress from '@mui/material/LinearProgress';
-import Paper from '@mui/material/Paper';
-import { Fragment, useEffect, useState } from 'react';
-import { PaperStyles } from 'styles/styles';
-import useAuth from '@hooks/useAuth.hook';
 import Auth from '@aws-amplify/auth';
+import Header from '@components/Header';
+import ImageBackground from '@components/ImageBackground';
+import LoadingPage from '@components/LoadingPage';
+import useAuth from '@hooks/useAuth.hook';
+import Paper from '@mui/material/Paper';
+import { useEffect, useState } from 'react';
+import { PaperStyles } from 'styles/styles';
 
 // simple page to get access token that can be used with API
 // useful for accessing authenticated endpoints with something
@@ -22,22 +23,21 @@ export default function AccessTokenPage() {
     }, [loading]);
 
     if (loading) {
-        return (
-            <Fragment>
-                <Header />
-                <LinearProgress />
-            </Fragment>
-        );
+        return <LoadingPage />;
     }
 
     return (
-        <Fragment>
+        <ImageBackground>
             <Header />
             <Paper
-                sx={{ backgroundColor: 'var(--secondary-bg)', ...PaperStyles }}
+                sx={{
+                    backgroundColor: 'var(--secondary-bg)',
+                    ...PaperStyles,
+                }}
             >
-                {token}
+                <div>Access Token:</div>
+                <div style={{ overflowWrap: 'anywhere' }}>{token}</div>
             </Paper>
-        </Fragment>
+        </ImageBackground>
     );
 }

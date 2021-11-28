@@ -12,7 +12,7 @@ import { Storage } from 'aws-amplify';
 import { FetchGlossaryItemDef } from 'client/graphqlDefs';
 import { GlossaryItem } from 'client/types';
 import { GlossaryItemQueryResult } from 'client/urqlConfig';
-import { handlePromise, processStorageList } from 'client/util';
+import { handlePromise } from 'client/util';
 import { pickBy } from 'lodash';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -33,43 +33,31 @@ const ItemGlossaryPage: NextPage = () => {
     useEffect(() => {
         const getImage = async () => {
             if (findGlossaryItemResult.data) {
-                const [res, err] = await handlePromise(Storage.list('images/'));
+                const imagesFromS3: any[] = [];
 
-                if (!err && res) {
-                    const { files: images } = processStorageList(res);
-                    const imageKeys: string[] = images.map(
-                        (image: any) => image.key.split('/')[1],
-                    );
-
-                    const imagesFromS3: any[] = [];
-
-                    const data = findGlossaryItemResult.data;
-                    const keys = data.item.images.map(
-                        (image: GlossaryItem['images'][0]) => image.imageKey,
-                    );
-                    for (const key of keys) {
-                        const imageKey = imageKeys.find(
-                            (imageKey: string) => imageKey === key,
-                        );
-
-                        if (imageKey) {
-                            try {
-                                const S3imageUrl = await Storage.get(
-                                    `images/${imageKey}`,
-                                );
-                                const imageReq = new Request(S3imageUrl);
-                                const [res, _imageNotFound] =
-                                    await handlePromise(fetch(imageReq));
-                                if (res && res.status === 200) {
-                                    imagesFromS3.push(S3imageUrl);
-                                }
-                            } catch (error: any) {
-                                console.error(error);
+                const data = findGlossaryItemResult.data;
+                const keys = data.item.images.map(
+                    (image: GlossaryItem['images'][0]) => image.imageKey,
+                );
+                for (const key of keys) {
+                    if (key) {
+                        try {
+                            const S3imageUrl = await Storage.get(
+                                `images/${key}`,
+                            );
+                            const imageReq = new Request(S3imageUrl);
+                            const [res, _imageNotFound] = await handlePromise(
+                                fetch(imageReq),
+                            );
+                            if (res && res.status === 200) {
+                                imagesFromS3.push(S3imageUrl);
                             }
+                        } catch (error: any) {
+                            console.error(error);
                         }
                     }
-                    setImages(imagesFromS3);
                 }
+                setImages(imagesFromS3);
             }
         };
 

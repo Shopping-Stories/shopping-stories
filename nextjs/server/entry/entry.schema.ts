@@ -9,7 +9,7 @@ import { Field, ID, Int, ObjectType } from 'type-graphql';
 
 export type EntryDocument = Entry & Document;
 
-@ObjectType('TobaccoMarkObject')
+@ObjectType()
 export class TobaccoMarkObject {
     @prop()
     @Field(() => ID, { description: 'words' })
@@ -20,7 +20,7 @@ export class TobaccoMarkObject {
     markName: string;
 }
 
-@ObjectType('PoundsShillingsPence')
+@ObjectType()
 export class PoundsShillingsPence {
     @prop()
     @Field({ description: 'Number of pounds', defaultValue: 0.0 })
@@ -35,7 +35,7 @@ export class PoundsShillingsPence {
     pence: number;
 }
 
-@ObjectType('MoneyObject')
+@ObjectType()
 export class MoneyObject {
     @prop()
     @Field({ description: '', defaultValue: '' })
@@ -57,7 +57,7 @@ export class MoneyObject {
     @Field(() => PoundsShillingsPence, { description: '' })
     currency: PoundsShillingsPence;
 }
-@ObjectType('NoteObject')
+@ObjectType()
 export class NoteObject {
     @prop()
     @Field({ description: '' })
@@ -76,7 +76,7 @@ export class NoteObject {
     tobaccoWeight: number;
 }
 
-@ObjectType('MetaObject')
+@ObjectType()
 export class MetaObject {
     @prop()
     @Field(() => String, { description: 'Ledger containing this Entry' })
@@ -113,7 +113,7 @@ export class MetaObject {
     comments: string;
 }
 
-@ObjectType('MentionedItemsObject')
+@ObjectType()
 export class MentionedItemsObject {
     @prop()
     @Field({ description: '' })
@@ -128,7 +128,7 @@ export class MentionedItemsObject {
     item: string;
 }
 
-@ObjectType('ItemsOrServicesObject')
+@ObjectType()
 export class ItemOrServiceObject {
     @prop()
     @Field({ description: '' })
@@ -162,7 +162,7 @@ export class ItemOrServiceObject {
     @Field(() => PoundsShillingsPence, { description: '' })
     itemCost: PoundsShillingsPence;
 }
-@ObjectType('ItemEntryObject')
+@ObjectType()
 export class ItemEntryObject {
     @prop()
     @Field({ description: '' })
@@ -184,7 +184,7 @@ export class ItemEntryObject {
     itemsMentioned: MentionedItemsObject[];
 }
 
-@ObjectType('TobaccoMoneyObject')
+@ObjectType()
 export class TobaccoMoneyObject {
     @prop()
     @Field({ description: 'words' })
@@ -211,7 +211,7 @@ export class TobaccoMoneyObject {
     casksSoldForEach: PoundsShillingsPence;
 }
 
-@ObjectType('TobaccoEntryObject')
+@ObjectType()
 export class TobaccoEntryObject {
     @prop()
     @Field({ description: 'words' })
@@ -234,7 +234,7 @@ export class TobaccoEntryObject {
     tobaccoShaved: number;
 }
 
-@ObjectType('RegularEntryObject')
+@ObjectType()
 export class RegularEntryObject {
     @prop()
     @Field({ description: 'words' })
@@ -249,18 +249,34 @@ export class RegularEntryObject {
     itemsMentioned: MentionedItemsObject[];
 }
 
-@ObjectType('PeoplePlacesObject')
-export class PeoplePlacesObject {
+@ObjectType()
+export class PersonObject {
     @prop()
     @Field({ description: 'Persons name' })
     name: string;
 
     @prop()
-    @Field(() => ID, { description: 'words', nullable: true })
+    @Field(() => ID, {
+        description: 'ID of this person in the people collection',
+        nullable: true,
+    })
+    id: ObjectId;
+}
+@ObjectType()
+export class PlaceObject {
+    @prop()
+    @Field({ description: 'Place name' })
+    name: string;
+
+    @prop()
+    @Field(() => ID, {
+        description: 'ID of that place in places collection',
+        nullable: true,
+    })
     id: ObjectId;
 }
 
-@ObjectType('DateObject', { description: 'Single Date' })
+@ObjectType()
 export class DateObject {
     @prop()
     @Field(() => Int, { description: 'day of date' })
@@ -279,7 +295,7 @@ export class DateObject {
     fullDate: Date;
 }
 
-@ObjectType('AccHolderObject', { description: '' })
+@ObjectType()
 export class AccHolderObject {
     @prop()
     @Field(() => String, {
@@ -402,17 +418,17 @@ export class Entry {
     @Field(() => RegularEntryObject, { nullable: true })
     regularEntry?: RegularEntryObject | null;
 
-    @prop({ _id: false, type: () => [PeoplePlacesObject], required: true })
-    @Field(() => [PeoplePlacesObject], {
+    @prop({ _id: false, type: () => [PersonObject], required: true })
+    @Field(() => [PersonObject], {
         description: 'People referenced in this entry',
     })
-    people: PeoplePlacesObject[];
+    people: PersonObject[];
 
-    @prop({ _id: false, type: () => [PeoplePlacesObject], required: true })
-    @Field(() => [PeoplePlacesObject], {
+    @prop({ _id: false, type: () => [PlaceObject], required: true })
+    @Field(() => [PlaceObject], {
         description: 'Places referenced in this entry',
     })
-    places: PeoplePlacesObject[];
+    places: PlaceObject[];
 
     @prop({ default: '' })
     @Field(() => String, { description: 'Type of Entry' })

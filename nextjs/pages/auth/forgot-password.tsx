@@ -1,12 +1,11 @@
 import AuthSkeleton from '@components/AuthSkeleton';
+import SnackBarCloseButton from '@components/SnackBarCloseButton';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import TextFieldWithHide from '@components/TextFieldWithHide';
-import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Container from '@mui/material/Container';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
-import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
@@ -154,22 +153,10 @@ const SignInPage: NextPage = () => {
         }
     }, [user]);
 
-    const closeSnackBarButton = (
-        <IconButton
-            size="small"
-            aria-label="close"
-            color="inherit"
-            onClick={handleErrorClose}
-        >
-            <CloseIcon fontSize="small" />
-        </IconButton>
-    );
-
     return !codeSent ? (
         <AuthSkeleton formikForm={initiatePassChangeForm}>
-            <FormGroup>
+            <FormGroup sx={{ textAlign: 'center' }}>
                 <Typography variant="h2">Forgot Password</Typography>
-                {/* <FormHelperText>Please enter your username</FormHelperText> */}
                 <TextFieldWithFormikValidation
                     fullWidth
                     name="username"
@@ -183,7 +170,9 @@ const SignInPage: NextPage = () => {
                     autoHideDuration={6000}
                     onClose={handleErrorClose}
                     message={error}
-                    action={closeSnackBarButton}
+                    action={SnackBarCloseButton({
+                        handleClose: handleErrorClose,
+                    })}
                 />
                 <LoadingButton
                     loading={isLoading}
@@ -206,7 +195,7 @@ const SignInPage: NextPage = () => {
         </AuthSkeleton>
     ) : (
         <AuthSkeleton formikForm={submitPassChangeForm}>
-            <FormGroup>
+            <FormGroup sx={{ textAlign: 'center' }}>
                 <Typography variant="h2">Change password</Typography>
                 <TextFieldWithFormikValidation
                     fullWidth
@@ -232,7 +221,7 @@ const SignInPage: NextPage = () => {
                 <TextFieldWithFormikValidation
                     fullWidth
                     name="code"
-                    label="Confirm Code"
+                    label="Confirmation Code"
                     fieldName="code"
                     formikForm={submitPassChangeForm}
                 />
@@ -242,7 +231,9 @@ const SignInPage: NextPage = () => {
                     autoHideDuration={6000}
                     onClose={handleErrorClose}
                     message={error}
-                    action={closeSnackBarButton}
+                    action={SnackBarCloseButton({
+                        handleClose: handleErrorClose,
+                    })}
                 />
                 <LoadingButton
                     loading={isLoading}

@@ -1,12 +1,11 @@
 import AuthSkeleton from '@components/AuthSkeleton';
 import MuiNextLink from '@components/MuiNextLink';
+import SnackBarCloseButton from '@components/SnackBarCloseButton';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import TextFieldWithHide from '@components/TextFieldWithHide';
-import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Container from '@mui/material/Container';
 import FormGroup from '@mui/material/FormGroup';
-import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import { Auth } from 'aws-amplify';
@@ -116,34 +115,14 @@ const SignUpPage: NextPage = () => {
                         setErrorOpen(true);
                     }
                 }
-                // switch (error.message) {
-                //     case 'User already exists':
-                //         signUpForm.setFieldError('username', error.message);
-                //         break;
-                //     default:
-                //         console.error(`Error:  ${error.message}`);
-                // }
             }
             setIsLoading(false);
         },
     });
 
-    const closeSnackBarButton = (
-        <>
-            <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={handleErrorClose}
-            >
-                <CloseIcon fontSize="small" />
-            </IconButton>
-        </>
-    );
-
     return (
         <AuthSkeleton formikForm={signUpForm}>
-            <FormGroup>
+            <FormGroup sx={{ textAlign: 'center' }}>
                 <Typography variant="h2">Sign Up</Typography>
                 <TextFieldWithFormikValidation
                     fullWidth
@@ -193,7 +172,9 @@ const SignUpPage: NextPage = () => {
                     autoHideDuration={6000}
                     onClose={handleErrorClose}
                     message={error}
-                    action={closeSnackBarButton}
+                    action={SnackBarCloseButton({
+                        handleClose: handleErrorClose,
+                    })}
                 />
                 <LoadingButton
                     loading={isLoading}

@@ -8,7 +8,7 @@ import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import Stack from '@mui/material/Stack';
 import { Storage } from 'aws-amplify';
-import { handlePromise, processStorageList } from 'client/util';
+import { handlePromise } from 'client/util';
 import { isArray } from 'lodash';
 import { useEffect, useState } from 'react';
 import FileInput from './FileInput';
@@ -63,35 +63,19 @@ const GlossaryImageFormBody = (props: GlossaryImageFormBody) => {
     useEffect(() => {
         const getImage = async () => {
             if (formikForm.values.images[index].imageKey) {
-                const [fileList, listErr] = await handlePromise(
-                    Storage.list('images/'),
-                );
-
-                if (!listErr && fileList) {
-                    const { files: images } = processStorageList(fileList);
-                    const imageKeys = images.map(
-                        (image) => image.key.split('/')[1],
-                    );
-
-                    const key = formikForm.values.images[index].imageKey;
-                    const imageKey = imageKeys.find(
-                        (imageKey: string) => imageKey === key,
-                    );
-                    if (imageKey) {
-                        try {
-                            const S3image = await Storage.get(
-                                `images/${imageKey}`,
-                            );
-                            const imageReq = new Request(S3image);
-                            const [res, _imageNotFound] = await handlePromise(
-                                fetch(imageReq),
-                            );
-                            if (res && res.status === 200) {
-                                setImage(S3image);
-                            }
-                        } catch (error: any) {
-                            console.error(error);
+                const key = formikForm.values.images[index].imageKey;
+                if (key) {
+                    try {
+                        const S3image = await Storage.get(`images/${key}`);
+                        const imageReq = new Request(S3image);
+                        const [res, _imageNotFound] = await handlePromise(
+                            fetch(imageReq),
+                        );
+                        if (res && res.status === 200) {
+                            setImage(S3image);
                         }
+                    } catch (error: any) {
+                        console.error(error);
                     }
                 }
             }

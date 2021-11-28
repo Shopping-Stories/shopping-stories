@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 
 const findEntryDef = `
-query entryQuery($id: String!) {
+query entryQuery($id: String!, $populate: Boolean!) {
   entry: findEntry(id: $id) {
   	...entryFields
   }
@@ -31,12 +31,11 @@ const UpdateEntryPage: NextPage = () => {
     }
 
     const [tabIndex, setTabIndex] = useState<number>(0);
-    const [viewEntries, setViewEntries] = useState(false);
     const [initialValues, setInitialValues] = useState<Entry | null>(null);
 
     const [findEntryResult, _findEntry] = useQuery<FetchEntry>({
         query: findEntryDef,
-        variables: { id },
+        variables: { id, populate: false },
     });
     const entry = findEntryResult?.data?.entry;
 
@@ -76,8 +75,6 @@ const UpdateEntryPage: NextPage = () => {
                         id={id}
                         initialValues={initialValues}
                         tabIndex={tabIndex}
-                        viewEntries={viewEntries}
-                        setViewEntries={setViewEntries}
                     />
                 ) : null}
             </div>

@@ -8,30 +8,32 @@ import Header from '@components/Header';
 import LedgerReferencesForm from '@components/LedgerReferencesForm';
 import TextAreaWithFormikValidation from '@components/TextAreaWithFormikValidation';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
+import LoadingButton from '@mui/lab/LoadingButton';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { createEntrySchema } from 'client/formikSchemas';
 import { EntryFields } from 'client/graphqlDefs';
 import { Entry } from 'client/types';
 import { useFormik } from 'formik';
-import { Dispatch, SetStateAction } from 'react';
+import { useState } from 'react';
 import { PaperStyles } from 'styles/styles';
 import { useMutation } from 'urql';
+import SnackBarCloseButton from './SnackBarCloseButton';
 
 interface EntryUpdateFormProps {
     initialValues: Entry;
     tabIndex: number;
-    viewEntries: boolean;
     id: string;
-    setViewEntries: Dispatch<SetStateAction<boolean>>;
 }
 
 const updateEntryDef = `
-mutation updateEntry($id: String!, $updates: UpdateEntryInput!) {
+mutation updateEntry($id: String!, $updates: UpdateEntryInput!, $populate: Boolean!) {
   updateEntry(id: $id, updatedFields: $updates) {
     ...entryFields
 }
@@ -40,14 +42,28 @@ ${EntryFields}
 `;
 
 const EntryUpdateForm = (props: EntryUpdateFormProps) => {
-    const { tabIndex, viewEntries, initialValues, id } = props;
+    const { tabIndex, initialValues, id } = props;
+    const [openSuccess, setSuccessOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const [_updateEntryResult, updateEntry] = useMutation(updateEntryDef);
+
+    const handleSuccessClose = (
+        _: React.SyntheticEvent | React.MouseEvent,
+        reason?: string,
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSuccessOpen(false);
+    };
 
     const updateForm = useFormik<Entry>({
         enableReinitialize: true,
         initialValues: initialValues,
         validationSchema: createEntrySchema,
         onSubmit: async (values, { resetForm }) => {
+            setIsLoading(true);
             const entry: Entry = JSON.parse(JSON.stringify(values));
 
             entry.people.map((person) => {
@@ -89,12 +105,17 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
             const res = await updateEntry({
                 id,
                 updates: entry,
+                populate: false,
             });
 
             if (res.error) {
+                console.error(res.error);
             } else {
+                setSuccessMessage(`Successfully updated the entry`);
+                setSuccessOpen(true);
                 resetForm();
             }
+            setIsLoading(false);
         },
     });
     return (
@@ -382,25 +403,32 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                 />
                             </Stack>
                         </Grid>
-                        {!viewEntries && (
-                            <Button onClick={() => props.setViewEntries(true)}>
-                                View Subentries
-                            </Button>
-                        )}
-                        {viewEntries && (
-                            <Grid item xs={12}>
-                                <EntrySelectionTabForm
-                                    formikForm={updateForm}
-                                    initialIndex={tabIndex}
-                                />
-                            </Grid>
-                        )}
+                        <Grid item xs={12}>
+                            <EntrySelectionTabForm
+                                formikForm={updateForm}
+                                initialIndex={tabIndex}
+                            />
+                        </Grid>
                     </Grid>
-                    <Button variant="contained" type="submit">
+                    <LoadingButton
+                        loading={isLoading}
+                        variant="contained"
+                        type="submit"
+                    >
                         Submit
-                    </Button>
+                    </LoadingButton>
                 </form>
             </Paper>
+            <Snackbar
+                open={openSuccess}
+                autoHideDuration={6000}
+                onClose={handleSuccessClose}
+                action={SnackBarCloseButton({
+                    handleClose: handleSuccessClose,
+                })}
+            >
+                <Alert severity="success">{successMessage}</Alert>
+            </Snackbar>
         </ColorBackground>
     );
 };

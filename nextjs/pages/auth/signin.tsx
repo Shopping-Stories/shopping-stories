@@ -1,14 +1,13 @@
 import AuthSkeleton from '@components/AuthSkeleton';
 import MuiNextLink from '@components/MuiNextLink';
+import SnackBarCloseButton from '@components/SnackBarCloseButton';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import TextFieldWithHide from '@components/TextFieldWithHide';
-import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
-import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import { Auth } from 'aws-amplify';
@@ -78,22 +77,9 @@ const SignInPage: NextPage = () => {
         },
     });
 
-    const closeSnackBarButton = (
-        <>
-            <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={handleErrorClose}
-            >
-                <CloseIcon fontSize="small" />
-            </IconButton>
-        </>
-    );
-
     return (
         <AuthSkeleton formikForm={signInForm}>
-            <FormGroup>
+            <FormGroup sx={{ textAlign: 'center' }}>
                 <Typography variant="h2">Sign In</Typography>
                 <TextFieldWithFormikValidation
                     fullWidth
@@ -115,7 +101,9 @@ const SignInPage: NextPage = () => {
                     autoHideDuration={6000}
                     onClose={handleErrorClose}
                     message={error}
-                    action={closeSnackBarButton}
+                    action={SnackBarCloseButton({
+                        handleClose: handleErrorClose,
+                    })}
                 />
                 <LoadingButton
                     loading={isLoading}

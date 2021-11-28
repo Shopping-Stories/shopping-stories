@@ -59,8 +59,8 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
     const [{ data, fetching }, executeQuery] = useQuery<EntryQueryResult>({
         query: queryDef,
         variables: isAdvancedSearch
-            ? { options, advanced }
-            : { options, search },
+            ? { options, advanced, populate: false }
+            : { options, search, populate: false },
     });
 
     useEffect(() => {
@@ -78,7 +78,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
 
     useEffect(() => {
         setPage(0);
-    }, [search]);
+    }, [search, advanced]);
 
     const rows = data?.rows ?? [];
     const count = data?.count ?? 0;

@@ -1,4 +1,4 @@
-import HideOnScroll from '@components/HideOnScroll';
+// import HideOnScroll from '@components/HideOnScroll';
 import MuiNextLink from '@components/MuiNextLink';
 import Navbar from '@components/Navbar';
 import SideDrawer from '@components/SideDrawer';
@@ -13,6 +13,7 @@ import { Roles } from 'config/constants.config';
 import { isEqual, uniqWith } from 'lodash';
 import Image from 'next/image';
 import { Fragment, useEffect, useState } from 'react';
+import { LogoFabStyles } from 'styles/styles';
 
 const defaultNavLinks: NavLink[] = [
     { title: `home`, path: `/` },
@@ -22,7 +23,7 @@ const defaultNavLinks: NavLink[] = [
 ];
 
 const adminNavLinks: NavLink[] = [
-    { title: `transcripts`, path: `/documents` },
+    { title: `documents`, path: `/documents` },
     { title: `settings`, path: `/dashboard/settings` },
 ];
 
@@ -49,37 +50,38 @@ const Header = () => {
 
     return (
         <Fragment>
-            <HideOnScroll>
-                <AppBar position="fixed">
-                    <Toolbar>
-                        <Container
-                            maxWidth="lg"
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                            }}
-                        >
-                            <Fab aria-label="home">
-                                <MuiNextLink activeClassName="active" href="/">
-                                    <Image
-                                        alt="logo image"
-                                        src={'/HR_logo.png'}
-                                        layout="fill"
-                                    />
-                                </MuiNextLink>
-                            </Fab>
-                            <Navbar
-                                navLinks={uniqueNavLinks}
-                                isLoggedIn={isLoggedIn}
-                            />
-                            <SideDrawer
-                                navLinks={uniqueNavLinks}
-                                isLoggedIn={isLoggedIn}
-                            />
-                        </Container>
-                    </Toolbar>
-                </AppBar>
-            </HideOnScroll>
+            {/* <HideOnScroll>
+                <AppBar position="fixed"> */}
+            <AppBar position="relative">
+                <Toolbar>
+                    <Container
+                        maxWidth="lg"
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                        }}
+                    >
+                        <Fab sx={LogoFabStyles} aria-label="home">
+                            <MuiNextLink activeClassName="active" href="/">
+                                <Image
+                                    alt="logo image"
+                                    src={'/HR_logo.png'}
+                                    layout="fill"
+                                />
+                            </MuiNextLink>
+                        </Fab>
+                        <Navbar
+                            navLinks={uniqueNavLinks}
+                            isLoggedIn={isLoggedIn}
+                        />
+                        <SideDrawer
+                            navLinks={uniqueNavLinks}
+                            isLoggedIn={isLoggedIn}
+                        />
+                    </Container>
+                </Toolbar>
+            </AppBar>
+            {/* </HideOnScroll> */}
             <Offset />
         </Fragment>
     );

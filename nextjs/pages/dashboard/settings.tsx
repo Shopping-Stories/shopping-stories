@@ -2,15 +2,14 @@ import ColorBackground from '@components/ColorBackground';
 import DashboardPageSkeleton from '@components/DashboardPageSkeleton';
 import Header from '@components/Header';
 import LoadingPage from '@components/LoadingPage';
+import SnackBarCloseButton from '@components/SnackBarCloseButton';
 import TabPanel from '@components/TabPanel';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import TextFieldWithHide from '@components/TextFieldWithHide';
 import useAuth from '@hooks/useAuth.hook';
-import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import Container from '@mui/material/Container';
-import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
@@ -46,9 +45,9 @@ const AdminDashboardPage: NextPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [openError, setErrorOpen] = useState(false);
     const [openSuccess, setSuccessOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
     const [error, setError] = useState('');
     const [codeSent, setCodeSent] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
     const [userAttributes, setUserAttributes] = useState<UserAttributes | null>(
         null,
     );
@@ -220,17 +219,6 @@ const AdminDashboardPage: NextPage = () => {
         },
     });
 
-    const closeSnackBarButton = (
-        <IconButton
-            size="small"
-            aria-label="close"
-            color="inherit"
-            onClick={handleErrorClose}
-        >
-            <CloseIcon fontSize="small" />
-        </IconButton>
-    );
-
     if (loading) {
         return <LoadingPage />;
     }
@@ -376,7 +364,9 @@ const AdminDashboardPage: NextPage = () => {
                     open={openError}
                     autoHideDuration={6000}
                     onClose={handleErrorClose}
-                    action={closeSnackBarButton}
+                    action={SnackBarCloseButton({
+                        handleClose: handleErrorClose,
+                    })}
                 >
                     <Alert severity="error">{error}</Alert>
                 </Snackbar>
@@ -384,7 +374,9 @@ const AdminDashboardPage: NextPage = () => {
                     open={openSuccess}
                     autoHideDuration={6000}
                     onClose={handleSuccessClose}
-                    action={closeSnackBarButton}
+                    action={SnackBarCloseButton({
+                        handleClose: handleSuccessClose,
+                    })}
                 >
                     <Alert severity="success">{successMessage}</Alert>
                 </Snackbar>

@@ -27,7 +27,7 @@ import { PaperStyles } from 'styles/styles';
 import { useMutation } from 'urql';
 
 const createEntryDef = `
-mutation createEntry($entry: CreateEntryInput!) {
+mutation createEntry($entry: CreateEntryInput!, $populate: Boolean!) {
   createEntry(createEntryInput: $entry) {
     ...entryFields
   }
@@ -84,6 +84,7 @@ const CreateEntryPage: NextPage = () => {
 
             const res = await createEntry({
                 entry,
+                populate: false,
             });
 
             if (res.error) {

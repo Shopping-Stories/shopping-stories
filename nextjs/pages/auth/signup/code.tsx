@@ -1,8 +1,8 @@
 import AuthSkeleton from '@components/AuthSkeleton';
+import SnackBarCloseButton from '@components/SnackBarCloseButton';
 import LoadingButton from '@mui/lab/LoadingButton';
+import Button from '@mui/material/Button';
 import FormGroup from '@mui/material/FormGroup';
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -12,7 +12,6 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import * as yup from 'yup';
-import Button from '@mui/material/Button';
 
 const confirmationCodeSchema = yup.object({
     username: yup.string().required(),
@@ -93,22 +92,9 @@ const ConfirmAccountPage: NextPage = () => {
         }
     }, [username]);
 
-    const closeSnackBarButton = (
-        <>
-            <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={handleErrorClose}
-            >
-                <CloseIcon fontSize="small" />
-            </IconButton>
-        </>
-    );
-
     return (
         <AuthSkeleton formikForm={confirmEmailForm}>
-            <FormGroup>
+            <FormGroup sx={{ textAlign: 'center' }}>
                 <Typography variant="h3">
                     Please confirm your account
                 </Typography>
@@ -153,7 +139,9 @@ const ConfirmAccountPage: NextPage = () => {
                     autoHideDuration={6000}
                     onClose={handleErrorClose}
                     message={error}
-                    action={closeSnackBarButton}
+                    action={SnackBarCloseButton({
+                        handleClose: handleErrorClose,
+                    })}
                 />
                 <Button
                     size="small"

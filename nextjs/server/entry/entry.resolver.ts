@@ -2,21 +2,115 @@ import { Roles } from 'config/constants.config';
 import 'reflect-metadata';
 import { getMongooseFromFields } from 'server/config/utils';
 import { FindAllLimitAndSkip } from 'server/findAllArgs.input';
+import { Person } from 'server/person/person.schema';
+import PersonService from 'server/person/person.service';
+import { Place } from 'server/place/place.schema';
+import PlaceService from 'server/place/place.service';
+import { TobaccoMark } from 'server/tobaccoMark/tobaccoMark.schema';
+import TobaccoMarkService from 'server/tobaccoMark/tobaccoMark.service';
 import {
     Arg,
     Authorized,
+    FieldResolver,
     Info,
     Mutation,
     Query,
     Resolver,
+    Root,
     UseMiddleware,
 } from 'type-graphql';
 import { ConnectDB, ResolveTime } from '../middleware/misc.middleware';
-import { Entry } from './entry.schema';
+import {
+    AccHolderObject,
+    Entry,
+    PersonObject,
+    PlaceObject,
+    TobaccoMarkObject,
+} from './entry.schema';
 import { EntryService } from './entry.service';
 import { AdvancedSearchInput } from './input/advancedSearch.input';
 import { CreateEntryInput } from './input/createEntry.input';
 import { UpdateEntryInput } from './input/updateEntry.input';
+
+@Resolver(AccHolderObject)
+export class AccountHolderResolver {
+    @Authorized([Roles.Admin, Roles.Moderator])
+    @FieldResolver(() => Person, {
+        nullable: true,
+    })
+    populate(
+        @Info() info: any,
+        @Root() accountHolder: AccHolderObject,
+    ): Promise<Person | null> {
+        if (accountHolder.accountHolderID) {
+            return PersonService.findOne(
+                `${accountHolder.accountHolderID}`,
+                getMongooseFromFields(info),
+            );
+        }
+        return Promise.resolve(null);
+    }
+}
+
+@Resolver(PersonObject)
+export class EntryPersonResolver {
+    @Authorized([Roles.Admin, Roles.Moderator])
+    @FieldResolver(() => Person, {
+        nullable: true,
+    })
+    populate(
+        @Info() info: any,
+        @Root() person: PersonObject,
+    ): Promise<Person | null> {
+        if (person.id) {
+            return PersonService.findOne(
+                `${person.id}`,
+                getMongooseFromFields(info),
+            );
+        }
+        return Promise.resolve(null);
+    }
+}
+
+@Resolver(PlaceObject)
+export class EntryPlaceResolver {
+    @Authorized([Roles.Admin, Roles.Moderator])
+    @FieldResolver(() => Place, {
+        nullable: true,
+    })
+    populate(
+        @Info() info: any,
+        @Root() place: PlaceObject,
+    ): Promise<Place | null> {
+        if (place.id) {
+            return PlaceService.findOne(
+                `${place.id}`,
+                getMongooseFromFields(info),
+            );
+        }
+        return Promise.resolve(null);
+    }
+}
+
+@Resolver(TobaccoMarkObject)
+export class EntryMarkResolver {
+    @Authorized([Roles.Admin, Roles.Moderator])
+    @FieldResolver(() => TobaccoMark, {
+        nullable: true,
+    })
+    populate(
+        @Info() info: any,
+        @Root() mark: TobaccoMarkObject,
+    ): Promise<TobaccoMark | null> {
+        if (mark.markID) {
+            return TobaccoMarkService.findOne(
+                `${mark.markID}`,
+                getMongooseFromFields(info),
+            );
+        }
+        return Promise.resolve(null);
+    }
+}
 
 @Resolver((_of) => Entry)
 export default class EntryResolver {

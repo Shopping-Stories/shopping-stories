@@ -5,11 +5,10 @@ import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 const lightTheme: any = {
 	// palette values for light mode
 	primary: {
-		main: '#283618', // kombu
-		// main: '#606c38', // dark olive
+		main: '#283618',
 	},
 	secondary: {
-		main: '#606C38', // kombu
+		main: '#606C38',
 	},
 };
 

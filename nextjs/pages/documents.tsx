@@ -12,6 +12,7 @@ import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
 import { searchSchema } from 'client/formikSchemas';
 import { FetchDocumentsDef } from 'client/graphqlDefs';
@@ -72,7 +73,7 @@ interface QueryDocuments {
 
 const DocumentsPage: NextPage = () => {
     const router = useRouter();
-    const { loading: loadingAuth } = useAuth('/');
+    const { loading: loadingAuth } = useAuth('/auth/signin');
     const [loading, setLoading] = useState<boolean>(false);
     const [search, setSearch] = useState<string>('');
     const [page, setPage] = useState(0);
@@ -162,6 +163,14 @@ const DocumentsPage: NextPage = () => {
                             padding: '1rem',
                         }}
                     >
+                        <div>
+                            <Typography
+                                sx={{ textAlign: 'center' }}
+                                variant="h2"
+                            >
+                                Documents
+                            </Typography>
+                        </div>
                         <FormGroup>
                             <form onSubmit={searchForm.handleSubmit}>
                                 <TextFieldWithFormikValidation
@@ -217,7 +226,7 @@ const DocumentsPage: NextPage = () => {
                                     </LoadingButton>
                                 </Grid>
                                 <Grid item xs={4}>
-                                    Page {page + 1} of{' '}
+                                    {page + 1} of{' '}
                                     {Math.ceil(count / rowsPerPage)}
                                 </Grid>
                                 <Grid item xs={4}>

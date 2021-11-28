@@ -6,8 +6,9 @@ import Container from '@mui/material/Container';
 import FormGroup from '@mui/material/FormGroup';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { GlossaryItem, OptionsType } from 'client/types';
+import Typography from '@mui/material/Typography';
 import { FetchGlossaryItemsDef } from 'client/graphqlDefs';
+import { GlossaryItem, OptionsType } from 'client/types';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -113,6 +114,14 @@ const ItemGlossaryIndexPage: NextPage = () => {
                             padding: '1rem',
                         }}
                     >
+                        <div>
+                            <Typography
+                                sx={{ textAlign: 'center' }}
+                                variant="h2"
+                            >
+                                Item Glossary
+                            </Typography>
+                        </div>
                         <FormGroup>
                             <form onSubmit={formik.handleSubmit}>
                                 <TextFieldWithFormikValidation
@@ -167,7 +176,7 @@ const ItemGlossaryIndexPage: NextPage = () => {
                                     </LoadingButton>
                                 </Grid>
                                 <Grid item xs={4}>
-                                    Page {page + 1} of{' '}
+                                    {page + 1} of{' '}
                                     {Math.ceil(count / rowsPerPage)}
                                 </Grid>
                                 <Grid item xs={4}>

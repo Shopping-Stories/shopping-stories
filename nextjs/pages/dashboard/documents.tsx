@@ -33,7 +33,7 @@ import {
     UpdateDocumentDef,
 } from 'client/graphqlDefs';
 import { CreateDocument, DocumentInfo, SearchType } from 'client/types';
-import { handlePromise, processStorageList } from 'client/util';
+import { handlePromise } from 'client/util';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { isArray } from 'lodash';
@@ -276,35 +276,19 @@ const ManagePlacesPage: NextPage = () => {
     useEffect(() => {
         const getFile = async () => {
             if (updateForm.values.fileKey) {
-                const [res, err] = await handlePromise(
-                    Storage.list('documents/'),
-                );
-
-                if (!err && res) {
-                    const { files } = processStorageList(res);
-                    const fileKeys: string[] = files.map(
-                        (file: any) => file.key.split('/')[1],
-                    );
-
-                    const key = updateForm.values.fileKey;
-                    const fileKey = fileKeys.find(
-                        (fileKey: string) => fileKey === key,
-                    );
-                    if (fileKey) {
-                        try {
-                            const S3FileUrl = await Storage.get(
-                                `documents/${fileKey}`,
-                            );
-                            const fileReq = new Request(S3FileUrl);
-                            const [res, _fileNotFound] = await handlePromise(
-                                fetch(fileReq),
-                            );
-                            if (res && res.status === 200) {
-                                setPrevFileKey(fileKey);
-                            }
-                        } catch (error: any) {
-                            console.error(error);
+                const key = updateForm.values.fileKey;
+                if (key) {
+                    try {
+                        const S3FileUrl = await Storage.get(`documents/${key}`);
+                        const fileReq = new Request(S3FileUrl);
+                        const [res, _fileNotFound] = await handlePromise(
+                            fetch(fileReq),
+                        );
+                        if (res && res.status === 200) {
+                            setPrevFileKey(key);
                         }
+                    } catch (error: any) {
+                        console.error(error);
                     }
                 }
             }

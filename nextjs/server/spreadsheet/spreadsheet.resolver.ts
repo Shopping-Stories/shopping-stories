@@ -16,7 +16,7 @@ export default class SpreadsheetResolver {
     @Authorized([Roles.Admin])
     @Mutation((_returns) => [Object], { nullable: true })
     async importSpreadsheet(
-        @Arg('spreadsheetObj', (_returns) => Object) sheetObj: any,
+        @Arg('spreadsheetObj', () => Object) sheetObj: any,
     ): Promise<Object[]> {
         if (sheetObj) {
             return parseSpreadsheetObj(sheetObj[Object.keys(sheetObj)[0]]);

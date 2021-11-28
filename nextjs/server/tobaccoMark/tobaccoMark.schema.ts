@@ -1,8 +1,8 @@
 import {
     getModelForClass,
+    index,
     modelOptions,
     prop,
-    index,
 } from '@typegoose/typegoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
 import { Field, ID, ObjectType } from 'type-graphql';
@@ -17,6 +17,11 @@ export type TobaccoMarkDocument = TobaccoMark & Document;
     { '$**': 'text' },
     // @ts-ignore
     { name: 'search_index' },
+)
+@index(
+    { tobaccoMarkId: 1 },
+    // @ts-ignore
+    { name: 'Tobacco Mark ID Index' },
 )
 export class TobaccoMark {
     @Field((_returns) => ID, { description: 'String of MongoDB ObjectId' })

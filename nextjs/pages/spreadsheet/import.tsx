@@ -4,23 +4,22 @@ import FileInput from '@components/FileInput';
 import Header from '@components/Header';
 import LoadingPage from '@components/LoadingPage';
 import ParseTable from '@components/ParseTable';
+import SnackBarCloseButton from '@components/SnackBarCloseButton';
 import useAuth from '@hooks/useAuth.hook';
-import CloseIcon from '@mui/icons-material/Close';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Roles } from 'config/constants.config';
 import { NextPage } from 'next';
 import { useState } from 'react';
 import { PaperStylesSecondary } from 'styles/styles';
 import { useMutation } from 'urql';
-import { styled } from '@mui/material/styles';
 import xlsx from 'xlsx';
 
 const parseSheetDef = `
@@ -136,17 +135,6 @@ const ImportPage: NextPage = () => {
         setErrorOpen(false);
     };
 
-    const closeSnackBarButton = (
-        <IconButton
-            size="small"
-            aria-label="close"
-            color="inherit"
-            onClick={handleErrorClose}
-        >
-            <CloseIcon fontSize="small" />
-        </IconButton>
-    );
-
     if (loading) {
         return <LoadingPage />;
     }
@@ -227,7 +215,7 @@ const ImportPage: NextPage = () => {
                 open={openError}
                 autoHideDuration={6000}
                 onClose={handleErrorClose}
-                action={closeSnackBarButton}
+                action={SnackBarCloseButton({ handleClose: handleErrorClose })}
             >
                 <Alert severity="error">{error}</Alert>
             </Snackbar>
