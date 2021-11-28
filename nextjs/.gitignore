@@ -2,6 +2,8 @@
 
 .env.local
 
+/server/schema.gql
+
 # dependencies
 /node_modules
 /.pnp
