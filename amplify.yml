@@ -32,4 +32,4 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-    appRoot: nextjs
+    appRoot: website
