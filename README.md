@@ -6,4 +6,4 @@ There are two major componenets in this repo. The code for the documentation web
 
 ### The code for the documentation website can be found in the [./docs folder](./docs)
 
-### The code for the main website can be found in the [./website folder](./nextjs)
+### The code for the main website can be found in the [./website folder](./website)
