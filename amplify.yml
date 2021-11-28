@@ -1,0 +1,35 @@
+version: 1
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm install
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: build
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+    appRoot: docs
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci
+            - export NODE_OPTIONS="--max-old-space-size=5120"
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+    appRoot: nextjs
