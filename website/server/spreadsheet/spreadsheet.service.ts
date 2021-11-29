@@ -41,7 +41,7 @@ export default async function parseSpreadsheetObj(
                 entry.Month,
                 entry.Year_1,
             );
-            meta[i] = await makeMetaDataObject(entry, 'C_1760');
+            meta[i] = await makeMetaDataObject(entry, ledgerName);
             references[i] = await folioReferences(entry);
             accountHolder[i] = await makeAccountHolderObject(entry);
             if (entry.Entry) {
@@ -57,7 +57,7 @@ export default async function parseSpreadsheetObj(
                 }
             }
         } catch (err) {
-            meta[i] = await makeMetaDataObject(entry, 'C_1760');
+            meta[i] = await makeMetaDataObject(entry, ledgerName);
             accountHolder[i] = await makeAccountHolderObject(entry);
             if (err) {
                 errorMessage[i] = `entryID: ${entry.EntryID}, error: ${err}`;
