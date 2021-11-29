@@ -21,6 +21,7 @@ const RegularMarkForm = ({ formikForm }: any) => {
     const [{ data }, _executeQuery] = useQuery({
         query: FetchTobaccoMarks,
         variables: { options, search },
+        requestPolicy: 'cache-and-network',
     });
 
     const marksOptions = data?.marks ?? [];

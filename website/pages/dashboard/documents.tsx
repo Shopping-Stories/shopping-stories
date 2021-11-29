@@ -1,3 +1,4 @@
+import FormHelperText from '@mui/material/FormHelperText';
 import ActionDialog from '@components/ActionDialog';
 import ColorBackground from '@components/ColorBackground';
 import DashboardPageSkeleton from '@components/DashboardPageSkeleton';
@@ -136,7 +137,10 @@ const ManagePlacesPage: NextPage = () => {
 
     const [openCreate, setOpenCreate] = useState<boolean>(false);
     const handleOpenCreate = () => setOpenCreate(true);
-    const handleCloseCreate = () => setOpenCreate(false);
+    const handleCloseCreate = () => {
+        setOpenCreate(false);
+        createForm.resetForm();
+    };
 
     // creates the info in the database then uploads file to s3 bucket
     const createForm = useFormik<CreateDocument>({
@@ -445,6 +449,11 @@ const ManagePlacesPage: NextPage = () => {
                         Select File
                         <UploadFileIcon />
                     </FileInput>
+                    {!!createForm.errors.fileKey ? (
+                        <FormHelperText error={!!createForm.errors.fileKey}>
+                            {createForm.errors.fileKey}
+                        </FormHelperText>
+                    ) : null}
                 </div>
             </ActionDialog>
 

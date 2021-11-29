@@ -3,7 +3,10 @@ import { PersonModel } from '../person/person.schema';
 import { PlaceModel } from '../place/place.schema';
 import { TobaccoMarkModel } from '../tobaccoMark/tobaccoMark.schema';
 
-export default async function parseSpreadsheetObj(spreadsheetObj: any[]) {
+export default async function parseSpreadsheetObj(
+    spreadsheetObj: any[],
+    ledgerName: string,
+) {
     let entries = [];
     let meta = [];
     let accountHolder = [];

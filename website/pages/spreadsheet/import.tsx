@@ -5,6 +5,7 @@ import Header from '@components/Header';
 import LoadingPage from '@components/LoadingPage';
 import ParseTable from '@components/ParseTable';
 import SnackBarCloseButton from '@components/SnackBarCloseButton';
+import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import useAuth from '@hooks/useAuth.hook';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
@@ -16,15 +17,17 @@ import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Roles } from 'config/constants.config';
+import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useState } from 'react';
 import { PaperStylesSecondary } from 'styles/styles';
 import { useMutation } from 'urql';
 import xlsx from 'xlsx';
+import * as yup from 'yup';
 
 const parseSheetDef = `
-	mutation ParseSheet ($spreadsheet: JSONObject!) {
-		entries : importSpreadsheet(spreadsheetObj: $spreadsheet)
+	mutation ParseSheet ($ledgerName: String!, $entries: JSONObject!) {
+		entries : importSpreadsheet(spreadsheetObj: { ledgerName: $ledgerName, entries: $entries})
 	}
 `;
 
@@ -56,6 +59,21 @@ const ImportPage: NextPage = () => {
     const [openError, setErrorOpen] = useState(false);
     const [error, setError] = useState('');
 
+    const [openSuccess, setSuccessOpen] = useState(false);
+    const [successMessage, setSuccess] = useState('');
+
+    const ledgerField = useFormik<{ ledgerName: string }>({
+        initialValues: {
+            ledgerName: '',
+        },
+        validationSchema: yup.object({
+            ledgerName: yup.string().required('A ledger name is required'),
+        }),
+        onSubmit: async () => {
+            convertFileToJSON();
+        },
+    });
+
     const convertFileToJSON = async () => {
         if (file === null || !file) {
             return;
@@ -77,14 +95,19 @@ const ImportPage: NextPage = () => {
                 sheets[sheet] = data;
             });
 
-            const res: any = await parseSheet({ spreadsheet: sheets });
+            const res: any = await parseSheet({
+                ledgerName: ledgerField.values.ledgerName,
+                entries: sheets,
+            });
             if (res.error) {
                 console.error(res.error);
                 setError('An error occurred during the upload to the parser.');
                 setErrorOpen(true);
+            } else {
+                setEntries(res ? [...res?.data?.entries] : []);
             }
-            setEntries([...res?.data?.entries]);
             updateParseErrors(res?.data?.entries);
+            setSuccessOpen(false);
             setIsLoading(false);
             console.log({ entries: res?.data?.entries });
         };
@@ -98,7 +121,6 @@ const ImportPage: NextPage = () => {
                     message: entry.errorMessage,
                 }))
                 .filter((entry: any) => entry.message);
-            // setParseErrors([...errors]);
             if (errors.length > 0) {
                 setError('Error(s) occurred parsing the sheet');
                 setErrorOpen(true);
@@ -106,23 +128,30 @@ const ImportPage: NextPage = () => {
         }
     };
 
-    const handleUploadLoadToDatabase = () => {
+    const handleUploadLoadToDatabase = async () => {
         setIsCreatingEntries(true);
         const entriesWithoutError = entries.map((entry: any) => {
             delete entry.errorCode;
             delete entry.errorMessage;
             return entry;
         });
-        createEntries({ entries: entriesWithoutError })
-            .then(() => {
+        try {
+            const res = await createEntries({ entries: entriesWithoutError });
+            if (res.data) {
                 setParseErrors(null);
                 setIsCreatingEntries(false);
-            })
-            .catch((err: any) => {
-                console.error(err);
+                setSuccess('The sheet was successfully imported');
+                setSuccessOpen(true);
+            } else if (res.error) {
+                console.error(res.error);
                 setErrorOpen(true);
                 setError('The import into the database failed');
-            });
+            }
+        } catch (err: any) {
+            console.error(err.message);
+            setErrorOpen(true);
+            setError('The import into the database failed');
+        }
     };
 
     const handleErrorClose = (
@@ -135,6 +164,16 @@ const ImportPage: NextPage = () => {
         setErrorOpen(false);
     };
 
+    const handleSuccessClose = (
+        _: React.SyntheticEvent | React.MouseEvent,
+        reason?: string,
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSuccessOpen(false);
+    };
+
     if (loading) {
         return <LoadingPage />;
     }
@@ -145,7 +184,16 @@ const ImportPage: NextPage = () => {
             <DashboardPageSkeleton groups={groups}>
                 <Container maxWidth="xs">
                     <Paper sx={PaperStylesSecondary}>
-                        <Grid container justifyContent="center" spacing={2}>
+                        <Grid container justifyContent="center" spacing={3}>
+                            <Grid item>
+                                <TextFieldWithFormikValidation
+                                    fullWidth
+                                    name="ledgerName"
+                                    fieldName="ledgerName"
+                                    label="Ledger name"
+                                    formikForm={ledgerField}
+                                />
+                            </Grid>
                             <Grid item>
                                 <FileInput
                                     label="import spreadsheet"
@@ -156,16 +204,18 @@ const ImportPage: NextPage = () => {
                                 />
                             </Grid>
                             <Grid item>
-                                <LoadingButton
-                                    loading={isLoading}
-                                    onClick={convertFileToJSON}
-                                    variant="contained"
-                                    sx={{
-                                        margin: '1rem 5rem',
-                                    }}
-                                >
-                                    Parse Sheet
-                                </LoadingButton>
+                                <form onSubmit={ledgerField.handleSubmit}>
+                                    <LoadingButton
+                                        loading={isLoading}
+                                        type="submit"
+                                        variant="contained"
+                                        sx={{
+                                            margin: '1rem 5rem',
+                                        }}
+                                    >
+                                        Parse Sheet
+                                    </LoadingButton>
+                                </form>
                             </Grid>
                         </Grid>
                     </Paper>
@@ -218,6 +268,15 @@ const ImportPage: NextPage = () => {
                 action={SnackBarCloseButton({ handleClose: handleErrorClose })}
             >
                 <Alert severity="error">{error}</Alert>
+            </Snackbar>
+
+            <Snackbar
+                open={openSuccess}
+                autoHideDuration={6000}
+                onClose={handleSuccessClose}
+                action={SnackBarCloseButton({ handleClose: handleErrorClose })}
+            >
+                <Alert severity="success">{successMessage}</Alert>
             </Snackbar>
         </ColorBackground>
     );

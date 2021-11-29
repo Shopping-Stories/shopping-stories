@@ -68,7 +68,10 @@ const ManageCategoryPage: NextPage = () => {
 
     const [openCreate, setOpenCreate] = useState<boolean>(false);
     const handleOpenCreate = () => setOpenCreate(true);
-    const handleCloseCreate = () => setOpenCreate(false);
+    const handleCloseCreate = () => {
+        setOpenCreate(false);
+        createForm.resetForm();
+    };
 
     const createForm = useFormik<Omit<Category, 'id'>>({
         initialValues: {

@@ -31,6 +31,7 @@ const FindAccountHolder = ({ formikForm }: any) => {
     const [{ data }, _executeQuery] = useQuery({
         query: queryDef,
         variables: { options, search },
+        requestPolicy: 'cache-and-network',
     });
 
     const peopleOptions = data?.people ?? [];

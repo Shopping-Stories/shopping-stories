@@ -85,9 +85,10 @@ const DocumentsPage: NextPage = () => {
         skip: null,
     });
 
-    const [{ data, fetching }] = useQuery<QueryDocuments>({
+    const [{ data, stale }] = useQuery<QueryDocuments>({
         query: FetchDocumentsDef,
         variables: { options, search },
+        requestPolicy: 'cache-and-network',
     });
 
     useEffect(() => {
@@ -130,12 +131,12 @@ const DocumentsPage: NextPage = () => {
     };
 
     useEffect(() => {
-        if (fetching) {
+        if (stale) {
             setLoading(true);
         } else {
             setLoading(false);
         }
-    }, [fetching]);
+    }, [stale]);
 
     const fetchDocumentsPage = (newPage: number) => {
         setOptions((prevOpts: any) => ({

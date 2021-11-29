@@ -36,6 +36,7 @@ const UpdateEntryPage: NextPage = () => {
     const [findEntryResult, _findEntry] = useQuery<FetchEntry>({
         query: findEntryDef,
         variables: { id, populate: false },
+        requestPolicy: 'cache-and-network',
     });
     const entry = findEntryResult?.data?.entry;
 
@@ -61,7 +62,7 @@ const UpdateEntryPage: NextPage = () => {
         }
     }, [entry]);
 
-    if (findEntryResult.fetching || loading) {
+    if (findEntryResult.stale || loading) {
         return <LoadingPage />;
     } else if (findEntryResult.error) {
         console.error(findEntryResult.error);

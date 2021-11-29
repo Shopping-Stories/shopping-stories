@@ -25,6 +25,7 @@ const EntryPlacesForm = ({ formikForm }: any) => {
     const [{ data }, _executeQuery] = useQuery<FetchPlacesQuery>({
         query: FetchPlacesQuery,
         variables: { options, search },
+        requestPolicy: 'cache-and-network',
     });
 
     const placesOptions = data?.places ?? [];

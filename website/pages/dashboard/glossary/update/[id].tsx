@@ -37,6 +37,7 @@ const UpdateGlossaryItem: NextPage = () => {
         useQuery<GlossaryItemQueryResult>({
             query: FetchGlossaryItemDef,
             variables: { id },
+            requestPolicy: 'cache-and-network',
         });
     const glossaryItem = findGlossaryItemResult?.data?.item;
     const [_updateGlossaryItemResult, updateGlossaryItem] = useMutation(

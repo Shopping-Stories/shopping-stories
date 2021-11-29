@@ -26,6 +26,7 @@ const EntryPeopleForm = ({ formikForm }: any) => {
     const [{ data }, _executeQuery] = useQuery<FetchPeopleQuery>({
         query: FetchPeopleQuery,
         variables: { options, search },
+        requestPolicy: 'cache-and-network',
     });
 
     const peopleOptions = data?.people ?? [];
