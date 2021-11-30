@@ -11,10 +11,11 @@ import ParsingResultTableRow from './ParsingResultTableRow';
 
 interface ParseTableProps {
     entries: null | Entry[];
+    onParseEdit?: (entry: Entry, index: number) => void;
 }
 
 const ParseTable = (props: ParseTableProps) => {
-    const { entries } = props;
+    const { entries, onParseEdit } = props;
 
     const columnNames = [
         'First Name',
@@ -63,6 +64,7 @@ const ParseTable = (props: ParseTableProps) => {
                                 <TableRow>
                                     <TableCell />
                                     <TableCell />
+                                    <TableCell />
                                     <TableCell colSpan={4} align="center">
                                         Account Holder Information
                                     </TableCell>
@@ -90,6 +92,7 @@ const ParseTable = (props: ParseTableProps) => {
                                 </TableRow>
                                 <TableRow>
                                     <TableCell />
+                                    <TableCell />
                                     <TableCell>Index</TableCell>
                                     {columnNames.map(
                                         (name: string, i: number) => (
@@ -104,6 +107,7 @@ const ParseTable = (props: ParseTableProps) => {
                                 {entries.map((row, i) => {
                                     return (
                                         <ParsingResultTableRow
+                                            onParseEdit={onParseEdit}
                                             index={i + 1}
                                             row={row}
                                             key={i}

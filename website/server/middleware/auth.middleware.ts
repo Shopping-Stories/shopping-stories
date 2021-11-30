@@ -99,12 +99,6 @@ export const JWTAuthChecker: AuthChecker<MyContext> = async (
 
     let result: any;
     try {
-        logger.info(
-            `user claim verify invoked for ${JSON.stringify(
-                token.substring(0, 10),
-            )}`,
-        );
-
         const tokenSections = (token || '').split('.');
         if (tokenSections.length < 2) {
             throw new Error('requested token is invalid');
@@ -125,7 +119,9 @@ export const JWTAuthChecker: AuthChecker<MyContext> = async (
         const claim = result as Claim;
         const currentSeconds = Math.floor(new Date().valueOf() / 1000);
         if (currentSeconds > claim.exp || currentSeconds < claim.auth_time) {
-            throw new Error('claim is expired or invalid');
+            const error: any = new Error('claim is expired or invalid');
+            error.code = 'FORBIDDEN';
+            throw error;
         }
         if (claim.iss !== cognitoIssuer) {
             throw new Error('claim issuer is invalid');
@@ -133,12 +129,12 @@ export const JWTAuthChecker: AuthChecker<MyContext> = async (
         if (claim.token_use !== 'access') {
             throw new Error('claim use is not access');
         }
-        // logger.info(JSON.stringify(result, undefined, 4));
-        logger.info(`claim confirmed for ${claim.username}`);
+        logger.info(`Claim confirmed for ${claim.username}`);
         (req as any).user = result;
     } catch (error: any) {
-        logger.error(error);
         if (error.name === 'TokenExpiredError') {
+            // important: this ensures URQL will try a token refresh on the frontend
+            error.code = 'FORBIDDEN';
             throw error;
         }
         throw new Error('Unauthorized: invalid token');

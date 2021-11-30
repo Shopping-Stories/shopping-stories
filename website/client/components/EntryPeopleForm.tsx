@@ -9,7 +9,7 @@ import { FieldArray, FormikProvider } from 'formik';
 import debounce from 'lodash/debounce';
 import { useCallback, useState } from 'react';
 import { useQuery } from 'urql';
-import PeoplePlacesAutocomplete from './PeoplePlacesAutocomplete';
+import PersonAutocomplete from './PersonAutocomplete';
 
 const EntryPeopleForm = ({ formikForm }: any) => {
     const [search, setSearch] = useState<string>('');
@@ -55,14 +55,6 @@ const EntryPeopleForm = ({ formikForm }: any) => {
                                           direction="row"
                                           spacing={2}
                                       >
-                                          <PeoplePlacesAutocomplete
-                                              formikForm={formikForm}
-                                              fieldName={`people[${index}]`}
-                                              index={index}
-                                              label={`Person ${index}`}
-                                              labelOptions={peopleOptions}
-                                              search={delayedPersonSearch}
-                                          />
                                           <div
                                               style={{
                                                   display: 'flex',
@@ -77,9 +69,17 @@ const EntryPeopleForm = ({ formikForm }: any) => {
                                                       arrayHelpers.remove(index)
                                                   }
                                               >
-                                                  remove
+                                                  remove {index}
                                               </Button>
                                           </div>
+                                          <PersonAutocomplete
+                                              formikForm={formikForm}
+                                              fieldName={`people[${index}]`}
+                                              index={index}
+                                              label={`Person ${index}`}
+                                              labelOptions={peopleOptions}
+                                              search={delayedPersonSearch}
+                                          />
                                       </Stack>
                                   ))
                                 : null}

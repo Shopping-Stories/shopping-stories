@@ -1,8 +1,9 @@
 :root[data-theme="light"] {
   --primary: #283618;
   --secondary: #606C38;
+  --text: 96, 108, 56;
   --secondary-hover: #7b8a49;
-  --secondary-text: #b8b8b8;
+  --secondary-text: #cac9c9;
   --background-color: #BB9467;
   --secondary-bg: #FFE6A7;
   --secondary-bg-translucent: #ffe6a785;
@@ -12,8 +13,9 @@
 
 :root[data-theme="dark"] {
   --secondary: #3d4424;
+  --text: 212, 212, 212;
   --secondary-hover: #596334;
-  --secondary-text: #d4d4d4;
+  --secondary-text: #bdbcbc;
   --background-color: #333;
   --secondary-bg: #414141;
   --secondary-bg-translucent: #4141417a;

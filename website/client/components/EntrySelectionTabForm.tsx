@@ -63,7 +63,13 @@ const EntrySelectionTabForm = ({
 
     return (
         <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
-            <Tabs value={tabIndex} onChange={handleChange} centered>
+            <Tabs
+                variant="scrollable"
+                scrollButtons
+                allowScrollButtonsMobile
+                value={tabIndex}
+                onChange={handleChange}
+            >
                 <Tab label="Item Entries" {...a11yProps(0)} />
                 <Tab label="Tobacco Entry" {...a11yProps(1)} />
                 <Tab label="Regular Entry" {...a11yProps(2)} />

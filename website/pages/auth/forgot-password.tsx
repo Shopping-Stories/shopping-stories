@@ -14,6 +14,7 @@ import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { LinkColor } from 'styles/styles';
 import * as yup from 'yup';
 
 const initiatePassChangeSchema = yup.object({
@@ -183,6 +184,7 @@ const SignInPage: NextPage = () => {
                 </LoadingButton>
                 <Container>
                     <Link
+                        sx={LinkColor}
                         component="button"
                         onClick={() => {
                             setCodeSent(true);
@@ -244,6 +246,7 @@ const SignInPage: NextPage = () => {
                 </LoadingButton>
                 <Container>
                     <Link
+                        sx={LinkColor}
                         component="button"
                         onClick={() => {
                             setCodeSent(false);

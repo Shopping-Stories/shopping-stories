@@ -3,19 +3,26 @@ import DashboardPageSkeleton from '@components/DashboardPageSkeleton';
 import FileInput from '@components/FileInput';
 import Header from '@components/Header';
 import LoadingPage from '@components/LoadingPage';
+import ParseEntryUpdateForm from '@components/ParseEntryUpdateForm';
 import ParseTable from '@components/ParseTable';
 import SnackBarCloseButton from '@components/SnackBarCloseButton';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import useAuth from '@hooks/useAuth.hook';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { Entry } from 'client/types';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
@@ -58,9 +65,17 @@ const ImportPage: NextPage = () => {
     const [parseErrors, setParseErrors] = useState<any>(null);
     const [openError, setErrorOpen] = useState(false);
     const [error, setError] = useState('');
+    const [i, setI] = useState(0);
+
+    const [editEntry, setEditEntry] = useState<any>(null);
 
     const [openSuccess, setSuccessOpen] = useState(false);
     const [successMessage, setSuccess] = useState('');
+
+    const [openEdit, setOpenEdit] = useState<boolean>(false);
+    const handleCloseEdit = () => {
+        setOpenEdit(false);
+    };
 
     const ledgerField = useFormik<{ ledgerName: string }>({
         initialValues: {
@@ -222,7 +237,14 @@ const ImportPage: NextPage = () => {
                 </Container>
                 {entries ? (
                     <Paper sx={PaperStylesSecondary}>
-                        <ParseTable entries={entries} />
+                        <ParseTable
+                            onParseEdit={(_entry: Entry, index: number) => {
+                                setEditEntry(entries[index]);
+                                setI(index);
+                                setOpenEdit(true);
+                            }}
+                            entries={entries}
+                        />
                     </Paper>
                 ) : null}
                 <Container maxWidth="sm">
@@ -278,6 +300,28 @@ const ImportPage: NextPage = () => {
             >
                 <Alert severity="success">{successMessage}</Alert>
             </Snackbar>
+
+            <Dialog
+                fullWidth
+                maxWidth="lg"
+                open={openEdit}
+                onClose={handleCloseEdit}
+            >
+                <DialogTitle>Editing Entry</DialogTitle>
+                <DialogContent>
+                    <ParseEntryUpdateForm
+                        initialValues={editEntry}
+                        setEntry={(entry) => {
+                            entries[i] = entry;
+                        }}
+                    />
+                </DialogContent>
+                <DialogActions sx={{ alignSelf: 'center' }}>
+                    <Button variant="contained" onClick={handleCloseEdit}>
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </ColorBackground>
     );
 };

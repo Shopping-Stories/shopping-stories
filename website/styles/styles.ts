@@ -26,3 +26,11 @@ export const LogoFabStyles = {
         },
     },
 };
+
+export const LinkColor = {
+    color: 'var(--text)',
+    textDecorationColor: 'rgba(var(--text), 0.4)',
+    '&:hover': {
+        textDecorationColor: 'var(--text)',
+    },
+};

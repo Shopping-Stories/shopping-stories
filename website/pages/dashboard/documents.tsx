@@ -43,6 +43,7 @@ import { useRouter } from 'next/router';
 import { FormEvent, useEffect, useState } from 'react';
 import { PaperStylesSecondary } from 'styles/styles';
 import { useMutation } from 'urql';
+import Typography from '@mui/material/Typography';
 
 interface BodyRowProps {
     row: DocumentInfo;
@@ -311,6 +312,15 @@ const ManagePlacesPage: NextPage = () => {
                 <Paper sx={PaperStylesSecondary}>
                     <form onSubmit={searchForm.handleSubmit}>
                         <Stack spacing={2}>
+                            <div>
+                                <Typography
+                                    sx={{ textAlign: 'center' }}
+                                    variant="h4"
+                                >
+                                    Documents
+                                </Typography>
+                            </div>
+
                             <TextFieldWithFormikValidation
                                 fullWidth
                                 name="search"

@@ -14,6 +14,7 @@ import Button from '@mui/material/Button';
 import DialogContentText from '@mui/material/DialogContentText';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import {
     createPersonSchema,
     searchSchema,
@@ -184,6 +185,15 @@ const ManageMarksPage: NextPage = () => {
                 <Paper sx={PaperStylesSecondary}>
                     <form onSubmit={searchForm.handleSubmit}>
                         <Stack spacing={2}>
+                            <div>
+                                <Typography
+                                    sx={{ textAlign: 'center' }}
+                                    variant="h4"
+                                >
+                                    People
+                                </Typography>
+                            </div>
+
                             <TextFieldWithFormikValidation
                                 fullWidth
                                 name="search"

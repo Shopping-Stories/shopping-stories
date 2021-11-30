@@ -162,7 +162,10 @@ const UpdateGlossaryItem: NextPage = () => {
                     <form onSubmit={updateForm.handleSubmit}>
                         <Grid container justifyContent="center" spacing={4}>
                             <Grid item xs={12}>
-                                <Button href="/dashboard/glossary/items">
+                                <Button
+                                    variant="contained"
+                                    href="/dashboard/glossary/items"
+                                >
                                     Back to management panel
                                 </Button>
                             </Grid>

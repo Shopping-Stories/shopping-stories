@@ -13,6 +13,7 @@ import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { LinkColor } from 'styles/styles';
 import * as yup from 'yup';
 
 const signUpSchema = yup.object({
@@ -184,11 +185,11 @@ const SignUpPage: NextPage = () => {
                     Sign Up
                 </LoadingButton>
                 <Container>
-                    <MuiNextLink href="/auth/signin">
+                    <MuiNextLink sx={LinkColor} href="/auth/signin">
                         Already have an account? Sign in here!
                     </MuiNextLink>
                     <br />
-                    <MuiNextLink href={`${router.route}/code`}>
+                    <MuiNextLink sx={LinkColor} href={`${router.route}/code`}>
                         Already have a code? Confirm your email here!
                     </MuiNextLink>
                 </Container>

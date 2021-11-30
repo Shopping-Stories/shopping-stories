@@ -267,6 +267,15 @@ mutation createPerson($person: CreatePersonInput!) {
 ${PersonFields}
 `;
 
+export const FetchPersonQuery = `
+query FetchPerson($id: String!) {
+  person: findOnePerson(id: $id) {
+    ...personFields
+  }
+}
+${PersonFields}
+`;
+
 export const SearchPeopleDef = `
 query peopleQuery($search: String, $options: FindAllLimitAndSkip) {
   rows: findPeople(search: $search, options: $options) {
@@ -302,6 +311,15 @@ fragment placeFields on Place {
   alias
   descriptor
 }
+`;
+
+export const FetchPlaceQuery = `
+query FetchPlace($id: String!) {
+  place: findOnePlace(id: $id) {
+    ...placeFields
+  }
+}
+${PlaceFields}
 `;
 
 export const CreatePlaceDef = `
@@ -355,6 +373,15 @@ fragment markFields on TobaccoMark {
   whoRepresents
   whoUnder
 }
+`;
+
+export const FetchTobaccoMarkQuery = `
+query FetchMark($id: String!) {
+  mark: findOneTobaccoMark(id: $id) {
+    ...markFields
+  }
+}
+${TobaccoMarkFields}
 `;
 
 export const CreateTobaccoMarkDef = `

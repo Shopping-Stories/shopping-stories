@@ -13,6 +13,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
 import { searchSchema } from 'client/formikSchemas';
 import {
@@ -103,6 +104,15 @@ const GlossaryItemsDashboardPage: NextPage = () => {
                 <Paper sx={PaperStylesSecondary}>
                     <form onSubmit={searchForm.handleSubmit}>
                         <Stack spacing={2}>
+                            <div>
+                                <Typography
+                                    sx={{ textAlign: 'center' }}
+                                    variant="h4"
+                                >
+                                    Glossary Items
+                                </Typography>
+                            </div>
+
                             <TextFieldWithFormikValidation
                                 fullWidth
                                 name="search"

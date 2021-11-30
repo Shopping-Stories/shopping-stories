@@ -11,6 +11,7 @@ import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValida
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -130,7 +131,9 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                 <form onSubmit={updateForm.handleSubmit}>
                     <Grid container justifyContent="center" spacing={4}>
                         <Grid item xs={12}>
-                            <Button href="/entries/">Back entry list</Button>
+                            <Button variant="contained" href="/entries/">
+                                Back entry list
+                            </Button>
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <Typography component="h2">
@@ -409,14 +412,19 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                 initialIndex={tabIndex}
                             />
                         </Grid>
+                        <Grid item xs={12}>
+                            <Container maxWidth="sm">
+                                <LoadingButton
+                                    fullWidth
+                                    loading={isLoading}
+                                    variant="contained"
+                                    type="submit"
+                                >
+                                    Submit
+                                </LoadingButton>
+                            </Container>
+                        </Grid>
                     </Grid>
-                    <LoadingButton
-                        loading={isLoading}
-                        variant="contained"
-                        type="submit"
-                    >
-                        Submit
-                    </LoadingButton>
                 </form>
             </Paper>
             <Snackbar

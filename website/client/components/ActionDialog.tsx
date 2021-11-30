@@ -18,7 +18,7 @@ const ActionDialog = (props: ActionDialogProps) => {
     const { isOpen, onClose, isSubmitting, onSubmit, title } = props;
 
     return (
-        <Dialog open={isOpen} onClose={onClose}>
+        <Dialog fullWidth maxWidth="sm" open={isOpen} onClose={onClose}>
             <DialogTitle>{title}</DialogTitle>
             <form onSubmit={onSubmit}>
                 <DialogContent>{props.children}</DialogContent>

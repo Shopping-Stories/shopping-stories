@@ -19,6 +19,7 @@ interface EntryTableRowProps {
     index?: number;
     onEditClick?: any;
     onDeleteClick?: any;
+    onParseEdit?: (entry: Entry, index: number) => void;
     isAdmin?: boolean;
     isAdminOrModerator?: boolean;
 }
@@ -27,6 +28,7 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
         row,
         index,
         onEditClick,
+        onParseEdit,
         onDeleteClick,
         isAdmin,
         isAdminOrModerator,
@@ -82,6 +84,17 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
                         )}
                     </IconButton>
                 </TableCell>
+                {onParseEdit && index !== undefined ? (
+                    <TableCell>
+                        <Button
+                            variant="contained"
+                            startIcon={<EditIcon />}
+                            onClick={() => onParseEdit(row, index - 1)}
+                        >
+                            Edit
+                        </Button>
+                    </TableCell>
+                ) : null}
                 {index !== undefined ? (
                     <TableCell align="center">{index}</TableCell>
                 ) : null}

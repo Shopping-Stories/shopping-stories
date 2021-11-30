@@ -11,6 +11,7 @@ const a11yProps = (index: number) => {
     return {
         id: `tab-${index}`,
         'aria-controls': `tabpanel-${index}`,
+        sx: { '&.MuiTab-root': { color: 'var(--secondary-text)' } },
     };
 };
 
@@ -59,7 +60,13 @@ const AdvancedSearchTabForm = ({ formikForm }: { formikForm: any }) => {
 
     return (
         <Paper sx={{ width: '100%', backgroundColor: 'var(--secondary)' }}>
-            <Tabs value={tabIndex} onChange={handleChange} centered>
+            <Tabs
+                value={tabIndex}
+                onChange={handleChange}
+                variant="scrollable"
+                scrollButtons
+                allowScrollButtonsMobile
+            >
                 <Tab label="Item Entry" {...a11yProps(0)} />
                 <Tab label="Tobacco Entry" {...a11yProps(1)} />
                 <Tab label="Regular Entry" {...a11yProps(2)} />

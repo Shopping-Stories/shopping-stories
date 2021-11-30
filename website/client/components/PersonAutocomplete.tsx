@@ -3,36 +3,36 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { FetchTobaccoMarkQuery } from 'client/graphqlDefs';
-import { Mark, TobaccoMark } from 'client/types';
+import { FetchPersonQuery } from 'client/graphqlDefs';
+import { Person, PersonOrPlace } from 'client/types';
 import { get } from 'lodash';
 import { Fragment, useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
-interface MarkAutocompleteProps {
+interface PeoplePlacesAutocompleteProps {
     formikForm: any;
     fieldName: string;
     index: number;
     label: string;
-    labelOptions: Mark[];
+    labelOptions: PersonOrPlace[];
     search: (search: string, index: number) => void;
 }
 
-const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
+const PersonAutocomplete = (props: PeoplePlacesAutocompleteProps) => {
     const { formikForm, fieldName, index, label, labelOptions, search } = props;
-    const nameField = `${fieldName}.markName`;
-    const idField = `${fieldName}.markID`;
+    const nameField = `${fieldName}.name`;
+    const idField = `${fieldName}.id`;
 
     const id = get(formikForm.values, idField);
     const [queryId, setQueryId] = useState(id || '');
 
-    interface MarkQuery {
-        mark: TobaccoMark;
+    interface PersonQuery {
+        person: Person;
     }
 
-    const [result] = useQuery<MarkQuery>({
-        query: FetchTobaccoMarkQuery,
+    const [result] = useQuery<PersonQuery>({
+        query: FetchPersonQuery,
         pause: !Boolean(queryId.trim()),
         variables: { id: queryId },
     });
@@ -46,9 +46,9 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
     const optionalTypography = (title: string, fieldName: string) => {
         return (
             <Fragment>
-                {get(result.data?.mark, fieldName) ? (
+                {get(result.data?.person, fieldName) ? (
                     <Typography variant="body2">
-                        {title}: {get(result.data?.mark, fieldName)}
+                        {title}: {get(result.data?.person, fieldName)}
                     </Typography>
                 ) : null}
             </Fragment>
@@ -61,8 +61,8 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
             value={get(formikForm.values, fieldName)}
             onChange={(_, newValue: any) => {
                 if (newValue) {
-                    formikForm.setFieldValue(nameField, newValue.markName);
-                    formikForm.setFieldValue(idField, newValue.markID);
+                    formikForm.setFieldValue(nameField, newValue.name);
+                    formikForm.setFieldValue(idField.trim(), newValue.id);
                 }
             }}
             onInputChange={(_, newSearch: string, reason) => {
@@ -71,16 +71,16 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
                 }
             }}
             options={labelOptions}
-            getOptionLabel={(option: Mark) => option.markName || ''}
-            isOptionEqualToValue={(option: Mark, value: Mark) =>
-                option.markName === value.markName ||
-                option.markID === value.markID
-            }
+            getOptionLabel={(option: PersonOrPlace) => option.name || ''}
+            isOptionEqualToValue={(
+                option: PersonOrPlace,
+                value: PersonOrPlace,
+            ) => option.name === value.name}
             freeSolo
-            renderOption={(props, option: Mark) => {
+            renderOption={(props, option: PersonOrPlace) => {
                 return (
-                    <li {...props} key={option.markID}>
-                        {option.markName || ''}
+                    <li {...props} key={option.id}>
+                        {option.name || ''}
                     </li>
                 );
             }}
@@ -89,36 +89,31 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
                     <TextFieldWithFormikValidation
                         {...params}
                         fullWidth
-                        label={label}
                         name={nameField}
+                        label={label}
                         formikForm={formikForm}
                         fieldName={nameField}
                     />
 
-                    {result.data?.mark ? (
-                        <Card>
+                    {result.data?.person ? (
+                        <Card sx={{ backgroundColor: 'var(--secondary-bg)' }}>
                             <CardContent>
                                 <Typography variant="h6" component="div">
-                                    Tied to {result.data.mark.tobaccoMarkId}
+                                    Tied to{' '}
+                                    {`${result.data.person.firstName} ${result.data.person.lastName}`.trim()}
                                 </Typography>
-                                {optionalTypography(
-                                    'Tobacco Mark ID',
-                                    'tobaccoMarkId',
-                                )}
-                                {optionalTypography(
-                                    'Description',
-                                    'description',
-                                )}
-                                {optionalTypography('netWeight', 'netWeight')}
-                                {optionalTypography('Note', 'note')}
-                                {optionalTypography('Notes', 'Notes')}
-                                {optionalTypography('Warehouse', 'warehouse')}
-                                {optionalTypography('Where', 'where')}
-                                {optionalTypography(
-                                    'Who it represents',
-                                    'whoRepresents',
-                                )}
-                                {optionalTypography('Under who', 'whoUnder')}
+                                {optionalTypography('First name', 'firstName')}
+                                {optionalTypography('Last name', 'lastName')}
+                                {optionalTypography('Prefix', 'prefix')}
+                                {optionalTypography('Suffix', 'suffix')}
+                                {optionalTypography('Account', 'account')}
+                                {optionalTypography('Enslaved', 'enslaved')}
+                                {optionalTypography('Gender', 'gender')}
+                                {optionalTypography('Location', 'location')}
+                                {optionalTypography('Profession', 'profession')}
+                                {optionalTypography('Location', 'firstName')}
+                                {optionalTypography('Store', 'store')}
+                                {optionalTypography('Variations', 'variations')}
                             </CardContent>
                         </Card>
                     ) : null}
@@ -128,4 +123,4 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
     );
 };
 
-export default TobaccoMarkAutocomplete;
+export default PersonAutocomplete;

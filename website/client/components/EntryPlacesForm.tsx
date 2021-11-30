@@ -9,7 +9,7 @@ import { FieldArray, FormikProvider } from 'formik';
 import debounce from 'lodash/debounce';
 import { useCallback, useState } from 'react';
 import { useQuery } from 'urql';
-import PeoplePlacesAutocomplete from './PeoplePlacesAutocomplete';
+import PlaceAutocomplete from './PlaceAutocomplete';
 
 const EntryPlacesForm = ({ formikForm }: any) => {
     const [search, setSearch] = useState<string>('');
@@ -54,14 +54,6 @@ const EntryPlacesForm = ({ formikForm }: any) => {
                                           direction="row"
                                           spacing={2}
                                       >
-                                          <PeoplePlacesAutocomplete
-                                              formikForm={formikForm}
-                                              fieldName={`places[${index}]`}
-                                              index={index}
-                                              label={`Place ${index}`}
-                                              labelOptions={placesOptions}
-                                              search={delayedPlacesSearch}
-                                          />
                                           <div
                                               style={{
                                                   display: 'flex',
@@ -79,6 +71,14 @@ const EntryPlacesForm = ({ formikForm }: any) => {
                                                   remove
                                               </Button>
                                           </div>
+                                          <PlaceAutocomplete
+                                              formikForm={formikForm}
+                                              fieldName={`places[${index}]`}
+                                              index={index}
+                                              label={`Place ${index}`}
+                                              labelOptions={placesOptions}
+                                              search={delayedPlacesSearch}
+                                          />
                                       </Stack>
                                   ))
                                 : null}

@@ -144,6 +144,7 @@ const ConfirmAccountPage: NextPage = () => {
                     })}
                 />
                 <Button
+                    color="secondary"
                     size="small"
                     sx={{ margin: '1em', alignSelf: 'center', width: '50%' }}
                     variant="outlined"

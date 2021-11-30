@@ -29,7 +29,6 @@ export default class SpreadsheetResolver {
     async importSpreadsheet(
         @Arg('spreadsheetObj', () => ParseObject) sheetObj: any,
     ): Promise<Object[]> {
-        console.log(sheetObj);
         const { entries, ledgerName } = sheetObj;
 
         if (sheetObj) {

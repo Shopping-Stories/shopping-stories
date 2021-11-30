@@ -104,7 +104,7 @@ const ItemGlossaryPage: NextPage = () => {
                 >
                     <Grid container justifyContent="center" spacing={4}>
                         <Grid item xs={12}>
-                            <Button href="/glossary/items/">
+                            <Button variant="contained" href="/glossary/items/">
                                 Back item glossary
                             </Button>
                         </Grid>
