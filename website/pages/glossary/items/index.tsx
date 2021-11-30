@@ -134,7 +134,7 @@ const ItemGlossaryIndexPage: NextPage = () => {
                                 />
                                 <LoadingButton
                                     variant="contained"
-                                    loading={loading}
+                                    loading={stale}
                                     fullWidth
                                     type="submit"
                                 >
