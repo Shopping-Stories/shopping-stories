@@ -142,15 +142,15 @@ async function formatMoney(entry: any) {
         let colony =
             entry.Colony !== (null || '' || '-')
                 ? entry.Colony.toString().replace(/[^a-zA-z\s]/g, '')
-                : null;
+                : '';
         let commodity =
             entry.Commodity !== (null || '' || '-')
                 ? entry.Commodity.toString().replace(/[^a-zA-z\s]/g, '')
-                : null;
+                : '';
         let quantity =
             entry.Quantity !== (null || '' || '-')
                 ? entry.Quantity.toString().replace(/[^0-9.]/g, '')
-                : null;
+                : '';
         //formatted to objects here
         let sterling = {
             pounds: Number(SL),
@@ -992,7 +992,7 @@ async function updatedItemEntry(entryObj: any) {
                     );
                 }
                 item = {
-                    quantity: null,
+                    quantity: -1,
                     qualifier: mainItemString[1],
                     variants: mainItemString[2].split('*'),
                     item: mainItemString[3],
@@ -1119,8 +1119,8 @@ async function findCategories(item: any, inputString: string) {
         throw resMessage;
     }
     let res = {
-        category: null,
-        subcategory: null,
+        category: '',
+        subcategory: '',
     };
     let cursor = await CategoryModel.findOne({ $text: { $search: item } });
     if (cursor != null) {

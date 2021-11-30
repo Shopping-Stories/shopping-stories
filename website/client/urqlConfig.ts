@@ -27,7 +27,9 @@ export const addAuthToOperation = ({ authState, operation }: any) => {
 
 export const didAuthError = ({ error }: any) => {
     return error.graphQLErrors.some(
-        (e: any) => e.extensions?.code === 'FORBIDDEN',
+        (e: any) =>
+            e.extensions?.code === 'FORBIDDEN' ||
+            e.extensions?.exception?.code === 'FORBIDDEN',
     );
 };
 

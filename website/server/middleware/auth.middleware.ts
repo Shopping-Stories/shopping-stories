@@ -3,8 +3,8 @@ import * as jwt from 'jsonwebtoken';
 import { JWK } from 'jwk-to-pem';
 import { NextApiRequest } from 'next';
 import { AuthChecker } from 'type-graphql';
-import { MyContext } from '../../pages/api/graphql';
 import { CognitoConfig } from '../../config/constants.config';
+import { MyContext } from '../../pages/api/graphql';
 import { logger } from '../config/utils';
 
 export interface TokenHeader {
@@ -94,14 +94,18 @@ export const JWTAuthChecker: AuthChecker<MyContext> = async (
     const token = authHeader && authHeader.split(' ')[1];
 
     if (token == null) {
-        throw new Error('No Access Token Detected');
+        const error: any = new Error('No Access Token Detected');
+        error.code = 'FORBIDDEN';
+        throw error;
     }
 
     let result: any;
     try {
         const tokenSections = (token || '').split('.');
         if (tokenSections.length < 2) {
-            throw new Error('requested token is invalid');
+            const error: any = new Error('requested token is invalid');
+            error.code = 'FORBIDDEN';
+            throw error;
         }
 
         const headerJSON = Buffer.from(tokenSections[0], 'base64').toString(
@@ -112,7 +116,9 @@ export const JWTAuthChecker: AuthChecker<MyContext> = async (
         const keys = await getPublicKeys();
         const key = keys[header.kid];
         if (key === undefined) {
-            throw new Error('claim made for unknown kid');
+            const error: any = new Error('claim made for unknown kid');
+            error.code = 'FORBIDDEN';
+            throw error;
         }
 
         result = await jwt.verify(token, key.pem);
@@ -124,10 +130,14 @@ export const JWTAuthChecker: AuthChecker<MyContext> = async (
             throw error;
         }
         if (claim.iss !== cognitoIssuer) {
-            throw new Error('claim issuer is invalid');
+            const error: any = new Error('claim issuer is invalid');
+            error.code = 'FORBIDDEN';
+            throw error;
         }
         if (claim.token_use !== 'access') {
-            throw new Error('claim use is not access');
+            const error: any = new Error('claim use is not access');
+            error.code = 'FORBIDDEN';
+            throw error;
         }
         logger.info(`Claim confirmed for ${claim.username}`);
         (req as any).user = result;

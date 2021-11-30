@@ -41,7 +41,7 @@ const GlossaryItemIndexCard = (props: GlossaryItemIndexCardProps) => {
     }, [item.images]);
 
     return (
-        <Card sx={{ height: '100%' }}>
+        <Card>
             <CardActionArea href={`/glossary/items/${item.id}`}>
                 <CardHeader title={item.name} />
                 {item.images.length > 0 && imageURL && (

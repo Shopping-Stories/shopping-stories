@@ -54,7 +54,7 @@ const DocumentCard = (props: DocumentCardProps) => {
     }, []);
 
     return (
-        <Card sx={{ height: '100%' }}>
+        <Card>
             <CardHeader title={document.name} />
             <CardContent>{document.description}</CardContent>
             {fileUrl && (
@@ -216,9 +216,8 @@ const DocumentsPage: NextPage = () => {
                             <Grid container spacing={2}>
                                 <Grid item xs={4}>
                                     <LoadingButton
-                                        disabled={page < 1}
+                                        disabled={page < 1 || loading}
                                         variant="contained"
-                                        loading={loading}
                                         onClick={() =>
                                             fetchDocumentsPage(page - 1)
                                         }
@@ -234,10 +233,10 @@ const DocumentsPage: NextPage = () => {
                                     <LoadingButton
                                         disabled={
                                             page ===
-                                            Math.ceil(count / rowsPerPage) - 1
+                                                Math.ceil(count / rowsPerPage) -
+                                                    1 || loading
                                         }
                                         variant="contained"
-                                        loading={loading}
                                         onClick={() =>
                                             fetchDocumentsPage(page + 1)
                                         }

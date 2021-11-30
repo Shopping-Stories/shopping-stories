@@ -168,9 +168,8 @@ const ItemGlossaryIndexPage: NextPage = () => {
                             <Grid container spacing={2}>
                                 <Grid item xs={4}>
                                     <LoadingButton
-                                        disabled={page < 1}
+                                        disabled={page < 1 || loading}
                                         variant="contained"
-                                        loading={loading}
                                         onClick={() => fetchItemsPage(page - 1)}
                                     >
                                         Prev
@@ -184,10 +183,10 @@ const ItemGlossaryIndexPage: NextPage = () => {
                                     <LoadingButton
                                         disabled={
                                             page ===
-                                            Math.ceil(count / rowsPerPage) - 1
+                                                Math.ceil(count / rowsPerPage) -
+                                                    1 || loading
                                         }
                                         variant="contained"
-                                        loading={loading}
                                         onClick={() => fetchItemsPage(page + 1)}
                                     >
                                         Next

@@ -119,7 +119,7 @@ const ItemsMentionedTable = (props: { itemsMentioned: ItemMentioned[] }) => {
 
     return (
         <Fragment>
-            {props.itemsMentioned ? (
+            {props.itemsMentioned && props.itemsMentioned.length > 0 ? (
                 <Box sx={{ margin: 1 }}>
                     <Typography variant="h6" gutterBottom component="div">
                         Items Mentioned

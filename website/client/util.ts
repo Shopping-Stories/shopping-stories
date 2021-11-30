@@ -104,8 +104,8 @@ export const AmplifyOptions: any = {
  */
 export const signOut = (router: NextRouter) => {
     Auth.signOut()
-        .then(() => router.push('/'))
-        .catch(() => router.push('/'));
+        .then(() => (window.location = router.asPath as any))
+        .catch(() => (window.location = router.asPath as any));
 };
 
 /**
