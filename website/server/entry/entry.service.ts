@@ -27,6 +27,7 @@ export class EntryService {
         selectedFields: Object,
         search?: string,
     ): Promise<Entry[]> {
+        
         if (!!search) {
             return EntryModel.find(getMongoTextSearchObject(search), {
                 ...selectedFields,
@@ -119,7 +120,7 @@ export class EntryService {
             let colony = searchObj.colony.toString();
             temp['money.colony'] = { $regex: new RegExp(colony, 'i') };
         }
-        if (searchObj.itemEntry) {
+        if (searchObj.itemEntry != null) {
             let entry = searchObj.itemEntry;
             if (entry.perOrder === 1) {
                 temp['itemEntries.perOrder'] = 1;
@@ -147,7 +148,7 @@ export class EntryService {
                 };
             }
         }
-        if (searchObj.tobaccoEntry) {
+        if (searchObj.tobaccoEntry != null) {
             let entry = searchObj.tobaccoEntry;
             if (entry.description) {
                 let description = entry.description.toString();
@@ -163,7 +164,7 @@ export class EntryService {
                     $options: 'ix',
                 };
             }
-            if (entry.noteNumber) {
+            if (entry.noteNumber != -1) {
                 temp['tobaccoEntry.notes.noteNum'] = entry.noteNumber;
             }
             if (entry.moneyType) {
