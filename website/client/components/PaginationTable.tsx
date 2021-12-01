@@ -43,7 +43,7 @@ const PaginationTable = <T extends unknown>(props: PaginationTableProps<T>) => {
         count: number;
     }
 
-    const [{ data, stale }, updateQuery] = useQuery<QueryType>({
+    const [{ data, stale, fetching }, updateQuery] = useQuery<QueryType>({
         query: queryDef,
         variables: { options, search },
         requestPolicy: 'cache-and-network',
@@ -58,9 +58,9 @@ const PaginationTable = <T extends unknown>(props: PaginationTableProps<T>) => {
 
     useEffect(() => {
         if (setIsLoading !== undefined) {
-            setIsLoading(stale);
+            setIsLoading(stale || fetching);
         }
-    }, [stale]);
+    }, [stale, fetching]);
 
     useEffect(() => {
         setPage(0);
@@ -122,7 +122,7 @@ const PaginationTable = <T extends unknown>(props: PaginationTableProps<T>) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            {stale ? <LinearProgress /> : null}
+            {stale || fetching ? <LinearProgress /> : null}
             <TablePagination
                 rowsPerPageOptions={perPageOptions}
                 count={count}

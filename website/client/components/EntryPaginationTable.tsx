@@ -56,13 +56,14 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         count: number;
     }
 
-    const [{ data, stale }, executeQuery] = useQuery<EntryQueryResult>({
-        query: queryDef,
-        variables: isAdvancedSearch
-            ? { options, advanced, populate: false }
-            : { options, search, populate: false },
-        requestPolicy: 'cache-and-network',
-    });
+    const [{ data, stale, fetching }, executeQuery] =
+        useQuery<EntryQueryResult>({
+            query: queryDef,
+            variables: isAdvancedSearch
+                ? { options, advanced, populate: false }
+                : { options, search, populate: false },
+            requestPolicy: 'cache-and-network',
+        });
 
     useEffect(() => {
         if (reQuery) {
@@ -73,9 +74,9 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
 
     useEffect(() => {
         if (setIsLoading !== undefined) {
-            setIsLoading(stale);
+            setIsLoading(stale || fetching);
         }
-    }, [stale]);
+    }, [stale, fetching]);
 
     useEffect(() => {
         setPage(0);

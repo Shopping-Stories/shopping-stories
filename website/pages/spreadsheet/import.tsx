@@ -137,6 +137,7 @@ const ImportPage: NextPage = () => {
                 }))
                 .filter((entry: any) => entry.message);
             if (errors.length > 0) {
+                setParseErrors(errors);
                 setError('Error(s) occurred parsing the sheet');
                 setErrorOpen(true);
             }

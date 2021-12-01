@@ -49,7 +49,7 @@ const ItemGlossaryIndexPage: NextPage = () => {
         count: number;
     }
 
-    const [{ data, stale }] = useQuery<GlossaryItemsQueryResult>({
+    const [{ data, stale, fetching }] = useQuery<GlossaryItemsQueryResult>({
         query: FetchGlossaryItemsDef,
         variables: { options, search },
         requestPolicy: 'cache-and-network',
@@ -85,12 +85,12 @@ const ItemGlossaryIndexPage: NextPage = () => {
     };
 
     useEffect(() => {
-        if (stale) {
+        if (stale || fetching) {
             setLoading(true);
         } else {
             setLoading(false);
         }
-    }, [stale]);
+    }, [stale, fetching]);
 
     const fetchItemsPage = (newPage: number) => {
         setOptions((prevOpts: any) => ({
@@ -134,7 +134,7 @@ const ItemGlossaryIndexPage: NextPage = () => {
                                 />
                                 <LoadingButton
                                     variant="contained"
-                                    loading={stale}
+                                    loading={loading}
                                     fullWidth
                                     type="submit"
                                 >

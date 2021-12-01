@@ -2,13 +2,16 @@ import ColorBackground from '@components/ColorBackground';
 import GlossaryItemForm from '@components/GlossaryImageForm';
 import Header from '@components/Header';
 import LoadingPage from '@components/LoadingPage';
+import SnackBarCloseButton from '@components/SnackBarCloseButton';
 import TextAreaWithFormikValidation from '@components/TextAreaWithFormikValidation';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import useAuth from '@hooks/useAuth.hook';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Alert } from '@mui/material';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Storage } from 'aws-amplify';
@@ -43,6 +46,18 @@ const UpdateGlossaryItem: NextPage = () => {
     const [_updateGlossaryItemResult, updateGlossaryItem] = useMutation(
         UpdateGlossaryItemDef,
     );
+    const [openSuccess, setSuccessOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+
+    const handleSuccessClose = (
+        _: React.SyntheticEvent | React.MouseEvent,
+        reason?: string,
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSuccessOpen(false);
+    };
 
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [loading, setIsLoading] = useState<boolean>(false);
@@ -95,7 +110,7 @@ const UpdateGlossaryItem: NextPage = () => {
             images: [] as any,
         },
         validationSchema: glossaryItemSchema,
-        onSubmit: async (values, { resetForm }) => {
+        onSubmit: async (values) => {
             let errorUploadingImage = false;
             setIsLoading(true);
 
@@ -134,9 +149,8 @@ const UpdateGlossaryItem: NextPage = () => {
                 if (res.error) {
                     setIsLoading(false);
                 } else {
-                    router.push('/dashboard/glossary/items');
-                    resetForm();
-                    setIsLoading(false);
+                    setSuccessMessage(`Successfully updated the entry`);
+                    setSuccessOpen(true);
                 }
             }
             setIsLoading(false);
@@ -255,6 +269,16 @@ const UpdateGlossaryItem: NextPage = () => {
                         </LoadingButton>
                     </form>
                 </Paper>
+                <Snackbar
+                    open={openSuccess}
+                    autoHideDuration={6000}
+                    onClose={handleSuccessClose}
+                    action={SnackBarCloseButton({
+                        handleClose: handleSuccessClose,
+                    })}
+                >
+                    <Alert severity="success">{successMessage}</Alert>
+                </Snackbar>
             </ColorBackground>
         );
     }

@@ -85,7 +85,7 @@ const DocumentsPage: NextPage = () => {
         skip: null,
     });
 
-    const [{ data, stale }] = useQuery<QueryDocuments>({
+    const [{ data, stale, fetching }] = useQuery<QueryDocuments>({
         query: FetchDocumentsDef,
         variables: { options, search },
         requestPolicy: 'cache-and-network',
@@ -131,12 +131,12 @@ const DocumentsPage: NextPage = () => {
     };
 
     useEffect(() => {
-        if (stale) {
+        if (stale || fetching) {
             setLoading(true);
         } else {
             setLoading(false);
         }
-    }, [stale]);
+    }, [stale, fetching]);
 
     const fetchDocumentsPage = (newPage: number) => {
         setOptions((prevOpts: any) => ({
@@ -183,7 +183,7 @@ const DocumentsPage: NextPage = () => {
                                 />
                                 <LoadingButton
                                     variant="contained"
-                                    loading={stale}
+                                    loading={loading}
                                     fullWidth
                                     type="submit"
                                 >

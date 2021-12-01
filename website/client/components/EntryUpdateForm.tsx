@@ -63,7 +63,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
         enableReinitialize: true,
         initialValues: initialValues,
         validationSchema: createEntrySchema,
-        onSubmit: async (values, { resetForm }) => {
+        onSubmit: async (values) => {
             setIsLoading(true);
             const entry: Entry = JSON.parse(JSON.stringify(values));
 
@@ -114,7 +114,6 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
             } else {
                 setSuccessMessage(`Successfully updated the entry`);
                 setSuccessOpen(true);
-                resetForm();
             }
             setIsLoading(false);
         },
