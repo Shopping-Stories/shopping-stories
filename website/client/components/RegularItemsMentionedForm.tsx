@@ -37,6 +37,7 @@ const RegularItemsMentionedForm = ({ formikForm }: any) => {
                                                           type="number"
                                                           inputProps={{
                                                               min: 0,
+                                                              step: '0.01',
                                                           }}
                                                           formikForm={
                                                               formikForm

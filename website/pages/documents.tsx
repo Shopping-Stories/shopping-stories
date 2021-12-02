@@ -78,7 +78,7 @@ const DocumentsPage: NextPage = () => {
     const [search, setSearch] = useState<string>('');
     const [page, setPage] = useState(0);
 
-    const rowsPerPage = 10;
+    const rowsPerPage = 8;
 
     const [options, setOptions] = useState<OptionsType>({
         limit: rowsPerPage,

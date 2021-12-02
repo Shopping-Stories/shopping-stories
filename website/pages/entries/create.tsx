@@ -338,7 +338,7 @@ const CreateEntryPage: NextPage = () => {
                                     name="money.currency.pounds"
                                     label="Pounds"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={createForm}
                                     fieldName="money.currency.pounds"
                                 />
@@ -347,7 +347,7 @@ const CreateEntryPage: NextPage = () => {
                                     name="money.currency.shilling"
                                     label="Shilling"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={createForm}
                                     fieldName="money.currency.shilling"
                                 />
@@ -356,7 +356,7 @@ const CreateEntryPage: NextPage = () => {
                                     name="money.currency.pence"
                                     label="Pence"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={createForm}
                                     fieldName="money.currency.pence"
                                 />
@@ -367,7 +367,7 @@ const CreateEntryPage: NextPage = () => {
                                     name="money.sterling.pounds"
                                     label="Pounds"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={createForm}
                                     fieldName="money.sterling.pounds"
                                 />
@@ -376,7 +376,7 @@ const CreateEntryPage: NextPage = () => {
                                     name="money.sterling.shilling"
                                     label="Shilling"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={createForm}
                                     fieldName="money.sterling.shilling"
                                 />
@@ -385,7 +385,7 @@ const CreateEntryPage: NextPage = () => {
                                     name="money.sterling.pence"
                                     label="Pence"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={createForm}
                                     fieldName="money.sterling.pence"
                                 />

@@ -37,7 +37,7 @@ const ItemGlossaryIndexPage: NextPage = () => {
     });
 
     const [page, setPage] = useState(0);
-    const rowsPerPage = 10;
+    const rowsPerPage = 8;
 
     const [options, setOptions] = useState<OptionsType>({
         limit: rowsPerPage,

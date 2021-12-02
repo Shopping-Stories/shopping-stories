@@ -40,6 +40,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                               type="number"
                                                               inputProps={{
                                                                   min: 0,
+                                                                  step: '0.01',
                                                               }}
                                                               formikForm={
                                                                   formikForm
@@ -102,6 +103,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       type="number"
                                                                       inputProps={{
                                                                           min: 0,
+                                                                          step: '0.01',
                                                                       }}
                                                                       name={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.pounds`}
                                                                       label={`Pounds`}
@@ -115,6 +117,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       type="number"
                                                                       inputProps={{
                                                                           min: 0,
+                                                                          step: '0.01',
                                                                       }}
                                                                       name={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.shilling`}
                                                                       label={`Shilling`}
@@ -128,6 +131,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       type="number"
                                                                       inputProps={{
                                                                           min: 0,
+                                                                          step: '0.01',
                                                                       }}
                                                                       name={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.pence`}
                                                                       label={`Pence`}
@@ -151,6 +155,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       type="number"
                                                                       inputProps={{
                                                                           min: 0,
+                                                                          step: '0.01',
                                                                       }}
                                                                       name={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.pounds`}
                                                                       label={`Pounds`}
@@ -164,6 +169,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       type="number"
                                                                       inputProps={{
                                                                           min: 0,
+                                                                          step: '0.01',
                                                                       }}
                                                                       name={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.shilling`}
                                                                       label={`Shilling`}
@@ -177,6 +183,7 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                       type="number"
                                                                       inputProps={{
                                                                           min: 0,
+                                                                          step: '0.01',
                                                                       }}
                                                                       name={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.pence`}
                                                                       label={`Pence`}

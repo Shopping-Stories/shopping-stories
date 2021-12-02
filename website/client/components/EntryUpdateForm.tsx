@@ -352,7 +352,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     name="money.currency.pounds"
                                     label="Pounds"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.currency.pounds"
                                 />
@@ -361,7 +361,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     name="money.currency.shilling"
                                     label="Shilling"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.currency.shilling"
                                 />
@@ -370,7 +370,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     name="money.currency.pence"
                                     label="Pence"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.currency.pence"
                                 />
@@ -381,7 +381,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     name="money.sterling.pounds"
                                     label="Pounds"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.sterling.pounds"
                                 />
@@ -390,7 +390,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     name="money.sterling.shilling"
                                     label="Shilling"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.sterling.shilling"
                                 />
@@ -399,7 +399,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     name="money.sterling.pence"
                                     label="Pence"
                                     type="number"
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.sterling.pence"
                                 />

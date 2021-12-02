@@ -27,7 +27,6 @@ export class EntryService {
         selectedFields: Object,
         search?: string,
     ): Promise<Entry[]> {
-        
         if (!!search) {
             return EntryModel.find(getMongoTextSearchObject(search), {
                 ...selectedFields,

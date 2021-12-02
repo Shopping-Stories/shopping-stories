@@ -67,6 +67,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
+                                                          step: '0.01',
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].rateForTobacco.pounds`}
@@ -78,6 +79,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
+                                                          step: '0.01',
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].rateForTobacco.shilling`}
@@ -89,6 +91,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
+                                                          step: '0.01',
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].rateForTobacco.pence`}
@@ -104,6 +107,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
+                                                          step: '0.01',
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].tobaccoSold.pounds`}
@@ -115,6 +119,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
+                                                          step: '0.01',
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].tobaccoSold.shilling`}
@@ -126,6 +131,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
+                                                          step: '0.01',
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].tobaccoSold.pence`}
@@ -141,6 +147,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
+                                                          step: '0.01',
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].casksSoldForEach.pounds`}
@@ -163,6 +170,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       type="number"
                                                       inputProps={{
                                                           min: 0,
+                                                          step: '0.01',
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].casksSoldForEach.pence`}
