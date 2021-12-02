@@ -35,12 +35,22 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
     } = props;
     const [open, setOpen] = useState(false);
 
+    let debitOrCredit: any = row?.accountHolder?.debitOrCredit;
+
+    if (debitOrCredit === 1) {
+        debitOrCredit = "Credit";
+    } else if (debitOrCredit === 0) {
+        debitOrCredit = "Debit";
+    } else {
+        debitOrCredit = "Neither";
+    }
+
     const columnValues: any[] = [
         row?.accountHolder?.accountFirstName,
         row?.accountHolder?.accountLastName,
         row?.accountHolder?.prefix,
         row?.accountHolder?.suffix,
-        row?.accountHolder?.debitOrCredit,
+        debitOrCredit,
         row?.accountHolder?.location,
         row?.accountHolder?.profession,
         row?.accountHolder?.reference,

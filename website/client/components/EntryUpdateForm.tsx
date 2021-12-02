@@ -193,7 +193,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     name="accountHolder.debitOrCredit"
                                     type="number"
                                     inputProps={{ max: 1, min: -1 }}
-                                    label="Debit or Credit?"
+                                    label="Debit or Credit? (1 for Credit, 0 for Debit, -1 for Neither)"
                                     formikForm={updateForm}
                                     fieldName="accountHolder.debitOrCredit"
                                 />

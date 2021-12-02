@@ -22,7 +22,7 @@ const ParseTable = (props: ParseTableProps) => {
         'Last Name',
         'Prefix',
         'Suffix',
-        'Debt or Credit',
+        'Debit or Credit',
         'Location',
         'Profession',
         'Reference',

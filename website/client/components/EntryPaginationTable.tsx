@@ -125,7 +125,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         'Last Name',
         'Prefix',
         'Suffix',
-        'Debt or Credit',
+        'Debit or Credit',
         'Location',
         'Profession',
         'Reference',
