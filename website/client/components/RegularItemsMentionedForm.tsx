@@ -9,7 +9,15 @@ import { ItemMentioned } from 'client/types';
 import { FieldArray, FormikProvider } from 'formik';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
-const RegularItemsMentionedForm = ({ formikForm }: any) => {
+interface RegularItemsMentionedProps {
+    formikForm: any;
+    disabled?: boolean;
+}
+
+const RegularItemsMentionedForm = ({
+    formikForm,
+    disabled,
+}: RegularItemsMentionedProps) => {
     return (
         <FormikProvider value={formikForm}>
             <FieldArray
@@ -43,6 +51,7 @@ const RegularItemsMentionedForm = ({ formikForm }: any) => {
                                                               formikForm
                                                           }
                                                           fieldName={`regularEntry.itemsMentioned[${index}].quantity`}
+                                                          disabled={disabled}
                                                       />
 
                                                       <TextFieldWithFormikValidation
@@ -53,6 +62,7 @@ const RegularItemsMentionedForm = ({ formikForm }: any) => {
                                                               formikForm
                                                           }
                                                           fieldName={`regularEntry.itemsMentioned[${index}].qualifier`}
+                                                          disabled={disabled}
                                                       />
 
                                                       <TextFieldWithFormikValidation
@@ -63,51 +73,59 @@ const RegularItemsMentionedForm = ({ formikForm }: any) => {
                                                               formikForm
                                                           }
                                                           fieldName={`regularEntry.itemsMentioned[${index}].item`}
+                                                          disabled={disabled}
                                                       />
 
-                                                      <div
-                                                          style={{
-                                                              display: 'flex',
-                                                              alignItems:
-                                                                  'center',
-                                                          }}
-                                                      >
-                                                          <Button
-                                                              variant="contained"
-                                                              type="button"
-                                                              startIcon={
-                                                                  <DeleteIcon />
-                                                              }
-                                                              onClick={() =>
-                                                                  arrayHelpers.remove(
-                                                                      index,
-                                                                  )
-                                                              }
+                                                      {disabled ===
+                                                      true ? null : (
+                                                          <div
+                                                              style={{
+                                                                  display:
+                                                                      'flex',
+                                                                  alignItems:
+                                                                      'center',
+                                                              }}
                                                           >
-                                                              remove mentioned
-                                                              item {index}
-                                                          </Button>
-                                                      </div>
+                                                              <Button
+                                                                  variant="contained"
+                                                                  type="button"
+                                                                  startIcon={
+                                                                      <DeleteIcon />
+                                                                  }
+                                                                  onClick={() =>
+                                                                      arrayHelpers.remove(
+                                                                          index,
+                                                                      )
+                                                                  }
+                                                              >
+                                                                  remove
+                                                                  mentioned item{' '}
+                                                                  {index}
+                                                              </Button>
+                                                          </div>
+                                                      )}
                                                   </Stack>
                                               </CardContent>
                                           </Card>
                                       );
                                   })
                                 : null}
-                            <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<AddCircleIcon />}
-                                onClick={() =>
-                                    arrayHelpers.push({
-                                        quantity: 0,
-                                        qualifier: '',
-                                        item: '',
-                                    })
-                                }
-                            >
-                                Add
-                            </Button>
+                            {disabled === true ? null : (
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    startIcon={<AddCircleIcon />}
+                                    onClick={() =>
+                                        arrayHelpers.push({
+                                            quantity: 0,
+                                            qualifier: '',
+                                            item: '',
+                                        })
+                                    }
+                                >
+                                    Add
+                                </Button>
+                            )}
                         </Stack>
                     );
                 }}

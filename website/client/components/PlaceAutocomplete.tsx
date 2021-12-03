@@ -17,10 +17,19 @@ interface PeoplePlacesAutocompleteProps {
     label: string;
     labelOptions: PersonOrPlace[];
     search: (search: string, index: number) => void;
+    disabled?: boolean;
 }
 
 const PlaceAutocomplete = (props: PeoplePlacesAutocompleteProps) => {
-    const { formikForm, fieldName, index, label, labelOptions, search } = props;
+    const {
+        formikForm,
+        fieldName,
+        index,
+        label,
+        labelOptions,
+        search,
+        disabled,
+    } = props;
     const nameField = `${fieldName}.name`;
     const idField = `${fieldName}.id`;
 
@@ -70,7 +79,7 @@ const PlaceAutocomplete = (props: PeoplePlacesAutocompleteProps) => {
                     search(newSearch, index);
                 }
             }}
-            options={labelOptions}
+            options={disabled ? [] : labelOptions}
             getOptionLabel={(option: PersonOrPlace) => option.name || ''}
             isOptionEqualToValue={(
                 option: PersonOrPlace,
@@ -93,6 +102,7 @@ const PlaceAutocomplete = (props: PeoplePlacesAutocompleteProps) => {
                         label={label}
                         formikForm={formikForm}
                         fieldName={nameField}
+                        disabled={disabled}
                     />
 
                     {result.data?.place ? (

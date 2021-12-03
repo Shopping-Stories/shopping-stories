@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import { Entry } from 'client/types';
+import router from 'next/router';
 import { Fragment, useState } from 'react';
 import ArrayTable from './ArrayTable';
 import ItemEntriesTable from './ItemEntriesTable';
@@ -38,11 +39,11 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
     let debitOrCredit: any = row?.accountHolder?.debitOrCredit;
 
     if (debitOrCredit === 1) {
-        debitOrCredit = "Credit";
+        debitOrCredit = 'Credit';
     } else if (debitOrCredit === 0) {
-        debitOrCredit = "Debit";
+        debitOrCredit = 'Debit';
     } else {
-        debitOrCredit = "Neither";
+        debitOrCredit = 'Neither';
     }
 
     const columnValues: any[] = [
@@ -107,6 +108,18 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
                 ) : null}
                 {index !== undefined ? (
                     <TableCell align="center">{index}</TableCell>
+                ) : null}
+                {onEditClick ? (
+                    <TableCell>
+                        <Button
+                            variant="contained"
+                            onClick={() =>
+                                router.push(`entries/view/${(row as any).id}`)
+                            }
+                        >
+                            View
+                        </Button>
+                    </TableCell>
                 ) : null}
                 {onEditClick && isAdminOrModerator ? (
                     <TableCell>

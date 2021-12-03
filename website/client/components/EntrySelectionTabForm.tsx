@@ -19,9 +19,11 @@ const a11yProps = (index: number) => {
 const EntrySelectionTabForm = ({
     formikForm,
     initialIndex,
+    disabled,
 }: {
     formikForm: any;
     initialIndex?: number;
+    disabled?: boolean;
 }) => {
     const [tabIndex, setTabIndex] = useState(initialIndex || 0);
 
@@ -68,7 +70,7 @@ const EntrySelectionTabForm = ({
                 scrollButtons
                 allowScrollButtonsMobile
                 value={tabIndex}
-                onChange={handleChange}
+                onChange={disabled === true ? () => {} : handleChange}
             >
                 <Tab label="Item Entries" {...a11yProps(0)} />
                 <Tab label="Tobacco Entry" {...a11yProps(1)} />
@@ -76,17 +78,26 @@ const EntrySelectionTabForm = ({
             </Tabs>
             <TabPanel value={tabIndex} index={0}>
                 <Paper sx={PaperStyles}>
-                    <CreateItemEntryFrom formikForm={formikForm} />
+                    <CreateItemEntryFrom
+                        disabled={disabled}
+                        formikForm={formikForm}
+                    />
                 </Paper>
             </TabPanel>
             <TabPanel value={tabIndex} index={1}>
                 <Paper sx={PaperStyles}>
-                    <CreateTobaccoEntryFrom formikForm={formikForm} />
+                    <CreateTobaccoEntryFrom
+                        disabled={disabled}
+                        formikForm={formikForm}
+                    />
                 </Paper>
             </TabPanel>
             <TabPanel value={tabIndex} index={2}>
                 <Paper sx={PaperStyles}>
-                    <CreateRegularEntryFrom formikForm={formikForm} />
+                    <CreateRegularEntryFrom
+                        disabled={disabled}
+                        formikForm={formikForm}
+                    />
                 </Paper>
             </TabPanel>
         </Box>

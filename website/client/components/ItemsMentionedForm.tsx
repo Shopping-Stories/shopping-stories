@@ -8,7 +8,17 @@ import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
-const ItemsMentionedForm = ({ formikForm, prevIdx }: any) => {
+interface ItemsMentionedProps {
+    formikForm: any;
+    prevIdx: number;
+    disabled?: boolean;
+}
+
+const ItemsMentionedForm = ({
+    formikForm,
+    prevIdx,
+    disabled,
+}: ItemsMentionedProps) => {
     return (
         <FormikProvider value={formikForm}>
             <FieldArray
@@ -44,6 +54,9 @@ const ItemsMentionedForm = ({ formikForm, prevIdx }: any) => {
                                                                   formikForm
                                                               }
                                                               fieldName={`itemEntries[${prevIdx}].itemsMentioned[${index}].quantity`}
+                                                              disabled={
+                                                                  disabled
+                                                              }
                                                           />
 
                                                           <TextFieldWithFormikValidation
@@ -54,6 +67,9 @@ const ItemsMentionedForm = ({ formikForm, prevIdx }: any) => {
                                                                   formikForm
                                                               }
                                                               fieldName={`itemEntries[${prevIdx}].itemsMentioned[${index}].qualifier`}
+                                                              disabled={
+                                                                  disabled
+                                                              }
                                                           />
 
                                                           <TextFieldWithFormikValidation
@@ -64,33 +80,40 @@ const ItemsMentionedForm = ({ formikForm, prevIdx }: any) => {
                                                                   formikForm
                                                               }
                                                               fieldName={`itemEntries[${prevIdx}].itemsMentioned[${index}].item`}
+                                                              disabled={
+                                                                  disabled
+                                                              }
                                                           />
 
-                                                          <div
-                                                              style={{
-                                                                  display:
-                                                                      'flex',
-                                                                  alignItems:
-                                                                      'center',
-                                                              }}
-                                                          >
-                                                              <Button
-                                                                  variant="contained"
-                                                                  type="button"
-                                                                  startIcon={
-                                                                      <DeleteIcon />
-                                                                  }
-                                                                  onClick={() =>
-                                                                      arrayHelpers.remove(
-                                                                          index,
-                                                                      )
-                                                                  }
+                                                          {disabled ===
+                                                          true ? null : (
+                                                              <div
+                                                                  style={{
+                                                                      display:
+                                                                          'flex',
+                                                                      alignItems:
+                                                                          'center',
+                                                                  }}
                                                               >
-                                                                  remove
-                                                                  mentioned item{' '}
-                                                                  {index}
-                                                              </Button>
-                                                          </div>
+                                                                  <Button
+                                                                      variant="contained"
+                                                                      type="button"
+                                                                      startIcon={
+                                                                          <DeleteIcon />
+                                                                      }
+                                                                      onClick={() =>
+                                                                          arrayHelpers.remove(
+                                                                              index,
+                                                                          )
+                                                                      }
+                                                                  >
+                                                                      remove
+                                                                      mentioned
+                                                                      item{' '}
+                                                                      {index}
+                                                                  </Button>
+                                                              </div>
+                                                          )}
                                                       </Stack>
                                                   </CardContent>
                                               </Card>
@@ -98,20 +121,22 @@ const ItemsMentionedForm = ({ formikForm, prevIdx }: any) => {
                                       );
                                   })
                                 : null}
-                            <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<AddCircleIcon />}
-                                onClick={() =>
-                                    arrayHelpers.push({
-                                        quantity: 0,
-                                        qualifier: '',
-                                        item: '',
-                                    })
-                                }
-                            >
-                                Add Mentioned Item
-                            </Button>
+                            {disabled === true ? null : (
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    startIcon={<AddCircleIcon />}
+                                    onClick={() =>
+                                        arrayHelpers.push({
+                                            quantity: 0,
+                                            qualifier: '',
+                                            item: '',
+                                        })
+                                    }
+                                >
+                                    Add Mentioned Item
+                                </Button>
+                            )}
                         </Stack>
                     );
                 }}

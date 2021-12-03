@@ -22,7 +22,12 @@ query searchPeople($search: String!, $options: FindAllLimitAndSkip) {
 }
 `;
 
-const FindAccountHolder = ({ formikForm }: any) => {
+interface FindAccountProps {
+    formikForm: any;
+    disabled?: boolean;
+}
+
+const FindAccountHolder = ({ formikForm, disabled }: FindAccountProps) => {
     interface OptionsType {
         limit: number | null;
         skip: number | null;
@@ -103,7 +108,7 @@ const FindAccountHolder = ({ formikForm }: any) => {
                     delayedPersonSearch(newSearch);
                 }
             }}
-            options={peopleOptions}
+            options={disabled ? [] : peopleOptions}
             getOptionLabel={(option: any) => option.name || ''}
             isOptionEqualToValue={(option: any, value: any) =>
                 option.name === value.name
@@ -124,6 +129,7 @@ const FindAccountHolder = ({ formikForm }: any) => {
                         margin="dense"
                         variant="standard"
                         label={`Account Holder`}
+                        disabled={disabled}
                         error={
                             formikForm.touched.accountHolder?.accountHolderID &&
                             Boolean(

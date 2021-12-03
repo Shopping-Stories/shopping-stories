@@ -10,7 +10,17 @@ import { FieldArray, FormikProvider } from 'formik';
 import ItemsOrServicesVariantsForm from './ItemsOrServicesVariants';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
-const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
+interface ItemsOrServicesProps {
+    formikForm: any;
+    prevIdx: number;
+    disabled?: boolean;
+}
+
+const ItemsOrServicesForm = ({
+    formikForm,
+    prevIdx,
+    disabled,
+}: ItemsOrServicesProps) => {
     return (
         <FormikProvider value={formikForm}>
             <FieldArray
@@ -46,6 +56,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                   formikForm
                                                               }
                                                               fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].quantity`}
+                                                              disabled={
+                                                                  disabled
+                                                              }
                                                           />
                                                           <TextFieldWithFormikValidation
                                                               fullWidth
@@ -55,6 +68,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                   formikForm
                                                               }
                                                               fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].qualifier`}
+                                                              disabled={
+                                                                  disabled
+                                                              }
                                                           />
 
                                                           <TextFieldWithFormikValidation
@@ -65,6 +81,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                   formikForm
                                                               }
                                                               fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].item`}
+                                                              disabled={
+                                                                  disabled
+                                                              }
                                                           />
 
                                                           <TextFieldWithFormikValidation
@@ -75,6 +94,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                   formikForm
                                                               }
                                                               fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].category`}
+                                                              disabled={
+                                                                  disabled
+                                                              }
                                                           />
 
                                                           <TextFieldWithFormikValidation
@@ -85,6 +107,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                   formikForm
                                                               }
                                                               fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].subcategory`}
+                                                              disabled={
+                                                                  disabled
+                                                              }
                                                           />
                                                           <Grid
                                                               container
@@ -111,6 +136,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                           formikForm
                                                                       }
                                                                       fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.pounds`}
+                                                                      disabled={
+                                                                          disabled
+                                                                      }
                                                                   />
                                                                   <TextFieldWithFormikValidation
                                                                       fullWidth
@@ -125,6 +153,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                           formikForm
                                                                       }
                                                                       fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.shilling`}
+                                                                      disabled={
+                                                                          disabled
+                                                                      }
                                                                   />
                                                                   <TextFieldWithFormikValidation
                                                                       fullWidth
@@ -139,6 +170,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                           formikForm
                                                                       }
                                                                       fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].unitCost.pence`}
+                                                                      disabled={
+                                                                          disabled
+                                                                      }
                                                                   />
                                                               </Grid>
 
@@ -163,6 +197,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                           formikForm
                                                                       }
                                                                       fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.pounds`}
+                                                                      disabled={
+                                                                          disabled
+                                                                      }
                                                                   />
                                                                   <TextFieldWithFormikValidation
                                                                       fullWidth
@@ -177,6 +214,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                           formikForm
                                                                       }
                                                                       fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.shilling`}
+                                                                      disabled={
+                                                                          disabled
+                                                                      }
                                                                   />
                                                                   <TextFieldWithFormikValidation
                                                                       fullWidth
@@ -191,6 +231,9 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                           formikForm
                                                                       }
                                                                       fieldName={`itemEntries[${prevIdx}].itemsOrServices[${index}].itemCost.pence`}
+                                                                      disabled={
+                                                                          disabled
+                                                                      }
                                                                   />
                                                               </Grid>
                                                           </Grid>
@@ -203,33 +246,39 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                                                   prevIdx
                                                               }
                                                               prevIdx={index}
+                                                              disabled={
+                                                                  disabled
+                                                              }
                                                           />
-
-                                                          <div
-                                                              style={{
-                                                                  display:
-                                                                      'flex',
-                                                                  alignItems:
-                                                                      'center',
-                                                              }}
-                                                          >
-                                                              <Button
-                                                                  variant="contained"
-                                                                  type="button"
-                                                                  startIcon={
-                                                                      <DeleteIcon />
-                                                                  }
-                                                                  onClick={() =>
-                                                                      arrayHelpers.remove(
-                                                                          index,
-                                                                      )
-                                                                  }
+                                                          {disabled ===
+                                                          true ? null : (
+                                                              <div
+                                                                  style={{
+                                                                      display:
+                                                                          'flex',
+                                                                      alignItems:
+                                                                          'center',
+                                                                  }}
                                                               >
-                                                                  remove item or
-                                                                  service{' '}
-                                                                  {index}
-                                                              </Button>
-                                                          </div>
+                                                                  <Button
+                                                                      variant="contained"
+                                                                      type="button"
+                                                                      startIcon={
+                                                                          <DeleteIcon />
+                                                                      }
+                                                                      onClick={() =>
+                                                                          arrayHelpers.remove(
+                                                                              index,
+                                                                          )
+                                                                      }
+                                                                  >
+                                                                      remove
+                                                                      item or
+                                                                      service{' '}
+                                                                      {index}
+                                                                  </Button>
+                                                              </div>
+                                                          )}
                                                       </Stack>
                                                   </CardContent>
                                               </Card>
@@ -237,33 +286,35 @@ const ItemsOrServicesForm = ({ formikForm, prevIdx }: any) => {
                                       );
                                   })
                                 : null}
-                            <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<AddCircleIcon />}
-                                onClick={() =>
-                                    arrayHelpers.push({
-                                        quantity: 0,
-                                        qualifier: '',
-                                        variants: [],
-                                        item: '',
-                                        category: '',
-                                        subcategory: '',
-                                        unitCost: {
-                                            pounds: 0,
-                                            shilling: 0,
-                                            pence: 0,
-                                        },
-                                        itemCost: {
-                                            pounds: 0,
-                                            shilling: 0,
-                                            pence: 0,
-                                        },
-                                    })
-                                }
-                            >
-                                add Item or Service
-                            </Button>
+                            {disabled === true ? null : (
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    startIcon={<AddCircleIcon />}
+                                    onClick={() =>
+                                        arrayHelpers.push({
+                                            quantity: 0,
+                                            qualifier: '',
+                                            variants: [],
+                                            item: '',
+                                            category: '',
+                                            subcategory: '',
+                                            unitCost: {
+                                                pounds: 0,
+                                                shilling: 0,
+                                                pence: 0,
+                                            },
+                                            itemCost: {
+                                                pounds: 0,
+                                                shilling: 0,
+                                                pence: 0,
+                                            },
+                                        })
+                                    }
+                                >
+                                    add Item or Service
+                                </Button>
+                            )}
                         </Stack>
                     );
                 }}

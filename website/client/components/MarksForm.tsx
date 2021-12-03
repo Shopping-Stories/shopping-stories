@@ -10,7 +10,12 @@ import { useCallback, useState } from 'react';
 import { useQuery } from 'urql';
 import TobaccoMarkAutocomplete from './TobaccoMarkAutocomplete';
 
-const MarkForm = ({ formikForm }: any) => {
+interface MarkFormProps {
+    formikForm: any;
+    disabled?: boolean;
+}
+
+const MarkForm = ({ formikForm, disabled }: MarkFormProps) => {
     const [search, setSearch] = useState<string>('');
 
     const [options, _setOptions] = useState<OptionsType>({
@@ -62,43 +67,50 @@ const MarkForm = ({ formikForm }: any) => {
                                                       delayedTobaccoMarkSearch
                                                   }
                                                   formikForm={formikForm}
+                                                  disabled={disabled}
                                               />
-                                              <div
-                                                  style={{
-                                                      display: 'flex',
-                                                      alignItems: 'center',
-                                                  }}
-                                              >
-                                                  <Button
-                                                      variant="contained"
-                                                      type="button"
-                                                      startIcon={<DeleteIcon />}
-                                                      onClick={() =>
-                                                          arrayHelpers.remove(
-                                                              index,
-                                                          )
-                                                      }
+                                              {disabled === true ? null : (
+                                                  <div
+                                                      style={{
+                                                          display: 'flex',
+                                                          alignItems: 'center',
+                                                      }}
                                                   >
-                                                      remove
-                                                  </Button>
-                                              </div>
+                                                      <Button
+                                                          variant="contained"
+                                                          type="button"
+                                                          startIcon={
+                                                              <DeleteIcon />
+                                                          }
+                                                          onClick={() =>
+                                                              arrayHelpers.remove(
+                                                                  index,
+                                                              )
+                                                          }
+                                                      >
+                                                          remove
+                                                      </Button>
+                                                  </div>
+                                              )}
                                           </Stack>
                                       );
                                   })
                                 : null}
-                            <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<AddCircleIcon />}
-                                onClick={() =>
-                                    arrayHelpers.push({
-                                        markName: '',
-                                        markID: '',
-                                    })
-                                }
-                            >
-                                Add
-                            </Button>
+                            {disabled === true ? null : (
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    startIcon={<AddCircleIcon />}
+                                    onClick={() =>
+                                        arrayHelpers.push({
+                                            markName: '',
+                                            markID: '',
+                                        })
+                                    }
+                                >
+                                    Add
+                                </Button>
+                            )}
                         </Stack>
                     );
                 }}

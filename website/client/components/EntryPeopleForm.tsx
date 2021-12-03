@@ -11,7 +11,12 @@ import { useCallback, useState } from 'react';
 import { useQuery } from 'urql';
 import PersonAutocomplete from './PersonAutocomplete';
 
-const EntryPeopleForm = ({ formikForm }: any) => {
+interface EntryPeopleFormProps {
+    formikForm: any;
+    disabled?: boolean;
+}
+
+const EntryPeopleForm = ({ formikForm, disabled }: EntryPeopleFormProps) => {
     const [search, setSearch] = useState<string>('');
 
     const [options, _setOptions] = useState<OptionsType>({
@@ -55,23 +60,27 @@ const EntryPeopleForm = ({ formikForm }: any) => {
                                           direction="row"
                                           spacing={2}
                                       >
-                                          <div
-                                              style={{
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                              }}
-                                          >
-                                              <Button
-                                                  variant="contained"
-                                                  startIcon={<DeleteIcon />}
-                                                  type="button"
-                                                  onClick={() =>
-                                                      arrayHelpers.remove(index)
-                                                  }
+                                          {disabled === true ? null : (
+                                              <div
+                                                  style={{
+                                                      display: 'flex',
+                                                      alignItems: 'center',
+                                                  }}
                                               >
-                                                  remove {index}
-                                              </Button>
-                                          </div>
+                                                  <Button
+                                                      variant="contained"
+                                                      startIcon={<DeleteIcon />}
+                                                      type="button"
+                                                      onClick={() =>
+                                                          arrayHelpers.remove(
+                                                              index,
+                                                          )
+                                                      }
+                                                  >
+                                                      remove {index}
+                                                  </Button>
+                                              </div>
+                                          )}
                                           <PersonAutocomplete
                                               formikForm={formikForm}
                                               fieldName={`people[${index}]`}
@@ -79,20 +88,23 @@ const EntryPeopleForm = ({ formikForm }: any) => {
                                               label={`Person ${index}`}
                                               labelOptions={peopleOptions}
                                               search={delayedPersonSearch}
+                                              disabled={disabled}
                                           />
                                       </Stack>
                                   ))
                                 : null}
-                            <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<AddCircleIcon />}
-                                onClick={() =>
-                                    arrayHelpers.push({ name: '', id: '' })
-                                }
-                            >
-                                Add
-                            </Button>
+                            {disabled === true ? null : (
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    startIcon={<AddCircleIcon />}
+                                    onClick={() =>
+                                        arrayHelpers.push({ name: '', id: '' })
+                                    }
+                                >
+                                    Add
+                                </Button>
+                            )}
                         </Stack>
                     );
                 }}

@@ -11,7 +11,15 @@ import ItemsMentionedForm from './ItemsMentionedForm';
 import ItemsOrServicesForm from './itemsOrSevicesForm';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
-const CreateItemEntryFrom = ({ formikForm }: any) => {
+interface CreateItemEntryProps {
+    formikForm: any;
+    disabled?: boolean;
+}
+
+const CreateItemEntryFrom = ({
+    formikForm,
+    disabled,
+}: CreateItemEntryProps) => {
     return (
         <div>
             <FormikProvider value={formikForm}>
@@ -48,6 +56,7 @@ const CreateItemEntryFrom = ({ formikForm }: any) => {
                                                               formikForm
                                                           }
                                                           fieldName={`itemEntries[${index}].perOrder`}
+                                                          disabled={disabled}
                                                       />
                                                       <TextFieldWithFormikValidation
                                                           fullWidth
@@ -61,6 +70,7 @@ const CreateItemEntryFrom = ({ formikForm }: any) => {
                                                               formikForm
                                                           }
                                                           fieldName={`itemEntries[${index}].percentage`}
+                                                          disabled={disabled}
                                                       />
                                                       <Card
                                                           sx={{
@@ -76,6 +86,9 @@ const CreateItemEntryFrom = ({ formikForm }: any) => {
                                                                   }
                                                                   prevIdx={
                                                                       index
+                                                                  }
+                                                                  disabled={
+                                                                      disabled
                                                                   }
                                                               />
                                                           </CardContent>
@@ -95,52 +108,61 @@ const CreateItemEntryFrom = ({ formikForm }: any) => {
                                                                   prevIdx={
                                                                       index
                                                                   }
+                                                                  disabled={
+                                                                      disabled
+                                                                  }
                                                               />
                                                           </CardContent>
                                                       </Card>
-                                                      <div
-                                                          style={{
-                                                              display: 'flex',
-                                                              alignItems:
-                                                                  'center',
-                                                          }}
-                                                      >
-                                                          <Button
-                                                              variant="contained"
-                                                              startIcon={
-                                                                  <DeleteIcon />
-                                                              }
-                                                              type="button"
-                                                              onClick={() =>
-                                                                  arrayHelpers.remove(
-                                                                      index,
-                                                                  )
-                                                              }
+                                                      {disabled ===
+                                                      true ? null : (
+                                                          <div
+                                                              style={{
+                                                                  display:
+                                                                      'flex',
+                                                                  alignItems:
+                                                                      'center',
+                                                              }}
                                                           >
-                                                              remove entry{' '}
-                                                              {index}
-                                                          </Button>
-                                                      </div>
+                                                              <Button
+                                                                  variant="contained"
+                                                                  startIcon={
+                                                                      <DeleteIcon />
+                                                                  }
+                                                                  type="button"
+                                                                  onClick={() =>
+                                                                      arrayHelpers.remove(
+                                                                          index,
+                                                                      )
+                                                                  }
+                                                              >
+                                                                  remove entry{' '}
+                                                                  {index}
+                                                              </Button>
+                                                          </div>
+                                                      )}
                                                   </Stack>
                                               )
                                           );
                                       })
                                     : null}
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    startIcon={<AddCircleIcon />}
-                                    onClick={() =>
-                                        arrayHelpers.push({
-                                            perOrder: 0,
-                                            percentage: 0,
-                                            itemsOrServices: [],
-                                            itemsMentioned: [],
-                                        })
-                                    }
-                                >
-                                    Add
-                                </Button>
+                                {disabled === true ? null : (
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        startIcon={<AddCircleIcon />}
+                                        onClick={() =>
+                                            arrayHelpers.push({
+                                                perOrder: 0,
+                                                percentage: 0,
+                                                itemsOrServices: [],
+                                                itemsMentioned: [],
+                                            })
+                                        }
+                                    >
+                                        Add
+                                    </Button>
+                                )}
                             </Stack>
                         );
                     }}

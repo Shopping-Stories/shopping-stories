@@ -6,7 +6,15 @@ import RegularItemsMentionedForm from './RegularItemsMentionedForm';
 import RegularMarkForm from './RegularMarkForm';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
-const CreateRegularEntryFrom = ({ formikForm }: any) => {
+interface RegularEntryFormProps {
+    formikForm: any;
+    disabled?: boolean;
+}
+
+const CreateRegularEntryFrom = ({
+    formikForm,
+    disabled,
+}: RegularEntryFormProps) => {
     const ref = formikForm.values.regularEntry;
     return (
         <div>
@@ -18,6 +26,7 @@ const CreateRegularEntryFrom = ({ formikForm }: any) => {
                         label={`Entry`}
                         formikForm={formikForm}
                         fieldName={`regularEntry.entry`}
+                        disabled={disabled}
                     />
 
                     <Card
@@ -27,7 +36,10 @@ const CreateRegularEntryFrom = ({ formikForm }: any) => {
                     >
                         <CardHeader title="Tobacco Marks" />
                         <CardContent>
-                            <RegularMarkForm formikForm={formikForm} />
+                            <RegularMarkForm
+                                disabled={disabled}
+                                formikForm={formikForm}
+                            />
                         </CardContent>
                     </Card>
                     <Card
@@ -39,6 +51,7 @@ const CreateRegularEntryFrom = ({ formikForm }: any) => {
                         <CardContent>
                             <RegularItemsMentionedForm
                                 formikForm={formikForm}
+                                disabled={disabled}
                             />
                         </CardContent>
                     </Card>

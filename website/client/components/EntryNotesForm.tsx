@@ -9,7 +9,12 @@ import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
-const EntryNotesFrom = ({ formikForm }: any) => {
+interface EntryNotesFormProps {
+    formikForm: any;
+    disabled?: boolean;
+}
+
+const EntryNotesFrom = ({ formikForm, disabled }: EntryNotesFormProps) => {
     return (
         <FormikProvider value={formikForm}>
             <FieldArray
@@ -38,6 +43,7 @@ const EntryNotesFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.notes[${index}].noteNum`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -49,6 +55,7 @@ const EntryNotesFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.notes[${index}].totalWeight`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -60,6 +67,7 @@ const EntryNotesFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.notes[${index}].barrelWeight`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -71,41 +79,48 @@ const EntryNotesFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.notes[${index}].tobaccoWeight`}
+                                                      disabled={disabled}
                                                   />
                                               </CardContent>
-                                              <CardActions>
-                                                  <Button
-                                                      variant="contained"
-                                                      type="button"
-                                                      startIcon={<DeleteIcon />}
-                                                      onClick={() =>
-                                                          arrayHelpers.remove(
-                                                              index,
-                                                          )
-                                                      }
-                                                  >
-                                                      remove
-                                                  </Button>
-                                              </CardActions>
+                                              {disabled === true ? null : (
+                                                  <CardActions>
+                                                      <Button
+                                                          variant="contained"
+                                                          type="button"
+                                                          startIcon={
+                                                              <DeleteIcon />
+                                                          }
+                                                          onClick={() =>
+                                                              arrayHelpers.remove(
+                                                                  index,
+                                                              )
+                                                          }
+                                                      >
+                                                          remove
+                                                      </Button>
+                                                  </CardActions>
+                                              )}
                                           </Card>
                                       );
                                   })
                                 : null}
-                            <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<AddCircleIcon />}
-                                onClick={() =>
-                                    arrayHelpers.push({
-                                        noteNum: -1,
-                                        totalWeight: 0,
-                                        barrelWeight: 0,
-                                        tobaccoWeight: 0,
-                                    })
-                                }
-                            >
-                                Add Note
-                            </Button>
+                            {disabled === true ? null : (
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    startIcon={<AddCircleIcon />}
+                                    onClick={() =>
+                                        arrayHelpers.push({
+                                            noteNum: -1,
+                                            totalWeight: 0,
+                                            barrelWeight: 0,
+                                            tobaccoWeight: 0,
+                                        })
+                                    }
+                                >
+                                    Add Note
+                                </Button>
+                            )}
                         </Stack>
                     );
                 }}

@@ -164,6 +164,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                     <TableHead>
                         <TableRow>
                             <TableCell />
+                            <TableCell />
                             {isAdminOrModerator ? <TableCell /> : null}
                             {isAdmin ? <TableCell /> : null}
                             <TableCell colSpan={4} align="center">
@@ -192,6 +193,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                             </TableCell>
                         </TableRow>
                         <TableRow>
+                            <TableCell />
                             <TableCell />
                             {isAdminOrModerator ? <TableCell /> : null}
                             {isAdmin ? <TableCell /> : null}

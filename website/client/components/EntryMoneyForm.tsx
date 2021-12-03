@@ -9,7 +9,12 @@ import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
-const EntryMoneyFrom = ({ formikForm }: any) => {
+interface EntryMoneyFormProps {
+    formikForm: any;
+    disabled?: boolean;
+}
+
+const EntryMoneyFrom = ({ formikForm, disabled }: EntryMoneyFormProps) => {
     return (
         <FormikProvider value={formikForm}>
             <FieldArray
@@ -33,6 +38,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       label={`Type of money`}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].moneyType`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -44,6 +50,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].tobaccoAmount`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -55,6 +62,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].casksInTransaction`}
+                                                      disabled={disabled}
                                                   />
 
                                                   <Typography variant="subtitle2">
@@ -71,6 +79,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].rateForTobacco.pounds`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -83,6 +92,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].rateForTobacco.shilling`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -95,6 +105,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].rateForTobacco.pence`}
+                                                      disabled={disabled}
                                                   />
 
                                                   <Typography variant="subtitle2">
@@ -111,6 +122,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].tobaccoSold.pounds`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -123,6 +135,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].tobaccoSold.shilling`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -135,6 +148,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].tobaccoSold.pence`}
+                                                      disabled={disabled}
                                                   />
 
                                                   <Typography variant="subtitle2">
@@ -151,6 +165,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].casksSoldForEach.pounds`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -162,6 +177,7 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].casksSoldForEach.shilling`}
+                                                      disabled={disabled}
                                                   />
                                                   <TextFieldWithFormikValidation
                                                       fullWidth
@@ -174,58 +190,62 @@ const EntryMoneyFrom = ({ formikForm }: any) => {
                                                       }}
                                                       formikForm={formikForm}
                                                       fieldName={`tobaccoEntry.money[${index}].casksSoldForEach.pence`}
+                                                      disabled={disabled}
                                                   />
-
-                                                  <CardActions>
-                                                      <Button
-                                                          variant="contained"
-                                                          type="button"
-                                                          startIcon={
-                                                              <DeleteIcon />
-                                                          }
-                                                          onClick={() =>
-                                                              arrayHelpers.remove(
-                                                                  index,
-                                                              )
-                                                          }
-                                                      >
-                                                          remove
-                                                      </Button>
-                                                  </CardActions>
+                                                  {disabled === true ? null : (
+                                                      <CardActions>
+                                                          <Button
+                                                              variant="contained"
+                                                              type="button"
+                                                              startIcon={
+                                                                  <DeleteIcon />
+                                                              }
+                                                              onClick={() =>
+                                                                  arrayHelpers.remove(
+                                                                      index,
+                                                                  )
+                                                              }
+                                                          >
+                                                              remove
+                                                          </Button>
+                                                      </CardActions>
+                                                  )}
                                               </CardContent>
                                           </Card>
                                       );
                                   })
                                 : null}
-                            <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<AddCircleIcon />}
-                                onClick={() =>
-                                    arrayHelpers.push({
-                                        moneyType: '',
-                                        tobaccoAmount: 0,
-                                        rateForTobacco: {
-                                            pounds: 0,
-                                            shilling: 0,
-                                            pence: 0,
-                                        },
-                                        casksInTransaction: 0,
-                                        tobaccoSold: {
-                                            pounds: 0,
-                                            shilling: 0,
-                                            pence: 0,
-                                        },
-                                        casksSoldForEach: {
-                                            pounds: 0,
-                                            shilling: 0,
-                                            pence: 0,
-                                        },
-                                    })
-                                }
-                            >
-                                Add
-                            </Button>
+                            {disabled === true ? null : (
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    startIcon={<AddCircleIcon />}
+                                    onClick={() =>
+                                        arrayHelpers.push({
+                                            moneyType: '',
+                                            tobaccoAmount: 0,
+                                            rateForTobacco: {
+                                                pounds: 0,
+                                                shilling: 0,
+                                                pence: 0,
+                                            },
+                                            casksInTransaction: 0,
+                                            tobaccoSold: {
+                                                pounds: 0,
+                                                shilling: 0,
+                                                pence: 0,
+                                            },
+                                            casksSoldForEach: {
+                                                pounds: 0,
+                                                shilling: 0,
+                                                pence: 0,
+                                            },
+                                        })
+                                    }
+                                >
+                                    Add
+                                </Button>
+                            )}
                         </Stack>
                     );
                 }}

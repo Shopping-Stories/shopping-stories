@@ -7,7 +7,15 @@ import EntryNotesFrom from './EntryNotesForm';
 import MarkForm from './MarksForm';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
-const CreateTobaccoEntryFrom = ({ formikForm }: any) => {
+interface TobaccoEntryFormProps {
+    formikForm: any;
+    disabled?: boolean;
+}
+
+const CreateTobaccoEntryFrom = ({
+    formikForm,
+    disabled,
+}: TobaccoEntryFormProps) => {
     const ref = formikForm.values.tobaccoEntry;
     return (
         <div>
@@ -19,6 +27,7 @@ const CreateTobaccoEntryFrom = ({ formikForm }: any) => {
                         label={`Entry`}
                         formikForm={formikForm}
                         fieldName={`tobaccoEntry.entry`}
+                        disabled={disabled}
                     />
                     <TextFieldWithFormikValidation
                         fullWidth
@@ -28,6 +37,7 @@ const CreateTobaccoEntryFrom = ({ formikForm }: any) => {
                         inputProps={{ min: 0 }}
                         formikForm={formikForm}
                         fieldName={`tobaccoEntry.tobaccoShaved`}
+                        disabled={disabled}
                     />
                     <Card
                         sx={{
@@ -36,7 +46,10 @@ const CreateTobaccoEntryFrom = ({ formikForm }: any) => {
                     >
                         <CardHeader title="Tobacco Marks" />
                         <CardContent>
-                            <MarkForm formikForm={formikForm} />
+                            <MarkForm
+                                disabled={disabled}
+                                formikForm={formikForm}
+                            />
                         </CardContent>
                     </Card>
                     <Card
@@ -46,7 +59,10 @@ const CreateTobaccoEntryFrom = ({ formikForm }: any) => {
                     >
                         <CardHeader title="Entry Notes" />
                         <CardContent>
-                            <EntryNotesFrom formikForm={formikForm} />
+                            <EntryNotesFrom
+                                disabled={disabled}
+                                formikForm={formikForm}
+                            />
                         </CardContent>
                     </Card>
                     <Card
@@ -56,7 +72,10 @@ const CreateTobaccoEntryFrom = ({ formikForm }: any) => {
                     >
                         <CardHeader title="Money" />
                         <CardContent>
-                            <EntryMoneyForm formikForm={formikForm} />
+                            <EntryMoneyForm
+                                disabled={disabled}
+                                formikForm={formikForm}
+                            />
                         </CardContent>
                     </Card>
                 </Stack>

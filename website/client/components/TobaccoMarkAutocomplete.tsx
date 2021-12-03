@@ -17,10 +17,19 @@ interface MarkAutocompleteProps {
     label: string;
     labelOptions: Mark[];
     search: (search: string, index: number) => void;
+    disabled?: boolean;
 }
 
 const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
-    const { formikForm, fieldName, index, label, labelOptions, search } = props;
+    const {
+        formikForm,
+        fieldName,
+        index,
+        label,
+        labelOptions,
+        search,
+        disabled,
+    } = props;
     const nameField = `${fieldName}.markName`;
     const idField = `${fieldName}.markID`;
 
@@ -70,7 +79,7 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
                     search(newSearch, index);
                 }
             }}
-            options={labelOptions}
+            options={disabled ? [] : labelOptions}
             getOptionLabel={(option: Mark) => option.markName || ''}
             isOptionEqualToValue={(option: Mark, value: Mark) =>
                 option.markName === value.markName ||
@@ -93,6 +102,7 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
                         name={nameField}
                         formikForm={formikForm}
                         fieldName={nameField}
+                        disabled={disabled}
                     />
 
                     {result.data?.mark ? (

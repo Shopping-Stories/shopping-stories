@@ -6,7 +6,15 @@ import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
-const LedgerReferencesForm = ({ formikForm }: any) => {
+interface LedgerReferencesFormProps {
+    formikForm: any;
+    disabled?: boolean;
+}
+
+const LedgerReferencesForm = ({
+    formikForm,
+    disabled,
+}: LedgerReferencesFormProps) => {
     return (
         <FormikProvider value={formikForm}>
             <FieldArray
@@ -34,41 +42,47 @@ const LedgerReferencesForm = ({ formikForm }: any) => {
                                                       label={`Ledger ${index}`}
                                                       formikForm={formikForm}
                                                       fieldName={`ledgerRefs[${index}]`}
+                                                      disabled={disabled}
                                                   />
-                                                  <div
-                                                      style={{
-                                                          display: 'flex',
-                                                          alignItems: 'center',
-                                                      }}
-                                                  >
-                                                      <Button
-                                                          variant="contained"
-                                                          startIcon={
-                                                              <DeleteIcon />
-                                                          }
-                                                          type="button"
-                                                          onClick={() =>
-                                                              arrayHelpers.remove(
-                                                                  index,
-                                                              )
-                                                          }
+                                                  {disabled === true ? null : (
+                                                      <div
+                                                          style={{
+                                                              display: 'flex',
+                                                              alignItems:
+                                                                  'center',
+                                                          }}
                                                       >
-                                                          remove
-                                                      </Button>
-                                                  </div>
+                                                          <Button
+                                                              variant="contained"
+                                                              startIcon={
+                                                                  <DeleteIcon />
+                                                              }
+                                                              type="button"
+                                                              onClick={() =>
+                                                                  arrayHelpers.remove(
+                                                                      index,
+                                                                  )
+                                                              }
+                                                          >
+                                                              remove
+                                                          </Button>
+                                                      </div>
+                                                  )}
                                               </Stack>
                                           )
                                       );
                                   })
                                 : null}
-                            <Button
-                                variant="contained"
-                                type="button"
-                                startIcon={<AddCircleIcon />}
-                                onClick={() => arrayHelpers.push('')}
-                            >
-                                Add
-                            </Button>
+                            {disabled === true ? null : (
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    startIcon={<AddCircleIcon />}
+                                    onClick={() => arrayHelpers.push('')}
+                                >
+                                    Add
+                                </Button>
+                            )}
                         </Stack>
                     );
                 }}

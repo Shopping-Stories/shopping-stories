@@ -31,6 +31,7 @@ interface EntryUpdateFormProps {
     initialValues: Entry;
     tabIndex: number;
     id: string;
+    disabled?: boolean;
 }
 
 const updateEntryDef = `
@@ -43,7 +44,7 @@ ${EntryFields}
 `;
 
 const EntryUpdateForm = (props: EntryUpdateFormProps) => {
-    const { tabIndex, initialValues, id } = props;
+    const { tabIndex, initialValues, id, disabled } = props;
     const [openSuccess, setSuccessOpen] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -64,6 +65,10 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
         initialValues: initialValues,
         validationSchema: createEntrySchema,
         onSubmit: async (values) => {
+            if (disabled === true) {
+                return;
+            }
+
             setIsLoading(true);
             const entry: Entry = JSON.parse(JSON.stringify(values));
 
@@ -118,6 +123,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
             setIsLoading(false);
         },
     });
+
     return (
         <ColorBackground>
             <Header />
@@ -127,7 +133,11 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                     ...PaperStyles,
                 }}
             >
-                <form onSubmit={updateForm.handleSubmit}>
+                <form
+                    onSubmit={
+                        disabled === true ? undefined : updateForm.handleSubmit
+                    }
+                >
                     <Grid container justifyContent="center" spacing={4}>
                         <Grid item xs={12}>
                             <Button variant="contained" href="/entries/">
@@ -145,6 +155,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="First Name"
                                     formikForm={updateForm}
                                     fieldName="accountHolder.accountFirstName"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -152,6 +163,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Last Name"
                                     formikForm={updateForm}
                                     fieldName="accountHolder.accountLastName"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -159,6 +171,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Prefix"
                                     formikForm={updateForm}
                                     fieldName="accountHolder.prefix"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -166,6 +179,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Suffix"
                                     formikForm={updateForm}
                                     fieldName="accountHolder.suffix"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -173,6 +187,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Profession"
                                     formikForm={updateForm}
                                     fieldName="accountHolder.profession"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -180,6 +195,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Location"
                                     formikForm={updateForm}
                                     fieldName="accountHolder.location"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -187,6 +203,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Reference"
                                     formikForm={updateForm}
                                     fieldName="accountHolder.reference"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -196,8 +213,12 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Debit or Credit? (1 for Credit, 0 for Debit, -1 for Neither)"
                                     formikForm={updateForm}
                                     fieldName="accountHolder.debitOrCredit"
+                                    disabled={disabled}
                                 />
-                                <FindAccountHolder formikForm={updateForm} />
+                                <FindAccountHolder
+                                    disabled={disabled}
+                                    formikForm={updateForm}
+                                />
                             </Stack>
                             <Divider />
                             <Typography component="h2">Date Info</Typography>
@@ -210,6 +231,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     inputProps={{ min: 1, max: 31 }}
                                     formikForm={updateForm}
                                     fieldName="dateInfo.day"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -219,6 +241,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     inputProps={{ min: 1, max: 12 }}
                                     formikForm={updateForm}
                                     fieldName="dateInfo.month"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -227,6 +250,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     type="number"
                                     formikForm={updateForm}
                                     fieldName="dateInfo.year"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     name="dateInfo.fullDate"
@@ -237,22 +261,31 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     formikForm={updateForm}
                                     label="Full Date"
                                     fieldName="dateInfo.fullDate"
+                                    disabled={disabled}
                                 />
                                 <Paper sx={PaperStyles}>
                                     <FolioReferencesForm
                                         formikForm={updateForm}
+                                        disabled={disabled}
                                     />
                                 </Paper>
                                 <Paper sx={PaperStyles}>
                                     <LedgerReferencesForm
                                         formikForm={updateForm}
+                                        disabled={disabled}
                                     />
                                 </Paper>
                                 <Paper sx={PaperStyles}>
-                                    <EntryPeopleForm formikForm={updateForm} />
+                                    <EntryPeopleForm
+                                        formikForm={updateForm}
+                                        disabled={disabled}
+                                    />
                                 </Paper>
                                 <Paper sx={PaperStyles}>
-                                    <EntryPlacesForm formikForm={updateForm} />
+                                    <EntryPlacesForm
+                                        formikForm={updateForm}
+                                        disabled={disabled}
+                                    />
                                 </Paper>
                             </Stack>
                         </Grid>
@@ -265,6 +298,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Ledger"
                                     formikForm={updateForm}
                                     fieldName="meta.ledger"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -272,6 +306,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Reel"
                                     formikForm={updateForm}
                                     fieldName="meta.reel"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -279,6 +314,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Owner"
                                     formikForm={updateForm}
                                     fieldName="meta.owner"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -286,6 +322,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Store"
                                     formikForm={updateForm}
                                     fieldName="meta.store"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -293,6 +330,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Year"
                                     formikForm={updateForm}
                                     fieldName="meta.year"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -300,6 +338,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Folio Page"
                                     formikForm={updateForm}
                                     fieldName="meta.folioPage"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -307,6 +346,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Entry ID"
                                     formikForm={updateForm}
                                     fieldName="meta.entryID"
+                                    disabled={disabled}
                                 />
                                 <TextAreaWithFormikValidation
                                     name="meta.comments"
@@ -314,6 +354,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     fieldName="meta.comments"
                                     placeholder="Comments about the entry"
                                     formikForm={updateForm}
+                                    disabled={disabled}
                                 />
                                 <Divider />
                                 <TextAreaWithFormikValidation
@@ -322,6 +363,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     fieldName="entry"
                                     placeholder="Text of the original entry"
                                     formikForm={updateForm}
+                                    disabled={disabled}
                                 />
                                 <Divider />
                                 <TextFieldWithFormikValidation
@@ -330,6 +372,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Money Commodity"
                                     formikForm={updateForm}
                                     fieldName="money.commodity"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -337,6 +380,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Type of money (what colony it is from)"
                                     formikForm={updateForm}
                                     fieldName="money.colony"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -344,6 +388,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     label="Quantity of Money"
                                     formikForm={updateForm}
                                     fieldName="money.quantity"
+                                    disabled={disabled}
                                 />
                                 <Divider />
                                 <Typography component="h2">Currency</Typography>
@@ -355,6 +400,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.currency.pounds"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -364,6 +410,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.currency.shilling"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -373,6 +420,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.currency.pence"
+                                    disabled={disabled}
                                 />
                                 <Divider />
                                 <Typography component="h2">Sterling</Typography>
@@ -384,6 +432,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.sterling.pounds"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -393,6 +442,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.sterling.shilling"
+                                    disabled={disabled}
                                 />
                                 <TextFieldWithFormikValidation
                                     fullWidth
@@ -402,6 +452,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                                     inputProps={{ min: 0, step: '0.01' }}
                                     formikForm={updateForm}
                                     fieldName="money.sterling.pence"
+                                    disabled={disabled}
                                 />
                             </Stack>
                         </Grid>
@@ -409,20 +460,23 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                             <EntrySelectionTabForm
                                 formikForm={updateForm}
                                 initialIndex={tabIndex}
+                                disabled={disabled}
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <Container maxWidth="sm">
-                                <LoadingButton
-                                    fullWidth
-                                    loading={isLoading}
-                                    variant="contained"
-                                    type="submit"
-                                >
-                                    Submit
-                                </LoadingButton>
-                            </Container>
-                        </Grid>
+                        {disabled === true ? null : (
+                            <Grid item xs={12}>
+                                <Container maxWidth="sm">
+                                    <LoadingButton
+                                        fullWidth
+                                        loading={isLoading}
+                                        variant="contained"
+                                        type="submit"
+                                    >
+                                        Submit
+                                    </LoadingButton>
+                                </Container>
+                            </Grid>
+                        )}
                     </Grid>
                 </form>
             </Paper>

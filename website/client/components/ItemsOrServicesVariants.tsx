@@ -9,11 +9,19 @@ import Typography from '@mui/material/Typography';
 import { FieldArray, FormikProvider } from 'formik';
 import TextFieldWithFormikValidation from './TextFieldWithFormikValidation';
 
+interface VariantsProps {
+    formikForm: any;
+    prevPrevIdx: number;
+    prevIdx: number;
+    disabled?: boolean;
+}
+
 const ItemsOrServicesVariantsForm = ({
     formikForm,
     prevPrevIdx,
     prevIdx,
-}: any) => {
+    disabled,
+}: VariantsProps) => {
     return (
         formikForm.values.itemEntries[prevPrevIdx].itemsOrServices[prevIdx]
             .variants && (
@@ -61,23 +69,31 @@ const ItemsOrServicesVariantsForm = ({
                                                                           formikForm
                                                                       }
                                                                       fieldName={`itemEntries[${prevPrevIdx}].itemsOrServices[${prevIdx}].variants[${index}]`}
+                                                                      disabled={
+                                                                          disabled
+                                                                      }
                                                                   />
-                                                                  <Button
-                                                                      variant="contained"
-                                                                      startIcon={
-                                                                          <DeleteIcon />
-                                                                      }
-                                                                      type="button"
-                                                                      onClick={() =>
-                                                                          arrayHelpers.remove(
-                                                                              index,
-                                                                          )
-                                                                      }
-                                                                  >
-                                                                      remove
-                                                                      variant{' '}
-                                                                      {index}
-                                                                  </Button>
+                                                                  {disabled ===
+                                                                  true ? null : (
+                                                                      <Button
+                                                                          variant="contained"
+                                                                          startIcon={
+                                                                              <DeleteIcon />
+                                                                          }
+                                                                          type="button"
+                                                                          onClick={() =>
+                                                                              arrayHelpers.remove(
+                                                                                  index,
+                                                                              )
+                                                                          }
+                                                                      >
+                                                                          remove
+                                                                          variant{' '}
+                                                                          {
+                                                                              index
+                                                                          }
+                                                                      </Button>
+                                                                  )}
                                                               </Stack>
                                                           </CardContent>
                                                       </Card>
@@ -86,17 +102,20 @@ const ItemsOrServicesVariantsForm = ({
                                           );
                                       })
                                     : null}
-
-                                <Grid item xs={12}>
-                                    <Button
-                                        startIcon={<AddCircleIcon />}
-                                        variant="contained"
-                                        type="button"
-                                        onClick={() => arrayHelpers.push('')}
-                                    >
-                                        Add Variant
-                                    </Button>
-                                </Grid>
+                                {disabled === true ? null : (
+                                    <Grid item xs={12}>
+                                        <Button
+                                            startIcon={<AddCircleIcon />}
+                                            variant="contained"
+                                            type="button"
+                                            onClick={() =>
+                                                arrayHelpers.push('')
+                                            }
+                                        >
+                                            Add Variant
+                                        </Button>
+                                    </Grid>
+                                )}
                             </Grid>
                         );
                     }}

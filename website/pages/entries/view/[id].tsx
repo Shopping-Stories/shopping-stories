@@ -1,11 +1,9 @@
 import EntryUpdateForm from '@components/EntryUpdateForm';
 import LoadingPage from '@components/LoadingPage';
-import useAuth from '@hooks/useAuth.hook';
 import { entryInitialValues } from 'client/formikSchemas';
 import { EntryFields } from 'client/graphqlDefs';
 import { Entry } from 'client/types';
 import { cloneWithoutTypename } from 'client/util';
-import { Roles } from 'config/constants.config';
 import { merge } from 'lodash';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -21,10 +19,9 @@ query entryQuery($id: String!, $populate: Boolean!) {
 ${EntryFields}
 `;
 
-const UpdateEntryPage: NextPage = () => {
+const ViewEntryPage: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
-    const { loading } = useAuth('/entries', [Roles.Admin, Roles.Moderator]);
 
     interface FetchEntry {
         entry: Entry & { id: string };
@@ -62,7 +59,7 @@ const UpdateEntryPage: NextPage = () => {
         }
     }, [entry]);
 
-    if (findEntryResult.stale || loading) {
+    if (findEntryResult.stale || findEntryResult.fetching) {
         return <LoadingPage />;
     } else if (findEntryResult.error || findEntryResult.data?.entry === null) {
         console.error(findEntryResult.error);
@@ -76,6 +73,7 @@ const UpdateEntryPage: NextPage = () => {
                         id={id}
                         initialValues={initialValues}
                         tabIndex={tabIndex}
+                        disabled
                     />
                 ) : null}
             </div>
@@ -83,4 +81,4 @@ const UpdateEntryPage: NextPage = () => {
     }
 };
 
-export default UpdateEntryPage;
+export default ViewEntryPage;
