@@ -15,6 +15,7 @@ const adminLinks: NavLink[] = [
     { title: `import spreadsheet`, path: `/spreadsheet/import` },
     { title: `manage item glossary`, path: `/dashboard/glossary/items` },
     { title: `manage documents`, path: `/dashboard/documents` },
+    { title: `manage users`, path: `/dashboard/users` },
 ];
 
 const sideLinks: NavLink[] = [

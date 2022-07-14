@@ -584,3 +584,39 @@ query AdvancedSearch($advanced: AdvancedSearchInput, $options: FindAllLimitAndSk
 }
 ${EntryFields}
 `;
+
+export const ListUsersQuery = `
+query listUsers {
+  rows: listUsers
+ }
+`;
+
+export const AddUserToGroupDef = `
+mutation addUserToGroup($groupname: String!, $username: String!) {
+  addUserToGroup(groupname: $groupname, username: $username)
+}
+`;
+
+export const RemoveUserFromGroupDef = `
+mutation removeUserFromGroup($groupname: String!, $username: String!) {
+  removeUserFromGroup(groupname: $groupname, username: $username)
+}
+`;
+
+export const EnableUserDef = `
+mutation enableUser($username: String!) {
+  enableUser(username: $username)
+}
+`;
+
+export const DisableUserDef = `
+mutation disableUser($username: String!) {
+  disableUser(username: $username)
+}
+`;
+
+export const ListGroupsForUserDef = `
+query listGroupsForUser($username: String!) {
+  oldgroups: listGroupsForUser(username: $username)
+}
+`;

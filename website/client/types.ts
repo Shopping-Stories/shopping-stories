@@ -243,3 +243,20 @@ export interface TobaccoMark {
     whoRepresents: string;
     whoUnder: string;
 }
+
+export interface User {
+    Username: string;
+    Attributes: { Name: string; Value: string }[];
+    UserCreateDate: string;
+    UserLastModifiedDate: string;
+    Enabled: boolean;
+    UserStatus: string;
+}
+
+export interface listUsers {
+    Users: User[];
+}
+
+export interface UsersObj {
+    listUsers: listUsers;
+}
