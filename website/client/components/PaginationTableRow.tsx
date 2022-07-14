@@ -19,7 +19,7 @@ const PaginationTableRow = <T extends unknown>(
     const {
         row,
         onEditClick,
-        onDeleteClick: onDeleteClick,
+        onDeleteClick,
         isAdmin,
         isAdminOrModerator,
         cellValues,
@@ -43,6 +43,7 @@ const PaginationTableRow = <T extends unknown>(
                     <Button
                         variant="contained"
                         onClick={() => onDeleteClick(row)}
+                        startIcon={<DeleteIcon />}
                     >
                         Delete
                     </Button>
