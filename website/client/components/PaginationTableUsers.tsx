@@ -7,7 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { OptionsType, User } from 'client/types';
+import { OptionsType } from 'client/types';
 import { cloneWithoutTypename } from 'client/util';
 import * as React from 'react';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
