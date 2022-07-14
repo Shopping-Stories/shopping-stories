@@ -112,12 +112,8 @@ const ManageUsersPage: NextPage = () => {
         onSubmit: async (values, { resetForm }) => {
             setUpdating(true);
             let { groupname, username } = values;
-            console.log(groupname);
-            console.log(username);
-
             let oldgroupname = groupname;
             groupname = 'User';
-            console.log(oldgroupname);
             let res = await removeUserFromGroup({
                 groupname,
                 username,
