@@ -47,20 +47,19 @@ const ManageUsersPage: NextPage = () => {
         RemoveUserFromGroupDef,
     );
 
-    const [_ListGroupsForUser, listGroupsForUser] = useQuery({
+    const [_ListGroupsForUser] = useQuery({
         query: ListGroupsForUserDef,
     });
 
     const [_enableUserResult, enableUser] = useMutation(EnableUserDef);
 
     const [_disableUserResult, disableUser] = useMutation(DisableUserDef);
-    const [search, setSearch] = useState<string>('');
+    const [search] = useState<string>('');
     const [userToEnableDisable, setUserToEnableDisable] = useState<User | null>(
         null,
     );
 
     const [reQuery, setReQuery] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
     const [enableDisable, setEnableDisable] = useState(false);
     const [updating, setUpdating] = useState(false);
     const [rows, setRows] = useState<listUsers>({ Users: [] });
@@ -210,7 +209,6 @@ const ManageUsersPage: NextPage = () => {
                             setRows={setRows}
                             reQuery={reQuery}
                             setReQuery={setReQuery}
-                            setIsLoading={setIsLoading}
                             headerRow={
                                 <PaginationTableHead
                                     isAdmin={isAdmin}
@@ -307,7 +305,9 @@ const ManageUsersPage: NextPage = () => {
                 >
                     <MenuItem disabled value=""></MenuItem>
                     {userGroups.map((item) => (
-                        <MenuItem value={item.value}>{item.label}</MenuItem>
+                        <MenuItem key={item.value} value={item.value}>
+                            {item.label}
+                        </MenuItem>
                     ))}
                 </Select>
             </ActionDialog>
