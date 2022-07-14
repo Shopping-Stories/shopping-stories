@@ -4,22 +4,22 @@ import Button from '@mui/material/Button';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
-interface PaginationRowProps<T> {
+interface PaginationRowUsersProps<T> {
     isAdmin: boolean;
     isAdminOrModerator: boolean;
     row: T;
     cellValues: string[];
     onEditClick: (doc: T) => void;
-    onDeleteClick: (doc: T) => void;
+    onEnableDisableClick: (doc: T) => void;
 }
 
-const PaginationTableRow = <T extends unknown>(
-    props: PaginationRowProps<T>,
+const PaginationTableRowUsers = <T extends unknown>(
+    props: PaginationRowUsersProps<T>,
 ) => {
     const {
         row,
         onEditClick,
-        onDeleteClick: onDeleteClick,
+        onEnableDisableClick: onEnableDisableClick,
         isAdmin,
         isAdminOrModerator,
         cellValues,
@@ -42,9 +42,9 @@ const PaginationTableRow = <T extends unknown>(
                 <TableCell>
                     <Button
                         variant="contained"
-                        onClick={() => onDeleteClick(row)}
+                        onClick={() => onEnableDisableClick(row)}
                     >
-                        Delete
+                        Enable/Disable
                     </Button>
                 </TableCell>
             ) : null}
@@ -55,4 +55,4 @@ const PaginationTableRow = <T extends unknown>(
     );
 };
 
-export default PaginationTableRow;
+export default PaginationTableRowUsers;
