@@ -54,7 +54,6 @@ const ManageUsersPage: NextPage = () => {
     const [_enableUserResult, enableUser] = useMutation(EnableUserDef);
 
     const [_disableUserResult, disableUser] = useMutation(DisableUserDef);
-    const [search] = useState<string>('');
     const [userToEnableDisable, setUserToEnableDisable] = useState<User | null>(
         null,
     );
@@ -201,7 +200,6 @@ const ManageUsersPage: NextPage = () => {
                         </div>
                         <PaginationTableUsers
                             queryDef={ListUsersQuery}
-                            search={search}
                             setRows={setRows}
                             reQuery={reQuery}
                             setReQuery={setReQuery}
