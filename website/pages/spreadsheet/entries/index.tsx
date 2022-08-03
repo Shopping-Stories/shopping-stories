@@ -32,14 +32,22 @@ mutation deleteParsedEntry($id: String!, $populate: Boolean!) {
 ${ParsedEntryFields}
 `;
 
+const createEntriesDef = `
+	mutation CreateEntries($entries: [CreateEntryInput]!) {
+  		createEntries(entries: $entries){
+			id
+		}
+	}
+`;
+
 const ManagePlacesPage: NextPage = () => {
-    console.log('got here');
-    const { groups, loading } = useAuth();
+    const { groups, loading } = useAuth('/', [Roles.Admin]);
     const router = useRouter();
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isModerator = isInGroup(Roles.Moderator, groups);
     const isAdminOrModerator = isAdmin || isModerator;
     const [_deletePlaceResult, deletePlace] = useMutation(deleteParsedEntryDef);
+    const [_createEntriesResult, createEntries] = useMutation(createEntriesDef);
     const [placeToDelete, setPlaceToDelete] = useState<{
         id: string;
     } | null>(null);
@@ -49,6 +57,7 @@ const ManagePlacesPage: NextPage = () => {
     const [rows, setRows] = useState<Entry[]>([]);
     const [deleting, setDeleting] = useState(false);
 
+    const { documentName } = router.query;
     const handleOpenDelete = () => {
         setOpenDelete(true);
     };
@@ -87,6 +96,20 @@ const ManagePlacesPage: NextPage = () => {
         XLSX.writeFile(wb, `${fileName}.xlsx`);
     };
 
+    const handleDatabaseUpload = async () => {
+        setIsLoading(true);
+        console.log(rows);
+        const res = await createEntries({
+            rows: rows,
+            populate: false,
+        });
+
+        if (res.error) {
+            console.error(res.error);
+        }
+        setIsLoading(false);
+    };
+
     if (loading) {
         return <LoadingPage />;
     }
@@ -108,9 +131,7 @@ const ManagePlacesPage: NextPage = () => {
                                     <Button
                                         variant="contained"
                                         startIcon={<AddCircle />}
-                                        onClick={() =>
-                                            router.push(`/spreadsheet/entries/`)
-                                        }
+                                        onClick={handleDatabaseUpload}
                                     >
                                         upload to live database
                                     </Button>
@@ -141,7 +162,7 @@ const ManagePlacesPage: NextPage = () => {
                                 });
                                 handleOpenDelete();
                             }}
-                            search={''}
+                            search={'' + documentName}
                             reQuery={reQuery}
                             setRows={setRows}
                             setReQuery={setReQuery}

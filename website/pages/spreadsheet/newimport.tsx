@@ -44,10 +44,6 @@ const BodyRow = (props: BodyRowProps) => {
     const { row } = props;
     const router = useRouter();
 
-    const [parse, setParse] = useState<boolean>(false);
-    const handleParse = () => setParse(true);
-    const parsing = { parse };
-    console.log(parsing);
     const getFile = async () => {
         const [fileUrl, getErr] = await handlePromise(
             Storage.get(`documents/${row.fileKey}`),
@@ -76,7 +72,11 @@ const BodyRow = (props: BodyRowProps) => {
                     sx={{ m: 2 }}
                     startIcon={<AddCircle />}
                     variant="contained"
-                    onClick={handleParse}
+                    onClick={() =>
+                        router.push(
+                            `/spreadsheet/entries?documentName=${row.name}`,
+                        )
+                    }
                 >
                     Parse and Upload Data
                 </Button>

@@ -1,5 +1,6 @@
 import ParsedEntryUpdateForm from '@components/ParsedEntryUpdateForm';
 import LoadingPage from '@components/LoadingPage';
+import useAuth from '@hooks/useAuth.hook';
 import { entryInitialValues } from 'client/formikSchemas';
 import { ParsedEntryFields } from 'client/graphqlDefs';
 import { ParsedEntry } from 'client/types';
@@ -9,6 +10,7 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
+import { Roles } from 'config/constants.config';
 
 const findEntryDef = `
 query parsedEntryQuery($id: String!, $populate: Boolean!) {
@@ -22,7 +24,7 @@ ${ParsedEntryFields}
 const ViewEntryPage: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
-
+    useAuth('/', [Roles.Admin]);
     interface FetchEntry {
         entry: ParsedEntry & { id: string };
     }

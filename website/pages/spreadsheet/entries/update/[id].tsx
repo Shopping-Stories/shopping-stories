@@ -24,10 +24,7 @@ ${ParsedEntryFields}
 const UpdateEntryPage: NextPage = () => {
     const router = useRouter();
     const id = router.query.id;
-    const { loading } = useAuth('/spreadsheet/entries', [
-        Roles.Admin,
-        Roles.Moderator,
-    ]);
+    const { loading } = useAuth('/spreadsheet/entries', [Roles.Admin]);
 
     interface FetchEntry {
         entry: ParsedEntry & { id: string };

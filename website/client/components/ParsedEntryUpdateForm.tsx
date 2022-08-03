@@ -25,6 +25,8 @@ import { useFormik } from 'formik';
 import { useState } from 'react';
 import { PaperStyles } from 'styles/styles';
 import { useMutation } from 'urql';
+import router from 'next/router';
+
 import SnackBarCloseButton from './SnackBarCloseButton';
 
 interface ParsedEntryUpdateFormProps {
@@ -143,7 +145,7 @@ const ParsedEntryUpdateForm = (props: ParsedEntryUpdateFormProps) => {
                         <Grid item xs={12}>
                             <Button
                                 variant="contained"
-                                href="/spreadsheet/entries/"
+                                onClick={() => router.back()}
                             >
                                 Back entry list
                             </Button>
