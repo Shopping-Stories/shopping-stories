@@ -12,7 +12,11 @@ import DialogContentText from '@mui/material/DialogContentText';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import { ParsedEntryFields, SearchParsedEntryDef } from 'client/graphqlDefs';
+import {
+    EntryFields,
+    ParsedEntryFields,
+    SearchParsedEntryDef,
+} from 'client/graphqlDefs';
 import { Entry } from 'client/types';
 import { cloneWithoutTypename, flatten } from 'client/util';
 import { Roles } from 'config/constants.config';
@@ -32,12 +36,13 @@ mutation deleteParsedEntry($id: String!, $populate: Boolean!) {
 ${ParsedEntryFields}
 `;
 
-const createEntriesDef = `
-	mutation CreateEntries($entries: [CreateEntryInput]!) {
-  		createEntries(entries: $entries){
-			id
-		}
-	}
+const createEntryDef = `
+mutation createEntry($entry: CreateEntryInput!, $populate: Boolean!) {
+  createEntry(createEntryInput: $entry) {
+    ...entryFields
+  }
+}
+${EntryFields}
 `;
 
 const ManagePlacesPage: NextPage = () => {
@@ -47,7 +52,7 @@ const ManagePlacesPage: NextPage = () => {
     const isModerator = isInGroup(Roles.Moderator, groups);
     const isAdminOrModerator = isAdmin || isModerator;
     const [_deletePlaceResult, deletePlace] = useMutation(deleteParsedEntryDef);
-    const [_createEntriesResult, createEntries] = useMutation(createEntriesDef);
+    const [_createEntryResult, createEntry] = useMutation(createEntryDef);
     const [placeToDelete, setPlaceToDelete] = useState<{
         id: string;
     } | null>(null);
@@ -98,15 +103,72 @@ const ManagePlacesPage: NextPage = () => {
 
     const handleDatabaseUpload = async () => {
         setIsLoading(true);
-        console.log(rows);
-        const res = await createEntries({
-            rows: rows,
-            populate: false,
-        });
+        const rowsCopy = [...rows];
+        console.log(rowsCopy);
+        rowsCopy.forEach(async (row) => {
+            delete row.documentName;
+            delete row.id;
+            delete row.__typename;
+            console.log(row);
 
-        if (res.error) {
-            console.error(res.error);
-        }
+            const entry = JSON.parse(JSON.stringify(row));
+            //const entry = row;
+            entry.people.map((person: any) => {
+                if (!Boolean(person.id)) {
+                    delete person.id;
+                }
+                return person;
+            });
+
+            entry.places.map((place: any) => {
+                if (!Boolean(place.id)) {
+                    delete place.id;
+                }
+                return place;
+            });
+
+            if (entry.regularEntry) {
+                entry.regularEntry.tobaccoMarks.map((mark: any) => {
+                    if (!Boolean(mark.markID)) {
+                        delete mark.markID;
+                    }
+                    return mark;
+                });
+            }
+
+            if (entry.tobaccoEntry) {
+                delete entry.tobaccoEntry.__typename;
+                entry.tobaccoEntry.marks.map((mark: any) => {
+                    if (!Boolean(mark.markID)) {
+                        delete mark.markID;
+                    }
+                    return mark;
+                });
+            }
+
+            if (!Boolean(entry.dateInfo.fullDate)) {
+                delete entry.dateInfo.fullDate;
+            }
+
+            if (entry.money) {
+                delete entry.money.__typename;
+                delete entry.money.currency.__typename;
+                delete entry.money.sterling.__typename;
+                delete entry.money.currency.__typename;
+            }
+            delete entry.accountHolder.__typename;
+            delete entry.dateInfo.__typename;
+            delete entry.meta.__typename;
+
+            const res = await createEntry({
+                entry,
+                populate: true,
+            });
+
+            if (res.error) {
+                console.error(res.error);
+            }
+        });
         setIsLoading(false);
     };
 
