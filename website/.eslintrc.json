@@ -1,13 +1,10 @@
 {
-    "extends": "next/core-web-vitals",
-    "settings": {
-        "import/resolver": {
-            "typescript": {
-                "directory": "."
-            }
-        }
-    },
-    "rules": {
-        "@next/next/no-document-import-in-page": "off"
+  "extends": "next/core-web-vitals",
+  "settings": {
+  "import/resolver": {
+      "typescript": {
+        "directory": "."
+      }
     }
+  }
 }

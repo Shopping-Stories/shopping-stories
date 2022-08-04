@@ -11,12 +11,6 @@ import EntryResolver, {
     EntryPersonResolver,
     EntryPlaceResolver,
 } from '../../server/entry/entry.resolver';
-import ParsedEntryResolver, {
-    ParsedAccountHolderResolver,
-    ParsedEntryMarkResolver,
-    ParsedEntryPersonResolver,
-    ParsedEntryPlaceResolver,
-} from '../../server/parsedEntry/parsedEntry.resolver';
 import HelloResolver from '../../server/hello.resolver';
 import { DocToObject } from '../../server/middleware/misc.middleware';
 import AdminResolver from '../../server/admin/admin.resolver';
@@ -58,11 +52,6 @@ const getApolloServerHandler = async () => {
                 EntryPersonResolver,
                 EntryPlaceResolver,
                 EntryMarkResolver,
-                ParsedEntryResolver,
-                ParsedAccountHolderResolver,
-                ParsedEntryMarkResolver,
-                ParsedEntryPersonResolver,
-                ParsedEntryPlaceResolver,
             ],
             scalarsMap: [{ type: Object, scalar: GraphQLJSONObject }],
             authChecker: JWTAuthChecker,
