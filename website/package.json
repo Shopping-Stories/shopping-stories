@@ -3,8 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "cross-env FORCE_COLOR=true NODE_OPTIONS=--openssl-legacy-provider next dev | pino-pretty --colorize",
-        "build": "NODE_OPTIONS=--openssl-legacy-provider next build",
+        "dev": "cross-env FORCE_COLOR=true next dev | pino-pretty --colorize",
+        "build": "next build",
         "start": "NODE_ENV=production next start",
         "lint": "next lint",
         "format": "prettier --write \"server/**/*.ts\" \"client/**/*.tsx\" \"client/**/*.ts\" \"tests/**/*.ts\" \"pages/**/*.ts\" \"pages/**/*.tsx\"",
