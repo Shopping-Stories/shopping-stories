@@ -5,8 +5,11 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import SignInPage from './auth/signin';
+import useAuth from '@hooks/useAuth.hook';
 
 const Home: NextPage = () => {
+    const { isLoggedIn } = useAuth();
     return (
         <ImageBackground>
             <Head>
@@ -57,6 +60,7 @@ const Home: NextPage = () => {
                     </Typography>
                 </Grid>
             </Grid>
+            {!isLoggedIn && <SignInPage />}
         </ImageBackground>
     );
 };
