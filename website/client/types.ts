@@ -260,25 +260,3 @@ export interface listUsers {
 export interface UsersObj {
     listUsers: listUsers;
 }
-
-export interface ParsedEntry {
-    accountHolder: AccountHolder;
-    meta: MetaInformation;
-    dateInfo: DateInfo;
-    folioRefs: string[];
-    ledgerRefs: string[];
-    itemEntries: ItemEntry[] | null;
-    tobaccoEntry: TobaccoEntry | null;
-    regularEntry: RegularEntry | null;
-    people: { name: string; id?: string }[];
-    places: { name: string; id?: string }[];
-    entry: string;
-    money: {
-        commodity: string;
-        colony: string;
-        quantity: string;
-        currency: PoundsShillingPence;
-        sterling: PoundsShillingPence;
-    };
-    documentName: string;
-}
