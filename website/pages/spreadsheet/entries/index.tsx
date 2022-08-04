@@ -106,11 +106,6 @@ const ManagePlacesPage: NextPage = () => {
         const rowsCopy = [...rows];
         console.log(rowsCopy);
         rowsCopy.forEach(async (row) => {
-            delete row.documentName;
-            delete row.id;
-            delete row.__typename;
-            console.log(row);
-
             const entry = JSON.parse(JSON.stringify(row));
             //const entry = row;
             entry.people.map((person: any) => {
@@ -156,6 +151,9 @@ const ManagePlacesPage: NextPage = () => {
                 delete entry.money.sterling.__typename;
                 delete entry.money.currency.__typename;
             }
+            delete entry.documentName;
+            delete entry.id;
+            delete entry.__typename;
             delete entry.accountHolder.__typename;
             delete entry.dateInfo.__typename;
             delete entry.meta.__typename;
