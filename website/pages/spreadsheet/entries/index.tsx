@@ -5,6 +5,7 @@ import Header from '@components/Header';
 import LoadingPage from '@components/LoadingPage';
 import useAuth, { isInGroup } from '@hooks/useAuth.hook';
 import AddCircle from '@mui/icons-material/AddCircle';
+import Delete from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -12,6 +13,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import {
     EntryFields,
     ParsedEntryFields,
@@ -23,7 +25,7 @@ import { Roles } from 'config/constants.config';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { FormEvent, useState } from 'react';
-import { PaperStyles } from 'styles/styles';
+import { PaperStyles, PaperStylesSecondary } from 'styles/styles';
 import { useMutation } from 'urql';
 import xlsx from 'xlsx';
 
@@ -59,6 +61,8 @@ const ManagePlacesPage: NextPage = () => {
     const [reQuery, setReQuery] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
+    const [openDeleteAll, setOpenDeleteAll] = useState(false);
+    const [uploadAll, setUploadAll] = useState(false);
     const [rows, setRows] = useState<Entry[]>([]);
     const [deleting, setDeleting] = useState(false);
 
@@ -168,6 +172,21 @@ const ManagePlacesPage: NextPage = () => {
             }
         });
         setIsLoading(false);
+        router.push(`/spreadsheet/newimport`);
+    };
+
+    const handleDeleteAll = async () => {
+        setDeleting(true);
+        rows.forEach(async (row) => {
+            let entry = JSON.parse(JSON.stringify(row));
+            let id = entry.id;
+            let res = await deletePlace({ id, populate: false });
+            if (res.error) {
+                console.error(res.error);
+            }
+        });
+        setDeleting(false);
+        router.push(`/spreadsheet/newimport`);
     };
 
     if (loading) {
@@ -178,6 +197,33 @@ const ManagePlacesPage: NextPage = () => {
         <ColorBackground>
             <Header />
             <Container>
+                <Paper sx={PaperStylesSecondary}>
+                    <div>
+                        <Typography sx={{ textAlign: 'center' }} variant="h4">
+                            Viewing parsed entries for document: &apos;
+                            {documentName}&apos;
+                        </Typography>
+                        <Typography
+                            sx={{ textAlign: 'center' }}
+                            variant="body1"
+                        >
+                            This page will allow you view/edit parsed entries
+                            from the uploaded document. You can review any
+                            parser errors and make corrections to the entries as
+                            necessary. Modifying data here will have no effect
+                            on the live website until you click the &apos;Upload
+                            to Live Database&apos; button.
+                            <br />
+                            <br />
+                            NOTE: If you would like to reupload or delete the
+                            document to/from the database, you should first
+                            delete all of the parsed entries from this page.
+                            Failure to do so will cause the entries to appear
+                            again if a document is later uploaded with the same
+                            name.
+                        </Typography>
+                    </div>
+                </Paper>
                 <Paper
                     sx={{
                         backgroundColor: 'var(--secondary-bg)',
@@ -191,7 +237,7 @@ const ManagePlacesPage: NextPage = () => {
                                     <Button
                                         variant="contained"
                                         startIcon={<AddCircle />}
-                                        onClick={handleDatabaseUpload}
+                                        onClick={() => setUploadAll(true)}
                                     >
                                         upload to live database
                                     </Button>
@@ -203,6 +249,15 @@ const ManagePlacesPage: NextPage = () => {
                                         onClick={exportRowsToSpreadSheet}
                                     >
                                         download entries as excel
+                                    </Button>
+                                </div>
+                                <div>
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<Delete />}
+                                        onClick={() => setOpenDeleteAll(true)}
+                                    >
+                                        delete all entries
                                     </Button>
                                 </div>
                             </Stack>
@@ -249,6 +304,44 @@ const ManagePlacesPage: NextPage = () => {
             >
                 <DialogContentText>
                     Are you sure you want to delete this entry
+                </DialogContentText>
+            </ActionDialog>
+
+            {/* Delete All Dialog */}
+            <ActionDialog
+                isOpen={openDeleteAll}
+                onClose={() => setOpenDeleteAll(false)}
+                isSubmitting={deleting}
+                onSubmit={handleDeleteAll}
+                title={`Confirm deletion of all entries`}
+            >
+                <DialogContentText>
+                    <p>Are you sure you want to delete all parsed entries?</p>
+                    <h5>
+                        Do this if you are planning on deleting the spreadsheet
+                        document as well.
+                    </h5>
+                </DialogContentText>
+            </ActionDialog>
+
+            {/* Upload All Dialog */}
+            <ActionDialog
+                isOpen={uploadAll}
+                onClose={() => setUploadAll(false)}
+                isSubmitting={isLoading}
+                onSubmit={handleDatabaseUpload}
+                title={`Confirm upload of all entries`}
+            >
+                <DialogContentText>
+                    <p>
+                        Are you sure you want to upload all parsed entries to
+                        the live database in the current state?
+                    </p>
+                    <h5>
+                        Note that if you want to modify or delete the entries
+                        from the live database after upload, you will need to do
+                        so via the entries page.
+                    </h5>
                 </DialogContentText>
             </ActionDialog>
         </ColorBackground>

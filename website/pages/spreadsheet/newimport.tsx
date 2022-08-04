@@ -78,7 +78,7 @@ const BodyRow = (props: BodyRowProps) => {
                         )
                     }
                 >
-                    Parse and Upload Data
+                    Review Parsed Enries
                 </Button>
             </TableCell>{' '}
         </TableRow>
@@ -183,22 +183,22 @@ const NewImportPage: NextPage = () => {
                 <Paper sx={PaperStylesSecondary}>
                     <div>
                         <Typography sx={{ textAlign: 'center' }} variant="h4">
-                            Document Parser + Database Loader
+                            Spreadsheet Parser Dashboard
                         </Typography>
                         <Typography
                             sx={{ textAlign: 'center' }}
                             variant="body1"
                         >
-                            This page will allow you to select a spreadsheet
-                            file from storage to be parsed and uploaded to the
-                            database. If necessary, click &apos;Create
-                            Document&apos; to upload a new spreadsheet file to
-                            be parsed. After the file is created, or if it
-                            already exists, you can then search for it using the
-                            search bar. Then, click the button labeled
-                            &apos;Parse and Upload Data&apos; to upload the data
-                            from the document to the database, allowing it to be
-                            viewed from the live website.
+                            This page will allow you view/edit parsed entries
+                            from a selected spreadsheet. If necessary, click
+                            &apos;Create Document&apos; to upload a new
+                            spreadsheet file to be parsed. After the file is
+                            created, or if it already exists, you can then
+                            search for it using the search bar. Then, click the
+                            button labeled &apos;Review Parsed Enries&apos; to
+                            view/edit the entries before deciding to upload to
+                            the database, allowing it to be viewed from the live
+                            website.
                         </Typography>
                     </div>
                 </Paper>
