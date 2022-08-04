@@ -339,6 +339,20 @@ const ManagePlacesPage: NextPage = () => {
                             </LoadingButton>
                         </Stack>
                     </form>
+                    <div>
+                        <Typography
+                            sx={{ textAlign: 'center' }}
+                            variant="body1"
+                        >
+                            <br />
+                            NOTE: If you would like to reupload or delete a
+                            document, you should first delete all of the
+                            associated parsed entries for the document. This can
+                            be done via the 'Import Spreadsheet' page. Failure
+                            to do so may cause duplicate entries to appear if a
+                            document is later uploaded with the same name.
+                        </Typography>
+                    </div>
                 </Paper>
                 <Paper sx={PaperStylesSecondary}>
                     <Stack spacing={2}>
