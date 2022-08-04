@@ -65,8 +65,6 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
             requestPolicy: 'cache-and-network',
         });
 
-    console.log(data);
-
     useEffect(() => {
         if (reQuery) {
             executeQuery({ requestPolicy: 'network-only' });
