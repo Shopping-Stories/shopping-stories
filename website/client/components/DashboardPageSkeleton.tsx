@@ -12,7 +12,7 @@ import { Fragment } from 'react';
 import { PaperStyles } from 'styles/styles';
 
 const adminLinks: NavLink[] = [
-    { title: `import spreadsheet`, path: `/spreadsheet/newimport` },
+    { title: `import spreadsheet`, path: `/spreadsheet/import` },
     { title: `manage item glossary`, path: `/dashboard/glossary/items` },
     { title: `manage documents`, path: `/dashboard/documents` },
     { title: `manage users`, path: `/dashboard/users` },

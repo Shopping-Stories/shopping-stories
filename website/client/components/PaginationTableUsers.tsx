@@ -16,6 +16,7 @@ import TablePaginationActions from './TablePaginationActions';
 
 interface PaginationTableProps<T> {
     queryDef: string;
+    search: string;
     setRows: Dispatch<SetStateAction<T>>;
     reQuery?: boolean;
     setIsLoading?: Dispatch<SetStateAction<boolean>>;
@@ -27,7 +28,8 @@ interface PaginationTableProps<T> {
 const PaginationTableUsers = <T extends unknown>(
     props: PaginationTableProps<T>,
 ) => {
-    const { queryDef, setRows, headerRow, bodyRows, setIsLoading } = props;
+    const { queryDef, search, setRows, headerRow, bodyRows, setIsLoading } =
+        props;
 
     const [page, setPage] = useState(0);
     const perPageOptions = [10, 25, 50, 100];
@@ -39,13 +41,13 @@ const PaginationTableUsers = <T extends unknown>(
     });
 
     interface QueryType {
-        rows: T;
+        rows: T[];
         count: number;
     }
 
     const [{ data, stale, fetching }, updateQuery] = useQuery<QueryType>({
         query: queryDef,
-        variables: { options },
+        variables: { options, search },
         requestPolicy: 'cache-and-network',
     });
 
@@ -68,7 +70,7 @@ const PaginationTableUsers = <T extends unknown>(
             ...prevOpts,
             skip: 0,
         }));
-    }, []);
+    }, [search]);
 
     const count = data?.count ?? 0;
 
