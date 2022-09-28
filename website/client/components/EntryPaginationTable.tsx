@@ -7,11 +7,14 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
-import { AdvancedSearch, Entry, OptionsType } from 'client/types';
+import { DataGrid, GridColDef, GridRowsProp, GridRowModel } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
+import { AdvancedSearch, Entry, ItemEntry, ItemOrService, OptionsType } from 'client/types';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 import ParsingResultTableRow from './ParsingResultTableRow';
 import TablePaginationActions from './TablePaginationActions';
+import { TypeOf } from 'yup';
 
 interface EntryPaginationTable {
     queryDef: string;
@@ -84,12 +87,51 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         setPage(0);
     }, [search, advanced]);
 
-    const rows = data?.rows ?? [];
+    // const rows = data?.rows ?? [];
     const count = data?.count ?? 0;
 
+    function getRelevantItem(thing: ItemEntry[])
+    {
+        var which = 0;
+        console.log("Hello!");
+        for (var i = 0; i < thing.length; i++)
+        {
+            if (thing.at(i)?.itemsOrServices.at(0)?.item.includes(advanced?.itemEntry?.items.toLowerCase() || ""))
+            {
+                which = i;
+            }
+        }
+        return thing.at(which)?.itemsOrServices.at(0);
+    }
+  
     useEffect(() => {
         if (setRows !== undefined) {
             setRows(data?.rows || []);
+            let thing: GridRowsProp = data?.rows.map((row) => {return {
+                Purchaser: row?.accountHolder?.prefix + " " + row?.accountHolder?.accountFirstName + " " + row?.accountHolder?.accountLastName + " " + row?.accountHolder?.suffix,
+                RelevantItem: getRelevantItem(row?.itemEntries || [])?.variants.join(" ") + " " + getRelevantItem(row?.itemEntries || [])?.item,
+                // row?.accountHolder?.accountHolderID,
+                Date: row?.dateInfo?.fullDate.split("T")[0],
+                Owner: row?.meta?.owner,
+                Store: row?.meta?.store,
+                Comments: row?.meta?.comments,
+                Colony: row?.money?.colony,
+                Quantity: row?.money?.quantity,
+                Commodity: row?.money?.commodity,
+                CurrencyPounds: row?.money?.currency.pounds,
+                CurrencyShilling: row?.money?.currency.shilling,
+                CurrencyPence: row?.money?.currency.pence,
+                SterlingPounds: row?.money?.sterling.pounds,
+                SterlingShilling: row?.money?.sterling.shilling,
+                SterlingPence: row?.money?.sterling.pence,
+                EntryID: row?.meta?.entryID,
+                Ledger: row?.meta?.ledger,
+                Reel: row?.meta?.reel,
+                FolioPage: row?.meta?.folioPage,
+            }}) || [];
+            
+            
+            editRows(thing);
         }
     }, [data?.rows]);
 
@@ -122,27 +164,13 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         }));
     };
 
-    const columnNames = [
-        'First Name',
-        'Last Name',
-        'Prefix',
-        'Suffix',
-        'Debit or Credit',
-        'Location',
-        'Profession',
-        'Reference',
+    const columnNames: string[] = [
+        'Purchaser',
+        'Relevant Item',
         // 'Account Holder ID',
-        'Day',
-        'Month',
-        'Year',
         'Date',
-        'EntryID',
-        'Ledger',
-        'Reel',
-        'FolioPage',
         'Owner',
         'Store',
-        'Year',
         'Comments',
         'Colony',
         'Quantity',
@@ -153,11 +181,19 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         'Sterling Pounds',
         'Sterling Shilling',
         'Sterling Pence',
+        'EntryID',
+        'Ledger',
+        'Reel',
+        'FolioPage',
     ];
 
+    const [rows, editRows] = useState<GridRowsProp>([] as GridRowsProp);
+
+    const columns: GridColDef[] = columnNames.map((str: string) : GridColDef => {return {field: str.split(" ").join(""), headerName: str, flex: ["Purchaser", "Relevant Item", "Owner", "Comments"].includes(str) ? 1 : (["Reel", "EntryID", "Quantity", "Commodity", "Colony"].includes(str) ? 0.35 : 0.5)}});
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-            <TableContainer sx={{ minHeight: '80%' }}>
+        <Box sx={{height: '50vh', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
+        <Paper sx={{height: '100%',width: '100%', overflow: 'hidden' }}>
+            {/* <TableContainer sx={{ minHeight: '80%' }}>
                 <Table
                     sx={{ minWidth: '100vh' }}
                     stickyHeader
@@ -169,10 +205,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                             <TableCell />
                             {isAdminOrModerator ? <TableCell /> : null}
                             {isAdmin ? <TableCell /> : null}
-                            <TableCell colSpan={4} align="center">
-                                Account Holder Information
-                            </TableCell>
-                            <TableCell colSpan={4} align="center">
+                            <TableCell colSpan={5} align="center">
                                 Account Holder Information
                             </TableCell>
                             <TableCell colSpan={4} align="center">
@@ -241,8 +274,10 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
-            />
+            /> */}
+            <DataGrid rows={rows} columns={columns} pageSize={10} rowsPerPageOptions={[10]} getRowId={(row) => row.EntryID} disableSelectionOnClick/>
         </Paper>
+        </Box>
     );
 };
 

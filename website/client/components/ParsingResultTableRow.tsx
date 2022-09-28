@@ -47,10 +47,7 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
     }
 
     const columnValues: any[] = [
-        row?.accountHolder?.accountFirstName,
-        row?.accountHolder?.accountLastName,
-        row?.accountHolder?.prefix,
-        row?.accountHolder?.suffix,
+        row?.accountHolder?.prefix + " " + row?.accountHolder?.accountFirstName + " " + row?.accountHolder?.accountLastName + " " + row?.accountHolder?.suffix,
         debitOrCredit,
         row?.accountHolder?.location,
         row?.accountHolder?.profession,
@@ -143,8 +140,11 @@ const ParsingResultTableRow = (props: EntryTableRowProps) => {
                         </Button>
                     </TableCell>
                 ) : null}
+                    {/* <TableCell key={0} align="left" style={{width: 20em}}>
+                        {row?.accountHolder?.prefix + " " + row?.accountHolder?.accountFirstName + " " + row?.accountHolder?.accountLastName + " " + row?.accountHolder?.suffix}
+                    </TableCell> */}
                 {columnValues.map((value, i: number) => (
-                    <TableCell key={i} align="justify">
+                    <TableCell key={i + 1} align="center">
                         {value}
                     </TableCell>
                 ))}

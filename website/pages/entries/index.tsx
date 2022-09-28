@@ -486,76 +486,6 @@ const ManagePlacesPage: NextPage = () => {
                                 )}
                             </FormGroup>
                         </Paper>
-                        {(search || advanced) && (
-                            <Paper
-                                sx={{
-                                    backgroundColor: 'var(--secondary-bg)',
-                                    ...PaperStyles,
-                                }}
-                            >
-                                <Stack spacing={2}>
-                                    {isAdmin ? (
-                                        <Stack direction="row" spacing={4}>
-                                            <div>
-                                                <Button
-                                                    variant="contained"
-                                                    startIcon={<AddCircle />}
-                                                    onClick={() =>
-                                                        router.push(
-                                                            `/entries/create`,
-                                                        )
-                                                    }
-                                                >
-                                                    Create
-                                                </Button>
-                                            </div>
-                                            {/* <div>
-                                                <Button
-                                                    variant="contained"
-                                                    startIcon={
-                                                        <FileDownloadIcon />
-                                                    }
-                                                    onClick={
-                                                        exportRowsToSpreadSheet
-                                                    }
-                                                >
-                                                    download current page
-                                                </Button>
-                                            </div> */}
-                                        </Stack>
-                                    ) : null}
-                                    <EntryPaginationTable
-                                        isAdmin={isAdmin}
-                                        isAdminOrModerator={isAdminOrModerator}
-                                        queryDef={
-                                            currentSearchEntry
-                                                ? AdvancedSearchEntryDef
-                                                : SearchEntryDef
-                                        }
-                                        onEditClick={(row: any) =>
-                                            router.push(
-                                                `/entries/update/${row.id}`,
-                                            )
-                                        }
-                                        onDeleteClick={async (row: any) => {
-                                            setPlaceToDelete({
-                                                id: row.id,
-                                            });
-                                            handleOpenDelete();
-                                        }}
-                                        search={search}
-                                        reQuery={reQuery}
-                                        setRows={setRows}
-                                        setReQuery={setReQuery}
-                                        setIsLoading={setIsLoading}
-                                        advanced={advanced}
-                                        isAdvancedSearch={Boolean(
-                                            currentSearchEntry,
-                                        )}
-                                    />
-                                </Stack>
-                            </Paper>
-                        )}
                     </Grid>
                     <Grid item lg={3} xs={12}>
                         <Paper
@@ -651,6 +581,76 @@ const ManagePlacesPage: NextPage = () => {
                     </Grid>
                 </Grid>
             </Container>
+            
+                <Paper
+                    sx={{
+                        backgroundColor: 'var(--secondary-bg)',
+                        ...PaperStyles,
+                    }}
+                >
+                    <Stack spacing={2}>
+                        {isAdmin ? (
+                            <Stack direction="row" spacing={4}>
+                                <div>
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<AddCircle />}
+                                        onClick={() =>
+                                            router.push(
+                                                `/entries/create`,
+                                            )
+                                        }
+                                    >
+                                        Create
+                                    </Button>
+                                </div>
+                                {/* <div>
+                                    <Button
+                                        variant="contained"
+                                        startIcon={
+                                            <FileDownloadIcon />
+                                        }
+                                        onClick={
+                                            exportRowsToSpreadSheet
+                                        }
+                                    >
+                                        download current page
+                                    </Button>
+                                </div> */}
+                            </Stack>
+                        ) : null}
+                        <EntryPaginationTable
+                            isAdmin={isAdmin}
+                            isAdminOrModerator={isAdminOrModerator}
+                            queryDef={
+                                currentSearchEntry
+                                    ? AdvancedSearchEntryDef
+                                    : SearchEntryDef
+                            }
+                            onEditClick={(row: any) =>
+                                router.push(
+                                    `/entries/update/${row.id}`,
+                                )
+                            }
+                            onDeleteClick={async (row: any) => {
+                                setPlaceToDelete({
+                                    id: row.id,
+                                });
+                                handleOpenDelete();
+                            }}
+                            search={search}
+                            reQuery={reQuery}
+                            setRows={setRows}
+                            setReQuery={setReQuery}
+                            setIsLoading={setIsLoading}
+                            advanced={advanced}
+                            isAdvancedSearch={Boolean(
+                                currentSearchEntry,
+                            )}
+                        />
+                    </Stack>
+                </Paper>
+            
 
             {/* Delete Dialog */}
             <ActionDialog

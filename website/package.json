@@ -21,6 +21,7 @@
         "@emotion/styled": "^11.3.0",
         "@mui/icons-material": "^5.0.4",
         "@mui/lab": "^5.0.0-alpha.51",
+        "@mui/x-data-grid": "^5.0.5",
         "@mui/material": "^5.0.0-rc.1",
         "@mui/styles": "^5.0.1",
         "@mui/system": "^5.0.4",
