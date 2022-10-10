@@ -50,7 +50,7 @@ const SignInPage: NextPage = () => {
     const [user, setUser] = useState<any>(null);
 
     const handleErrorClose = (
-        _event: React.SyntheticEvent | React.MouseEvent,
+        _event: React.SyntheticEvent | Event,
         reason?: string,
     ) => {
         if (reason === 'clickaway') {

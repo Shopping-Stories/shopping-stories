@@ -1,20 +1,9 @@
-import LinearProgress from '@mui/material/LinearProgress';
 import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import { DataGrid, GridColDef, GridRowsProp, GridRowModel } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
-import { AdvancedSearch, Entry, ItemEntry, ItemOrService, OptionsType } from 'client/types';
+import { AdvancedSearch, Entry, ItemEntry, OptionsType } from 'client/types';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useQuery } from 'urql';
-import ParsingResultTableRow from './ParsingResultTableRow';
-import TablePaginationActions from './TablePaginationActions';
-import { TypeOf } from 'yup';
 
 interface EntryPaginationTable {
     queryDef: string;
@@ -37,22 +26,20 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         search,
         advanced,
         isAdvancedSearch,
-        onEditClick,
-        onDeleteClick,
         setReQuery,
         setIsLoading,
         reQuery,
-        isAdmin,
-        isAdminOrModerator,
         setRows,
     } = props;
     const [page, setPage] = useState(0);
+    page;
     const [rowsPerPage, setRowsPerPage] = useState(10);
-
+    setRowsPerPage;
     const [options, setOptions] = useState<OptionsType>({
         limit: rowsPerPage,
         skip: null,
     });
+    setOptions;
 
     interface EntryQueryResult {
         rows: (Entry & { id: string })[];
@@ -75,36 +62,36 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
             executeQuery({ requestPolicy: 'network-only' });
             setReQuery(false);
         }
-    }, [reQuery]);
+    }, [executeQuery, reQuery, setReQuery]);
 
     useEffect(() => {
         if (setIsLoading !== undefined) {
             setIsLoading(stale || fetching);
         }
-    }, [stale, fetching]);
+    }, [stale, fetching, setIsLoading]);
 
     useEffect(() => {
         setPage(0);
     }, [search, advanced]);
 
     // const rows = data?.rows ?? [];
-    const count = data?.count ?? 0;
 
-    function getRelevantItem(thing: ItemEntry[])
-    {
-        var which = 0;
-        console.log("Hello!");
-        for (var i = 0; i < thing.length; i++)
-        {
-            if (thing.at(i)?.itemsOrServices.at(0)?.item.includes(advanced?.itemEntry?.items.toLowerCase() || ""))
-            {
-                which = i;
-            }
-        }
-        return thing.at(which)?.itemsOrServices.at(0);
-    }
+    
   
     useEffect(() => {
+        function getRelevantItem(thing: ItemEntry[])
+        {
+            var which = 0;
+            console.log("Hello!");
+            for (var i = 0; i < thing.length; i++)
+            {
+                if (thing.at(i)?.itemsOrServices.at(0)?.item.includes(advanced?.itemEntry?.items.toLowerCase() || ""))
+                {
+                    which = i;
+                }
+            }
+            return thing.at(which)?.itemsOrServices.at(0);
+        }
         if (setRows !== undefined) {
             setRows(data?.rows || []);
             let thing: GridRowsProp = data?.rows.map((row) => {return {
@@ -133,36 +120,11 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
             
             editRows(thing);
         }
-    }, [data?.rows]);
+    }, [advanced?.itemEntry?.items, data?.rows, setRows]);
 
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - count) : 0;
 
-    const handleChangePage = (
-        _event: React.MouseEvent<HTMLButtonElement> | null,
-        newPage: number,
-    ) => {
-        setOptions((prevOpts) => ({
-            ...prevOpts,
-            limit: rowsPerPage,
-            skip: newPage * rowsPerPage,
-        }));
-        setPage(newPage);
-    };
 
-    const handleChangeRowsPerPage = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
-        const newRowsPerPage = parseInt(event.target.value, 10);
-        setRowsPerPage(newRowsPerPage);
-        setPage(0);
-        setOptions((prevOpts) => ({
-            ...prevOpts,
-            limit: newRowsPerPage,
-            skip: 0,
-        }));
-    };
 
     const columnNames: string[] = [
         'Purchaser',

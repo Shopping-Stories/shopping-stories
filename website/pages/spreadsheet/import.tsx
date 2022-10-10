@@ -171,17 +171,17 @@ const ImportPage: NextPage = () => {
     };
 
     const handleErrorClose = (
-        _: React.SyntheticEvent | React.MouseEvent,
+        _: Event | React.SyntheticEvent,
         reason?: string,
     ) => {
         if (reason === 'clickaway') {
             return;
         }
-        setErrorOpen(false);
+        setSuccessOpen(false);
     };
 
     const handleSuccessClose = (
-        _: React.SyntheticEvent | React.MouseEvent,
+        _: React.SyntheticEvent | Event,
         reason?: string,
     ) => {
         if (reason === 'clickaway') {

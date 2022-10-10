@@ -80,7 +80,7 @@ const PlaceAutocomplete = (props: PeoplePlacesAutocompleteProps) => {
                 }
             }}
             options={disabled ? [] : labelOptions}
-            getOptionLabel={(option: PersonOrPlace) => option.name || ''}
+            getOptionLabel={(option: String | PersonOrPlace) => {let pp = option as PersonOrPlace; return pp.name || ''}}
             isOptionEqualToValue={(
                 option: PersonOrPlace,
                 value: PersonOrPlace,

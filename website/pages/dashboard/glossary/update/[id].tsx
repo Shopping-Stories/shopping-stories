@@ -50,7 +50,7 @@ const UpdateGlossaryItem: NextPage = () => {
     const [successMessage, setSuccessMessage] = useState('');
 
     const handleSuccessClose = (
-        _: React.SyntheticEvent | React.MouseEvent,
+        _: Event | React.SyntheticEvent,
         reason?: string,
     ) => {
         if (reason === 'clickaway') {
@@ -71,29 +71,6 @@ const UpdateGlossaryItem: NextPage = () => {
             imageFiles.filter((image: File) => image.name !== imageKey),
         );
     };
-
-    const initialValues = {
-        name: '',
-        description: '',
-        origin: '',
-        use: '',
-        category: '',
-        subcategory: '',
-        qualifiers: '',
-        culturalContext: '',
-        citations: '',
-        images: [] as any,
-    };
-
-    useEffect(() => {
-        if (glossaryItem) {
-            const cleanFields = cloneWithoutTypename(glossaryItem);
-            delete cleanFields.id;
-            updateForm.setValues(merge(initialValues, cleanFields));
-        }
-    }, [glossaryItem]);
-
-    type UpdateGlossaryItemType = Omit<GlossaryItem, 'id'>;
 
     const updateForm = useFormik<UpdateGlossaryItemType>({
         enableReinitialize: true,
@@ -156,6 +133,30 @@ const UpdateGlossaryItem: NextPage = () => {
             setIsLoading(false);
         },
     });
+
+    useEffect(() => {
+        const initialValues = {
+            name: '',
+            description: '',
+            origin: '',
+            use: '',
+            category: '',
+            subcategory: '',
+            qualifiers: '',
+            culturalContext: '',
+            citations: '',
+            images: [] as any,
+        };
+        if (glossaryItem) {
+            const cleanFields = cloneWithoutTypename(glossaryItem);
+            delete cleanFields.id;
+            updateForm.setValues(merge(initialValues, cleanFields));
+        }
+    }, [glossaryItem, updateForm]);
+
+    type UpdateGlossaryItemType = Omit<GlossaryItem, 'id'>;
+
+    
 
     if (findGlossaryItemResult.fetching || authLoading) {
         return <LoadingPage />;

@@ -37,7 +37,7 @@ const ParseEntryUpdateForm = (props: EntryUpdateFormProps) => {
     const [entry, setEditEntry] = useState<any>(null);
 
     const handleSuccessClose = (
-        _: React.SyntheticEvent | React.MouseEvent,
+        _: Event | React.SyntheticEvent,
         reason?: string,
     ) => {
         if (reason === 'clickaway') {

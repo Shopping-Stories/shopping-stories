@@ -80,7 +80,7 @@ const TobaccoMarkAutocomplete = (props: MarkAutocompleteProps) => {
                 }
             }}
             options={disabled ? [] : labelOptions}
-            getOptionLabel={(option: Mark) => option.markName || ''}
+            getOptionLabel={(option: String | Mark) => {let mn = option as Mark; return mn.markName || ''}}
             isOptionEqualToValue={(option: Mark, value: Mark) =>
                 option.markName === value.markName ||
                 option.markID === value.markID

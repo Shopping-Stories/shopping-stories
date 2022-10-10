@@ -51,7 +51,7 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
     const [_updateEntryResult, updateEntry] = useMutation(updateEntryDef);
 
     const handleSuccessClose = (
-        _: React.SyntheticEvent | React.MouseEvent,
+        _: Event | React.SyntheticEvent,
         reason?: string,
     ) => {
         if (reason === 'clickaway') {

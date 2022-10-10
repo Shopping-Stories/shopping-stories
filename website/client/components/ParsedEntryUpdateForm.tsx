@@ -54,7 +54,7 @@ const ParsedEntryUpdateForm = (props: ParsedEntryUpdateFormProps) => {
         useMutation(updateParsedEntryDef);
 
     const handleSuccessClose = (
-        _: React.SyntheticEvent | React.MouseEvent,
+        _: Event | React.SyntheticEvent,
         reason?: string,
     ) => {
         if (reason === 'clickaway') {
