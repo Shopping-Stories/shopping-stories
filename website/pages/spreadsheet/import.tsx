@@ -177,7 +177,7 @@ const ImportPage: NextPage = () => {
         if (reason === 'clickaway') {
             return;
         }
-        setSuccessOpen(false);
+        setErrorOpen(false);
     };
 
     const handleSuccessClose = (

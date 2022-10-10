@@ -59,7 +59,7 @@ const AdminDashboardPage: NextPage = () => {
         if (reason === 'clickaway') {
             return;
         }
-        setSuccessOpen(false);
+        setErrorOpen(false);
     };
 
     const handleSuccessClose = (
