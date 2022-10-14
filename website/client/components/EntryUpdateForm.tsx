@@ -140,8 +140,9 @@ const EntryUpdateForm = (props: EntryUpdateFormProps) => {
                 >
                     <Grid container justifyContent="center" spacing={4}>
                         <Grid item xs={12}>
+                            {/*TODO: Make this use nextrouter to keep search result state*/}
                             <Button variant="contained" href="/entries/">
-                                Back entry list
+                                Back to entry list
                             </Button>
                         </Grid>
                         <Grid item xs={12} md={6}>

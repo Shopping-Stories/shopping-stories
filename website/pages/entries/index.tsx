@@ -35,7 +35,9 @@ import { PaperStyles } from 'styles/styles';
 import { useMutation } from 'urql';
 import xlsx from 'xlsx';
 import { FormControl, InputLabel, MenuItem } from '@mui/material';
+
 import { FileUpload } from '@mui/icons-material';
+import MuiNextLink from '@components/MuiNextLink';
 
 const deleteEntryDef = `
 mutation deleteEntry($id: String!, $populate: Boolean!) {
@@ -68,6 +70,7 @@ const ManagePlacesPage: NextPage = () => {
     const [_deletePlaceResult, deletePlace] = useMutation(deleteEntryDef);
 
     const [search, setSearch] = useState('');
+    // const [graph, setGraph] = useState(false)
 
     const [advanced, setAdvanced] = useState<AdvancedSearch | null>(null);
     const [placeToDelete, setPlaceToDelete] = useState<{
@@ -115,6 +118,7 @@ const ManagePlacesPage: NextPage = () => {
         },
         validationSchema: searchSchema,
         onSubmit: (values: any) => {
+            // setCurrentSearchEntry(values.search);
             setSearch(values.search);
         },
     });
@@ -482,6 +486,20 @@ const ManagePlacesPage: NextPage = () => {
                                         >
                                             Search
                                         </LoadingButton>
+                                        <LoadingButton
+                                            fullWidth
+                                            loading={isLoading}
+                                            variant="contained"
+                                        >
+                                            Graph View
+                                            <MuiNextLink
+                                                href={{
+                                                    pathname: "/graphview",
+                                                    query: { search: search}
+                                                }}
+                                                activeClassName="active"
+                                            ></MuiNextLink>
+                                        </LoadingButton>
                                     </form>
                                 )}
                             </FormGroup>
@@ -580,31 +598,28 @@ const ManagePlacesPage: NextPage = () => {
                         )}
                     </Grid>
                 </Grid>
-            </Container>
-            
-                <Paper
-                    sx={{
-                        backgroundColor: 'var(--secondary-bg)',
-                        ...PaperStyles,
-                    }}
-                >
-                    <Stack spacing={2}>
-                        {isAdmin ? (
-                            <Stack direction="row" spacing={4}>
-                                <div>
-                                    <Button
-                                        variant="contained"
-                                        startIcon={<AddCircle />}
-                                        onClick={() =>
-                                            router.push(
-                                                `/entries/create`,
-                                            )
-                                        }
-                                    >
-                                        Create
-                                    </Button>
-                                </div>
-                                {/* <div>
+                {(search || advanced) && (
+                    <Paper
+                        sx={{
+                            backgroundColor: 'var(--secondary-bg)',
+                            ...PaperStyles,
+                        }}
+                    >
+                        <Stack spacing={2}>
+                            {isAdmin ? (
+                                <Stack direction="row" spacing={4}>
+                                    <div>
+                                        <Button
+                                            variant="contained"
+                                            startIcon={<AddCircle />}
+                                            onClick={() =>
+                                                router.push(`/entries/create`)
+                                            }
+                                        >
+                                            Create
+                                        </Button>
+                                    </div>
+                                    {/* <div>
                                     <Button
                                         variant="contained"
                                         startIcon={
@@ -617,40 +632,37 @@ const ManagePlacesPage: NextPage = () => {
                                         download current page
                                     </Button>
                                 </div> */}
-                            </Stack>
-                        ) : null}
-                        <EntryPaginationTable
-                            isAdmin={isAdmin}
-                            isAdminOrModerator={isAdminOrModerator}
-                            queryDef={
-                                currentSearchEntry
-                                    ? AdvancedSearchEntryDef
-                                    : SearchEntryDef
-                            }
-                            onEditClick={(row: any) =>
-                                router.push(
-                                    `/entries/update/${row.id}`,
-                                )
-                            }
-                            onDeleteClick={async (row: any) => {
-                                setPlaceToDelete({
-                                    id: row.id,
-                                });
-                                handleOpenDelete();
-                            }}
-                            search={search}
-                            reQuery={reQuery}
-                            setRows={setRows}
-                            setReQuery={setReQuery}
-                            setIsLoading={setIsLoading}
-                            advanced={advanced}
-                            isAdvancedSearch={Boolean(
-                                currentSearchEntry,
-                            )}
-                        />
-                    </Stack>
-                </Paper>
-            
+                                </Stack>
+                            ) : null}
+                            <EntryPaginationTable
+                                isAdmin={isAdmin}
+                                isAdminOrModerator={isAdminOrModerator}
+                                queryDef={
+                                    currentSearchEntry
+                                        ? AdvancedSearchEntryDef
+                                        : SearchEntryDef
+                                }
+                                onEditClick={(row: any) =>
+                                    router.push(`/entries/update/${row.id}`)
+                                }
+                                onDeleteClick={async (row: any) => {
+                                    setPlaceToDelete({
+                                        id: row.id,
+                                    });
+                                    handleOpenDelete();
+                                }}
+                                search={search}
+                                reQuery={reQuery}
+                                setRows={setRows}
+                                setReQuery={setReQuery}
+                                setIsLoading={setIsLoading}
+                                advanced={advanced}
+                                isAdvancedSearch={Boolean(currentSearchEntry)}
+                            />
+                        </Stack>
+                    </Paper>
+                )}
+            </Container>
 
             {/* Delete Dialog */}
             <ActionDialog
