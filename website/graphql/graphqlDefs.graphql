@@ -97,7 +97,7 @@ query CategoriesQuery($search: String, $options: FindAllLimitAndSkip) {
     }
     count: countCategories(search: $search)
 }
-fragment CategoryFields on Category {
+fragment categoryFields on Category {
     id
     item
     category
