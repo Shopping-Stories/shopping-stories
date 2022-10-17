@@ -270,13 +270,13 @@ fragment markFields on TobaccoMark {
     whoUnder
 }
 
-query AdvancedSearch($advanced: AdvancedSearchInput,$options: FindAllLimitAndSkip,$populate: Boolean!) {
+query AdvancedSearch($advanced: AdvancedSearchInput,$options: FindAllLimitAndSkip) {
     rows: advancedFindEntries(search: $advanced, options: $options) {
         ...entryFields
     }
     count: advancedCountEntries(search: $advanced)
 }
-query EntriesQuery($search: String, $options: FindAllLimitAndSkip, $populate: Boolean!) {
+query EntriesQuery($search: String, $options: FindAllLimitAndSkip) {
     rows: findEntries(search: $search, options: $options) {
         ...entryFields
     }
@@ -335,7 +335,7 @@ fragment accountFields on AccHolderObject {
     reference
     debitOrCredit
     accountHolderID
-    populate @include(if: $populate) {
+    populate {
         ...personFields
     }
 }
@@ -382,7 +382,7 @@ fragment itemEntryFields on ItemEntryObject {
 fragment tobaccoMarkFields on TobaccoMarkObject {
     markID
     markName
-    populate @include(if: $populate) {
+    populate {
         ...markFields
     }
 }
@@ -431,14 +431,14 @@ fragment regularEntryFields on RegularEntryObject {
 fragment peopleFields on PersonObject {
     name
     id
-    populate @include(if: $populate) {
+    populate {
         ...personFields
     }
 }
 fragment placesFields on PlaceObject {
     name
     id
-    populate @include(if: $populate) {
+    populate {
         ...placeFields
     }
 }
@@ -454,7 +454,7 @@ fragment moneyFields on MoneyObject {
     }
 }
 
-query ParsedEntriesQuery($search: String, $options: FindAllLimitAndSkip, $populate: Boolean!) {
+query ParsedEntriesQuery($search: String, $options: FindAllLimitAndSkip) {
     rows: findParsedEntries(search: $search, options: $options) {
         ...parsedEntryFields
     }
@@ -514,7 +514,7 @@ fragment parsedAccFields on ParsedAccHolderObject {
     reference
     debitOrCredit
     accountHolderID
-    populate @include(if: $populate) {
+    populate {
         ...personFields
     }
 }
@@ -561,7 +561,7 @@ fragment parsedItemEntryFields on ParsedItemEntryObject {
 fragment parsedTobaccoMarkFields on ParsedTobaccoMarkObject {
     markID
     markName
-    populate @include(if: $populate) {
+    populate {
         ...markFields
     }
 }
@@ -610,14 +610,14 @@ fragment parsedRegularEntryFields on ParsedRegularEntryObject {
 fragment parsedPeopleFields on ParsedPersonObject {
     name
     id
-    populate @include(if: $populate) {
+    populate {
         ...personFields
     }
 }
 fragment parsedPlacesFields on ParsedPlaceObject {
     name
     id
-    populate @include(if: $populate) {
+    populate {
         ...placeFields
     }
 }
