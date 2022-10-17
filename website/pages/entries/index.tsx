@@ -468,7 +468,7 @@ const ManagePlacesPage: NextPage = () => {
                                             Search
                                         </LoadingButton>
                                     </Box>
-                                ) : (
+                                ) : (<>
                                     <form onSubmit={searchForm.handleSubmit}>
                                         <TextFieldWithFormikValidation
                                             fullWidth
@@ -486,6 +486,7 @@ const ManagePlacesPage: NextPage = () => {
                                         >
                                             Search
                                         </LoadingButton>
+                                    </form>
                                         <LoadingButton
                                             fullWidth
                                             loading={isLoading}
@@ -494,13 +495,14 @@ const ManagePlacesPage: NextPage = () => {
                                             Graph View
                                             <MuiNextLink
                                                 href={{
-                                                    pathname: "/graphview",
-                                                    query: { search: search}
+                                                    pathname: '/graphview/[search]',
+                                                    query: {
+                                                        search
+                                                    }
                                                 }}
                                                 activeClassName="active"
                                             ></MuiNextLink>
-                                        </LoadingButton>
-                                    </form>
+                                        </LoadingButton></>
                                 )}
                             </FormGroup>
                         </Paper>

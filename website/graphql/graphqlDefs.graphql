@@ -1,0 +1,642 @@
+fragment glossaryItemFields on GlossaryItem {
+    id
+    name
+    description
+    origin
+    use
+    category
+    subcategory
+    qualifiers
+    culturalContext
+    citations
+    images {
+        imageKey
+        name
+        material
+        dimensions
+        date
+        caption
+        collectionCitation
+        url
+        license
+    }
+}
+
+mutation createGlossaryItem($item: CreateGlossaryItemInput!) {
+    createGlossaryItem(newGlossaryItem: $item) {
+        ...glossaryItemFields
+    }
+}
+
+query glossaryItemsQuery($search: String, $options: FindAllLimitAndSkip) {
+    rows: findGlossaryItems(search: $search, options: $options) {
+        ...glossaryItemFields
+    }
+    count: countGlossaryItems(search: $search)
+}
+
+mutation updateGlossaryItem($id: String!, $updates: UpdateGlossaryItemInput!) {
+    updateGlossaryItem(id: $id, updatedFields: $updates) {
+        ...glossaryItemFields
+    }
+}
+
+mutation deleteGlossaryItem($id: String!) {
+    deletedItem: deleteGlossaryItem(id: $id) {
+        ...glossaryItemFields
+    }
+}
+
+query glossaryItemQuery ($id: String!) {
+    item: findGlossaryItem(id: $id) {
+        ...glossaryItemFields
+    }
+}
+
+fragment documentFields on DocumentInfo {
+    id
+    name
+    description
+    fileKey
+}
+
+mutation createDocument($doc: CreateDocumentInput!) {
+    doc: createDocument(newDocument: $doc) {
+        ...documentFields
+    }
+}
+
+query fetchDocuments($search: String, $options: FindAllLimitAndSkip) {
+    rows: findDocuments(search: $search, options: $options) {
+        ...documentFields
+    }
+    count: countDocuments(search: $search)
+}
+
+mutation updateDocument($id: String!, $updates: UpdateDocumentInput!) {
+    doc: updateDocument(id: $id, updatedFields: $updates) {
+        ...documentFields
+    }
+}
+
+mutation deleteDocument($id: String!) {
+    doc: deleteDocument(id: $id) {
+        ...documentFields
+    }
+}
+
+query FetchPeople($search: String!, $options: FindAllLimitAndSkip) {
+    people: findPeople(search: $search, options: $options) {
+        id
+        firstName
+        lastName
+        name: fullName
+    }
+}
+
+query searchPlaces($search: String!, $options: FindAllLimitAndSkip) {
+    places: findPlaces(search: $search, options: $options) {
+        id
+        name: location
+    }
+}
+
+query FetchMarks($search: String!, $options: FindAllLimitAndSkip) {
+    marks: findTobaccoMarks(search: $search, options: $options) {
+        id
+        markID: id
+        # markName: description
+        markName: tobaccoMarkId
+    }
+}
+
+fragment categoryFields on Category {
+    id
+    item
+    category
+    subcategory
+}
+
+mutation createCategory($category: CreateCategoryInput!) {
+    createCategory(category: $category) {
+        ...categoryFields
+    }
+}
+
+query CategoriesQuery($search: String, $options: FindAllLimitAndSkip) {
+    rows: findCategories(search: $search, options: $options) {
+        ...categoryFields
+    }
+    count: countCategories(search: $search)
+}
+
+mutation updateCategory($id: String!, $updates: UpdateCategoryInput!) {
+    updateCategory(id: $id, updatedFields: $updates) {
+        ...categoryFields
+    }
+}
+
+mutation deleteCategory($id: String!) {
+    deleteCategory(id: $id) {
+        ...categoryFields
+    }
+}
+
+fragment itemsFields on Item {
+    id
+    item
+    variants
+}
+
+mutation createItem($item: CreateItemInput!) {
+    createItem(item: $item) {
+        ...itemsFields
+    }
+}
+
+query itemsQuery($search: String, $options: FindAllLimitAndSkip) {
+    rows: findItems(search: $search, options: $options) {
+        ...itemsFields
+    }
+    count: countItems(search: $search)
+}
+
+mutation updateItem($id: String!, $updates: UpdateItemInput!) {
+    updateItem(id: $id, updatedFields: $updates) {
+        ...itemsFields
+    }
+}
+
+mutation deleteItem($id: String!) {
+    deleteItem(id: $id) {
+        ...itemsFields
+    }
+}
+
+fragment personFields on Person {
+    id
+    account
+    enslaved
+    firstName
+    lastName
+    gender
+    location
+    prefix
+    suffix
+    profession
+    professionCategory
+    professionQualifier
+    reference
+    store
+    variations
+}
+
+mutation createPerson($person: CreatePersonInput!) {
+    createPerson(person: $person) {
+        ...personFields
+    }
+}
+
+query FetchPerson($id: String!) {
+    person: findOnePerson(id: $id) {
+        ...personFields
+    }
+}
+
+query peopleQuery($search: String, $options: FindAllLimitAndSkip) {
+    rows: findPeople(search: $search, options: $options) {
+        ...personFields
+    }
+    count: countPeople(search: $search)
+}
+
+mutation updatePerson($id: String!, $updates: UpdatePersonInput!) {
+    updatePerson(id: $id, updatedFields: $updates) {
+        ...personFields
+    }
+}
+
+mutation deletePerson($id: String!) {
+    deletePerson(id: $id) {
+        ...personFields
+    }
+}
+
+fragment placeFields on Place {
+    id
+    location
+    alias
+    descriptor
+}
+
+query FetchPlace($id: String!) {
+    place: findOnePlace(id: $id) {
+        ...placeFields
+    }
+}
+
+mutation createPlace($place: CreatePlaceInput!) {
+    createPlace(place: $place) {
+        ...placeFields
+    }
+}
+
+query placesQuery($search: String, $options: FindAllLimitAndSkip) {
+    rows: findPlaces(search: $search, options: $options) {
+        ...placeFields
+    }
+    count: countPlaces(search: $search)
+}
+
+mutation updatePlace($id: String!, $updates: UpdatePlaceInput!) {
+    updatePlace(id: $id, updatedFields: $updates) {
+        ...placeFields
+    }
+}
+
+mutation deletePlace($id: String!) {
+    deletePlace(id: $id) {
+        ...placeFields
+    }
+}
+
+fragment markFields on TobaccoMark {
+    id
+    description
+    image
+    netWeight
+    note
+    notes
+    tobaccoMarkId
+    warehouse
+    where
+    whoRepresents
+    whoUnder
+}
+
+query FetchMark($id: String!) {
+    mark: findOneTobaccoMark(id: $id) {
+        ...markFields
+    }
+}
+
+mutation createTobaccoMark($mark: CreateTobaccoMarkInput!) {
+    createTobaccoMark(tobaccoMark: $mark) {
+        ...markFields
+    }
+}
+
+query tobaccoMarksQuery($search: String, $options: FindAllLimitAndSkip) {
+    rows: findTobaccoMarks(search: $search, options: $options) {
+        ...markFields
+    }
+    count: countTobaccoMarks(search: $search)
+}
+
+mutation updateTobaccoMark($id: String!, $updates: UpdateTobaccoMarkInput!) {
+    updateTobaccoMark(id: $id, updatedFields: $updates) {
+        ...markFields
+    }
+}
+
+mutation deleteTobaccoMark($id: String!) {
+    deleteTobaccoMark(id: $id) {
+        ...markFields
+    }
+}
+
+fragment mentionedItems on MentionedItemsObject {
+    quantity
+    qualifier
+    item
+}
+
+fragment money on PoundsShillingsPence {
+    pounds
+    shilling
+    pence
+}
+
+fragment entryFields on Entry {
+    id
+    accountHolder {
+        accountFirstName
+        accountLastName
+        prefix
+        suffix
+        profession
+        location
+        reference
+        debitOrCredit
+        accountHolderID
+        populate @include(if: $populate) {
+            ...personFields
+        }
+    }
+    meta {
+        ledger
+        reel
+        owner
+        store
+        year
+        folioPage
+        entryID
+        comments
+    }
+    dateInfo {
+        day
+        month
+        year
+        fullDate
+    }
+    folioRefs
+    ledgerRefs
+    itemEntries {
+        perOrder
+        percentage
+        itemsOrServices {
+            quantity
+            qualifier
+            variants
+            item
+            category
+            subcategory
+            unitCost {
+                ...money
+            }
+            itemCost {
+                ...money
+            }
+        }
+        itemsMentioned {
+            ...mentionedItems
+        }
+    }
+    tobaccoEntry {
+        entry
+        marks {
+            markID
+            markName
+            populate @include(if: $populate) {
+                ...markFields
+            }
+        }
+        notes {
+            noteNum
+            totalWeight
+            barrelWeight
+            tobaccoWeight
+        }
+        money {
+            moneyType
+            tobaccoAmount
+            rateForTobacco {
+                ...money
+            }
+            casksInTransaction
+            tobaccoSold {
+                ...money
+            }
+            casksSoldForEach {
+                ...money
+            }
+        }
+        tobaccoShaved
+    }
+    regularEntry {
+        entry
+        tobaccoMarks {
+            markID
+            markName
+            populate @include(if: $populate) {
+                ...markFields
+            }
+        }
+        itemsMentioned {
+            ...mentionedItems
+        }
+    }
+    people {
+        name
+        id
+        populate @include(if: $populate) {
+            ...personFields
+        }
+    }
+    places {
+        name
+        id
+        populate @include(if: $populate) {
+            ...placeFields
+        }
+    }
+    entry
+    money {
+        commodity
+        colony
+        quantity
+        currency {
+            ...money
+        }
+        sterling {
+            ...money
+        }
+    }
+}
+
+query entriesQuery(
+    $search: String
+    $options: FindAllLimitAndSkip
+    $populate: Boolean!
+) {
+    rows: findEntries(search: $search, options: $options) {
+        ...entryFields
+    }
+    count: countEntries(search: $search)
+}
+
+query AdvancedSearch(
+    $advanced: AdvancedSearchInput
+    $options: FindAllLimitAndSkip
+    $populate: Boolean!
+) {
+    rows: advancedFindEntries(search: $advanced, options: $options) {
+        ...entryFields
+    }
+    count: advancedCountEntries(search: $advanced)
+}
+
+query listUsers {
+    rows: listUsers
+}
+
+mutation addUserToGroup($groupname: String!, $username: String!) {
+    addUserToGroup(groupname: $groupname, username: $username)
+}
+
+mutation removeUserFromGroup($groupname: String!, $username: String!) {
+    removeUserFromGroup(groupname: $groupname, username: $username)
+}
+
+mutation enableUser($username: String!) {
+    enableUser(username: $username)
+}
+
+mutation disableUser($username: String!) {
+    disableUser(username: $username)
+}
+
+query listGroupsForUser($username: String!) {
+    oldgroups: listGroupsForUser(username: $username)
+}
+
+fragment parsedMentionedItems on ParsedMentionedItemsObject {
+    quantity
+    qualifier
+    item
+}
+
+fragment parsedMoney on ParsedPoundsShillingsPence {
+    pounds
+    shilling
+    pence
+}
+
+fragment parsedEntryFields on ParsedEntry {
+    id
+    accountHolder {
+        accountFirstName
+        accountLastName
+        prefix
+        suffix
+        profession
+        location
+        reference
+        debitOrCredit
+        accountHolderID
+        populate @include(if: $populate) {
+            ...personFields
+        }
+    }
+    meta {
+        ledger
+        reel
+        owner
+        store
+        year
+        folioPage
+        entryID
+        comments
+    }
+    dateInfo {
+        day
+        month
+        year
+        fullDate
+    }
+    folioRefs
+    ledgerRefs
+    itemEntries {
+        perOrder
+        percentage
+        itemsOrServices {
+            quantity
+            qualifier
+            variants
+            item
+            category
+            subcategory
+            unitCost {
+                ...parsedMoney
+            }
+            itemCost {
+                ...parsedMoney
+            }
+        }
+        itemsMentioned {
+            ...parsedMentionedItems
+        }
+    }
+    tobaccoEntry {
+        entry
+        marks {
+            markID
+            markName
+            populate @include(if: $populate) {
+                ...markFields
+            }
+        }
+        notes {
+            noteNum
+            totalWeight
+            barrelWeight
+            tobaccoWeight
+        }
+        money {
+            moneyType
+            tobaccoAmount
+            rateForTobacco {
+                ...parsedMoney
+            }
+            casksInTransaction
+            tobaccoSold {
+                ...parsedMoney
+            }
+            casksSoldForEach {
+                ...parsedMoney
+            }
+        }
+        tobaccoShaved
+    }
+    regularEntry {
+        entry
+        tobaccoMarks {
+            markID
+            markName
+            populate @include(if: $populate) {
+                ...markFields
+            }
+        }
+        itemsMentioned {
+            ...parsedMentionedItems
+        }
+    }
+    people {
+        name
+        id
+        populate @include(if: $populate) {
+            ...personFields
+        }
+    }
+    places {
+        name
+        id
+        populate @include(if: $populate) {
+            ...placeFields
+        }
+    }
+    entry
+    money {
+        commodity
+        colony
+        quantity
+        currency {
+            ...parsedMoney
+        }
+        sterling {
+            ...parsedMoney
+        }
+    }
+    documentName
+}
+
+query parsedEntriesQuery(
+    $search: String
+    $options: FindAllLimitAndSkip
+    $populate: Boolean!
+) {
+    rows: findParsedEntries(search: $search, options: $options) {
+        ...parsedEntryFields
+    }
+    count: countEntries(search: $search)
+}
