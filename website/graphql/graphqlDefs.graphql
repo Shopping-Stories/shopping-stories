@@ -18,7 +18,7 @@ query GlossaryItemQuery ($id: String!) {
         ...glossaryItemFields
     }
 }
-query GlossaryItemsQuery($search: String, $options: FindAllLimitAndSkip) {
+query GlossaryItems($search: String, $options: FindAllLimitAndSkip) {
     rows: findGlossaryItems(search: $search, options: $options) {
         ...glossaryItemFields
     }
@@ -91,7 +91,7 @@ mutation CreateCategory($category: CreateCategoryInput!) {
         ...categoryFields
     }
 }
-query CategoriesQuery($search: String, $options: FindAllLimitAndSkip) {
+query Categories($search: String, $options: FindAllLimitAndSkip) {
     rows: findCategories(search: $search, options: $options) {
         ...categoryFields
     }
@@ -119,7 +119,7 @@ mutation DeleteItem($id: String!) {
         ...itemFields
     }
 }
-query ItemsQuery($search: String, $options: FindAllLimitAndSkip) {
+query Items($search: String, $options: FindAllLimitAndSkip) {
     rows: findItems(search: $search, options: $options) {
         ...itemFields
     }
@@ -159,7 +159,7 @@ query FetchPeople($search: String!, $options: FindAllLimitAndSkip) {
         name: fullName
     }
 }
-query PeopleQuery($search: String, $options: FindAllLimitAndSkip) {
+query People($search: String, $options: FindAllLimitAndSkip) {
     rows: findPeople(search: $search, options: $options) {
         ...personFields
     }
@@ -209,7 +209,7 @@ query SearchPlaces($search: String!, $options: FindAllLimitAndSkip) {
         name: location
     }
 }
-query PlacesQuery($search: String, $options: FindAllLimitAndSkip) {
+query Places($search: String, $options: FindAllLimitAndSkip) {
     rows: findPlaces(search: $search, options: $options) {
         ...placeFields
     }
@@ -250,7 +250,7 @@ query FetchMarks($search: String!, $options: FindAllLimitAndSkip) {
         markName: tobaccoMarkId
     }
 }
-query TobaccoMarksQuery($search: String, $options: FindAllLimitAndSkip) {
+query TobaccoMarks($search: String, $options: FindAllLimitAndSkip) {
     rows: findTobaccoMarks(search: $search, options: $options) {
         ...markFields
     }
@@ -276,7 +276,7 @@ query AdvancedSearch($advanced: AdvancedSearchInput,$options: FindAllLimitAndSki
     }
     count: advancedCountEntries(search: $advanced)
 }
-query EntriesQuery($search: String, $options: FindAllLimitAndSkip) {
+query Entries($search: String, $options: FindAllLimitAndSkip) {
     rows: findEntries(search: $search, options: $options) {
         ...entryFields
     }
@@ -335,9 +335,6 @@ fragment accountFields on AccHolderObject {
     reference
     debitOrCredit
     accountHolderID
-    populate {
-        ...personFields
-    }
 }
 fragment metaFields on MetaObject {
     ledger
@@ -382,9 +379,6 @@ fragment itemEntryFields on ItemEntryObject {
 fragment tobaccoMarkFields on TobaccoMarkObject {
     markID
     markName
-    populate {
-        ...markFields
-    }
 }
 fragment noteFields on NoteObject {
     noteNum
@@ -431,16 +425,10 @@ fragment regularEntryFields on RegularEntryObject {
 fragment peopleFields on PersonObject {
     name
     id
-    populate {
-        ...personFields
-    }
 }
 fragment placesFields on PlaceObject {
     name
     id
-    populate {
-        ...placeFields
-    }
 }
 fragment moneyFields on MoneyObject {
     commodity
@@ -454,7 +442,7 @@ fragment moneyFields on MoneyObject {
     }
 }
 
-query ParsedEntriesQuery($search: String, $options: FindAllLimitAndSkip) {
+query ParsedEntries($search: String, $options: FindAllLimitAndSkip) {
     rows: findParsedEntries(search: $search, options: $options) {
         ...parsedEntryFields
     }
@@ -514,9 +502,6 @@ fragment parsedAccFields on ParsedAccHolderObject {
     reference
     debitOrCredit
     accountHolderID
-    populate {
-        ...personFields
-    }
 }
 fragment parsedMetaFields on ParsedMetaObject {
     ledger
@@ -561,9 +546,6 @@ fragment parsedItemEntryFields on ParsedItemEntryObject {
 fragment parsedTobaccoMarkFields on ParsedTobaccoMarkObject {
     markID
     markName
-    populate {
-        ...markFields
-    }
 }
 fragment ParsedNoteFields on ParsedNoteObject {
     noteNum
@@ -610,16 +592,10 @@ fragment parsedRegularEntryFields on ParsedRegularEntryObject {
 fragment parsedPeopleFields on ParsedPersonObject {
     name
     id
-    populate {
-        ...personFields
-    }
 }
 fragment parsedPlacesFields on ParsedPlaceObject {
     name
     id
-    populate {
-        ...placeFields
-    }
 }
 fragment ParsedMoneyFields on ParsedMoneyObject {
     commodity
