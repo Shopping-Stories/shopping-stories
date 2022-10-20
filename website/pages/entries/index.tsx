@@ -30,14 +30,13 @@ import { useFormik } from 'formik';
 import { cloneDeep } from 'lodash';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 import { PaperStyles } from 'styles/styles';
 import { useMutation } from 'urql';
 import xlsx from 'xlsx';
 import { FormControl, InputLabel, MenuItem } from '@mui/material';
 
 import { FileUpload } from '@mui/icons-material';
-import MuiNextLink from '@components/MuiNextLink';
 
 const deleteEntryDef = `
 mutation deleteEntry($id: String!, $populate: Boolean!) {
@@ -70,6 +69,7 @@ const ManagePlacesPage: NextPage = () => {
     const [_deletePlaceResult, deletePlace] = useMutation(deleteEntryDef);
 
     const [search, setSearch] = useState('');
+    const [submitted, setSubmitted] = useState(false);
     // const [graph, setGraph] = useState(false)
 
     const [advanced, setAdvanced] = useState<AdvancedSearch | null>(null);
@@ -119,9 +119,13 @@ const ManagePlacesPage: NextPage = () => {
         validationSchema: searchSchema,
         onSubmit: (values: any) => {
             // setCurrentSearchEntry(values.search);
-            setSearch(values.search);
+            setSubmitted(values.search);
         },
     });
+
+    useEffect(() => {
+        if (submitted) setSearch(searchForm.values.search);
+    }, [submitted]);
 
     const advancedSearchForm = useFormik<AdvancedSearch>({
         initialValues: {
@@ -154,6 +158,12 @@ const ManagePlacesPage: NextPage = () => {
             setAdvanced(values);
         },
     });
+
+    const toGraph = () => {
+        const path = `/entries/graphview/${searchForm.values.search}`;
+
+        router.push(path);
+    };
 
     const exportRowsToSpreadSheet = () => {
         const XLSX = xlsx;
@@ -468,41 +478,48 @@ const ManagePlacesPage: NextPage = () => {
                                             Search
                                         </LoadingButton>
                                     </Box>
-                                ) : (<>
-                                    <form onSubmit={searchForm.handleSubmit}>
-                                        <TextFieldWithFormikValidation
-                                            fullWidth
-                                            variant={'filled'}
-                                            name={'search'}
-                                            formikForm={searchForm}
-                                            label={'Search'}
-                                            fieldName={'search'}
-                                        />
-                                        <LoadingButton
-                                            fullWidth
-                                            loading={isLoading}
-                                            variant="contained"
-                                            type="submit"
+                                ) : (
+                                    <>
+                                        <form
+                                            onSubmit={searchForm.handleSubmit}
                                         >
-                                            Search
-                                        </LoadingButton>
-                                    </form>
+                                            <TextFieldWithFormikValidation
+                                                fullWidth
+                                                variant={'filled'}
+                                                name={'search'}
+                                                formikForm={searchForm}
+                                                label={'Search'}
+                                                fieldName={'search'}
+                                            />
+                                            <LoadingButton
+                                                fullWidth
+                                                loading={isLoading}
+                                                variant="contained"
+                                                type="submit"
+                                            >
+                                                Search
+                                            </LoadingButton>
+                                        </form>
                                         <LoadingButton
                                             fullWidth
                                             loading={isLoading}
                                             variant="contained"
+                                            onClick={toGraph}
                                         >
                                             Graph View
-                                            <MuiNextLink
-                                                href={{
-                                                    pathname: '/graphview/[search]',
-                                                    query: {
-                                                        search
-                                                    }
-                                                }}
-                                                activeClassName="active"
-                                            ></MuiNextLink>
-                                        </LoadingButton></>
+                                            {/*<Link*/}
+                                            {/*    href={`/graphview/${search}`}*/}
+                                            {/*    href={{*/}
+                                            {/*        pathname: '/graphview/[search]',*/}
+                                            {/*        query: {*/}
+                                            {/*            search: `/entries/graphview/${searchForm.values.search}`*/}
+                                            {/*            advanced:*/}
+                                            {/*        }*/}
+                                            {/*    }}*/}
+                                            {/*    activeClassName="active"*/}
+                                            {/*></Link>*/}
+                                        </LoadingButton>
+                                    </>
                                 )}
                             </FormGroup>
                         </Paper>
@@ -636,31 +653,35 @@ const ManagePlacesPage: NextPage = () => {
                                 </div> */}
                                 </Stack>
                             ) : null}
-                            <EntryPaginationTable
-                                isAdmin={isAdmin}
-                                isAdminOrModerator={isAdminOrModerator}
-                                queryDef={
-                                    currentSearchEntry
-                                        ? AdvancedSearchEntryDef
-                                        : SearchEntryDef
-                                }
-                                onEditClick={(row: any) =>
-                                    router.push(`/entries/update/${row.id}`)
-                                }
-                                onDeleteClick={async (row: any) => {
-                                    setPlaceToDelete({
-                                        id: row.id,
-                                    });
-                                    handleOpenDelete();
-                                }}
-                                search={search}
-                                reQuery={reQuery}
-                                setRows={setRows}
-                                setReQuery={setReQuery}
-                                setIsLoading={setIsLoading}
-                                advanced={advanced}
-                                isAdvancedSearch={Boolean(currentSearchEntry)}
-                            />
+                            {submitted && (
+                                <EntryPaginationTable
+                                    isAdmin={isAdmin}
+                                    isAdminOrModerator={isAdminOrModerator}
+                                    queryDef={
+                                        currentSearchEntry
+                                            ? AdvancedSearchEntryDef
+                                            : SearchEntryDef
+                                    }
+                                    onEditClick={(row: any) =>
+                                        router.push(`/entries/update/${row.id}`)
+                                    }
+                                    onDeleteClick={async (row: any) => {
+                                        setPlaceToDelete({
+                                            id: row.id,
+                                        });
+                                        handleOpenDelete();
+                                    }}
+                                    search={search}
+                                    reQuery={reQuery}
+                                    setRows={setRows}
+                                    setReQuery={setReQuery}
+                                    setIsLoading={setIsLoading}
+                                    advanced={advanced}
+                                    isAdvancedSearch={Boolean(
+                                        currentSearchEntry,
+                                    )}
+                                />
+                            )}
                         </Stack>
                     </Paper>
                 )}
