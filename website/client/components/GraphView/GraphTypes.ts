@@ -10,17 +10,49 @@ import {
     NoteObject,
     TobaccoMarkObject,
     MentionedItemsObject,
-    ItemOrServiceObject,
-} from '../graphql/generated/graphql';
+    ItemOrServiceObject, EntriesQuery
+} from "../../../graphql/generated/graphql";
+import { LinkObject, NodeObject } from "react-force-graph-2d";
 
-export type Vertex = { id: string };
-export type Edge = { source: string; target: string };
-export type Vertices = Vertex[];
-export type Edges = Edge[];
-export type MyGraphData = { nodes: Vertices; links: Edges };
-export type AdjacencyList = { [key: string]: Set<string> };
+interface Vertex extends NodeObject {
+    neighbors?: Neighbors;
+    info: NodeInfo;
+    canvasIcon?: HTMLImageElement;
+    listIcon?: HTMLImageElement;
+    focused: boolean
+}
+export type Node = Vertex & Required<Pick<NodeObject, 'id'>>
 
-export type NodeInfo =
+export interface Link extends LinkObject {
+    icon?: HTMLImageElement
+}
+
+export interface CustomGraphData {
+    nodes: Node[],
+    links: Link[]
+}
+export type Neighbors = { [key: string]: Node }
+export type NodeInfo = EntryResults
+
+export type AdjacencyList = { [key:string]: Set<string> };
+
+
+export interface GraphGuiProps {
+    result: EntriesQuery | undefined;
+}
+
+
+export type GKey = keyof NodeInfo | string;
+export type NestKey = keyof NestedArray;
+
+export type NestedArray = NoteObject | TobaccoMarkObject | MentionedItemsObject | ItemOrServiceObject
+export type NestedArrays = NestedArray[]
+export type ObjArray =  [
+    arr: NestedArrays,//{ [Property in keyof NestedArray]: NestedArray[Property]; },
+    key: keyof NestedArray
+][]
+
+type EntryResults =
     /* Field Property BreakDown: */
     //Non-nullable:
     //  noNesting:
@@ -50,6 +82,3 @@ export type NodeInfo =
     | TobaccoMarkObject //in: tobaccoEntry, regularEntry
     | MentionedItemsObject //in: ItemEntries
     | ItemOrServiceObject //in: ItemEntries
-    | string[];
-export type GraphInfo = { [key: string]: NodeInfo | NodeInfo[] };
-export type GKey = keyof GraphInfo & string;
