@@ -63,18 +63,18 @@ const Header = ({ title }: HeaderConfig) => {
         <Fragment>
             {/*<HideOnScroll>*/}
 
-            <AppBar
+            {/* <AppBar
                 position="fixed"
                 sx={{
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                     width: `calc(100% - ${width}px)`,
                     ml: `${width}px`,
                 }}
-            >
-                {/*<AppBar*/}
-                {/*    position="relative"*/}
-                {/*    sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}*/}
-                {/*>*/}
+            > */}
+                <AppBar
+                   position="relative"
+                   sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                >
                 <Toolbar>
                     <Container
                         maxWidth="lg"
