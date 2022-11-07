@@ -11,10 +11,10 @@ import NodeList from '@components/GraphView/NodeList';
 import { getSVGIcon } from '@components/GraphView/util';
 import ControlBar from '@components/GraphView/ControlBar';
 import Drawer from '@mui/material/Drawer';
-import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
-import Toolbar from '@mui/material/Toolbar';
 import Divider from '@mui/material/Divider';
-import ListItemText from '@mui/material/ListItemText';
+// import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
+// import Toolbar from '@mui/material/Toolbar';
+// import ListItemText from '@mui/material/ListItemText';
 
 
 type Neighbors = { [key: string]: NodeObject }
@@ -253,7 +253,9 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
     // console.log("render");
     return (
         <>
-            <ControlBar width={240} />
+            <ControlBar
+                // width={240}
+            />
             <Drawer
                 variant="permanent"
                 anchor="left"
@@ -267,11 +269,11 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
                     },
                 }}
             >
-                <Toolbar>
-                    <SubdirectoryArrowRightIcon />
-                    <ListItemText primary="Nodes" secondary="Edges" />
-                </Toolbar>
-                <Divider />
+                {/*<Toolbar>*/}
+                {/*    <SubdirectoryArrowRightIcon />*/}
+                {/*    <ListItemText primary="Nodes" secondary="Edges" />*/}
+                {/*</Toolbar>*/}
+                {/*<Divider />*/}
                 {
                     graphRef &&
                     <NodeList
@@ -305,6 +307,7 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
 };
 
 export default GraphGui;
+
 type NKey = keyof NodeObject | string | number
 type focusHandler = (id: NKey) => void ;
 type nodeHandler = (node: NodeObject) => void;

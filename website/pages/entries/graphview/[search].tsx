@@ -5,7 +5,7 @@ import LoadingPage from '@components/LoadingPage';
 
 const ForceGraph = dynamic(() => import('@components/GraphView/GraphGui'), {
     ssr: false,
-    loading: () => <LoadingPage />,
+    loading: () => <LoadingPage title={"GraphView"}/>,
 });
 
 export const getServerSideProps: GetServerSideProps = async context => {
@@ -39,7 +39,7 @@ const EntryGraphView = ({ arg }: GraphGuiPageProps) => {
     // TODO: "fetching" component
     return (
         <>
-            {fetching && <LoadingPage />}
+            {/*{fetching && <LoadingPage />}*/}
             {!error && <ForceGraph result={data} />}
         </>
     );
