@@ -125,7 +125,7 @@ const ManagePlacesPage: NextPage = () => {
 
     useEffect(() => {
         if (submitted) setSearch(searchForm.values.search);
-    }, [submitted]);
+    }, [submitted, searchForm.values.search]);
 
     const advancedSearchForm = useFormik<AdvancedSearch>({
         initialValues: {

@@ -90,7 +90,7 @@ const ConfirmAccountPage: NextPage = () => {
         if (username) {
             confirmEmailForm.setFieldValue('username', username);
         }
-    }, [username]);
+    }, [username, confirmEmailForm]);
 
     return (
         <AuthSkeleton formikForm={confirmEmailForm}>

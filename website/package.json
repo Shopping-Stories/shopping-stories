@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "cross-env FORCE_COLOR=true next dev | pino-pretty --colorize",
+        "dev": "cross-env FORCE_COLOR=true NODE_OPTIONS=--openssl-legacy-provider next dev | pino-pretty --colorize",
         "build": "cross-env next build",
         "start": "cross-env NODE_ENV=production next start",
         "lint": "cross-env next lint",
