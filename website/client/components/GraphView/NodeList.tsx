@@ -9,20 +9,21 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
+import Toolbar from "@mui/material/Toolbar";
+import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 
 const EdgeListItem = ({ edge, handleClickZoom, focusOn, focusOff }: EdgeListItemProps) => {
     const {info, id} = edge
     return (
-            <ListItemButton
-                onMouseEnter={()=>focusOn(edge.id)}
-                onMouseLeave={()=>focusOff("")}
-            >
+            <ListItemButton>
                 <ListItemIcon sx={{ pl: 2 }}>
                     <NodeIcon
                         t={`${info ? info.__typename : id}`}
                     />
                 </ListItemIcon>
                 <ListItemText
+                    onMouseEnter={()=>focusOn(edge.id)}
+                    onMouseLeave={()=>focusOff("")}
                     onClick={() => handleClickZoom(edge)}
                     secondary={`${id}`}
                     secondaryTypographyProps={{
@@ -45,14 +46,13 @@ const ListItem = ({ node, handleClickZoom, focusOn, focusOff }: NodeListItemProp
     
     return (
         <>
-                <ListItemButton
-                    onMouseEnter={()=>focusOn(node.id)}
-                    onMouseLeave={()=>focusOff("")}
-                >
+                <ListItemButton>
                     <ListItemIcon>
                         <NodeIcon t={`${info ? info.__typename : ''}`} />
                     </ListItemIcon>
                     <ListItemText
+                        onMouseEnter={()=>focusOn(node.id)}
+                        onMouseLeave={()=>focusOff("")}
                         onClick={()=>handleClickZoom(node)}
                         primary={id}
                         primaryTypographyProps={{
@@ -98,19 +98,26 @@ const ListItem = ({ node, handleClickZoom, focusOn, focusOff }: NodeListItemProp
 };
 
 const NodeList = ({ gData, handleClickZoom, focusOn, focusOff}: NodeListProps): JSX.Element => {
-    // console.log("nodelist render");
+    console.log("nodelist render");
     return (
-        <List>
-            {gData.nodes.filter(node => !!node).map(node =>
-                <ListItem
-                    handleClickZoom={handleClickZoom}
-                    key={node.id}
-                    node={node}
-                    focusOn={focusOn}
-                    focusOff={focusOff}
-                />
-            )}
-        </List>
+        <>
+            <Toolbar>
+                <SubdirectoryArrowRightIcon />
+                <ListItemText primary="Nodes" secondary="Edges" />
+            </Toolbar>
+            <Divider />
+            <List>
+                {gData.nodes.filter(node => !!node).map(node =>
+                    <ListItem
+                        handleClickZoom={handleClickZoom}
+                        key={node.id}
+                        node={node}
+                        focusOn={focusOn}
+                        focusOff={focusOff}
+                    />
+                )}
+            </List>
+        </>
     );
 };
 

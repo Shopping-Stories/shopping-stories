@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -18,12 +18,13 @@ import Collapse from "@mui/material/Collapse";
 interface ControlBarProps {
     width: number;
 }
-const ControlBar = ({ width }: ControlBarProps) => {
+// { width }: ControlBarProps
+const ControlBar = () => {
     const [open, setOpen] = useState(false);
     const handleClick = () => {
         setOpen(!open);
     };
-
+    console.log("control bar render")
     // const toggleDrawer = () => setDrawn(!drawn);
     return (
         <AppBar
@@ -33,8 +34,8 @@ const ControlBar = ({ width }: ControlBarProps) => {
             elevation={0}
             sx={{
                 // zIndex: (theme) => theme.zIndex.drawer,
-                width: `calc(100% - ${width}px)`,
-                ml: `${width}px`,
+                width: `calc(100% - ${240}px)`,
+                ml: `${240}px`,
                 // mr: `${width}px`
             }}
         >
@@ -55,7 +56,7 @@ const ControlBar = ({ width }: ControlBarProps) => {
                 <List
                     sx={{
                         // zIndex: (theme) => theme.zIndex.drawer,
-                        width: `calc(100% - ${width}px)`,
+                        width: `calc(100% - ${240}px)`,
                         // mr: `${width}px`
                     }}
                 >
@@ -98,4 +99,4 @@ const ControlBar = ({ width }: ControlBarProps) => {
         </AppBar>
     );
 };
-export default ControlBar;
+export default memo(ControlBar);
