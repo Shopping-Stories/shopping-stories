@@ -21,7 +21,7 @@ import { handlePromise } from 'client/util';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import backgrounds from 'styles/backgrounds.module.css';
 import { useQuery } from 'urql';
 
@@ -51,7 +51,7 @@ const DocumentCard = (props: DocumentCardProps) => {
 
     useEffect(() => {
         getFile(document.fileKey).then((url) => url && setFileUrl(url));
-    }, []);
+    }, [document.fileKey]);
 
     return (
         <Card>
@@ -91,10 +91,30 @@ const DocumentsPage: NextPage = () => {
         requestPolicy: 'cache-and-network',
     });
 
+    const updateQuery = useCallback((page: number) => {
+        router.push({
+            pathname: router.pathname,
+            query: {
+                search: encodeURI(search),
+                page: encodeURI(page + 1 + ''),
+            },
+        });
+    }, [router, search]);
+    
     useEffect(() => {
         setPage(0);
         updateQuery(0);
-    }, [search]);
+    }, [search, updateQuery]);
+
+    const fetchDocumentsPage = useCallback((newPage: number) => {
+        setOptions((prevOpts: any) => ({
+            ...prevOpts,
+            limit: rowsPerPage,
+            skip: newPage * rowsPerPage,
+        }));
+        setPage(newPage);
+        updateQuery(newPage);
+    }, [rowsPerPage, updateQuery]);
 
     useEffect(() => {
         if (!router.query.page) {
@@ -105,7 +125,7 @@ const DocumentsPage: NextPage = () => {
             setPage(pageNum - 1);
             fetchDocumentsPage(pageNum - 1);
         }
-    }, [router.query.page]);
+    }, [router.query.page, fetchDocumentsPage]);
 
     const searchForm = useFormik<SearchType>({
         initialValues: {
@@ -120,15 +140,6 @@ const DocumentsPage: NextPage = () => {
     const rows = data?.rows ?? [];
     const count = data?.count ?? 0;
 
-    const updateQuery = (page: number) => {
-        router.push({
-            pathname: router.pathname,
-            query: {
-                search: encodeURI(search),
-                page: encodeURI(page + 1 + ''),
-            },
-        });
-    };
 
     useEffect(() => {
         if (stale || fetching) {
@@ -138,15 +149,7 @@ const DocumentsPage: NextPage = () => {
         }
     }, [stale, fetching]);
 
-    const fetchDocumentsPage = (newPage: number) => {
-        setOptions((prevOpts: any) => ({
-            ...prevOpts,
-            limit: rowsPerPage,
-            skip: newPage * rowsPerPage,
-        }));
-        setPage(newPage);
-        updateQuery(newPage);
-    };
+
 
     if (loadingAuth) {
         return <LoadingPage />;

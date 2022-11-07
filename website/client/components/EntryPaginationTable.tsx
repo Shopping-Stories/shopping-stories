@@ -97,8 +97,8 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
             let thing: GridRowsProp = data?.rows.map((row) => {return {
                 Purchaser: row?.accountHolder?.prefix + " " + row?.accountHolder?.accountFirstName + " " + row?.accountHolder?.accountLastName + " " + row?.accountHolder?.suffix,
                 RelevantItem: getRelevantItem(row?.itemEntries || [])?.variants.join(" ") + " " + getRelevantItem(row?.itemEntries || [])?.item,
-                // row?.accountHolder?.accountHolderID,
-                Date: row?.dateInfo?.fullDate.split("T")[0],
+                AccountHolderID: row?.accountHolder?.accountHolderID,
+                Date: row?.dateInfo?.fullDate?.split("T")[0],
                 Owner: row?.meta?.owner,
                 Store: row?.meta?.store,
                 Comments: row?.meta?.comments,
@@ -129,7 +129,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
     const columnNames: string[] = [
         'Purchaser',
         'Relevant Item',
-        // 'Account Holder ID',
+        'Account Holder ID',
         'Date',
         'Owner',
         'Store',

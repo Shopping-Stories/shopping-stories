@@ -12,7 +12,7 @@ import { GlossaryItem, OptionsType } from 'client/types';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import backgrounds from 'styles/backgrounds.module.css';
 import { useQuery } from 'urql';
 import * as yup from 'yup';
@@ -54,11 +54,31 @@ const ItemGlossaryIndexPage: NextPage = () => {
         variables: { options, search },
         requestPolicy: 'cache-and-network',
     });
+    
+    const updateQuery = useCallback((page: number) => {
+        router.push({
+            pathname: router.pathname,
+            query: {
+                search: encodeURI(search),
+                page: encodeURI(page + 1 + ''),
+            },
+        });
+    }, [router, search]);
 
     useEffect(() => {
         setPage(0);
         updateQuery(0);
-    }, [search]);
+    }, [search, updateQuery]);
+
+    const fetchItemsPage = useCallback((newPage: number) => {
+        setOptions((prevOpts: any) => ({
+            ...prevOpts,
+            limit: rowsPerPage,
+            skip: newPage * rowsPerPage,
+        }));
+        setPage(newPage);
+        updateQuery(newPage);
+    }, [updateQuery]);
 
     useEffect(() => {
         if (!router.query.page) {
@@ -69,20 +89,11 @@ const ItemGlossaryIndexPage: NextPage = () => {
             setPage(pageNum - 1);
             fetchItemsPage(pageNum - 1);
         }
-    }, [router.query.page]);
+    }, [router.query.page, fetchItemsPage]);
 
     const rows = data?.rows ?? [];
     const count = data?.count ?? 0;
 
-    const updateQuery = (page: number) => {
-        router.push({
-            pathname: router.pathname,
-            query: {
-                search: encodeURI(search),
-                page: encodeURI(page + 1 + ''),
-            },
-        });
-    };
 
     useEffect(() => {
         if (stale || fetching) {
@@ -92,15 +103,7 @@ const ItemGlossaryIndexPage: NextPage = () => {
         }
     }, [stale, fetching]);
 
-    const fetchItemsPage = (newPage: number) => {
-        setOptions((prevOpts: any) => ({
-            ...prevOpts,
-            limit: rowsPerPage,
-            skip: newPage * rowsPerPage,
-        }));
-        setPage(newPage);
-        updateQuery(newPage);
-    };
+
 
     return (
         <div className={backgrounds.colorBackground}>
