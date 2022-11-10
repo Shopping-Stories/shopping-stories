@@ -33,7 +33,7 @@ const EntryGraphView = ({ arg }: GraphGuiPageProps) => {
         },
         // requestPolicy: 'cache-and-network',
     });
-    const { data, fetching, error } = result;
+    const { data, error } = result;
     // console.log("Query Result:", result);
     
     // TODO: "fetching" component
