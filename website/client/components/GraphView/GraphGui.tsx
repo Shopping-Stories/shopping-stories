@@ -12,11 +12,13 @@ import { getSVGIcon } from '@components/GraphView/util';
 import ControlBar from '@components/GraphView/ControlBar';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
+import { useColorMode } from "../../ThemeMode";
+// import {useTheme} from "@mui/material";
 // import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
 // import Toolbar from '@mui/material/Toolbar';
 // import ListItemText from '@mui/material/ListItemText';
 
-
+// module override to get custom Node/Link properties
 type Neighbors = { [key: string]: NodeObject }
 declare module "react-force-graph-2d" {
     interface NodeObject {
@@ -46,11 +48,13 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
             graphRef.current.centerAt(node.x, node.y, 200);
         }
     },[graphRef]);
-    
-    // const buildGraph = useCallback(() => {
+    const {mode} = useColorMode()
+
     // const [nodeMap, graph] = useMemo(() => {
     const graph = useMemo(() => {
         // console.log('Entry Query Result: \n', result);
+        // console.log(mode)
+        // console.log("graph building...")
         let V: NodeObject[] = []//Node[] = [];
         let E: Link[] = [];
         let adjList: AdjacencyList = {};
@@ -77,7 +81,7 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
                     id: itemID,
                     // label: itemID,
                     info: item,
-                    canvasIcon: getSVGIcon(tName),
+                    canvasIcon: getSVGIcon(tName, 'light')
                 };
             }
         };
@@ -222,29 +226,33 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
         setNodeFocused(id)
     }, [])
     
-    const paintNodes = useCallback((node:NodeObject, ctx:CanvasRenderingContext2D)=> {
-        if (node.id) {
-            let v = node//nodeMap[node.id]
-            if (!v || v.x === undefined || v.y === undefined) {
-                return;
-            }
-            const size = 24;
-            if (nodeFocused === v.id){
-                ctx.beginPath();
-                ctx.arc(v.x, v.y, 12 * 1.4, 0, 2 * Math.PI, false);
-                ctx.fillStyle = 'green';
-                ctx.fill();
-            }
-            if (v.canvasIcon) {
-                ctx.drawImage(v.canvasIcon, v.x - size / 2, v.y - size / 2, size, size,);
-            }
-            
+    useMemo(() =>{
+        for (let v in graph.nodes){
+            let node = graph.nodes[v]
+            node.canvasIcon = getSVGIcon(
+                node.info.__typename ? node.info.__typename : 'err',
+                mode,
+            );
         }
-    },[nodeFocused])
+    } , [graph, mode])
     
-    // useEffect(() => {
-    //     buildGraph();
-    // }, [buildGraph, result]);
+    const paintNodes = useCallback((node:NodeObject, ctx:CanvasRenderingContext2D)=> {
+        // let node = node//nodeMap[node.id]
+        if (!node || node.x === undefined || node.y === undefined) {
+            return;
+        }
+        const size = 24;
+        if (nodeFocused === node.id){
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, 12 * 1.4, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'green';
+            ctx.fill();
+        }
+        if (node.canvasIcon) {
+            ctx.drawImage(node.canvasIcon, node.x - size / 2, node.y - size / 2, size, size,);
+        }
+        
+    },[nodeFocused])
     
     // useEffect(() => {
     //     console.log('Graph: \n', graph);
@@ -269,11 +277,6 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
                     },
                 }}
             >
-                {/*<Toolbar>*/}
-                {/*    <SubdirectoryArrowRightIcon />*/}
-                {/*    <ListItemText primary="Nodes" secondary="Edges" />*/}
-                {/*</Toolbar>*/}
-                {/*<Divider />*/}
                 {
                     graphRef &&
                     <NodeList
@@ -288,19 +291,16 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
             <ForceGraph2D
                 ref={graphRef}
                 graphData={graph}
-                autoPauseRedraw={false}
-                // nodeRelSize={12}
-                // nodeColor={node => node === nodeFocused ? 'orange' : 'white'}
-                // nodeVisibility={}
+                // autoPauseRedraw={false}
+                linkColor={()=>'gray'}
+                linkWidth={.75}
                 // TODO: Figure out canvas interaction with next.js
                 nodeLabel={(node) => (node?.id ? node.id.toString() : '')}
-                // nodeCanvasObjectMode={()=>'after'}
                 nodeCanvasObject={
                     (node, ctx) =>
                         paintNodes(node, ctx)
                 }
                 onNodeClick={handleZoom}
-                // enablePointerInteraction={true}
             />
         </>
     );

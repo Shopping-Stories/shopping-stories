@@ -65,8 +65,9 @@ const Header = ({ title }: HeaderConfig) => {
             {/*<HideOnScroll>*/}
 
              <AppBar
+                //  position="relative"
                 // position="fixed"
-                 position={"relative"}
+                position={title === "GraphView" ? "fixed" : "relative"}
                 sx={{
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                     width: `calc(100% - ${width}px)`,
