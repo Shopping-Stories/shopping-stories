@@ -3,6 +3,7 @@ import { useState, memo  } from "react";
 import NodeIcon from '@components/GraphView/NodeIcon';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
+// import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -11,66 +12,85 @@ import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import Toolbar from "@mui/material/Toolbar";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
+// import IconButton from "@mui/material/IconButton";
+// import InfoIcon from '@mui/icons-material/Info';
+import Tooltip from "@mui/material/Tooltip";
+// import ListItemAvatar from '@mui/material/ListItemAvatar';
+// import Avatar from '@mui/material/Avatar';
 
-const EdgeListItem = ({ edge, handleClickZoom, focusOn, focusOff }: EdgeListItemProps) => {
+const EdgeListItem = ({ edge, handleClickZoom, focusOn, focusOff, toggleInfo }: EdgeListItemProps) => {
     const {info, id} = edge
     return (
-            <ListItemButton>
-                <ListItemIcon sx={{ pl: 2 }}>
-                    <NodeIcon
-                        t={`${info ? info.__typename : id}`}
-                    />
-                </ListItemIcon>
-                <ListItemText
-                    onMouseEnter={()=>focusOn(edge.id)}
-                    onMouseLeave={()=>focusOff("")}
-                    onClick={() => handleClickZoom(edge)}
-                    secondary={`${id}`}
-                    secondaryTypographyProps={{
-                        style: {
-                            whiteSpace: 'normal',
-                            wordWrap: 'break-word',
-                            // overflow: 'auto'
-                            maxWidth: '100%',
-                        },
-                    }}
+        <ListItemButton
+            onMouseEnter={()=>focusOn(edge.id)}
+            onMouseLeave={()=>focusOff("")}
+        >
+            <Tooltip title={"Toggle Info Panel"}>
+            <ListItemIcon sx={{ pl: 2 }} onClick={()=>toggleInfo(edge)}>
+                <NodeIcon
+                    t={`${info ? info.__typename : id}`}
                 />
-            </ListItemButton>
+            </ListItemIcon>
+            </Tooltip>
+            <Tooltip title={"Click text to zoom"}>
+            <ListItemText
+                onClick={() => handleClickZoom(edge)}
+                secondary={`${id}`}
+                secondaryTypographyProps={{
+                    noWrap: true,
+                    style: {
+                        // whiteSpace: 'normal',
+                        // wordWrap: 'break-word',
+                        // // overflow: 'auto'
+                        // maxWidth: '100%',
+                    },
+                }}
+            />
+            </Tooltip>
+        </ListItemButton>
     );
 };
 
-const ListItem = ({ node, handleClickZoom, focusOn, focusOff }: NodeListItemProps) => {
+const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: NodeListItemProps) => {
     const {id, neighbors, info} = node
     const [open, setOpen] = useState(false);
     const handleClickOpen = () => setOpen(!open);
     
     return (
         <>
-                <ListItemButton>
-                    <ListItemIcon>
-                        <NodeIcon t={`${info ? info.__typename : ''}`} />
-                    </ListItemIcon>
-                    <ListItemText
-                        onMouseEnter={()=>focusOn(node.id)}
-                        onMouseLeave={()=>focusOff("")}
-                        onClick={()=>handleClickZoom(node)}
-                        primary={id}
-                        primaryTypographyProps={{
-                            style: {
-                                whiteSpace: 'normal',
-                                wordWrap: 'break-word',
-                                // overflow: 'auto',
-                                maxWidth: '100%',
-                            },
-                        }}
-                    />
-                    {neighbors &&
-                        (open ? (
-                            <ExpandLess onClick={handleClickOpen} />
-                        ) : (
-                            <ExpandMore onClick={handleClickOpen} />
-                        ))}
-                </ListItemButton>
+            <ListItemButton
+                onMouseEnter={()=>focusOn(node.id)}
+                onMouseLeave={()=>focusOff("")}
+            >
+                <Tooltip title={"Toggle Info Panel"}>
+                <ListItemIcon onClick={()=>toggleInfo(node)}>
+                    {/*<Avatar sx={{ width: 36, height: 36 }}>*/}
+                    <NodeIcon t={`${info ? info.__typename : ''}`} />
+                    {/*</Avatar>*/}
+                </ListItemIcon>
+                </Tooltip>
+                <Tooltip title={"Click text to zoom"}>
+                <ListItemText
+                    onClick={()=>handleClickZoom(node)}
+                    primary={id}
+                    primaryTypographyProps={{
+                        noWrap: true,
+                        style: {
+                            // whiteSpace: 'normal',
+                            // wordWrap: 'break-word',
+                            // overflow: 'auto',
+                            // maxWidth: '100%',
+                        },
+                    }}
+                />
+                </Tooltip>
+                {neighbors &&
+                    (open ? (
+                        <ExpandLess onClick={handleClickOpen} />
+                    ) : (
+                        <ExpandMore onClick={handleClickOpen} />
+                    ))}
+            </ListItemButton>
             {/*</Tooltip>*/}
             <Collapse
                 in={open}
@@ -88,6 +108,7 @@ const ListItem = ({ node, handleClickZoom, focusOn, focusOff }: NodeListItemProp
                                 handleClickZoom={handleClickZoom}
                                 focusOn={focusOn}
                                 focusOff={focusOff}
+                                toggleInfo={toggleInfo}
                             />
                         ))}
                 </List>
@@ -97,8 +118,8 @@ const ListItem = ({ node, handleClickZoom, focusOn, focusOff }: NodeListItemProp
     );
 };
 
-const NodeList = ({ gData, handleClickZoom, focusOn, focusOff}: NodeListProps): JSX.Element => {
-    console.log("nodelist render");
+const NodeList = ({ gData, handleClickZoom, focusOn, focusOff, toggleInfo}: NodeListProps): JSX.Element => {
+    // console.log("nodelist render");
     return (
         <>
             <Toolbar>
@@ -108,12 +129,13 @@ const NodeList = ({ gData, handleClickZoom, focusOn, focusOff}: NodeListProps): 
             <Divider />
             <List>
                 {gData.nodes.filter(node => !!node).map(node =>
-                    <ListItem
+                    <NodeListItem
                         handleClickZoom={handleClickZoom}
                         key={node.id}
                         node={node}
                         focusOn={focusOn}
                         focusOff={focusOff}
+                        toggleInfo={toggleInfo}
                     />
                 )}
             </List>

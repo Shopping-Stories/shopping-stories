@@ -37,17 +37,29 @@ declare module "react-force-graph-2d" {
         nodes: NodeObject[],
         links: LinkObject[]
     }
+    
+    interface LinkObject {
+        source?: string | number | NodeObject;
+        target?: string | number | NodeObject;
+        linkInfo?: unknown
+    }
 }
 
 const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
+    
     const [nodeFocused, setNodeFocused] = useState("")
+    
+    const [graphPanelInfo, setGraphPanelInfo] = useState<{ info: NodeInfo, name:string }>();
+    
     const handleZoom = useCallback(node => {
         if (graphRef.current) {
             graphRef.current.zoom(5, 200);
             graphRef.current.centerAt(node.x, node.y, 200);
         }
+        setGraphPanelInfo({ info:node.info, name:node.id.toString() })
     },[graphRef]);
+    
     const {mode} = useColorMode()
 
     // const [nodeMap, graph] = useMemo(() => {
@@ -112,12 +124,12 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
                     folioRefs,
                 } = row;
                 const acc: GKey = `${accountHolder.accountFirstName} ${accountHolder.accountLastName}`;
-                adjList[acc] = new Set<string>([]);
-                updateGInfo(accountHolder, acc);
-
                 const parentEntry = `${meta.ledger}-${meta.folioPage}-${meta.entryID}`;
+                // adjList[acc] = new Set<string>([]);
+                updateGInfo(accountHolder, acc);
                 updateGInfo(meta, parentEntry);
                 updateAL(acc, parentEntry);
+                updateAL(parentEntry, acc);
 
                 // TODO: not sure if id is unique with these. There are also 4 possible id values:
                 //  tm.markID, tm.markName, tm.populate.id, tm.populate.tobaccoMarkId
@@ -217,6 +229,12 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
         return G
     }, [result]);
     
+    const toggleInfo = useCallback((node:NodeObject)=>{
+        setGraphPanelInfo({
+            info: node.info,
+            name: node.id.toString()
+        })
+    }, [])
     
     const focusOn = useCallback((id) => {
         setNodeFocused(id)
@@ -252,7 +270,7 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
             ctx.drawImage(node.canvasIcon, node.x - size / 2, node.y - size / 2, size, size,);
         }
         
-    },[nodeFocused])
+    },[nodeFocused, mode])
     
     // useEffect(() => {
     //     console.log('Graph: \n', graph);
@@ -263,6 +281,7 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
         <>
             <ControlBar
                 // width={240}
+                {...graphPanelInfo}
             />
             <Drawer
                 variant="permanent"
@@ -284,6 +303,7 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
                       handleClickZoom={handleZoom}
                       focusOn={focusOn}
                       focusOff={focusOff}
+                      toggleInfo={toggleInfo}
                     />
                 }
                 <Divider />
@@ -314,12 +334,14 @@ type nodeHandler = (node: NodeObject) => void;
 export interface NodeListProps {
     gData: GraphData
     handleClickZoom: nodeHandler
+    toggleInfo: nodeHandler
     focusOn: focusHandler
     focusOff: focusHandler
 }
 export interface NodeListItemProps {
     node: NodeObject
     handleClickZoom: nodeHandler
+    toggleInfo: nodeHandler
     focusOn: focusHandler
     focusOff: focusHandler
 }
@@ -327,6 +349,7 @@ export interface NodeListItemProps {
 export interface EdgeListItemProps {
     edge:NodeObject;
     handleClickZoom: nodeHandler
+    toggleInfo: nodeHandler
     focusOn: focusHandler
     focusOff: focusHandler
 }
