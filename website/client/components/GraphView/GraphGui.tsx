@@ -222,6 +222,12 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
         }
         // console.log('Adjacency List: \n', adjList);
         // notVis.forEach((v) => V.push({ id: v }));
+        V.sort(function(a, b){
+            if (!a.info.__typename) return -1
+            if (!b.info.__typename) return 1
+            return a.info.__typename < b.info.__typename ? -1 : 1
+        })
+        // E.sort()
         let G: GraphData = { nodes: V, links: E }
         // setGraph({ nodes: V, links: E });
         // setNodeMap(nodeDict);
