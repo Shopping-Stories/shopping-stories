@@ -1,10 +1,9 @@
 import Paper from '@mui/material/Paper';
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
-import { AdvancedSearch, OptionsType } from 'client/types';
+import { AdvancedSearch, Entry, ItemEntry, OptionsType } from 'client/types';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Entry } from "new_types/api_types";
+import { useQuery } from 'urql';
 
 interface EntryPaginationTable {
     queryDef: string;
@@ -21,20 +20,9 @@ interface EntryPaginationTable {
     setRows: Dispatch<SetStateAction<Entry[]>>;
 }
 
-interface EntryQueryResult {
-    entries: (Entry)[];
-}
-
-const doSearch = async (search: string): Promise<EntryQueryResult> => {
-    const res = await fetch("http://preprod.shoppingstories.org:4562/search/" + search);
-    // console.log(await res.text());
-    let toret: EntryQueryResult = JSON.parse(await res.text());
-    return toret;
-  };
-
 const EntryPaginationTable = (props: EntryPaginationTable) => {
     const {
-        // queryDef,
+        queryDef,
         search,
         advanced,
         isAdvancedSearch,
@@ -47,33 +35,40 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
     page;
     const [rowsPerPage, setRowsPerPage] = useState(10);
     setRowsPerPage;
-    const [setOptions] = useState<OptionsType>({
+    const [options, setOptions] = useState<OptionsType>({
         limit: rowsPerPage,
         skip: null,
     });
     setOptions;
 
-    
-    const {data, refetch, isLoading} =
-        useQuery(
-            ["entries", search],
-            () => doSearch(search),
-        );
+    interface EntryQueryResult {
+        rows: (Entry & { id: string })[];
+        count: number;
+    }
 
-    // console.log(data);
+    const [{ data, stale, fetching }, executeQuery] =
+        useQuery<EntryQueryResult>({
+            query: queryDef,
+            variables: isAdvancedSearch
+                ? { options, advanced, populate: false }
+                : { options, search, populate: false },
+            requestPolicy: 'cache-and-network',
+        });
+
+    console.log(data);
 
     useEffect(() => {
         if (reQuery) {
-            refetch();
+            executeQuery({ requestPolicy: 'network-only' });
             setReQuery(false);
         }
-    }, [refetch, reQuery, setReQuery]);
+    }, [executeQuery, reQuery, setReQuery]);
 
     useEffect(() => {
         if (setIsLoading !== undefined) {
-            setIsLoading(isLoading);
+            setIsLoading(stale || fetching);
         }
-    }, [isLoading, setIsLoading]);
+    }, [stale, fetching, setIsLoading]);
 
     useEffect(() => {
         setPage(0);
@@ -81,47 +76,51 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
 
     // const rows = data?.rows ?? [];
 
-    function toTitleCase(str: string) {
-        return str.replace(/\w\S*/g, function(txt){
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
-    }
+    
   
     useEffect(() => {
+        function getRelevantItem(thing: ItemEntry[])
+        {
+            var which = 0;
+            console.log("Hello!");
+            for (var i = 0; i < thing.length; i++)
+            {
+                if (thing.at(i)?.itemsOrServices.at(0)?.item.includes(advanced?.itemEntry?.items.toLowerCase() || ""))
+                {
+                    which = i;
+                }
+            }
+            return thing.at(which)?.itemsOrServices.at(0);
+        }
         if (setRows !== undefined) {
-            setRows(data?.entries || []);
-            console.log(data?.entries);
-            let thing: GridRowsProp = data?.entries.map((row) => {return {
-                Purchaser: row?.account_name,
-                Amount: row?.amount,
-                Item: toTitleCase((row?.item ?? "")),
-                // AccountHolderID: row?.accountHolderID,
-                Date: row?.ledger?.folio_year,
-                Owner: row?.store_owner,
-                // Store: row?.meta?.store,
-                // Comments: row?.meta?.comments,
-                // Colony: row?.money?.colony,
-                Quantity: row?.Quantity,
-                Commodity: row?.Commodity,
-                $Pounds: row?.currency?.pounds,
-                $Shilling: row?.currency?.shillings,
-                $Pence: row?.currency?.pennies,
-                $Farthings: row?.currency?.farthings,
-                "£Pounds": row?.sterling?.pounds,
-                "£Shilling": row?.sterling?.shillings,
-                "£Pence": row?.sterling?.pennies,
-                "£Farthings": row?.sterling?.farthings,
-                EntryID: row?.ledger?.entry_id,
-                // Ledger: row?.ledger?.folio_year,
-                Reel: row?.ledger?.reel,
-                FolioPage: row?.ledger?.folio_page,
-                id: row?._id,
+            setRows(data?.rows || []);
+            let thing: GridRowsProp = data?.rows.map((row) => {return {
+                Purchaser: row?.accountHolder?.prefix + " " + row?.accountHolder?.accountFirstName + " " + row?.accountHolder?.accountLastName + " " + row?.accountHolder?.suffix,
+                RelevantItem: getRelevantItem(row?.itemEntries || [])?.variants.join(" ") + " " + getRelevantItem(row?.itemEntries || [])?.item,
+                AccountHolderID: row?.accountHolder?.accountHolderID,
+                Date: row?.dateInfo?.fullDate?.split("T")[0],
+                Owner: row?.meta?.owner,
+                Store: row?.meta?.store,
+                Comments: row?.meta?.comments,
+                Colony: row?.money?.colony,
+                Quantity: row?.money?.quantity,
+                Commodity: row?.money?.commodity,
+                CurrencyPounds: row?.money?.currency.pounds,
+                CurrencyShilling: row?.money?.currency.shilling,
+                CurrencyPence: row?.money?.currency.pence,
+                SterlingPounds: row?.money?.sterling.pounds,
+                SterlingShilling: row?.money?.sterling.shilling,
+                SterlingPence: row?.money?.sterling.pence,
+                EntryID: row?.meta?.entryID,
+                Ledger: row?.meta?.ledger,
+                Reel: row?.meta?.reel,
+                FolioPage: row?.meta?.folioPage,
             }}) || [];
             
             
             editRows(thing);
         }
-    }, [advanced?.itemEntry?.items, data?.entries, setRows]);
+    }, [advanced?.itemEntry?.items, data?.rows, setRows]);
 
     // Avoid a layout jump when reaching the last page with empty rows.
 
@@ -129,61 +128,32 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
 
     const columnNames: string[] = [
         'Purchaser',
-        'Amount',
-        'Item',
-        // 'Account Holder ID',
+        'Relevant Item',
+        'Account Holder ID',
         'Date',
         'Owner',
-        // 'Store',
-        // 'Comments',
-        // 'Colony',
+        'Store',
+        'Comments',
+        'Colony',
         'Quantity',
         'Commodity',
-        '$ Pounds',
-        '$ Shilling',
-        '$ Pence',
-        '$ Farthings',
-        '£ Pounds',
-        '£ Shilling',
-        '£ Pence',
-        '£ Farthings',
+        'Currency Pounds',
+        'Currency Shilling',
+        'Currency Pence',
+        'Sterling Pounds',
+        'Sterling Shilling',
+        'Sterling Pence',
         'EntryID',
-        // 'Ledger Year',
+        'Ledger',
         'Reel',
         'FolioPage',
     ];
 
     const [rows, editRows] = useState<GridRowsProp>([] as GridRowsProp);
 
-    const columns: GridColDef[] = columnNames.map((str: string) : GridColDef => {
-        return {
-            field: str.split(" ").join(""), 
-            headerName: str, 
-            flex: [
-                "Purchaser", 
-                "Relevant Item", 
-                "Owner", 
-                "Comments"
-            ].includes(str) ? 1 
-            : ([
-                "Reel", 
-                "EntryID", 
-                "Quantity", 
-                "Commodity", 
-                "Colony", 
-                "$ Pounds", 
-                "$ Shilling", 
-                "$ Pence", 
-                "$ Farthings", 
-                '£ Pounds',
-                '£ Shilling',
-                '£ Pence',
-                '£ Farthings',
-                "Amount"
-            ].includes(str) ? 0.3 : 0.5)}
-    });
+    const columns: GridColDef[] = columnNames.map((str: string) : GridColDef => {return {field: str.split(" ").join(""), headerName: str, flex: ["Purchaser", "Relevant Item", "Owner", "Comments"].includes(str) ? 1 : (["Reel", "EntryID", "Quantity", "Commodity", "Colony"].includes(str) ? 0.35 : 0.5)}});
     return (
-        <Box sx={{height: '60vh', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
+        <Box sx={{height: '50vh', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
         <Paper sx={{height: '100%',width: '100%', overflow: 'hidden' }}>
             {/* <TableContainer sx={{ minHeight: '80%' }}>
                 <Table
@@ -267,7 +237,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
             /> */}
-            <DataGrid rows={rows} columns={columns} pageSize={10} rowsPerPageOptions={[10]} getRowId={(row) => row.id} disableSelectionOnClick/>
+            <DataGrid rows={rows} columns={columns} pageSize={10} rowsPerPageOptions={[10]} getRowId={(row) => row.EntryID} disableSelectionOnClick/>
         </Paper>
         </Box>
     );
