@@ -94,7 +94,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         }
         if (setRows !== undefined) {
             setRows(data?.rows || []);
-            let thing: GridRowsProp = data?.rows.map((row) => {return {
+            let thing: GridRowsProp = (data?.rows || []).map((row) => {return {
                 Purchaser: row?.accountHolder?.prefix + " " + row?.accountHolder?.accountFirstName + " " + row?.accountHolder?.accountLastName + " " + row?.accountHolder?.suffix,
                 RelevantItem: getRelevantItem(row?.itemEntries || [])?.variants.join(" ") + " " + getRelevantItem(row?.itemEntries || [])?.item,
                 // row?.accountHolder?.accountHolderID,
