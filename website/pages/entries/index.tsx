@@ -23,18 +23,21 @@ import {
     EntryFields,
     SearchEntryDef,
 } from 'client/graphqlDefs';
-import { AdvancedSearch, Entry, SearchType } from 'client/types';
+import { AdvancedSearch, SearchType } from 'client/types';
+import { Entry } from 'new_types/api_types';
 import { cloneWithoutTypename, flatten } from 'client/util';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { cloneDeep } from 'lodash';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 import { PaperStyles } from 'styles/styles';
 import { useMutation } from 'urql';
-import xlsx from 'xlsx';
+// import xlsx from 'xlsx';
 import { FormControl, InputLabel, MenuItem } from '@mui/material';
+
 import { FileUpload } from '@mui/icons-material';
 
 const deleteEntryDef = `
@@ -50,6 +53,8 @@ const entriesData = [
     { label: 'Item', value: 'itemEntry' },
     { label: 'Tobacco', value: 'tobaccoEntry' },
 ];
+
+const queryClient = new QueryClient();
 
 const downloadOptionsData = [
     { label: 'xlsx', value: 'xlsx' },
@@ -68,6 +73,8 @@ const ManagePlacesPage: NextPage = () => {
     const [_deletePlaceResult, deletePlace] = useMutation(deleteEntryDef);
 
     const [search, setSearch] = useState('');
+    const [submitted, setSubmitted] = useState(false);
+    // const [graph, setGraph] = useState(false)
 
     const [advanced, setAdvanced] = useState<AdvancedSearch | null>(null);
     const [placeToDelete, setPlaceToDelete] = useState<{
@@ -78,7 +85,7 @@ const ManagePlacesPage: NextPage = () => {
     const [openDelete, setOpenDelete] = useState(false);
     const [rows, setRows] = useState<Entry[]>([]);
     const [deleting, setDeleting] = useState(false);
-    const [currentSearchEntry, setCurrentSearchEntry] = useState('');
+    const [currentSearchEntry, setCurrentSearchEntry ] = useState('');
     const [currentDownloadOption, setCurrentDownloadOption] = useState('');
 
     const handleOpenDelete = () => {
@@ -115,9 +122,14 @@ const ManagePlacesPage: NextPage = () => {
         },
         validationSchema: searchSchema,
         onSubmit: (values: any) => {
-            setSearch(values.search);
+            // setCurrentSearchEntry(values.search);
+            setSubmitted(values.search);
         },
     });
+
+    useEffect(() => {
+        if (submitted) setSearch(searchForm.values.search);
+    }, [submitted, searchForm.values.search]);
 
     const advancedSearchForm = useFormik<AdvancedSearch>({
         initialValues: {
@@ -151,15 +163,21 @@ const ManagePlacesPage: NextPage = () => {
         },
     });
 
-    const exportRowsToSpreadSheet = () => {
-        const XLSX = xlsx;
-        const fileName = `export-${Date.now()}`;
-        const flatRows = rows.map((row) => flatten(cloneWithoutTypename(row)));
-        const workSheet = XLSX.utils.json_to_sheet(flatRows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, workSheet, fileName);
-        XLSX.writeFile(wb, `${fileName}.xlsx`);
+    const toGraph = () => {
+        const path = `/entries/graphview/${searchForm.values.search}`;
+
+        router.push(path);
     };
+
+    // const exportRowsToSpreadSheet = () => {
+    //     const XLSX = xlsx;
+    //     const fileName = `export-${Date.now()}`;
+    //     const flatRows = rows.map((row) => flatten(cloneWithoutTypename(row)));
+    //     const workSheet = XLSX.utils.json_to_sheet(flatRows);
+    //     const wb = XLSX.utils.book_new();
+    //     XLSX.utils.book_append_sheet(wb, workSheet, fileName);
+    //     XLSX.writeFile(wb, `${fileName}.xlsx`);
+    // };
 
     const handleEntryChange = (e: any) => {
         console.log(e.target.value);
@@ -170,7 +188,7 @@ const ManagePlacesPage: NextPage = () => {
         setCurrentDownloadOption(e.target.value);
         switch (e.target.value) {
             case 'xlsx':
-                exportRowsToSpreadSheet();
+                // exportRowsToSpreadSheet();
                 break;
             case 'utfa':
                 //  exportRowsToUTFA();
@@ -297,6 +315,7 @@ const ManagePlacesPage: NextPage = () => {
     };
 
     return (
+        <QueryClientProvider client={queryClient}>
         <ColorBackground>
             <Header />
             <Container>
@@ -465,24 +484,47 @@ const ManagePlacesPage: NextPage = () => {
                                         </LoadingButton>
                                     </Box>
                                 ) : (
-                                    <form onSubmit={searchForm.handleSubmit}>
-                                        <TextFieldWithFormikValidation
-                                            fullWidth
-                                            variant={'filled'}
-                                            name={'search'}
-                                            formikForm={searchForm}
-                                            label={'Search'}
-                                            fieldName={'search'}
-                                        />
+                                    <>
+                                        <form
+                                            onSubmit={searchForm.handleSubmit}
+                                        >
+                                            <TextFieldWithFormikValidation
+                                                fullWidth
+                                                variant={'filled'}
+                                                name={'search'}
+                                                formikForm={searchForm}
+                                                label={'Search'}
+                                                fieldName={'search'}
+                                            />
+                                            <LoadingButton
+                                                fullWidth
+                                                loading={isLoading}
+                                                variant="contained"
+                                                type="submit"
+                                            >
+                                                Search
+                                            </LoadingButton>
+                                        </form>
                                         <LoadingButton
                                             fullWidth
                                             loading={isLoading}
                                             variant="contained"
-                                            type="submit"
+                                            onClick={toGraph}
                                         >
-                                            Search
+                                            Graph View
+                                            {/*<Link*/}
+                                            {/*    href={`/graphview/${search}`}*/}
+                                            {/*    href={{*/}
+                                            {/*        pathname: '/graphview/[search]',*/}
+                                            {/*        query: {*/}
+                                            {/*            search: `/entries/graphview/${searchForm.values.search}`*/}
+                                            {/*            advanced:*/}
+                                            {/*        }*/}
+                                            {/*    }}*/}
+                                            {/*    activeClassName="active"*/}
+                                            {/*></Link>*/}
                                         </LoadingButton>
-                                    </form>
+                                    </>
                                 )}
                             </FormGroup>
                         </Paper>
@@ -581,7 +623,7 @@ const ManagePlacesPage: NextPage = () => {
                     </Grid>
                 </Grid>
             </Container>
-            
+            {(search || advanced) && (
                 <Paper
                     sx={{
                         backgroundColor: 'var(--secondary-bg)',
@@ -596,29 +638,28 @@ const ManagePlacesPage: NextPage = () => {
                                         variant="contained"
                                         startIcon={<AddCircle />}
                                         onClick={() =>
-                                            router.push(
-                                                `/entries/create`,
-                                            )
+                                            router.push(`/entries/create`)
                                         }
                                     >
                                         Create
                                     </Button>
                                 </div>
                                 {/* <div>
-                                    <Button
-                                        variant="contained"
-                                        startIcon={
-                                            <FileDownloadIcon />
-                                        }
-                                        onClick={
-                                            exportRowsToSpreadSheet
-                                        }
-                                    >
-                                        download current page
-                                    </Button>
-                                </div> */}
+                                <Button
+                                    variant="contained"
+                                    startIcon={
+                                        <FileDownloadIcon />
+                                    }
+                                    onClick={
+                                        exportRowsToSpreadSheet
+                                    }
+                                >
+                                    download current page
+                                </Button>
+                            </div> */}
                             </Stack>
                         ) : null}
+                        
                         <EntryPaginationTable
                             isAdmin={isAdmin}
                             isAdminOrModerator={isAdminOrModerator}
@@ -628,9 +669,7 @@ const ManagePlacesPage: NextPage = () => {
                                     : SearchEntryDef
                             }
                             onEditClick={(row: any) =>
-                                router.push(
-                                    `/entries/update/${row.id}`,
-                                )
+                                router.push(`/entries/update/${row.id}`)
                             }
                             onDeleteClick={async (row: any) => {
                                 setPlaceToDelete({
@@ -648,9 +687,11 @@ const ManagePlacesPage: NextPage = () => {
                                 currentSearchEntry,
                             )}
                         />
+                        
                     </Stack>
                 </Paper>
-            
+            )}
+        
 
             {/* Delete Dialog */}
             <ActionDialog
@@ -665,6 +706,7 @@ const ManagePlacesPage: NextPage = () => {
                 </DialogContentText>
             </ActionDialog>
         </ColorBackground>
+        </QueryClientProvider>
     );
 };
 

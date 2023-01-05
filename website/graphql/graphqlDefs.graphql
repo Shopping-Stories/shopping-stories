@@ -1,0 +1,629 @@
+mutation CreateGlossaryItem($item: CreateGlossaryItemInput!) {
+    createGlossaryItem(newGlossaryItem: $item) {
+        ...glossaryItemFields
+    }
+}
+mutation UpdateGlossaryItem($id: String!, $updates: UpdateGlossaryItemInput!) {
+    updateGlossaryItem(id: $id, updatedFields: $updates) {
+        ...glossaryItemFields
+    }
+}
+mutation DeleteGlossaryItem($id: String!) {
+    deletedItem: deleteGlossaryItem(id: $id) {
+        ...glossaryItemFields
+    }
+}
+query GlossaryItemQuery ($id: String!) {
+    item: findGlossaryItem(id: $id) {
+        ...glossaryItemFields
+    }
+}
+query GlossaryItems($search: String, $options: FindAllLimitAndSkip) {
+    rows: findGlossaryItems(search: $search, options: $options) {
+        ...glossaryItemFields
+    }
+    count: countGlossaryItems(search: $search)
+}
+fragment glossaryItemFields on GlossaryItem {
+    id
+    name
+    description
+    origin
+    use
+    category
+    subcategory
+    qualifiers
+    culturalContext
+    citations
+    images {
+        imageKey
+        name
+        material
+        dimensions
+        date
+        caption
+        collectionCitation
+        url
+        license
+    }
+}
+
+mutation CreateDocument($doc: CreateDocumentInput!) {
+    doc: createDocument(newDocument: $doc) {
+        ...documentFields
+    }
+}
+mutation UpdateDocument($id: String!, $updates: UpdateDocumentInput!) {
+    doc: updateDocument(id: $id, updatedFields: $updates) {
+        ...documentFields
+    }
+}
+mutation DeleteDocument($id: String!) {
+    doc: deleteDocument(id: $id) {
+        ...documentFields
+    }
+}
+query FetchDocuments($search: String, $options: FindAllLimitAndSkip) {
+    rows: findDocuments(search: $search, options: $options) {
+        ...documentFields
+    }
+    count: countDocuments(search: $search)
+}
+fragment documentFields on DocumentInfo {
+    id
+    name
+    description
+    fileKey
+}
+
+mutation UpdateCategory($id: String!, $updates: UpdateCategoryInput!) {
+    updateCategory(id: $id, updatedFields: $updates) {
+        ...categoryFields
+    }
+}
+mutation DeleteCategory($id: String!) {
+    deleteCategory(id: $id) {
+        ...categoryFields
+    }
+}
+mutation CreateCategory($category: CreateCategoryInput!) {
+    createCategory(category: $category) {
+        ...categoryFields
+    }
+}
+query Categories($search: String, $options: FindAllLimitAndSkip) {
+    rows: findCategories(search: $search, options: $options) {
+        ...categoryFields
+    }
+    count: countCategories(search: $search)
+}
+fragment categoryFields on Category {
+    id
+    item
+    category
+    subcategory
+}
+
+mutation CreateItem($item: CreateItemInput!) {
+    createItem(item: $item) {
+        ...itemFields
+    }
+}
+mutation UpdateItem($id: String!, $updates: UpdateItemInput!) {
+    updateItem(id: $id, updatedFields: $updates) {
+        ...itemFields
+    }
+}
+mutation DeleteItem($id: String!) {
+    deleteItem(id: $id) {
+        ...itemFields
+    }
+}
+query Items($search: String, $options: FindAllLimitAndSkip) {
+    rows: findItems(search: $search, options: $options) {
+        ...itemFields
+    }
+    count: countItems(search: $search)
+}
+fragment itemFields on Item {
+    id
+    item
+    variants
+}
+
+mutation CreatePerson($person: CreatePersonInput!) {
+    createPerson(person: $person) {
+        ...personFields
+    }
+}
+mutation UpdatePerson($id: String!, $updates: UpdatePersonInput!) {
+    updatePerson(id: $id, updatedFields: $updates) {
+        ...personFields
+    }
+}
+mutation DeletePerson($id: String!) {
+    deletePerson(id: $id) {
+        ...personFields
+    }
+}
+query FetchPerson($id: String!) {
+    person: findOnePerson(id: $id) {
+        ...personFields
+    }
+}
+query FetchPeople($search: String!, $options: FindAllLimitAndSkip) {
+    people: findPeople(search: $search, options: $options) {
+        id
+        firstName
+        lastName
+        name: fullName
+    }
+}
+query People($search: String, $options: FindAllLimitAndSkip) {
+    rows: findPeople(search: $search, options: $options) {
+        ...personFields
+    }
+    count: countPeople(search: $search)
+}
+fragment personFields on Person {
+    id
+    account
+    enslaved
+    firstName
+    lastName
+    gender
+    location
+    prefix
+    suffix
+    profession
+    professionCategory
+    professionQualifier
+    reference
+    store
+    variations
+}
+
+mutation CreatePlace($place: CreatePlaceInput!) {
+    createPlace(place: $place) {
+        ...placeFields
+    }
+}
+mutation UpdatePlace($id: String!, $updates: UpdatePlaceInput!) {
+    updatePlace(id: $id, updatedFields: $updates) {
+        ...placeFields
+    }
+}
+mutation DeletePlace($id: String!) {
+    deletePlace(id: $id) {
+        ...placeFields
+    }
+}
+query FetchPlace($id: String!) {
+    place: findOnePlace(id: $id) {
+        ...placeFields
+    }
+}
+query SearchPlaces($search: String!, $options: FindAllLimitAndSkip) {
+    places: findPlaces(search: $search, options: $options) {
+        id
+        name: location
+    }
+}
+query Places($search: String, $options: FindAllLimitAndSkip) {
+    rows: findPlaces(search: $search, options: $options) {
+        ...placeFields
+    }
+    count: countPlaces(search: $search)
+}
+fragment placeFields on Place {
+    id
+    location
+    alias
+    descriptor
+}
+
+mutation CreateTobaccoMark($mark: CreateTobaccoMarkInput!) {
+    createTobaccoMark(tobaccoMark: $mark) {
+        ...markFields
+    }
+}
+mutation UpdateTobaccoMark($id: String!, $updates: UpdateTobaccoMarkInput!) {
+    updateTobaccoMark(id: $id, updatedFields: $updates) {
+        ...markFields
+    }
+}
+mutation DeleteTobaccoMark($id: String!) {
+    deleteTobaccoMark(id: $id) {
+        ...markFields
+    }
+}
+query FetchMark($id: String!) {
+    mark: findOneTobaccoMark(id: $id) {
+        ...markFields
+    }
+}
+query FetchMarks($search: String!, $options: FindAllLimitAndSkip) {
+    marks: findTobaccoMarks(search: $search, options: $options) {
+        id
+        markID: id
+        # markName: description
+        markName: tobaccoMarkId
+    }
+}
+query TobaccoMarks($search: String, $options: FindAllLimitAndSkip) {
+    rows: findTobaccoMarks(search: $search, options: $options) {
+        ...markFields
+    }
+    count: countTobaccoMarks(search: $search)
+}
+fragment markFields on TobaccoMark {
+    id
+    description
+    image
+    netWeight
+    note
+    notes
+    tobaccoMarkId
+    warehouse
+    where
+    whoRepresents
+    whoUnder
+}
+
+query AdvancedSearch($advanced: AdvancedSearchInput,$options: FindAllLimitAndSkip) {
+    rows: advancedFindEntries(search: $advanced, options: $options) {
+        ...entryFields
+    }
+    count: advancedCountEntries(search: $advanced)
+}
+query Entries($search: String, $options: FindAllLimitAndSkip) {
+    rows: findEntries(search: $search, options: $options) {
+        ...entryFields
+    }
+    count: countEntries(search: $search)
+}
+fragment entryFields on Entry {
+    id
+    accountHolder {
+        ...accountFields
+    }
+    meta {
+        ...metaFields
+    }
+    dateInfo {
+        ...dateFields
+    }
+    folioRefs
+    ledgerRefs
+    itemEntries {
+        ...itemEntryFields
+    }
+    tobaccoEntry {
+        ...tobaccoEntryFields
+    }
+    regularEntry {
+        ...regularEntryFields
+    }
+    people {
+        ...peopleFields
+    }
+    places {
+        ...placesFields
+    }
+    entry
+    money {
+        ...moneyFields
+    }
+}
+fragment mentionedItems on MentionedItemsObject {
+    quantity
+    qualifier
+    item
+}
+fragment denominations on PoundsShillingsPence {
+    pounds
+    shilling
+    pence
+}
+fragment accountFields on AccHolderObject {
+    accountFirstName
+    accountLastName
+    prefix
+    suffix
+    profession
+    location
+    reference
+    debitOrCredit
+    accountHolderID
+}
+fragment metaFields on MetaObject {
+    ledger
+    reel
+    owner
+    store
+    year
+    folioPage
+    entryID
+    comments
+}
+fragment dateFields on DateObject {
+    day
+    month
+    year
+    fullDate
+}
+fragment itemOrServiceFields on ItemOrServiceObject {
+    quantity
+    qualifier
+    variants
+    item
+    category
+    subcategory
+    unitCost {
+        ...denominations
+    }
+    itemCost {
+        ...denominations
+    }
+}
+fragment itemEntryFields on ItemEntryObject {
+    perOrder
+    percentage
+    itemsOrServices {
+        ...itemOrServiceFields
+    }
+    itemsMentioned {
+        ...mentionedItems
+    }
+}
+fragment tobaccoMarkFields on TobaccoMarkObject {
+    markID
+    markName
+}
+fragment noteFields on NoteObject {
+    noteNum
+    totalWeight
+    barrelWeight
+    tobaccoWeight
+}
+fragment tobaccoMoneyFields on TobaccoMoneyObject {
+    moneyType
+    tobaccoAmount
+    rateForTobacco {
+        ...denominations
+    }
+    casksInTransaction
+    tobaccoSold {
+        ...denominations
+    }
+    casksSoldForEach {
+        ...denominations
+    }
+}
+fragment tobaccoEntryFields on TobaccoEntryObject {
+    entry
+    marks {
+        ...tobaccoMarkFields
+    }
+    notes {
+        ...noteFields
+    }
+    money {
+        ...tobaccoMoneyFields
+    }
+    tobaccoShaved
+}
+fragment regularEntryFields on RegularEntryObject {
+    entry
+    tobaccoMarks {
+        ...tobaccoMarkFields
+    }
+    itemsMentioned {
+        ...mentionedItems
+    }
+}
+fragment peopleFields on PersonObject {
+    name
+    id
+}
+fragment placesFields on PlaceObject {
+    name
+    id
+}
+fragment moneyFields on MoneyObject {
+    commodity
+    colony
+    quantity
+    currency {
+        ...denominations
+    }
+    sterling {
+        ...denominations
+    }
+}
+
+query ParsedEntries($search: String, $options: FindAllLimitAndSkip) {
+    rows: findParsedEntries(search: $search, options: $options) {
+        ...parsedEntryFields
+    }
+    count: countEntries(search: $search)
+}
+fragment parsedEntryFields on ParsedEntry {
+    id
+    accountHolder {
+        ...parsedAccFields
+    }
+    meta {
+        ...parsedMetaFields
+    }
+    dateInfo {
+        ...parsedDateFields
+    }
+    folioRefs
+    ledgerRefs
+    itemEntries {
+        ...parsedItemEntryFields
+    }
+    tobaccoEntry {
+        ...parsedTobaccoEntryFields
+    }
+    regularEntry {
+        ...parsedRegularEntryFields
+    }
+    people {
+        ...parsedPeopleFields
+    }
+    places {
+        ...parsedPlacesFields
+    }
+    entry
+    money {
+        ...ParsedMoneyFields
+    }
+    documentName
+}
+fragment parsedMentionedItems on ParsedMentionedItemsObject {
+    quantity
+    qualifier
+    item
+}
+fragment parsedDenominations on ParsedPoundsShillingsPence {
+    pounds
+    shilling
+    pence
+}
+fragment parsedAccFields on ParsedAccHolderObject {
+    accountFirstName
+    accountLastName
+    prefix
+    suffix
+    profession
+    location
+    reference
+    debitOrCredit
+    accountHolderID
+}
+fragment parsedMetaFields on ParsedMetaObject {
+    ledger
+    reel
+    owner
+    store
+    year
+    folioPage
+    entryID
+    comments
+}
+fragment parsedDateFields on ParsedDateObject {
+    day
+    month
+    year
+    fullDate
+}
+fragment parsedItemOrServiceFields on ParsedItemOrServiceObject {
+    quantity
+    qualifier
+    variants
+    item
+    category
+    subcategory
+    unitCost {
+        ...parsedDenominations
+    }
+    itemCost {
+        ...parsedDenominations
+    }
+}
+fragment parsedItemEntryFields on ParsedItemEntryObject {
+    perOrder
+    percentage
+    itemsOrServices {
+        ...parsedItemOrServiceFields
+    }
+    itemsMentioned {
+        ...parsedMentionedItems
+    }
+}
+fragment parsedTobaccoMarkFields on ParsedTobaccoMarkObject {
+    markID
+    markName
+}
+fragment ParsedNoteFields on ParsedNoteObject {
+    noteNum
+    totalWeight
+    barrelWeight
+    tobaccoWeight
+}
+fragment parsedTobaccoMoneyFields on ParsedTobaccoMoneyObject {
+    moneyType
+    tobaccoAmount
+    rateForTobacco {
+        ...parsedDenominations
+    }
+    casksInTransaction
+    tobaccoSold {
+        ...parsedDenominations
+    }
+    casksSoldForEach {
+        ...parsedDenominations
+    }
+}
+fragment parsedTobaccoEntryFields on ParsedTobaccoEntryObject {
+    entry
+    marks {
+        ...parsedTobaccoMarkFields
+    }
+    notes {
+        ...ParsedNoteFields
+    }
+    money {
+        ...parsedTobaccoMoneyFields
+    }
+    tobaccoShaved
+}
+fragment parsedRegularEntryFields on ParsedRegularEntryObject {
+    entry
+    tobaccoMarks {
+        ...parsedTobaccoMarkFields
+    }
+    itemsMentioned {
+        ...parsedMentionedItems
+    }
+}
+fragment parsedPeopleFields on ParsedPersonObject {
+    name
+    id
+}
+fragment parsedPlacesFields on ParsedPlaceObject {
+    name
+    id
+}
+fragment ParsedMoneyFields on ParsedMoneyObject {
+    commodity
+    colony
+    quantity
+    currency {
+        ...parsedDenominations
+    }
+    sterling {
+        ...parsedDenominations
+    }
+}
+
+mutation AddUserToGroup($groupname: String!, $username: String!) {
+    addUserToGroup(groupname: $groupname, username: $username)
+}
+mutation RemoveUserFromGroup($groupname: String!, $username: String!) {
+    removeUserFromGroup(groupname: $groupname, username: $username)
+}
+mutation EnableUser($username: String!) {
+    enableUser(username: $username)
+}
+mutation disableUser($username: String!) {
+    disableUser(username: $username)
+}
+query ListUsers {
+    rows: listUsers
+}
+query listGroupsForUser($username: String!) {
+    oldgroups: listGroupsForUser(username: $username)
+}

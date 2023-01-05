@@ -136,6 +136,7 @@ export interface RegularEntry {
 }
 
 export interface Entry {
+    id:string;
     accountHolder: AccountHolder;
     meta: MetaInformation;
     dateInfo: DateInfo;

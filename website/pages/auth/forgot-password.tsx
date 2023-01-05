@@ -152,7 +152,7 @@ const SignInPage: NextPage = () => {
         if (user) {
             submitPassChangeForm.setFieldValue('username', user);
         }
-    }, [user]);
+    }, [user, submitPassChangeForm]);
 
     return !codeSent ? (
         <AuthSkeleton formikForm={initiatePassChangeForm}>

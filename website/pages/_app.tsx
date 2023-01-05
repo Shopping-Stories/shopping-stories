@@ -19,6 +19,9 @@ import {
 import { AmplifyOptions, S3Options } from '../client/util';
 import createEmotionCache from '../styles/createEmotionCache';
 import '../styles/globals.css';
+import Layout from "@components/Layout";
+//TODO: remove all header imports in pages/components
+// import Header from "@components/Header";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -125,7 +128,9 @@ function App({
                 <ColorModeContext.Provider value={colorMode}>
                     <ThemeProvider theme={theme}>
                         <CssBaseline />
-                        <Component {...pageProps} />
+                        <Layout>
+                            <Component {...pageProps} />
+                        </Layout>
                     </ThemeProvider>
                 </ColorModeContext.Provider>
             </Provider>
