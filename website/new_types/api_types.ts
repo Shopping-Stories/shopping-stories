@@ -46,3 +46,44 @@ export interface Entry {
     accountHolderID?: string;
     "_id"?: string;
 }
+
+export interface ParserOutput {
+    errors?: Array<string>
+    error_context?: Array<Array<string | Array<string>>>
+    amount?: string
+    amount_is_combo?: boolean
+    item?: string
+    price?: string
+    price_is_combo?: boolean
+    phrases?: Array<Map<string, string | Array<string>>>
+    date?: string
+    pounds?: number
+    pounds_ster?: number
+    shillings?: number
+    shillings_ster?: number
+    pennies_ster?: number
+    pennies?: number
+    farthings_ster?: number
+    Marginalia?: string
+    farthings?: number
+    currency_type?: string
+    currency_totaling_contextless?: boolean
+    commodity_totaling_contextless?: boolean
+    account_name?: string
+    reel?: number
+    store_owner?: string
+    folio_year?: string
+    folio_page?: number
+    entry_id?: string
+    "Date Year"?: string
+    "_Month": string
+    Day?: string
+    debit_or_credit?: string
+    context?: Array<Array<string>>
+    Quantity?: string
+    Commodity?: string
+    people?: Array<string>
+    type?: string
+    liber_book?: string
+    mentions?: Array<string>
+}

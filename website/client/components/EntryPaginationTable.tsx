@@ -43,10 +43,10 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         reQuery,
         setRows,
     } = props;
-    const [page, setPage] = useState(0);
-    page;
+
     const [rowsPerPage, setRowsPerPage] = useState(10);
     setRowsPerPage;
+    
     const [setOptions] = useState<OptionsType>({
         limit: rowsPerPage,
         skip: null,
@@ -75,9 +75,6 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         }
     }, [isLoading, setIsLoading]);
 
-    useEffect(() => {
-        setPage(0);
-    }, [search, advanced]);
 
     // const rows = data?.rows ?? [];
 
