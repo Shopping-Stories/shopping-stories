@@ -1,11 +1,12 @@
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ParserOutput } from "new_types/api_types";
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Popover from '@mui/material/Popover';
 import Typography  from '@mui/material/Typography';
+import {rowType} from './ParserEditorDialog';
 
 
 interface ParserOutputEditor {
@@ -13,8 +14,10 @@ interface ParserOutputEditor {
     setIsLoading: Dispatch<SetStateAction<boolean>>;
     isAdmin: boolean;
     isAdminOrModerator: boolean;
-    setRows: Dispatch<SetStateAction<ParserOutput[]>>;
     setErrorRows: Dispatch<SetStateAction<string>>;
+    setSelectedRow: Dispatch<SetStateAction<rowType|null>>
+    rows: GridRowsProp
+    editRows: Dispatch<SetStateAction<GridRowsProp>>
 }
 
 type ParserOutputQueryResult = Array<ParserOutput>;
@@ -49,8 +52,10 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
     const {
         url,
         setIsLoading,
-        setRows,
-        setErrorRows
+        setErrorRows,
+        setSelectedRow,
+        rows,
+        editRows
     } = props;
     
     const {data, refetch, isLoading} =
@@ -92,12 +97,10 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
         }
     }, [isLoading, setIsLoading]);
 
-    const [rows, editRows] = useState<GridRowsProp>([] as GridRowsProp);
     const [value, setValue] = useState('');
 
     useEffect(() => {
-        if (setRows !== undefined) {
-            setRows(data?.entries || []);
+        if (editRows !== undefined) {
             // console.log(data?.entries);
             let n = 0;
             let thing: GridRowsProp = data?.entries.map((row) => {return {
@@ -130,7 +133,7 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
             
             editRows(thing);
         }
-    }, [data?.entries, setRows, editRows]);
+    }, [data?.entries, editRows]);
     
     const columnNames: string[] = [
         "Errors",
@@ -169,6 +172,11 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
         const row = rows[id];
         setValue(row[field]);
         setAnchorEl(event.currentTarget);
+    }
+
+    const handleRowSelect = (event: React.MouseEvent<HTMLElement>) => {
+        let id = parseInt(event.currentTarget.dataset.id!)
+        setSelectedRow(rows[id])
     }
 
     const open = Boolean(anchorEl);
@@ -213,6 +221,9 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
                     cell: {
                         onMouseEnter: mouseOverCell,
                         onMouseLeave: handlePopoverClose
+                    },
+                    row: {
+                        onClick: handleRowSelect
                     }
                 }}
             />
