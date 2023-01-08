@@ -23,8 +23,9 @@ import {
     EntryFields,
     SearchEntryDef,
 } from 'client/graphqlDefs';
-import { AdvancedSearch, Entry, SearchType } from 'client/types';
-import { cloneWithoutTypename, flatten } from 'client/util';
+import { AdvancedSearch, SearchType } from 'client/types';
+import { Entry } from 'new_types/api_types';
+// import { cloneWithoutTypename, flatten } from 'client/util';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { cloneDeep } from 'lodash';
@@ -33,7 +34,7 @@ import { useRouter } from 'next/router';
 import { FormEvent, useState, useEffect } from 'react';
 import { PaperStyles } from 'styles/styles';
 import { useMutation } from 'urql';
-import xlsx from 'xlsx';
+// import xlsx from 'xlsx';
 import { FormControl, InputLabel, MenuItem } from '@mui/material';
 
 import { FileUpload } from '@mui/icons-material';
@@ -51,6 +52,8 @@ const entriesData = [
     { label: 'Item', value: 'itemEntry' },
     { label: 'Tobacco', value: 'tobaccoEntry' },
 ];
+
+
 
 const downloadOptionsData = [
     { label: 'xlsx', value: 'xlsx' },
@@ -81,7 +84,7 @@ const ManagePlacesPage: NextPage = () => {
     const [openDelete, setOpenDelete] = useState(false);
     const [rows, setRows] = useState<Entry[]>([]);
     const [deleting, setDeleting] = useState(false);
-    const [currentSearchEntry, setCurrentSearchEntry] = useState('');
+    const [currentSearchEntry, setCurrentSearchEntry ] = useState('');
     const [currentDownloadOption, setCurrentDownloadOption] = useState('');
 
     const handleOpenDelete = () => {
@@ -165,15 +168,15 @@ const ManagePlacesPage: NextPage = () => {
         router.push(path);
     };
 
-    const exportRowsToSpreadSheet = () => {
-        const XLSX = xlsx;
-        const fileName = `export-${Date.now()}`;
-        const flatRows = rows.map((row) => flatten(cloneWithoutTypename(row)));
-        const workSheet = XLSX.utils.json_to_sheet(flatRows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, workSheet, fileName);
-        XLSX.writeFile(wb, `${fileName}.xlsx`);
-    };
+    // const exportRowsToSpreadSheet = () => {
+    //     const XLSX = xlsx;
+    //     const fileName = `export-${Date.now()}`;
+    //     const flatRows = rows.map((row) => flatten(cloneWithoutTypename(row)));
+    //     const workSheet = XLSX.utils.json_to_sheet(flatRows);
+    //     const wb = XLSX.utils.book_new();
+    //     XLSX.utils.book_append_sheet(wb, workSheet, fileName);
+    //     XLSX.writeFile(wb, `${fileName}.xlsx`);
+    // };
 
     const handleEntryChange = (e: any) => {
         console.log(e.target.value);
@@ -184,7 +187,7 @@ const ManagePlacesPage: NextPage = () => {
         setCurrentDownloadOption(e.target.value);
         switch (e.target.value) {
             case 'xlsx':
-                exportRowsToSpreadSheet();
+                // exportRowsToSpreadSheet();
                 break;
             case 'utfa':
                 //  exportRowsToUTFA();
@@ -311,6 +314,7 @@ const ManagePlacesPage: NextPage = () => {
     };
 
     return (
+        
         <ColorBackground>
             <Header />
             <Container>
@@ -701,6 +705,7 @@ const ManagePlacesPage: NextPage = () => {
                 </DialogContentText>
             </ActionDialog>
         </ColorBackground>
+        
     );
 };
 

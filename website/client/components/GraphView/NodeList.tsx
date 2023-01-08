@@ -3,7 +3,6 @@ import { useState, memo  } from "react";
 import NodeIcon from '@components/GraphView/NodeIcon';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
-// import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -19,23 +18,23 @@ import Tooltip from "@mui/material/Tooltip";
 // import Avatar from '@mui/material/Avatar';
 
 const EdgeListItem = ({ edge, handleClickZoom, focusOn, focusOff, toggleInfo }: EdgeListItemProps) => {
-    const {info, id} = edge
+    const {label, id, nodeType} = edge
     return (
-        <ListItemButton
-            onMouseEnter={()=>focusOn(edge.id)}
-            onMouseLeave={()=>focusOff("")}
-        >
+            <ListItemButton
+                onMouseEnter={()=>focusOn(edge.id)}
+                onMouseLeave={()=>focusOff("")}
+            >
             <Tooltip title={"Toggle Info Panel"}>
             <ListItemIcon sx={{ pl: 2 }} onClick={()=>toggleInfo(edge)}>
-                <NodeIcon
-                    t={`${info ? info.__typename : id}`}
-                />
+                    <NodeIcon
+                        t={`${nodeType ? nodeType : id}`}
+                    />
             </ListItemIcon>
             </Tooltip>
             <Tooltip title={"Click text to zoom"}>
-            <ListItemText
-                onClick={() => handleClickZoom(edge)}
-                secondary={`${id}`}
+                <ListItemText
+                    onClick={() => handleClickZoom(edge)}
+                    primary={label !== '' ? label : id}
                 secondaryTypographyProps={{
                     noWrap: true,
                     style: {
@@ -47,32 +46,31 @@ const EdgeListItem = ({ edge, handleClickZoom, focusOn, focusOff, toggleInfo }: 
                 }}
             />
             </Tooltip>
-        </ListItemButton>
+            </ListItemButton>
     );
 };
 
 const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: NodeListItemProps) => {
-    const {id, neighbors, info} = node
+    const {id, neighbors, nodeType, label} = node
     const [open, setOpen] = useState(false);
     const handleClickOpen = () => setOpen(!open);
     
     return (
         <>
-            <ListItemButton
-                onMouseEnter={()=>focusOn(node.id)}
-                onMouseLeave={()=>focusOff("")}
-            >
+                <ListItemButton
+                    onMouseEnter={()=>focusOn(node.id)}
+                    onMouseLeave={()=>focusOff("")}
+                >
                 <Tooltip title={"Toggle Info Panel"}>
                 <ListItemIcon onClick={()=>toggleInfo(node)}>
                     {/*<Avatar sx={{ width: 36, height: 36 }}>*/}
-                    <NodeIcon t={`${info ? info.__typename : ''}`} />
-                    {/*</Avatar>*/}
+                        <NodeIcon t={`${nodeType ? nodeType : ''}`} />
                 </ListItemIcon>
                 </Tooltip>
                 <Tooltip title={"Click text to zoom"}>
-                <ListItemText
-                    onClick={()=>handleClickZoom(node)}
-                    primary={id}
+                    <ListItemText
+                        onClick={()=>handleClickZoom(node)}
+                        primary={label !== '' ? label : id}
                     primaryTypographyProps={{
                         noWrap: true,
                         style: {
@@ -84,13 +82,13 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
                     }}
                 />
                 </Tooltip>
-                {neighbors &&
-                    (open ? (
-                        <ExpandLess onClick={handleClickOpen} />
-                    ) : (
-                        <ExpandMore onClick={handleClickOpen} />
-                    ))}
-            </ListItemButton>
+                    {neighbors &&
+                        (open ? (
+                            <ExpandLess onClick={handleClickOpen} />
+                        ) : (
+                            <ExpandMore onClick={handleClickOpen} />
+                        ))}
+                </ListItemButton>
             {/*</Tooltip>*/}
             <Collapse
                 in={open}
@@ -127,8 +125,8 @@ const NodeList = ({ gData, handleClickZoom, focusOn, focusOff, toggleInfo}: Node
                 <ListItemText primary="Nodes" secondary="Edges" />
             </Toolbar>
             <Divider />
-            <List>
-                {gData.nodes.filter(node => !!node).map(node =>
+        <List>
+            {gData.nodes.filter(node => !!node).map(node =>
                     <NodeListItem
                         handleClickZoom={handleClickZoom}
                         key={node.id}

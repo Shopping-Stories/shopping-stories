@@ -1,14 +1,9 @@
 import ForceGraph2D, { ForceGraphMethods, GraphData, LinkObject, NodeObject } from "react-force-graph-2d";
 import { useCallback, useState, useRef, useMemo } from "react";
-import {
-    Link,
-    NodeInfo,
-    AdjacencyList, GKey,
-    GraphGuiProps,
-    // NestedArrays, NestKey,
-} from "./GraphTypes";
+import { Entry } from "new_types/api_types"
+
 import NodeList from '@components/GraphView/NodeList';
-import { getSVGIcon } from '@components/GraphView/util';
+import { setNodeSVGIcon, getLinkInfo, getNodeInfo } from '@components/GraphView/util';
 import ControlBar from '@components/GraphView/ControlBar';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
@@ -18,36 +13,60 @@ import { useColorMode } from "../../ThemeMode";
 // import Toolbar from '@mui/material/Toolbar';
 // import ListItemText from '@mui/material/ListItemText';
 
-// module override to get custom Node/Link properties
-type Neighbors = { [key: string]: NodeObject }
+// type GeneralEdge = Omit<Entry, "peopleID" | "account_name" | "accountHolderID" | "item" | "itemID" >
+// type ProviderEdge = Omit<GeneralEdge, "account_name" | "accountHolderID" | "item" | "itemID" >
+// type ConsumerEdge = Omit<Entry, "account_name" | "accountHolderID" | "item" | "itemID" >
+// type LinkInfo = ProviderEdge | ConsumerEdge | GeneralEdge
+// type LinkInfo = Omit<Entry, "peopleID" | "account_name" | "accountHolderID" | "item" | "itemID" >
+// type LinkInfo = Omit<Entry, "a" | "b">
+
+type NodeDict = { [key: string]: NodeObject }
+type LinkDict = { [key: string]: LinkObject }
 declare module "react-force-graph-2d" {
     interface NodeObject {
         id: string | number;
         x?: number;
         y?: number;
         // other properties you want to access from `NodeObject` here
-        label?: string | null;
+        label: string;
         // other properties you want to add to the object here
-        neighbors?: Neighbors;
-        info: NodeInfo;
+        neighbors: NodeDict;
+        linkKeys: Set<string>;
+        entryKeys: Set<number>;
+        nodeType: string;
         canvasIcon?: HTMLImageElement;
         listIcon?: HTMLImageElement;
+        color?: string
+    }
+    interface LinkObject {
+        id: string | number;
+        source: string | number | NodeObject;
+        target: string | number | NodeObject;
+        entryKeys: Set<number>;
+        infoKeys: string[]
+        linkType: string;
+        label?: string;
+        color?: string
+        // canvasIcon?: HTMLImageElement;
     }
     interface GraphData {
         nodes: NodeObject[],
-        links: LinkObject[]
-    }
-    
-    interface LinkObject {
-        source?: string | number | NodeObject;
-        target?: string | number | NodeObject;
-        linkInfo?: unknown
+        links: LinkObject[],
+        nodeDict: NodeDict,
+        linkDict: LinkDict
     }
 }
+export interface GraphGuiProps {
+    // result: EntriesQuery | undefined;
+    result: Entry[]
+}
+// import { EntryQueryResult } from "../../../pages/entries/graphview/[search]";
+interface GraphGui {
+    entries: Entry[]
+}
 
-const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
+const GraphGui = ({entries}: GraphGui): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
-    
     const [nodeFocused, setNodeFocused] = useState("")
     
     const [graphPanelInfo, setGraphPanelInfo] = useState<{ info: NodeInfo, name:string }>();
@@ -61,184 +80,135 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
     },[graphRef]);
     
     const {mode} = useColorMode()
-
-    // const [nodeMap, graph] = useMemo(() => {
-    const graph = useMemo(() => {
-        // console.log('Entry Query Result: \n', result);
-        // console.log(mode)
-        // console.log("graph building...")
-        let V: NodeObject[] = []//Node[] = [];
-        let E: Link[] = [];
-        let adjList: AdjacencyList = {};
-        let nodeDict: { [key: string]: NodeObject } = {};
-        // let linkDict: {[key:string]: Link} = {};
-
-        // const processNestedArray = (parent: string, arr: NestedArrays, key: NestKey,
-        // ) => {
-        //     if (arr.length) {
-        //         arr?.filter((item) => !!item).forEach((item) => {
-        //             // updateGInfo(item, item[key]);
-        //             // updateAL(parent, item[key]);
-        //         });
-        //     }
-        // };
-
-        const updateGInfo = (item: NodeInfo, itemID: GKey) => {
-            if (!nodeDict[itemID]) {
-                let tName = `${
-                    item && item.__typename ? item.__typename : 'Error'
-                }`;
-                // console.log("item for icon: ", item)
-                nodeDict[itemID] = {
-                    id: itemID,
-                    // label: itemID,
-                    info: item,
-                    canvasIcon: getSVGIcon(tName, 'light')
+    
+    const graph: GraphData = useMemo(() => {
+        // if (!entries) return {nodes:[], links:[]}
+        // let V: NodeObject[] = [];
+        // let E: LinkObject[] = [];
+        let visited: NodeDict = {}
+        let linkDict: LinkDict = {}
+        let index = 0
+        
+        const makeNode = (t:string, nodeID:string, entryID:string) => {
+            if (!visited[nodeID]) {
+                let newNode: NodeObject = {
+                    id: nodeID,
+                    nodeType: t,
+                    label: t !== "mention" ? entries[index][getNodeInfo(t)] : "",
+                    canvasIcon: setNodeSVGIcon(t, "light"),
+                    entryKeys: new Set<number>(),
+                    linkKeys: new Set<string>(),
+                    neighbors: {}
                 };
+                visited[nodeID] = newNode
             }
-        };
-
-        const updateAL = (vertex: string, edge: string) => {
-            if (!adjList[vertex]) adjList[vertex] = new Set<string>();
-
-            if (!adjList[vertex].has(edge)) adjList[vertex].add(edge);
-
-            if (!adjList[edge]) adjList[edge] = new Set<string>();
-
-            if (!adjList[edge].has(vertex)) adjList[edge].add(vertex);
-        };
-
-        //Builds the graph prop and node map
-        if (result && result.rows) {
-            for (let row of result.rows) {
-                const {
-                    meta,
-                    // money,
-                    accountHolder,
-                    tobaccoEntry,
-                    regularEntry,
-                    itemEntries,
-                    people,
-                    places,
-                    ledgerRefs,
-                    folioRefs,
-                } = row;
-                const acc: GKey = `${accountHolder.accountFirstName} ${accountHolder.accountLastName}`;
-                const parentEntry = `${meta.ledger}-${meta.folioPage}-${meta.entryID}`;
-                // adjList[acc] = new Set<string>([]);
-                updateGInfo(accountHolder, acc);
-                updateGInfo(meta, parentEntry);
-                updateAL(acc, parentEntry);
-                updateAL(parentEntry, acc);
-
-                // TODO: not sure if id is unique with these. There are also 4 possible id values:
-                //  tm.markID, tm.markName, tm.populate.id, tm.populate.tobaccoMarkId
-                // TODO: this would need to map to all entries where it appears to get their info
-                // nullable fields
-                // --nestedArrays
-                if (tobaccoEntry) {
-                    const {
-                        marks,
-                        notes,
-                        // tobaccoShaved,
-                        // money
-                    } = tobaccoEntry;
-                    marks?.forEach((mark) => {
-                        const mName = `Mark-${mark.markName}`;
-                        updateGInfo(mark, mName);
-                        updateAL(parentEntry, mName);
-                    });
-                    notes?.forEach((note) => {
-                        const nk = `Note-${note.noteNum}`;
-                        updateGInfo(note, nk);
-                        updateAL(parentEntry, nk);
-                    });
+            visited[nodeID].entryKeys.add(index)
+        }
+        
+        const makeLink = (v1:string, v2:string, eID:string) => {
+            let keyArr = [visited[v1].id, visited[v2].id].sort();
+            let linkID = `${keyArr[0]}${keyArr[1]}`
+            visited[v1].linkKeys.add(linkID)
+            visited[v2].linkKeys.add(linkID)
+            if (!linkDict || !linkDict[linkID]) {
+                let typeArr = [visited[v1].nodeType, visited[v2].nodeType].sort()
+                let t = `${typeArr[0]}-${typeArr[1]}`
+                let newLink: LinkObject = {
+                    id: linkID,
+                    source: visited[keyArr[0]],
+                    target: visited[keyArr[1]],
+                    linkType: t,
+                    entryKeys: new Set<number>(),
+                    infoKeys: getLinkInfo(t)
                 }
-                if (regularEntry) {
-                    const { tobaccoMarks, itemsMentioned } = regularEntry;
-                    tobaccoMarks?.forEach((mark) => {
-                        const mName = `Mark-${mark.markName}`;
-                        updateGInfo(mark, mName);
-                        updateAL(parentEntry, mName);
-                    });
-                    itemsMentioned?.forEach((item) => {
-                        updateGInfo(item, item.item);
-                        updateAL(parentEntry, item.item);
-                    });
+                linkDict[linkID] = newLink
+            }
+            linkDict[linkID].entryKeys.add(index)
+        }
+        
+        const addNeighbors = (node:string, neighbors:NodeObject[], eID:string) => {
+            if (!visited || node === '' || !visited[node]) return
+            if (!visited[node].neighbors) {
+                visited[node].neighbors = {};
+            }
+            for (let nei of neighbors) {
+                
+                let A = false
+                let B = false
+                if (!visited[nei.id] || !visited[nei.id].neighbors){
+                    // visited[nei].neighbors = {};
+                    makeNode(nei.nodeType, nei.id.toString(), eID)
                 }
-                // --isArray
-                itemEntries?.forEach((itemEntry) => {
-                    const {
-                        itemsMentioned,
-                        itemsOrServices,
-                        // perOrder,
-                        // percentage,
-                    } = itemEntry;
-                    if (itemsOrServices.length) {
-                        itemsOrServices.forEach((item) => {
-                            if (item) {
-                                updateGInfo(item, item.item);
-                                updateAL(parentEntry, item.item);
-                            }
-                        });
-                    }
-                    if (itemsMentioned.length) {
-                        itemsMentioned
-                            .filter((item) => !!item)
-                            .forEach((item) => {
-                                updateGInfo(item, item.item);
-                                updateAL(parentEntry, item.item);
-                            });
-                    }
-                });
-                // --isArray, no nesting
-                people?.forEach((person) => {
-                    updateGInfo(person, person.name);
-                    updateAL(parentEntry, person.name);
-                });
-                places?.forEach((place) => {
-                    updateAL(parentEntry, place.name);
-                    updateGInfo(place, place.name);
-                });
-                ledgerRefs?.forEach((l) => updateAL(parentEntry, l));
-                folioRefs?.forEach((f) => updateAL(parentEntry, f));
+                if (!visited[node] || !visited[node].neighbors[nei.id]) {
+                    A = true
+                    visited[node].neighbors[nei.id] = nei;
+                }
+                if (!nei.neighbors[node]) {
+                    B = true
+                    nei.neighbors[node] = visited[node];
+                }
+                if (A && B){
+                    makeLink(node, nei.id.toString(), eID)
+                }
             }
         }
-
-        // let notVis: Set<string> = new Set<string>([]);
-        for (let node in adjList) {
-            // TODO: Remove empty string checks after DB entries are corrected
-            if (node !== '' && nodeDict[node]) {
-                V.push(nodeDict[node]);
-                let nei: Neighbors = {};
-                adjList[node]?.forEach((edge) => {
-                    if (edge !== '' && nodeDict[edge]) {
-                        nei[edge] = nodeDict[edge];
-                        E.push({ source: node, target: edge });
-                    }
-                });
-                nodeDict[node].neighbors = nei;
+        
+        const processEntry = (e: Entry) => {
+            let toItem = []
+            let toAccount = []
+            if (!e._id) return
+            if (e.store_owner) {
+                makeNode("Store", e.store_owner, e._id)
+                toItem.push(visited[e.store_owner])
             }
+            if (e.itemID){
+                makeNode("Item", e.itemID, e._id)
+                
+            }
+            if (e.accountHolderID) {
+                makeNode("PersonAccount", e.accountHolderID, e._id)
+                toItem.push(visited[e.accountHolderID])
+            }
+            // if (e.peopleID && e.people){}
+            if (e.mentions) {
+                for (let mention in e.mentions) {
+                    if (visited[mention]){
+                        makeNode("Mention", mention, e._id)
+                        visited[mention].label = mention
+                        toAccount.push(visited[mention])
+                        toItem.push(visited[mention])
+                    }
+                }
+            }
+            if (e.itemID){
+                addNeighbors(e.itemID, toItem, e._id)
+            }
+            if (e.accountHolderID){
+                addNeighbors(e.accountHolderID, toAccount, e._id)
+            }
+        };
+        
+        for (const [i, entry] of entries.entries()) {
+            index = i
+            processEntry(entry)
         }
-        // console.log('Adjacency List: \n', adjList);
-        // notVis.forEach((v) => V.push({ id: v }));
-        V.sort(function(a, b){
-            if (!a.info.__typename) return -1
-            if (!b.info.__typename) return 1
-            return a.info.__typename < b.info.__typename ? -1 : 1
-        })
-        // E.sort()
-        let G: GraphData = { nodes: V, links: E }
-        // setGraph({ nodes: V, links: E });
-        // setNodeMap(nodeDict);
-        // return [nodeDict, G]
-        return G
-    }, [result]);
+        const comparator = (a:NodeObject, b:NodeObject) => {
+            if (!a.nodeType) return -1
+            if (!b.nodeType) return 1
+            return a.nodeType < b.nodeType ? -1 : 1
+        }
+        return {
+            nodes: Object.values(visited).sort((a,b) => comparator(a, b)),
+            links: Object.values(linkDict),
+            linkDict: linkDict,
+            nodeDict: visited
+        }
+    }, [entries])
     
     const toggleInfo = useCallback((node:NodeObject)=>{
         setGraphPanelInfo({
-            info: node.info,
-            name: node.id.toString()
+            info: Object.values(node.entryKeys).map(k => entries[k]),
+            name: node.label
         })
     }, [])
     
@@ -253,8 +223,8 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
     useMemo(() =>{
         for (let v in graph.nodes){
             let node = graph.nodes[v]
-            node.canvasIcon = getSVGIcon(
-                node.info.__typename ? node.info.__typename : 'err',
+            node.canvasIcon = setNodeSVGIcon(
+                node.nodeType ? node.nodeType : 'err',
                 mode,
             );
         }
@@ -276,7 +246,7 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
             ctx.drawImage(node.canvasIcon, node.x - size / 2, node.y - size / 2, size, size,);
         }
         
-    },[nodeFocused, mode])
+    },[nodeFocused])
     
     // useEffect(() => {
     //     console.log('Graph: \n', graph);
@@ -302,6 +272,11 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
                     },
                 }}
             >
+                {/*<Toolbar>*/}
+                {/*    <SubdirectoryArrowRightIcon />*/}
+                {/*    <ListItemText primary="Nodes" secondary="Edges" />*/}
+                {/*</Toolbar>*/}
+                <Divider />
                 {
                     graphRef &&
                     <NodeList
@@ -321,12 +296,14 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
                 linkColor={()=>'gray'}
                 linkWidth={.75}
                 // TODO: Figure out canvas interaction with next.js
-                nodeLabel={(node) => (node?.id ? node.id.toString() : '')}
+                nodeLabel={(node) => (node?.label ? node.label.toString() : node.id.toString())}
+                // nodeCanvasObjectMode={()=>'after'}
                 nodeCanvasObject={
                     (node, ctx) =>
                         paintNodes(node, ctx)
                 }
                 onNodeClick={handleZoom}
+                // enablePointerInteraction={true}
             />
         </>
     );
@@ -334,9 +311,11 @@ const GraphGui = ({ result }: GraphGuiProps): JSX.Element => {
 
 export default GraphGui;
 
+//Graph types that must be declared in this file
 type NKey = keyof NodeObject | string | number
 type focusHandler = (id: NKey) => void ;
 type nodeHandler = (node: NodeObject) => void;
+
 export interface NodeListProps {
     gData: GraphData
     handleClickZoom: nodeHandler

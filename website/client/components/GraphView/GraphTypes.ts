@@ -37,9 +37,7 @@ export type NodeInfo = EntryResults
 export type AdjacencyList = { [key:string]: Set<string> };
 
 
-export interface GraphGuiProps {
-    result: EntriesQuery | undefined;
-}
+
 
 
 export type GKey = keyof NodeInfo | string;

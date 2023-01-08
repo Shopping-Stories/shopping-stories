@@ -1,7 +1,10 @@
 import dynamic from 'next/dynamic';
 import { GetServerSideProps } from 'next';
-import { useEntriesQuery } from "../../../graphql/generated/graphql";
+// import { useRouter } from "next/router";
+// import { useEntriesQuery } from "../../../graphql/generated/graphql";
+import { useQuery } from '@tanstack/react-query';
 import LoadingPage from '@components/LoadingPage';
+import { Entry } from "new_types/api_types";
 
 const ForceGraph = dynamic(() => import('@components/GraphView/GraphGui'), {
     ssr: false,
@@ -9,38 +12,53 @@ const ForceGraph = dynamic(() => import('@components/GraphView/GraphGui'), {
 });
 
 export const getServerSideProps: GetServerSideProps = async context => {
-    let arg = context.query['search'];
+    let search = context.query.search
     // console.log("Search:", arg);
     return {
         props: {
-            search: arg,
+            search: search,
             title: 'GraphView'
         },
     };
 };
 
+const doSearch = async (search:string): Promise<EntryQueryResult> => {
+    const res = await fetch("http://preprod.shoppingstories.org:4562/search/" + search);
+    // console.log(await res.text());
+    // let toret: EntryQueryResult = JSON.parse(await res.text());
+    return JSON.parse(await res.text());
+};
+
+export interface EntryQueryResult {
+    entries: Entry[];
+}
+
 interface GraphGuiPageProps {
-    arg: string;
+    search: string
+    title: string
 }
 
 //possibly change to server side rendered
-const EntryGraphView = ({ arg }: GraphGuiPageProps) => {
-    // get search params from route
-    const [result] = useEntriesQuery({
-        variables: {
-            options: { limit: 50, skip: null },
-            search: arg,
-        },
-        // requestPolicy: 'cache-and-network',
-    });
-    const { data, error } = result;
-    // console.log("Query Result:", result);
+const EntryGraphView = ({search,title}:GraphGuiPageProps) => {
+
+    // const router = useRouter();
+    // const { search } = router.query;
+
+    const { data, refetch, isLoading, isFetching, error } = useQuery({
+        queryKey:['entries', search],
+        queryFn: () => doSearch(search),
     
+});
+
+    // console.log("Query Result:", result);
+
     // TODO: "fetching" component
     return (
         <>
-            {/*{fetching && <LoadingPage />}*/}
-            {!error && <ForceGraph result={data} />}
+            {(isFetching || isLoading) && <LoadingPage title={title}/>}
+            {!error && !!data && data.entries !== undefined && (
+                <ForceGraph entries={data.entries} />
+            )}
         </>
     );
 };

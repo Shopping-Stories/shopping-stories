@@ -330,12 +330,12 @@ const ControlBar = ({ info, name }: ControlBarProps) => {
                         </div>
                     </FormControl>
                 </Box>
-                <div>
-                    <Typography sx={{ml:1}}>Date Range</Typography>
-                    <Slider
-                        sx={{ml:2, mr:2}}
-                    />
-                </div>
+                    <div>
+                        <Typography sx={{ml:1}}>Date Range</Typography>
+                        <Slider
+                            sx={{ml:2, mr:2}}
+                        />
+                    </div>
                     
                 </TabPanel>
                 <Divider />
