@@ -20,6 +20,7 @@ import { AmplifyOptions, S3Options } from '../client/util';
 import createEmotionCache from '../styles/createEmotionCache';
 import '../styles/globals.css';
 import Layout from "@components/Layout";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 //TODO: remove all header imports in pages/components
 // import Header from "@components/Header";
 
@@ -114,7 +115,7 @@ function App({
 
     // Update the theme only if the mode changes
     const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
-
+    const queryClient = new QueryClient();
     return (
         <CacheProvider value={emotionCache}>
             <Head>
@@ -125,6 +126,7 @@ function App({
                 />
             </Head>
             <Provider value={client}>
+                            <QueryClientProvider client={queryClient}>
                 <ColorModeContext.Provider value={colorMode}>
                     <ThemeProvider theme={theme}>
                         <CssBaseline />
@@ -133,6 +135,7 @@ function App({
                         </Layout>
                     </ThemeProvider>
                 </ColorModeContext.Provider>
+                            </QueryClientProvider>
             </Provider>
         </CacheProvider>
     );

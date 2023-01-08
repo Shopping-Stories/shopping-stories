@@ -1,140 +1,100 @@
 // import { GKey, NodeInfo } from "@components/GraphView/GraphTypes";
 import { PaletteMode } from "@mui/material";
 
-const typeMap = {
-     PersonObject: {
-         icon: {
-             dark: '/SVG/person_black_24dp.svg',
-             light: '/SVG/person_black_24dp.svg'
-         }
-     },
-     ItemEntryObject: {
-         icon: {
-             dark: "/SVG/shopping_basket_black_24dp.svg"
-         }
-     },
-     ItemOrServiceObject: {
-         icon: {
-             dark: '/SVG/shopping_basket_black_24dp.svg',
-             light: '/SVG/shopping_basket_white_24dp.svg'
-         }
-     },
-     MentionedItemsObject: {
-         icon: {
-             dark: '/SVG/shopping_basket_black_24dp.svg',
-             light: '/SVG/shopping_basket_white_24dp.svg'
-         }
-     },
-     RegularEntryObject: {
-         icon: {
-             dark: '/SVG/history_edu_black_24dp.svg',
-             light: '/SVG/history_edu_white_24dp.svg'
-         }
-     },
-     TobaccoEntryObject: {
-         icon: {
-             dark: '/SVG/history_edu_black_24dp.svg',
-             light: '/SVG/history_edu_white_24dp.svg'
-         }
-     },
-     MetaObject: {
-         icon: {
-             dark: '/SVG/history_edu_black_24dp.svg',
-             light: '/SVG/history_edu_white_24dp.svg'
-         }
-     },
-     PlaceObject: {
-         icon: {
-             dark: '/SVG/place_black_24dp.svg',
-             light: '/SVG/place_white_24dp.svg'
-             
-         }
-     },
-     AccHolderObject: {
-         icon: {
-             dark: '/SVG/storefront_black_24dp.svg',
-             light: '/SVG/storefront_white_24dp.svg'
-         }
-     },
-     TobaccoMarkObject: {
-         icon: {
-             dark: '/SVG/note_black_24dp.svg',
-             light: '/SVG/note_white_24dp.svg'
-         }
-     },
-     NoteObject: {
-         icon: {
-             dark: '/SVG/sticky_note_2_black_24dp.svg',
-             light: '/SVG/sticky_note_2_white_24dp.svg'
-         }
-     },
-     // '/SVG/help_black_24dp.svg';
-}
+import { Entry } from "../../../new_types/api_types";
+// import { NodeInfo } from "@components/GraphView/GraphTypes";
 
-const getSrc = (t:string, mode: PaletteMode) => {
+const getNodeSrc = (t:string, mode: PaletteMode) => {
     switch (mode) {
         case 'light': {
             switch (t) {
-                case 'PersonObject':
-                    return '/SVG/person_black_24dp.svg';
-                case 'ItemEntryObject':
-                    return '/SVG/shopping_basket_black_24dp.svg';
-                case 'ItemOrServiceObject':
-                    return '/SVG/shopping_basket_black_24dp.svg';
-                case 'MentionedItemsObject':
-                    return '/SVG/shopping_basket_black_24dp.svg';
-                case 'RegularEntryObject':
-                    return '/SVG/history_edu_black_24dp.svg';
-                case 'TobaccoEntryObject':
-                    return '/SVG/history_edu_black_24dp.svg';
-                case 'MetaObject':
-                    return '/SVG/history_edu_black_24dp.svg';
-                case 'PlaceObject':
-                    return '/SVG/place_black_24dp.svg';
-                case 'AccHolderObject':
-                    return '/SVG/storefront_black_24dp.svg';
-                case 'TobaccoMarkObject':
-                    return '/SVG/note_black_24dp.svg';
-                case 'NoteObject':
-                    return '/SVG/sticky_note_2_black_24dp.svg';
+                case 'Person':
+                    return '/SVG/person_black_24dp.svg'
+                case 'PersonAccount':
+                    return '/SVG/person_black_24dp.svg'
+                case 'Item':
+                    return '/SVG/shopping_basket_black_24dp.svg'
+                case 'Store':
+                    return '/SVG/storefront_black_24dp.svg'
                 default:
-                    return '/SVG/help_black_24dp.svg';
+                    return '/SVG/help_black_24dp.svg'
             }
         }
-        case 'dark': {
+        default: {
             switch (t) {
-                case 'PersonObject':
-                    return '/SVG/person_white_24dp.svg';
-                case 'ItemEntryObject':
-                    return '/SVG/shopping_basket_white_24dp.svg';
-                case 'ItemOrServiceObject':
-                    return '/SVG/shopping_basket_white_24dp.svg';
-                case 'MentionedItemsObject':
-                    return '/SVG/shopping_basket_white_24dp.svg';
-                case 'RegularEntryObject':
-                    return '/SVG/history_edu_white_24dp.svg';
-                case 'TobaccoEntryObject':
-                    return '/SVG/history_edu_white_24dp.svg';
-                case 'MetaObject':
-                    return '/SVG/history_edu_white_24dp.svg';
-                case 'PlaceObject':
-                    return '/SVG/place_white_24dp.svg';
-                case 'AccHolderObject':
-                    return '/SVG/storefront_white_24dp.svg';
-                case 'TobaccoMarkObject':
-                    return '/SVG/note_white_24dp.svg';
-                case 'NoteObject':
-                    return '/SVG/sticky_note_2_white_24dp.svg';
+                case 'Person':
+                    return '/SVG/person_white_24dp.svg'
+                case 'PersonAccount':
+                    return '/SVG/person_white_24dp.svg'
+                case 'Item':
+                    return '/SVG/shopping_basket_white_24dp.svg'
+                case 'Store':
+                    return '/SVG/storefront_white_24dp.svg'
                 default:
-                    return '/SVG/help_white_24dp.svg';
+                    return '/SVG/help_white_24dp.svg'
             }
         }
     }
 }
-export const getSVGIcon = (t: string, mode: PaletteMode) => {
+
+type EKey = keyof Entry;
+
+export const getNodeInfo = (nodeType:string):EKey => {
+    switch (nodeType) {
+        case "Item":
+            return "item"
+        case "PersonAccount":
+            return "account_name"
+        case "Store":
+            return "store_owner"
+        case "Mention":
+            return "mentions"
+        default:
+            return "_id"
+    }
+}
+const ledger = ["ledger", "date", "Date Year", "_Month", "Day", "liber_book",]
+const base = [...ledger, "context", "phrases", "mentions"]
+const item = [
+    "store_owner",
+    "item", "itemID", "amount", "amount_is_combo",
+    "Quantity", "Commodity", "type",
+    "price", "price_is_combo",
+    "currency", "currency_type", "sterling",
+    "currency_totaling_contextless", "commodity_totaling_contextless",
+    "debit_or_credit"
+]
+const person = ["people", "peopleID"]
+const personAcct = ["account_name", "accountHolderID" ]
+
+export const getLinkInfo = (linkType:string, ):string[] =>  {
+
+    switch (linkType) {
+        case "Item-PersonAccount":
+            return [...base, ...item, ...personAcct]
+        case "Item-Person":
+            return [...base, ...person, ...person]
+        case "Item-Store":
+            return [...base, ...item, ...personAcct]
+        case "Person-PersonAccount":
+            return [...base, ...person, ...personAcct]
+        case "Mention-PersonAccount":
+            return base
+        default:
+            return []
+    }
+}
+
+export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {
+    const img = new Image()
+    img.src = getNodeSrc(t, mode)
+    return img
+};
+
+export const setLinkSVGIcon = (t: string) => {
     // const nodeIcons = {
     const img = new Image()
-    img.src = getSrc(t, mode)
+    // img.src = getLinkSrc(t)
     return img
     // AccountHolderObject:
 };
