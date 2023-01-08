@@ -43,10 +43,10 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         reQuery,
         setRows,
     } = props;
-    const [page, setPage] = useState(0);
-    page;
+
     const [rowsPerPage, setRowsPerPage] = useState(10);
     setRowsPerPage;
+    
     const [setOptions] = useState<OptionsType>({
         limit: rowsPerPage,
         skip: null,
@@ -75,9 +75,6 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         }
     }, [isLoading, setIsLoading]);
 
-    useEffect(() => {
-        setPage(0);
-    }, [search, advanced]);
 
     // const rows = data?.rows ?? [];
 
@@ -92,7 +89,8 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
             setRows(data?.entries || []);
             console.log(data?.entries);
             let thing: GridRowsProp = data?.entries.map((row) => {return {
-                Purchaser: row?.account_name,
+                AccountName: row?.account_name,
+                "Dr/Cr": row?.debit_or_credit,
                 Amount: row?.amount,
                 Item: toTitleCase((row?.item ?? "")),
                 // AccountHolderID: row?.accountHolderID,
@@ -128,7 +126,8 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
 
 
     const columnNames: string[] = [
-        'Purchaser',
+        'Account Name',
+        'Dr/Cr',
         'Amount',
         'Item',
         // 'Account Holder ID',
@@ -160,8 +159,10 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
             field: str.split(" ").join(""), 
             headerName: str, 
             flex: [
-                "Purchaser", 
+                "Purchaser",
+                "Account Name", 
                 "Relevant Item", 
+                "Item",
                 "Owner", 
                 "Comments"
             ].includes(str) ? 1 
@@ -179,7 +180,8 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 '£ Shilling',
                 '£ Pence',
                 '£ Farthings',
-                "Amount"
+                "Amount",
+                "Dr/Cr"
             ].includes(str) ? 0.3 : 0.5)}
     });
     return (
@@ -267,7 +269,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
             /> */}
-            <DataGrid rows={rows} columns={columns} pageSize={10} rowsPerPageOptions={[10]} getRowId={(row) => row.id} disableSelectionOnClick/>
+            <DataGrid rows={rows} columns={columns} autoPageSize getRowId={(row) => row.id} disableSelectionOnClick/>
         </Paper>
         </Box>
     );
