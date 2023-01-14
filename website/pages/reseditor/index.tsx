@@ -33,9 +33,22 @@ import { PaperStyles } from 'styles/styles';
 
 import ParserOutputEditor from '@components/ParserOutputEditor';
 import Typography from '@mui/material/Typography';
-import ParserEditorDialog, {rowType} from '@components/ParserEditorDialog';
+import ParserEditorDialog, { rowType } from '@components/ParserEditorDialog';
 import URLTable from '@components/URLTable';
 
+interface sfile {
+    file: string
+    name: string
+}
+
+interface fileUploads {
+    files: Array<sfile>
+}
+
+interface parserProgress {
+    progress: number
+    filenames: Array<string>
+}
 
 const queryClient = new QueryClient();
 
@@ -55,8 +68,10 @@ const ResView: NextPage = () => {
     const [text, setText] = useState(message_prefix);
 
     const [rows, editRows] = useState<GridRowsProp>([] as GridRowsProp);
+    const [parsing, setParsing] = useState<boolean>(false);
+    const [progress, setProgress] = useState<number>(0);
 
-    const [selectedRow, setSelectedRow] = useState<rowType|null>(null);
+    const [selectedRow, setSelectedRow] = useState<rowType | null>(null);
     const [url, setUrl] = useState("");
 
     const handleClick = (event: React.MouseEvent, url: string) => {
@@ -78,6 +93,17 @@ const ResView: NextPage = () => {
         setSelectedRow(null)
     }
 
+    const getBase64 = (file: Blob, cb: (content: string | ArrayBuffer | null) => void) => {
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            cb(reader.result)
+        };
+        reader.onerror = function (error) {
+            console.log('Error: ', error);
+        };
+    }
+
     const handleBack = () => {
         setOpen(false)
         setSelectedRow(null)
@@ -85,70 +111,137 @@ const ResView: NextPage = () => {
         setUrl("")
     }
 
+    const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) {
+            return;
+        }
+
+        let files: Array<sfile> = [];
+
+        for (let ix = 0; ix < e.target.files.length; ix++) {
+            let file = e.target.files[ix];
+            getBase64(file, (content) => {
+                if ((content != null) && (typeof content == typeof "asdas")) {
+                    let f: sfile = { "file": (content as unknown as string).split(",")[1], "name": file.name }
+                    files.push(f)
+                }
+            });
+        }
+
+        let toUpload: fileUploads = { "files": files }
+
+        setParsing(true);
+        setProgress(0);
+        CheckParsing();
+    }
+
+    async function CheckParsing() {
+        const checkUrl = "http://preprod.shoppingstories.org:4562/get_parser_progress";
+        const res = await fetch(checkUrl);
+        let progress: parserProgress = JSON.parse(await res.text());
+        if (progress.progress < 1) {
+            setParsing(true);
+            setProgress(progress.progress);
+            await new Promise(r => setTimeout(r, 45000));
+            CheckParsing();
+        }
+        else {
+            setParsing(false);
+            setProgress(0);
+        }
+    }
+
+    CheckParsing();
+
     if (loading) {
         return <LoadingPage />;
     }
-    
-    if (editing) {
+
+
+    if (parsing) {
         return (
-            <QueryClientProvider client={queryClient}>
             <ColorBackground>
-                <Header />
-                <Box sx={{width: "100%", display: "flex", flexDirection: "column", alignItems: "center"}}>
-                    <Paper sx={{...PaperStyles, marginBottom: "0px", marginTop: "2vh", width: "fit-content", padding: "1.5vh"}}>
-                            <Typography variant='h5' align="center">{text}</Typography>
-                            <Box sx={{width: "100%", paddingTop: "1vh"}}><Button variant='contained' sx={{"width": "100%"}} onClick={(event) => {handleBack()}}><Typography variant='h5'>Back</Typography></Button></Box>
-                            <Box sx={{width: "100%", paddingTop: "1vh"}}><Button variant='contained' sx={{"width": "100%"}}><Typography variant='h5'>Save to Database</Typography></Button></Box>
+                <Header/>
+                <Box sx={{display: "flex", width: "100%", flexDirection: "column", alignItems: "center"}}>
+                    <Paper sx={{...PaperStyles, width: "fit-content", marginTop: "2vh"}}>
+                        <Typography variant="h3">Parsing is about {progress * 100}% done.</Typography>
                     </Paper>
                 </Box>
-                {
-                    <Paper
-                        sx={{
-                            backgroundColor: 'var(--secondary-bg)',
-                            ...PaperStyles,
-                            marginTop: "2vh",
-                        }}
-                    >
-                        <Stack spacing={2}>
-                            <ParserOutputEditor
-                                isAdmin={isAdmin}
-                                isAdminOrModerator={isAdminOrModerator}
-                                setIsLoading={setIsLoading}
-                                url={url}
-                                setErrorRows={(rows) => {setText(message_prefix + rows)}}
-                                setSelectedRow={setSelectedRow}
-                                rows={rows}
-                                editRows={editRows}
-                            />                        
-                        </Stack>
-                    </Paper>
-                }
-                <ParserEditorDialog row={selectedRow} setRow={handleDialogClose} setClose={handleCloseNoSave}></ParserEditorDialog>
-    
             </ColorBackground>
-            </QueryClientProvider>
         );
     }
     else {
-        return (
-            <QueryClientProvider client={queryClient}>
-            <ColorBackground>
-                <Header />
-                {
-                    <Paper
-                        sx={{
-                            backgroundColor: 'var(--secondary-bg)',
-                            ...PaperStyles,
-                            marginTop: "2vh",
-                        }}
-                    >
-                        <URLTable handleClick={handleClick}></URLTable>
-                    </Paper>
-                }
-    
-            </ColorBackground>
-            </QueryClientProvider>
-        );
+        if (editing) {
+            return (
+                <QueryClientProvider client={queryClient}>
+                    <ColorBackground>
+                        <Header />
+                        <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <Paper sx={{ ...PaperStyles, marginBottom: "0px", marginTop: "2vh", width: "fit-content", padding: "1.5vh" }}>
+                                <Typography variant='h5' align="center">{text}</Typography>
+                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={(event) => { handleBack() }}><Typography variant='h5'>Back</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }}><Typography variant='h5'>Save to Database</Typography></Button></Box>
+                            </Paper>
+                        </Box>
+                        {
+                            <Paper
+                                sx={{
+                                    backgroundColor: 'var(--secondary-bg)',
+                                    ...PaperStyles,
+                                    marginTop: "2vh",
+                                }}
+                            >
+                                <Stack spacing={2}>
+                                    <ParserOutputEditor
+                                        isAdmin={isAdmin}
+                                        isAdminOrModerator={isAdminOrModerator}
+                                        setIsLoading={setIsLoading}
+                                        url={url}
+                                        setErrorRows={(rows) => { setText(message_prefix + rows) }}
+                                        setSelectedRow={setSelectedRow}
+                                        rows={rows}
+                                        editRows={editRows}
+                                    />
+                                </Stack>
+                            </Paper>
+                        }
+                        <ParserEditorDialog row={selectedRow} setRow={handleDialogClose} setClose={handleCloseNoSave}></ParserEditorDialog>
+
+                    </ColorBackground>
+                </QueryClientProvider>
+            );
+        }
+        else {
+            return (
+                <QueryClientProvider client={queryClient}>
+                    <ColorBackground>
+                        <Header />
+                        <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <Box>
+                                <Paper sx={{ ...PaperStyles, width: "fit-content", margin: "0", marginTop: "2vh" }}>
+                                    <Button variant="contained" sx={{ width: "8vw" }} component="label">
+                                        Upload File
+                                        <input hidden multiple type="file" onChange={handleUpload} />
+                                    </Button>
+                                </Paper>
+                            </Box>
+                        </Box>
+                        {
+                            <Paper
+                                sx={{
+                                    backgroundColor: 'var(--secondary-bg)',
+                                    ...PaperStyles,
+                                    marginTop: "2vh",
+                                }}
+                            >
+                                <URLTable handleClick={handleClick}></URLTable>
+                            </Paper>
+                        }
+
+                    </ColorBackground>
+                </QueryClientProvider>
+            );
+        }
     }
 };
 

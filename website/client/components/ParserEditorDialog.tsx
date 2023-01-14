@@ -140,7 +140,7 @@ const getFormsFromRow = (row?: rowType) => {
                 out.push(
                     <TextField
                         label={origKeys[a]}
-                        value={(row?.original![origKeys[a]] as unknown as string[][]).map((value) => value[0]).join(" ")}
+                        value={row?.original![origKeys[a]] == undefined ? "" : (row?.original![origKeys[a]] as unknown as string[][]).map((value) => value[0]).join(" ")}
                         onChange={() => { }}
                         key={origKeys[a]}
                         sx={{ padding: "0.3vh", marginTop: mtop, width: "30vw" }}
