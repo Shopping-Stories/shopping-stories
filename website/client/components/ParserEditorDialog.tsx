@@ -20,6 +20,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
+import Delete from '@mui/icons-material/Delete';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { TransitionProps } from '@mui/material/transitions';
 import Slide from '@mui/material/Slide';
@@ -27,7 +28,7 @@ import { ParserOutput, ParserOutputKey, ParserOutputKeys, ParserStringKeys, Pars
 
 interface ParserEditorDialog {
     row: rowType | null,
-    setRow: Dispatch<rowType>,
+    setRow: Dispatch<rowType|null>,
     setClose: () => void
 }
 
@@ -216,6 +217,11 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     } = props
     const nrow = JSON.parse(JSON.stringify(row))
 
+    const deleteRow = () => {
+        setRow(null);
+    }
+    
+
     const intHandleClose = () => {
         setRow(nrow!)
     }
@@ -241,6 +247,9 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                         aria-label="close"
                     >
                         <CloseIcon />
+                    </IconButton>
+                    <IconButton color="inherit" aria-label="delete" onClick={(event) => {deleteRow()}}>
+                        <Delete/>
                     </IconButton>
                     <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                         Editing Row
