@@ -1,41 +1,26 @@
-import ActionDialog from '@components/ActionDialog';
 import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
 import LoadingPage from '@components/LoadingPage';
 import useAuth, { isInGroup } from '@hooks/useAuth.hook';
-import AddCircle from '@mui/icons-material/AddCircle';
-import Select from '@mui/material/Select';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import DialogContentText from '@mui/material/DialogContentText';
-import FormGroup from '@mui/material/FormGroup';
-import Grid2 from '@mui/material/Unstable_Grid2';
+
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { GridRowsProp, GridValidRowModel } from '@mui/x-data-grid';
-import { useQuery } from '@tanstack/react-query';
-
-
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 
 import { ParserOutput } from 'new_types/api_types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Roles } from 'config/constants.config';
 import { NextPage } from 'next';
-import React, { FormEvent, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PaperStyles } from 'styles/styles';
 
 import ParserOutputEditor from '@components/ParserOutputEditor';
 import Typography from '@mui/material/Typography';
 import ParserEditorDialog, { rowType } from '@components/ParserEditorDialog';
 import URLTable from '@components/URLTable';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 interface sfile {
     file: string
@@ -84,9 +69,9 @@ const ResView: NextPage = () => {
     // const [graph, setGraph] = useState(false)
 
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [, setIsLoading] = useState(false);
 
-    const [open, setOpen] = useState<boolean>(false);
+    const [, setOpen] = useState<boolean>(false);
     const message_prefix = "Errors are found in entries with ids: ";
     const [text, setText] = useState(message_prefix);
 
@@ -101,7 +86,7 @@ const ResView: NextPage = () => {
     const [unchangeable, setUnchangeable] = useState<boolean>(false);
     const [waiting, setWaiting] = useState<boolean>(false);
 
-    const handleClick = (event: React.MouseEvent, url: string) => {
+    const handleClick = (_event: React.MouseEvent, url: string) => {
         setUrl(url);
         setEditing(true);
     }
@@ -349,9 +334,9 @@ const ResView: NextPage = () => {
                         <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Paper sx={{ ...PaperStyles, marginBottom: "0px", marginTop: "2vh", width: "fit-content", padding: "1.5vh" }}>
                                 <Typography variant='h5' align="center">{text}</Typography>
-                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={(event) => { handleBack() }}><Typography variant='h5'>Back</Typography></Button></Box>
-                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={(event) => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button></Box>
-                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={(event) => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => { handleBack() }}><Typography variant='h5'>Back</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button></Box>
                             </Paper>
                         </Box>
                         {

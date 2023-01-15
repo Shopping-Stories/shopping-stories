@@ -1,27 +1,16 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Dialog, { DialogProps } from '@mui/material/Dialog';
+import Dialog from '@mui/material/Dialog';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import Switch from '@mui/material/Switch';
-import { DataGrid, GridColDef, GridRow } from '@mui/x-data-grid';
+
 import TextField from '@mui/material/TextField';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Delete from '@mui/icons-material/Delete';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch } from 'react';
 import { TransitionProps } from '@mui/material/transitions';
 import Slide from '@mui/material/Slide';
 import { ParserOutput, ParserOutputKey, ParserOutputKeys, ParserStringKeys, ParserNumberKeys } from 'new_types/api_types';
@@ -63,7 +52,7 @@ type origKey = ParserOutputKey
 const origKeys = ParserOutputKeys
 type rowTypeKey = keyof rowType
 
-const rowTypeKeys = ["Errors", "Account Name", "Dr/Cr", "Amount", "Item", "Date", "Owner", "Quantity", "Commodity", "Pounds", "Shilling", "Pence", "Farthings", "Currency Type", "EntryID", "Reel", "FolioPage", "original", "id"] as Array<rowTypeKey>
+// const rowTypeKeys = ["Errors", "Account Name", "Dr/Cr", "Amount", "Item", "Date", "Owner", "Quantity", "Commodity", "Pounds", "Shilling", "Pence", "Farthings", "Currency Type", "EntryID", "Reel", "FolioPage", "original", "id"] as Array<rowTypeKey>
 const oldKeyNewKeyMap: Record<string, string> = {"errors": "Errors", "account_name": "Account Name", "debit_or_credit": "Dr/Cr", "amount": "Amount", "item": "Item", "folio_year": "Date", "store_owner": "Owner", "Quantity": "Quantity", "Commodity": "Commodity", "currency_type": "Currency Type", "entry_id": "EntryID", "reel": "Reel", "folio_page": "FolioPage" }
 const splitPlaces = new Set<origKey>(["context", "price", "date", "farthings_ster", "currency_type", "entry_id", "Day", "Commodity", "error_context"] as Array<origKey>)
 const oldCurrNewCurrMap: Record<string, string> = {"pounds": "Pounds", "pounds_ster": "Pounds", "shillings": "Shilling", "shillings_ster": "Shilling", "pennies": "Pence", "pennies_ster": "Pence", "farthings": "Farthings", "farthings_ster": "Farthings"}
@@ -248,7 +237,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     >
                         <CloseIcon />
                     </IconButton>
-                    <IconButton color="inherit" aria-label="delete" onClick={(event) => {deleteRow()}}>
+                    <IconButton color="inherit" aria-label="delete" onClick={(_event) => {deleteRow()}}>
                         <Delete/>
                     </IconButton>
                     <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">

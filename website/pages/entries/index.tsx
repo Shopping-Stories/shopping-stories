@@ -25,7 +25,7 @@ import {
 } from 'client/graphqlDefs';
 import { AdvancedSearch, SearchType } from 'client/types';
 import { Entry } from 'new_types/api_types';
-import { cloneWithoutTypename, flatten } from 'client/util';
+// import { cloneWithoutTypename, flatten } from 'client/util';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
@@ -83,7 +83,7 @@ const ManagePlacesPage: NextPage = () => {
     const [reQuery, setReQuery] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
-    const [rows, setRows] = useState<Entry[]>([]);
+    const [, setRows] = useState<Entry[]>([]);
     const [deleting, setDeleting] = useState(false);
     const [currentSearchEntry, setCurrentSearchEntry ] = useState('');
     const [currentDownloadOption, setCurrentDownloadOption] = useState('');

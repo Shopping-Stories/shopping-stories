@@ -58,7 +58,7 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
         editRows
     } = props;
     
-    const {data, refetch, isLoading} =
+    const {data, isLoading} =
     useQuery(
         ["entries", url],
         () => {
