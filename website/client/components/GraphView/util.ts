@@ -8,27 +8,27 @@ const getNodeSrc = (t:string, mode: PaletteMode) => {
     switch (mode) {
         case 'light': {
             switch (t) {
-                case 'Person':
+                case 'person':
                     return '/SVG/person_black_24dp.svg'
-                case 'PersonAccount':
+                case 'personAccount':
                     return '/SVG/person_black_24dp.svg'
-                case 'Item':
+                case 'item':
                     return '/SVG/shopping_basket_black_24dp.svg'
-                case 'Store':
+                case 'store':
                     return '/SVG/storefront_black_24dp.svg'
                 default:
                     return '/SVG/help_black_24dp.svg'
             }
         }
-        default: {
+        case 'dark': {
             switch (t) {
-                case 'Person':
+                case 'person':
                     return '/SVG/person_white_24dp.svg'
-                case 'PersonAccount':
+                case 'personAccount':
                     return '/SVG/person_white_24dp.svg'
-                case 'Item':
+                case 'item':
                     return '/SVG/shopping_basket_white_24dp.svg'
-                case 'Store':
+                case 'store':
                     return '/SVG/storefront_white_24dp.svg'
                 default:
                     return '/SVG/help_white_24dp.svg'
@@ -39,23 +39,42 @@ const getNodeSrc = (t:string, mode: PaletteMode) => {
 
 type EKey = keyof Entry;
 
-export const getNodeInfo = (nodeType:string):EKey => {
+export const getNodeType = (nodeType:string):EKey => {
     switch (nodeType) {
-        case "Item":
+        case "item":
             return "item"
-        case "PersonAccount":
+        case "personAccount":
             return "account_name"
-        case "Store":
+        case "store":
             return "store_owner"
-        case "Mention":
+        case "mention":
             return "mentions"
         default:
             return "_id"
     }
 }
-const ledger = ["ledger", "date", "Date Year", "_Month", "Day", "liber_book",]
-const base = [...ledger, "context", "phrases", "mentions"]
-const item = [
+
+export const getNodeInfo = (entry:Entry, t:EKey) => {
+
+}
+
+type LedgerKeys = Pick<Entry, "ledger"| "date"| "Date Year"| "_Month"| "Day"| "liber_book">
+type BaseKeys = Pick<Entry, keyof LedgerKeys | "context"| "phrases"| "mentions">
+type ItemKeys = Pick<Entry, "store_owner"|
+    "item"| "itemID"| "amount"| "amount_is_combo"|
+    "Quantity"| "Commodity"| "type"|
+    "price"| "price_is_combo"|
+    "currency"| "currency_type"| "sterling"|
+    "currency_totaling_contextless"| "commodity_totaling_contextless"|
+    "debit_or_credit"
+    >
+type Person = Pick<Entry, "people" | "peopleID">
+type PersonAccount = Pick<Entry, "account_name" | "accountHolderID">
+type NodeInfo = Pick<Entry, "item" | "account_name" | "store_owner" | "mentions" | "_id" | keyof BaseKeys | keyof ItemKeys | keyof Person | keyof PersonAccount>
+
+const ledgerKeys: EKey[]  = ["ledger", "date", "Date Year", "_Month", "Day", "liber_book"]
+const base: EKey[] = [...ledgerKeys, "context", "phrases", "mentions"]
+const item: EKey[] = [
     "store_owner",
     "item", "itemID", "amount", "amount_is_combo",
     "Quantity", "Commodity", "type",
@@ -64,25 +83,31 @@ const item = [
     "currency_totaling_contextless", "commodity_totaling_contextless",
     "debit_or_credit"
 ]
-const person = ["people", "peopleID"]
-const personAcct = ["account_name", "accountHolderID" ]
+const person: EKey[] = ["people", "peopleID"]
+const personAcct: EKey[] = ["account_name", "accountHolderID" ]
 
-export const getLinkInfo = (linkType:string, ):string[] =>  {
+export const getNodeKeys = (nodeType:string): EKey[] => ledgerKeys //[...ledgerKeys, getNodeType(nodeType)]
+
+export const getLinkKeys = (linkType:string, ):EKey[] =>  {
 
     switch (linkType) {
-        case "Item-PersonAccount":
+        case "item_personAccount":
             return [...base, ...item, ...personAcct]
-        case "Item-Person":
+        case "item_person":
             return [...base, ...person, ...person]
-        case "Item-Store":
+        case "item_store":
             return [...base, ...item, ...personAcct]
-        case "Person-PersonAccount":
+        case "person_personAccount":
             return [...base, ...person, ...personAcct]
-        case "Mention-PersonAccount":
+        case "mention_personAccount":
             return base
         default:
             return []
     }
+}
+
+export const filterEntry = (e:Entry, keys:EKey[]):Partial<Entry> => {
+    return Object.fromEntries(keys.map(k => [k, e[k]]))
 }
 
 export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {

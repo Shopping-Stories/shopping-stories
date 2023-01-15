@@ -13,15 +13,15 @@ interface NodeIconProps {
 
 const NodeIcon = ({ t }: NodeIconProps) => {
     switch (t) {
-        case "Item":
+        case "item":
             return <ShoppingBasketIcon />;
-        case "PersonAccount":
+        case "personAccount":
             return <PersonIcon />;
-        case "Person":
+        case "person":
             return <PersonIcon />
-        case "Store":
+        case "store":
             return <StorefrontIcon />;
-        case "Mention":
+        case "mention":
             return <HelpIcon />;
         default:
             return <HelpIcon />;

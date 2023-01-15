@@ -69,8 +69,10 @@ const Header = ({ title }: HeaderConfig) => {
                 position={title === "GraphView" ? "fixed" : "relative"}
                 sx={{
                     zIndex: (theme) => theme.zIndex.drawer + 1,
-                    width: `calc(100% - ${width}px)`,
-                    ml: `${width}px`,
+                    // width: `calc(100% - ${width}px)`,
+                    width: `85%`,
+                    ml: `15%`
+                    // ml: `${width}px`,
                 }}
             >
                 {/*<AppBar*/}
