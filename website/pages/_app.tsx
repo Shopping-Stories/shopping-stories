@@ -2,8 +2,8 @@ import { CacheProvider } from '@emotion/react';
 import { createTheme, PaletteMode, useMediaQuery } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
-import { authExchange } from '@urql/exchange-auth';
-import { cacheExchange } from '@urql/exchange-graphcache';
+// import { authExchange } from '@urql/exchange-auth';
+// import { cacheExchange } from '@urql/exchange-graphcache';
 import { Auth, Storage } from 'aws-amplify';
 import { ColorModeContext } from 'client/ThemeMode';
 import type { AppProps } from 'next/app';
@@ -11,61 +11,64 @@ import Head from 'next/head';
 import { useEffect, useMemo, useState } from 'react';
 import { getDesignTokens } from 'styles/theme';
 import { Client, dedupExchange, fetchExchange, Provider } from 'urql';
-import {
-    addAuthToOperation,
-    didAuthError,
-    getAuth,
-} from '../client/urqlConfig';
+// import {
+//     addAuthToOperation,
+//     didAuthError,
+//     getAuth,
+// } from '../client/urqlConfig';
 import { AmplifyOptions, S3Options } from '../client/util';
 import createEmotionCache from '../styles/createEmotionCache';
 import '../styles/globals.css';
+import Layout from "@components/Layout";
+//TODO: remove all header imports in pages/components
+// import Header from "@components/Header";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
-const cache = cacheExchange({
-    keys: {
-        AccHolderObject: () => null,
-        MetaObject: () => null,
-        DateObject: () => null,
-        RegularEntryObject: () => null,
-        TobaccoMarkObject: () => null,
-        TobaccoEntryObject: () => null,
-        TobaccoMoneyObject: () => null,
-        PersonObject: () => null,
-        PlaceObject: () => null,
-        MoneyObject: () => null,
-        PoundsShillingsPence: () => null,
-        ItemEntryObject: () => null,
-        ItemOrServiceObject: () => null,
-        MentionedItemsObject: () => null,
-        NoteObject: () => null,
-        ImageObject: () => null,
-        PurchaseObject: () => null,
-    },
-    updates: {
-        Mutation: {
-            deleteDocument(_result, args, cache, _info) {
-                cache.invalidate({
-                    __typename: 'DocumentInfo',
-                    id: args.id as string,
-                });
-            },
-        },
-    },
-});
+// const cache = cacheExchange({
+//     keys: {
+//         AccHolderObject: () => null,
+//         MetaObject: () => null,
+//         DateObject: () => null,
+//         RegularEntryObject: () => null,
+//         TobaccoMarkObject: () => null,
+//         TobaccoEntryObject: () => null,
+//         TobaccoMoneyObject: () => null,
+//         PersonObject: () => null,
+//         PlaceObject: () => null,
+//         MoneyObject: () => null,
+//         PoundsShillingsPence: () => null,
+//         ItemEntryObject: () => null,
+//         ItemOrServiceObject: () => null,
+//         MentionedItemsObject: () => null,
+//         NoteObject: () => null,
+//         ImageObject: () => null,
+//         PurchaseObject: () => null,
+//     },
+//     updates: {
+//         Mutation: {
+//             deleteDocument(_result, args, cache, _info) {
+//                 cache.invalidate({
+//                     __typename: 'DocumentInfo',
+//                     id: args.id as string,
+//                 });
+//             },
+//         },
+//     },
+// });
 
 const client = new Client({
     url: '/api/graphql',
     exchanges: [
         dedupExchange,
-        cache,
-        authExchange({
-            /* config */
-            getAuth: getAuth,
-            addAuthToOperation: addAuthToOperation,
-            didAuthError: didAuthError,
-        }),
+        // cache,
+        // authExchange({
+        //     /* config */
+        //     getAuth: getAuth,
+        //     addAuthToOperation: addAuthToOperation,
+        //     didAuthError: didAuthError,
+        // }),
         fetchExchange,
     ],
 });
@@ -125,7 +128,9 @@ function App({
                 <ColorModeContext.Provider value={colorMode}>
                     <ThemeProvider theme={theme}>
                         <CssBaseline />
-                        <Component {...pageProps} />
+                        <Layout>
+                            <Component {...pageProps} />
+                        </Layout>
                     </ThemeProvider>
                 </ColorModeContext.Provider>
             </Provider>
