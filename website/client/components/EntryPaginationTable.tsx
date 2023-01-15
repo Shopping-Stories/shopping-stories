@@ -269,11 +269,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
             /> */}
-<<<<<<< HEAD
-            <DataGrid rows={rows} columns={columns} autoPageSize getRowId={(row) => row.id} disableSelectionOnClick/>
-=======
             <DataGrid rows={rows ?? []} columns={columns} autoPageSize getRowId={(row) => row.id} disableSelectionOnClick/>
->>>>>>> main
         </Paper>
         </Box>
     );
