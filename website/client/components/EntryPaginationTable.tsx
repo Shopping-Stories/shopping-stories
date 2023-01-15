@@ -28,6 +28,7 @@ interface EntryQueryResult {
 const doSearch = async (search: string): Promise<EntryQueryResult> => {
     const res = await fetch("http://preprod.shoppingstories.org:4562/search/" + search);
     // console.log(await res.text());
+    console.log(res);
     let toret: EntryQueryResult = JSON.parse(await res.text());
     return toret;
   };
@@ -268,7 +269,11 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
             /> */}
+<<<<<<< HEAD
             <DataGrid rows={rows} columns={columns} autoPageSize getRowId={(row) => row.id} disableSelectionOnClick/>
+=======
+            <DataGrid rows={rows ?? []} columns={columns} autoPageSize getRowId={(row) => row.id} disableSelectionOnClick/>
+>>>>>>> main
         </Paper>
         </Box>
     );
