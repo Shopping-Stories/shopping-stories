@@ -1,7 +1,7 @@
 // import { GKey, NodeInfo } from "@components/GraphView/GraphTypes";
 import { PaletteMode } from "@mui/material";
 
-import { Entry } from "../../../new_types/api_types";
+import { Currency, Entry, Ledger } from "../../../new_types/api_types";
 // import { NodeInfo } from "@components/GraphView/GraphTypes";
 
 const getNodeSrc = (t:string, mode: PaletteMode) => {
@@ -105,9 +105,25 @@ export const getLinkKeys = (linkType:string, ):EKey[] =>  {
             return []
     }
 }
+export type EntryInfo = Omit<Partial<Currency> & Partial<Ledger> & Entry, "ledger" | "currency">
+export const filterEntry = (e:Entry, keys:EKey[]):EntryInfo => {
+    let entryInfo: EntryInfo = {}
+    for (let key of keys){
+        if (key === "ledger" || key === "currency"){
+            for (let [k, v] of Object.entries(e[key as keyof Entry])){
+                entryInfo[k as keyof EntryInfo] = v
+            }
+        }
+        else {
+            entryInfo[key] = e[key]
+        }
+    }
+    return entryInfo
+}
 
-export const filterEntry = (e:Entry, keys:EKey[]):Partial<Entry> => {
-    return Object.fromEntries(keys.map(k => [k, e[k]]))
+export const makeLinkSnake = (x:string, y:string):string[] => {
+    let arr = [x, y].sort();
+    return [...arr, `${arr[0]}_${arr[1]}`]
 }
 
 export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {

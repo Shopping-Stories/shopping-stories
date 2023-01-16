@@ -16,6 +16,7 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 import Tooltip from "@mui/material/Tooltip";
 // import ListItemAvatar from '@mui/material/ListItemAvatar';
 // import Avatar from '@mui/material/Avatar';
+import { makeLinkSnake } from "@components/GraphView/util";
 
 const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleInfo }: LinkListItemProps) => {
     const { id, linkType} = link
@@ -50,11 +51,6 @@ const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleIn
             </ListItemButton>
     );
 };
-
-const getLinkKey = (u:string, v:string) => {
-    let arr = [u, v].sort()
-    return `${arr[0]}_${arr[1]}`
-}
 
 const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: NodeListItemProps) => {
     const {id, neighbors, nodeType, label} = node
@@ -104,12 +100,12 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
             >
                 <List component="nav" disablePadding>
                     {neighbors && Object.entries(neighbors)
-                        .filter((entry) => !!entry[1])
+                        // .filter(([key, v]) => (!!v && !!v.linkDict[getLinkKey(key, id.toString())]))
                         .map(([key, v]) => (
                             <LinkListItem
                                 key={key}
                                 node={v}
-                                link={v.linkDict[getLinkKey(v.id.toString(), id.toString())]}
+                                link={v.linkDict[makeLinkSnake(v.id.toString(), id.toString())[2]]}
                                 handleClickZoom={handleClickZoom}
                                 focusOn={focusOn}
                                 focusOff={focusOff}

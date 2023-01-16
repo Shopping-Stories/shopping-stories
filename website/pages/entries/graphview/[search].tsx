@@ -47,10 +47,9 @@ const EntryGraphView = ({search,title}:GraphGuiPageProps) => {
     const { data, refetch, isLoading, isFetching, error } = useQuery({
         queryKey:['entries', search],
         queryFn: () => doSearch(search),
-    
 });
 
-    // console.log("Query Result:", result);
+    console.log("Query Result:", data?.entries);
 
     // TODO: "fetching" component
     return (

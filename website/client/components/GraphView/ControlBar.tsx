@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect, useCallback } from "react";
+import React, { useState, memo, useEffect } from "react";
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -9,10 +9,6 @@ import StorefrontIcon from '@mui/icons-material/Storefront';
 import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import ShoppingBasketOutlinedIcon from '@mui/icons-material/ShoppingBasketOutlined';
-import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
-import PlaceIcon from '@mui/icons-material/Place';
-import NoteIcon from '@mui/icons-material/Note';
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import LegendToggleIcon from '@mui/icons-material/LegendToggle';
@@ -26,19 +22,24 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
-import TextField from '@mui/material/TextField';
 import Slider from '@mui/material/Slider';
-import Button from "@mui/material/Button";
-import { Formik, Form, Field, useFormik } from "formik";
+
+import { ControlBarProps } from "@components/GraphView/GraphGui";
 
 // import Entry from "new_types/api_types"
-import {GraphPredicates, ControlBarProps } from "@components/GraphView/GraphGui";
 // import { graphFilterSchema } from "../../formikSchemas";
 
+// import FormControl from '@mui/material/FormControl';
+// import FormLabel from '@mui/material/FormLabel';
+// import FormGroup from '@mui/material/FormGroup';
+// import TextField from '@mui/material/TextField';
+// import Button from "@mui/material/Button";
+// import { Formik, Form, Field, useFormik } from "formik";
+// import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+// import PlaceIcon from '@mui/icons-material/Place';
+// import NoteIcon from '@mui/icons-material/Note';
+// import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 // import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
 // import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 // import NoteOutlinedIcon from '@mui/icons-material/NoteOutlined';
@@ -96,7 +97,7 @@ function a11yProps(index: number) {
     };
 }
 
-const ControlBar = ({ name, info, makePredicates, filter, entityType }: ControlBarProps) => {
+const ControlBar = ({ name, info, makePredicates, entityType }: ControlBarProps) => {
     const [open, setOpen] = useState(false);
     const [infoOpen, setInfoOpen] = useState(!!info);
     const [tab, setTab] = useState(0)
@@ -260,7 +261,7 @@ const ControlBar = ({ name, info, makePredicates, filter, entityType }: ControlB
                                     <>
                                         <Divider />
                                         {Object.entries(e)
-                                            .filter(([k, v]) => !!v)
+                                            .filter(e => !!e[1])
                                             .map(([k, v]) => (
                                                 <ListItem key={k}>
                                                     {
