@@ -41,10 +41,10 @@ const Header = ({ title }: HeaderConfig) => {
     const { groups, isLoggedIn } = useAuth();
     const authLinks = isLoggedIn ? adminNavLinks : [];
     const uniqueNavLinks = uniqWith([...navLinks, ...authLinks], isEqual);
-    const [width, setWidth] = useState(0);
+    const [width, setWidth] = useState("100%");
     useEffect(() => {
         if (title && title === 'GraphView') {
-            setWidth(240);
+            setWidth("85%");
         }
     },[title]);
 
