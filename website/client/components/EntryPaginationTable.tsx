@@ -26,7 +26,7 @@ interface EntryQueryResult {
 }
 
 const doSearch = async (search: string): Promise<EntryQueryResult> => {
-    const res = await fetch("https://preprod.shoppingstories.org:4562/search/" + search);
+    const res = await fetch("https://api.preprod.shoppingstories.org:4562/search/" + search);
     // console.log(await res.text());
     console.log(res);
     let toret: EntryQueryResult = JSON.parse(await res.text());
