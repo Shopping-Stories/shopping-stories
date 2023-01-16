@@ -21,6 +21,7 @@ const defaultNavLinks: NavLink[] = [
     { title: `about`, path: `/about` },
     { title: `search`, path: `/entries` },
     { title: `glossary`, path: `/glossary/items` },
+    { title: `parser results`, path: `/reseditor`}
 ];
 
 const adminNavLinks: NavLink[] = [
@@ -41,10 +42,10 @@ const Header = ({ title }: HeaderConfig) => {
     const { groups, isLoggedIn } = useAuth();
     const authLinks = isLoggedIn ? adminNavLinks : [];
     const uniqueNavLinks = uniqWith([...navLinks, ...authLinks], isEqual);
-    const [width, setWidth] = useState("100%");
+    const [, setWidth] = useState(0);
     useEffect(() => {
         if (title && title === 'GraphView') {
-            setWidth("85%");
+            setWidth(240);
         }
     },[title]);
 
@@ -63,22 +64,18 @@ const Header = ({ title }: HeaderConfig) => {
         <Fragment>
             {/*<HideOnScroll>*/}
 
-             <AppBar
-                //  position="relative"
-                // position="fixed"
-                position={title === "GraphView" ? "fixed" : "relative"}
+            {/* <AppBar
+                position="fixed"
                 sx={{
                     zIndex: (theme) => theme.zIndex.drawer + 1,
-                    // width: `calc(100% - ${width}px)`,
-                    width: `85%`,
-                    ml: `15%`
-                    // ml: `${width}px`,
+                    width: `calc(100% - ${width}px)`,
+                    ml: `${width}px`,
                 }}
-            >
-                {/*<AppBar*/}
-                {/*   position="relative"*/}
-                {/*   sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}*/}
-                {/*>*/}
+            > */}
+                <AppBar
+                   position="relative"
+                   sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                >
                 <Toolbar>
                     <Container
                         maxWidth="lg"

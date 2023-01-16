@@ -87,3 +87,11 @@ export interface ParserOutput {
     liber_book?: string
     mentions?: Array<string>
 }
+export type ParserOutputKey = keyof ParserOutput 
+
+export const ParserOutputKeys = ["errors", "error_context", "context", "debit_or_credit", "account_name", "amount", "amount_is_combo", "item", "price", "type", "liber_book",  "price_is_combo", "phrases", "date", "pounds_ster", "shillings_ster", "pennies_ster", "farthings_ster", "pounds", "shillings", "pennies", "farthings", "currency_type", "currency_totaling_contextless", "commodity_totaling_contextless", "Marginalia", "store_owner", "reel", "folio_year", "folio_page", "entry_id", "Date Year", "_Month", "Day", "Quantity", "Commodity", "people", "mentions"] as Array<ParserOutputKey>
+
+export const ParserStringKeys = new Set<ParserOutputKey>(["amount", "item", "price", "date", "Marginalia", "account_name", "store_owner", "folio_year", "entry_id", "Date Year", "_Month", "Day", "debit_or_credit", "Quantity", "Commodity", "type", "liber_book"] as Array<ParserOutputKey>)
+export const ParserStringArrayKeys = new Set<ParserOutputKey>(["errors", "people", "mentions"] as Array<ParserOutputKey>)
+export const ParserBooleanKeys = new Set<ParserOutputKey>(["amount_is_combo", "price_is_combo", "currency_totaling_contextless", "commodity_totaling_contextless"] as Array<ParserOutputKey>)
+export const ParserNumberKeys = new Set<ParserOutputKey>(["pounds", "pounds_ster", "shillings", "shillings_ster", "pennies", "pennies_ster", "farthings", "farthings_ster", "reel", "folio_page"] as Array<ParserOutputKey>)

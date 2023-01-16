@@ -37,7 +37,6 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         // queryDef,
         search,
         advanced,
-        isAdvancedSearch,
         setReQuery,
         setIsLoading,
         reQuery,

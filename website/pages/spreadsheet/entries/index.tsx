@@ -1,6 +1,6 @@
 import ActionDialog from '@components/ActionDialog';
 import ColorBackground from '@components/ColorBackground';
-import EntryPaginationTable from '@components/EntryPaginationTable';
+// import EntryPaginationTable from '@components/EntryPaginationTable';
 import Header from '@components/Header';
 import LoadingPage from '@components/LoadingPage';
 import useAuth, { isInGroup } from '@hooks/useAuth.hook';
@@ -17,7 +17,7 @@ import Typography from '@mui/material/Typography';
 import {
     EntryFields,
     ParsedEntryFields,
-    SearchParsedEntryDef,
+    // SearchParsedEntryDef,
 } from 'client/graphqlDefs';
 import { Entry } from 'client/types';
 import { cloneWithoutTypename, flatten } from 'client/util';
@@ -51,25 +51,25 @@ const ManagePlacesPage: NextPage = () => {
     const { groups, loading } = useAuth('/', [Roles.Admin]);
     const router = useRouter();
     const isAdmin = isInGroup(Roles.Admin, groups);
-    const isModerator = isInGroup(Roles.Moderator, groups);
-    const isAdminOrModerator = isAdmin || isModerator;
+    // const isModerator = isInGroup(Roles.Moderator, groups);
+    // const isAdminOrModerator = isAdmin || isModerator;
     const [_deletePlaceResult, deletePlace] = useMutation(deleteParsedEntryDef);
     const [_createEntryResult, createEntry] = useMutation(createEntryDef);
-    const [placeToDelete, setPlaceToDelete] = useState<{
+    const [placeToDelete, ] = useState<{
         id: string;
     } | null>(null);
-    const [reQuery, setReQuery] = useState(false);
+    const [, setReQuery] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [openDeleteAll, setOpenDeleteAll] = useState(false);
     const [uploadAll, setUploadAll] = useState(false);
-    const [rows, setRows] = useState<Entry[]>([]);
+    const [rows, ] = useState<Entry[]>([]);
     const [deleting, setDeleting] = useState(false);
 
     const { documentName } = router.query;
-    const handleOpenDelete = () => {
-        setOpenDelete(true);
-    };
+    // const handleOpenDelete = () => {
+    //     setOpenDelete(true);
+    // };
 
     const handleCloseDelete = () => {
         setOpenDelete(false);
@@ -262,7 +262,7 @@ const ManagePlacesPage: NextPage = () => {
                                 </div>
                             </Stack>
                         ) : null}
-                        <EntryPaginationTable
+                        {/* <EntryPaginationTable
                             isAdmin={isAdmin}
                             isAdminOrModerator={isAdminOrModerator}
                             queryDef={SearchParsedEntryDef}
@@ -284,7 +284,7 @@ const ManagePlacesPage: NextPage = () => {
                             setIsLoading={setIsLoading}
                             advanced={null}
                             isAdvancedSearch={false}
-                        />
+                        /> */}
                         <LoadingButton
                             loading={isLoading}
                             variant="contained"
