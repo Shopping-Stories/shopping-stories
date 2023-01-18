@@ -5,8 +5,8 @@ import { GetServerSideProps } from 'next';
 import { useQuery } from '@tanstack/react-query';
 import LoadingPage from '@components/LoadingPage';
 import { Entry } from "new_types/api_types";
-
-const ForceGraph = dynamic(() => import('@components/GraphView/GraphGui'), {
+// import GraphGui from "@components/GraphView/GraphGui";
+const ForceGraph = dynamic(() => import('../../../client/components/GraphView/GraphGui'), {
     ssr: false,
     loading: () => <LoadingPage title={"GraphView"}/>,
 });
@@ -23,7 +23,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
 };
 
 const doSearch = async (search:string): Promise<EntryQueryResult> => {
-    const res = await fetch("http://preprod.shoppingstories.org:4562/search/" + search);
+    const res = await fetch("https://api.preprod.shoppingstories.org:443/search/" + search);
     // console.log(await res.text());
     // let toret: EntryQueryResult = JSON.parse(await res.text());
     return JSON.parse(await res.text());
@@ -49,13 +49,13 @@ const EntryGraphView = ({search,title}:GraphGuiPageProps) => {
         queryFn: () => doSearch(search),
 });
 
-    console.log("Query Result:", data?.entries);
+    // console.log("Query Result:", error ? error : data?.entries);
 
     // TODO: "fetching" component
     return (
         <>
             {(isFetching || isLoading) && <LoadingPage title={title}/>}
-            {!error && !!data && data.entries !== undefined && (
+            {!!data && data.entries !== undefined && (
                 <ForceGraph entries={data.entries} />
             )}
         </>
