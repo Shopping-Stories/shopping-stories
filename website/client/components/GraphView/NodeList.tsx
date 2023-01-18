@@ -18,13 +18,13 @@ import Tooltip from "@mui/material/Tooltip";
 // import Avatar from '@mui/material/Avatar';
 import { makeLinkSnake } from "@components/GraphView/util";
 
-const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleInfo }: LinkListItemProps) => {
+const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleInfo, parent }: LinkListItemProps) => {
     const { id, linkType} = link
     const {nodeType, label} = node
     return (
             <ListItemButton
-                onMouseEnter={()=>focusOn(link.id)}
-                onMouseLeave={()=>focusOff("")}
+                onMouseEnter={()=>focusOn(new Set<string|number>([link.id, parent.id, node.id]))}
+                onMouseLeave={()=>focusOff(new Set<string|number>())}
             >
             <Tooltip title={"Toggle Info Panel"}>
             <ListItemIcon sx={{ pl: 2 }} onClick={()=>toggleInfo(node, link)}>
@@ -60,8 +60,8 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
     return (
         <>
             <ListItemButton
-                onMouseEnter={()=>focusOn(node.id)}
-                onMouseLeave={()=>focusOff("")}
+                onMouseEnter={()=>focusOn(new Set<string|number>([node.id]))}
+                onMouseLeave={()=>focusOff(new Set<string|number>())}
             >
             <Tooltip title={"Toggle Info Panel"}>
             <ListItemIcon onClick={()=>toggleInfo(node)}>
@@ -105,6 +105,7 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
                             <LinkListItem
                                 key={key}
                                 node={v}
+                                parent={node}
                                 link={v.linkDict[makeLinkSnake(v.id.toString(), id.toString())[2]]}
                                 handleClickZoom={handleClickZoom}
                                 focusOn={focusOn}

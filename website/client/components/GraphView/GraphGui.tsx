@@ -1,5 +1,5 @@
 import ForceGraph2D, { ForceGraphMethods, GraphData, LinkObject, NodeObject } from "react-force-graph-2d";
-import { useCallback, useState, useRef, useMemo, useEffect } from "react";
+import React, { useCallback, useState, useRef, useMemo, useLayoutEffect, useEffect } from "react";
 import { Entry } from "new_types/api_types";
 
 import NodeList from '@components/GraphView/NodeList';
@@ -11,16 +11,20 @@ import {
     getledgerKeys,
     getNodeKeys, filterEntry, EntryInfo, makeLinkSnake
 } from "@components/GraphView/util";
-import ControlBar from '@components/GraphView/ControlBar';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import { useColorMode } from "../../ThemeMode";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import GraphInfoPanel from "@components/GraphView/GraphInfoPanel";
+import GraphFilterPanel from "@components/GraphView/GraphFilterPanel";
 
-// import { ControlBarProps } from "@components/GraphView/ControlBar";
-// import {useTheme} from "@mui/material";
+import {useTheme} from "@mui/material";
 // import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
 // import Toolbar from '@mui/material/Toolbar';
 // import ListItemText from '@mui/material/ListItemText';
+// import Container from "@mui/material/Container";
+// import Toolbar from "@mui/material/Toolbar";
 
 // type GeneralEdge = Omit<Entry, "peopleID" | "account_name" | "accountHolderID" | "item" | "itemID" >
 // type ProviderEdge = Omit<GeneralEdge, "account_name" | "accountHolderID" | "item" | "itemID" >
@@ -85,13 +89,6 @@ const initFilter = {
     dateRange: undefined,
     search: undefined
 }
-const linkColors = {
-    item_personAccount: "green",
-    item_person: "purple",
-    item_store: "orange",
-    person_personAccount: "magenta",
-    mention_personAccount: "blue"
-}
 
 export interface GraphGuiProps {
     // result: EntriesQuery | undefined;
@@ -99,9 +96,19 @@ export interface GraphGuiProps {
 }
 const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
-    const [nodeFocused, setNodeFocused] = useState("")
-    const [graphPanelInfo, setGraphPanelInfo] = useState<GraphPanelInfo>();
+    const [focusedItems, setFocusedItems] = useState(new Set<string | number>())
+    const [graphPanelInfo, setGraphPanelInfo] = useState<GraphInfoPanelProps>();
     const {mode} = useColorMode()
+    const {palette} = useTheme()
+    const linkColors = useMemo(()=>{
+        return {
+            item_personAccount: palette.success.main,
+            item_person: palette.success.main,
+            item_store: palette.warning.main,
+            person_personAccount: palette.info.main,
+            mention_personAccount: palette.error.main
+        }
+    }, [palette])
     
     const comparator = (a:NodeObject, b:NodeObject) => {
         if (!a.nodeType) return 1
@@ -135,11 +142,12 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
         const makeLink = (v1:string, v2:string) => {
             let [source, target, linkID] = makeLinkSnake(v1, v2)
             if (!linkProps || !linkProps[linkID]) {
+                let t = makeLinkSnake(nodeProps[v1].nodeType, nodeProps[v2].nodeType)[2]
                 linkProps[linkID] = {
                     id: linkID,
                     source: source,
                     target: target,
-                    linkType: makeLinkSnake(nodeProps[v1].nodeType, nodeProps[v2].nodeType)[2],
+                    linkType: t,
                     entries: new Set<number>(),
                     entryKeys: getLinkKeys(t),
                     // label:
@@ -171,6 +179,7 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
         const processEntry = (e: Entry) => {
             let toItem = new Set<string>()
             let toAccount = new Set<string>()
+            let personID = e.peopleID?.match(/'([^']+)'/)
             if (!e._id) return
             if (e.store_owner) {
                 makeNode("store", e.store_owner)
@@ -194,14 +203,18 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
                     }
                 }
             }
+            if (typeof personID === "string"){
+                makeNode("person", personID)
+                toAccount.add(personID)
+            }
             if (e.itemID){
                 addNeighbors(e.itemID, toItem)
             }
             if (e.accountHolderID){
                 addNeighbors(e.accountHolderID, toAccount)
             }
-            if (e.peopleID){
-                // add(Ne)
+            if (typeof personID === "string") {
+                addNeighbors(personID, toAccount)
             }
         };
         
@@ -363,12 +376,12 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
         // console.log(info)
     }, [entries])
     
-    const focusOn = useCallback((id) => {
-        setNodeFocused(id)
+    const focusOn = useCallback((elements) => {
+        setFocusedItems(elements)
     }, [])
     
-    const focusOff = useCallback((id) => {
-        setNodeFocused(id)
+    const focusOff = useCallback((empty) => {
+        setFocusedItems(empty)
     }, [])
     
     const handleZoom:nodeHandler = useCallback((node )=> {
@@ -385,96 +398,129 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
             return;
         }
         const size = 24;
-        if (nodeFocused === node.id){
+        if (focusedItems.has(node.id)){
             ctx.beginPath();
-            ctx.arc(node.x, node.y, 12 * 1.4, 0, 2 * Math.PI, false);
-            ctx.fillStyle = 'green';
+            ctx.arc(node.x, node.y, 9 * 1.4, 0, 2 * Math.PI, false);
+            ctx.fillStyle = palette.error.light;
             ctx.fill();
         }
         if (node.canvasIcon) {
             ctx.drawImage(node.canvasIcon, node.x - size / 2, node.y - size / 2, size, size,);
         }
         
-    },[nodeFocused])
+    },[focusedItems, palette])
     
-    // console.log("render");
+    const graphGridRef = useRef<HTMLDivElement>(null)
+    const [graphWidth, setGraphWidth] = useState<number | undefined>(undefined)
+    const [graphHeight, setGraphHeight] = useState<number | undefined>(undefined)
+    
+    useLayoutEffect(() => {
+        // setGraphWidth(graphGridRef?.current?.clientWidth)
+        setGraphHeight(graphGridRef?.current?.clientHeight)
+        setGraphWidth(graphGridRef?.current?.getBoundingClientRect().width)
+        // setGraphHeight(graphGridRef?.current?.getBoundingClientRect().height)
+    },[])
+
+    window.addEventListener('resize', () => {
+        setGraphWidth(graphGridRef?.current?.getBoundingClientRect().width)
+        // setGraphHeight(graphGridRef?.current?.getBoundingClientRect().height)
+        // setGraphWidth(graphGridRef?.current?.clientWidth)
+        setGraphHeight(graphGridRef?.current?.clientHeight)
+        console.log(graphWidth, graphHeight)
+    })
+    console.log("render");
     return (
-        <>
-            <ControlBar
-                // width={240}
-                name={graphPanelInfo?.name}
-                info={graphPanelInfo?.info}
-                entityType={graphPanelInfo?.entityType}
-                makePredicates={makePredicates}
-            />
-            <Drawer
-                variant="permanent"
-                anchor="left"
-                open
-                sx={{
-                    width: 240,
-                    flexShrink: 0,
-                    [`& .MuiDrawer-paper`]: {
-                        // width: 240,
-                        width: `15%`,
-                        boxSizing: 'border-box',
-                    },
-                }}
-            >
-                {/*<Toolbar>*/}
-                {/*    <SubdirectoryArrowRightIcon />*/}
-                {/*    <ListItemText primary="Nodes" secondary="Edges" />*/}
-                {/*</Toolbar>*/}
-                <Divider />
-                {graphRef && (
-                    <NodeList
-                        gData={graph}
-                        handleClickZoom={handleZoom}
-                        focusOn={focusOn}
-                        focusOff={focusOff}
-                        toggleInfo={toggleInfo}
+        <Box component={"main"} sx={{flexGrow: 1, overflow: 'auto'}} alignItems={"stretch"}>
+            
+            <Grid container>
+                <Grid item xs={2} >
+                    <Drawer
+                        variant="permanent"
+                        anchor="left"
+                        open
+                        sx={{
+                            // width: 240,
+                            flexShrink: 0,
+                            position: 'relative',
+                            [`& .MuiDrawer-paper`]: {
+                                // width: 240,
+                                width: `16.67%`,
+                                // boxSizing: 'border-box',
+                            },
+                        }}
+                    >
+                        {/*<Toolbar>*/}
+                        {/*    <SubdirectoryArrowRightIcon />*/}
+                        {/*    <ListItemText primary="Nodes" secondary="Edges" />*/}
+                        {/*</Toolbar>*/}
+                        <Divider />
+                        {graphRef && (
+                            <NodeList
+                                gData={graph}
+                                handleClickZoom={handleZoom}
+                                focusOn={focusOn}
+                                focusOff={focusOff}
+                                toggleInfo={toggleInfo}
+                            />
+                        )}
+                        <Divider />
+                    </Drawer>
+                </Grid>
+                <Grid component={'div'} item xs={7}  ref={graphGridRef}>
+                    <Box position={"relative"}>
+                    <ForceGraph2D
+                        ref={graphRef}
+                        graphData={graph}
+                        width={graphWidth}
+                        height={graphHeight}
+                        // autoPauseRedraw={false}
+                        linkColor={(l) => linkColors[l.linkType as keyof typeof linkColors]}
+                        linkWidth={link => focusedItems.has(link.id) ? 2.5 : 1.4}
+                        linkDirectionalParticles={4}
+                        linkDirectionalParticleWidth={link => focusedItems.has(link.id) ? 4 : 0}
+                        // TODO: Figure out canvas interaction with next.js
+                        nodeLabel={(node) =>
+                            node?.label ? node.label.toString() : node.id.toString()
+                        }
+                        // nodeCanvasObjectMode={()=>'after'}
+                        nodeCanvasObject={(node, ctx) => paintNodes(node, ctx)}
+                        onNodeClick={handleZoom}
+                        // enablePointerInteraction={true}
                     />
-                )}
-                <Divider />
-            </Drawer>
-            <ForceGraph2D
-                ref={graphRef}
-                graphData={graph}
-                // nodeRelSize={24}
-                // autoPauseRedraw={false}
-                linkColor={(l) => linkColors[l.linkType as keyof typeof linkColors]}
-                linkWidth={1.5}
-                // TODO: Figure out canvas interaction with next.js
-                nodeLabel={(node) =>
-                    node?.label ? node.label.toString() : node.id.toString()
-                }
-                // nodeCanvasObjectMode={()=>'after'}
-                nodeCanvasObject={(node, ctx) => paintNodes(node, ctx)}
-                onNodeClick={handleZoom}
-                // enablePointerInteraction={true}
-            />
-        </>
+                    <GraphFilterPanel makePredicates={makePredicates}/>
+                    </Box>
+                </Grid>
+                <Grid item xs={3}>
+                    {/*<Toolbar/>*/}
+                    <GraphInfoPanel
+                        // width={240}
+                        name={graphPanelInfo?.name}
+                        info={graphPanelInfo?.info}
+                        entityType={graphPanelInfo?.entityType}
+                    />
+                </Grid>
+            </Grid>
+    </Box>
     );
 };
-
 export default GraphGui;
 
 //Graph types that must be declared in this file
 type NKey = keyof NodeObject | string | number
-type focusHandler = (id: NKey) => void ;
+type focusHandler = (elements:Set<NKey>) => void ;
 type nodeHandler = (node:NodeObject) => void;
 type itemHandler = (node:NodeObject, link?:LinkObject) => void
 
-interface GraphPanelInfo {
+export interface GraphFilterPanelProps {
+    makePredicates: (nodeOrLink:string, t:string, check:boolean) => void;
+    filter?: GraphPredicates
+}
+
+export interface GraphInfoPanelProps {
+    // width: number;
     name: string | undefined;
     info: EntryInfo[] | undefined;
     entityType: string | undefined
-}
-
-export interface ControlBarProps extends GraphPanelInfo {
-    // width: number;
-    makePredicates: (nodeOrLink:string, t:string, check:boolean) => void;
-    filter?: GraphPredicates
     // startDate: Date,
     // endDate: Date,
 }
@@ -495,6 +541,7 @@ export interface NodeListItemProps {
 export interface LinkListItemProps {
     link:LinkObject;
     node: NodeObject
+    parent: NodeObject
     handleClickZoom: nodeHandler
     toggleInfo: itemHandler
     focusOn: focusHandler

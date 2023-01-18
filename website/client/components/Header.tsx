@@ -13,6 +13,7 @@ import { isEqual, uniqWith } from 'lodash';
 import Image from 'next/image';
 import { Fragment, useEffect, useState } from 'react';
 import { LogoFabStyles } from 'styles/styles';
+import Box from '@mui/material/Box';
 // import { styled } from '@mui/system';
 // import Typography from "@mui/material/Typography";
 
@@ -21,7 +22,6 @@ const defaultNavLinks: NavLink[] = [
     { title: `about`, path: `/about` },
     { title: `search`, path: `/entries` },
     { title: `glossary`, path: `/glossary/items` },
-    { title: `parser results`, path: `/reseditor`}
 ];
 
 const adminNavLinks: NavLink[] = [
@@ -42,10 +42,10 @@ const Header = ({ title }: HeaderConfig) => {
     const { groups, isLoggedIn } = useAuth();
     const authLinks = isLoggedIn ? adminNavLinks : [];
     const uniqueNavLinks = uniqWith([...navLinks, ...authLinks], isEqual);
-    const [, setWidth] = useState(0);
+    const [width, setWidth] = useState("100%");
     useEffect(() => {
         if (title && title === 'GraphView') {
-            setWidth(240);
+            setWidth("83.33%");
         }
     },[title]);
 
@@ -61,21 +61,23 @@ const Header = ({ title }: HeaderConfig) => {
     }, [groups, isLoggedIn]);
 
     return (
-        <Fragment>
-            {/*<HideOnScroll>*/}
-
-            {/* <AppBar
+        <>
+            <AppBar
+                //  position="relative"
                 position="fixed"
+                // position={title === 'GraphView' ? 'fixed' : 'relative'}
                 sx={{
                     zIndex: (theme) => theme.zIndex.drawer + 1,
-                    width: `calc(100% - ${width}px)`,
-                    ml: `${width}px`,
+                    // width: `calc(100% - ${width}px)`,
+                    width: `${width}`,
+                    ml: `calc(100% - ${width}px)`,
+                    // ml: `${width}px`,
                 }}
-            > */}
-                <AppBar
-                   position="relative"
-                   sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                >
+            >
+                {/*<AppBar*/}
+                {/*   position="relative"*/}
+                {/*   sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}*/}
+                {/*>*/}
                 <Toolbar>
                     <Container
                         maxWidth="lg"
@@ -104,28 +106,9 @@ const Header = ({ title }: HeaderConfig) => {
                     </Container>
                 </Toolbar>
             </AppBar>
-            {/*{title && title === 'GraphView' && (*/}
-            {/*    <AppBar*/}
-            {/*        // anchor="right"*/}
-            {/*        color="transparent"*/}
-            {/*        position="fixed"*/}
-            {/*        sx={{*/}
-            {/*            zIndex: (theme) => theme.zIndex.drawer+1,*/}
-            {/*            width: `calc(100% - ${width}px)`,*/}
-            {/*            ml: `${width}px`*/}
-            {/*            // mr: `${drawerWidth}px`*/}
-            {/*        }}*/}
-            {/*    >*/}
-            {/*        <Toolbar>*/}
-            {/*        <Typography sx={{ flexGrow: 1 }} variant="h6" noWrap component="div">*/}
-            {/*            Nodes*/}
-            {/*        </Typography>*/}
-            {/*    </Toolbar>*/}
-            {/*    </AppBar>*/}
-            {/*)}*/}
-            {/*</HideOnScroll>*/}
-            {/*<Offset />*/}
-        </Fragment>
+            {/*{(title === 'GraphView') && <Toolbar/>}*/}
+            <Toolbar/>
+            </>
     );
 };
 

@@ -11,6 +11,7 @@ import Head from 'next/head';
 import { useEffect, useMemo, useState } from 'react';
 import { getDesignTokens } from 'styles/theme';
 import { Client, dedupExchange, fetchExchange, Provider } from 'urql';
+import {useTheme} from "@mui/material";
 // import {
 //     addAuthToOperation,
 //     didAuthError,
@@ -112,9 +113,17 @@ function App({
         }),
         [mode],
     );
-
+    
+    const theme = useTheme()
+    
     // Update the theme only if the mode changes
-    const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
+    const customTheme = useMemo(() => createTheme({
+            ...theme,
+            palette: getDesignTokens(mode)
+        }
+    ), [mode]);
+    // console.log(customTheme)
+    
     const queryClient = new QueryClient();
     return (
         <CacheProvider value={emotionCache}>
@@ -128,7 +137,7 @@ function App({
             <Provider value={client}>
                             <QueryClientProvider client={queryClient}>
                 <ColorModeContext.Provider value={colorMode}>
-                    <ThemeProvider theme={theme}>
+                    <ThemeProvider theme={customTheme}>
                         <CssBaseline />
                         <Layout>
                             <Component {...pageProps} />

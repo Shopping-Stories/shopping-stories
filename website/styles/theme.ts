@@ -1,6 +1,9 @@
 import { PaletteMode } from '@mui/material';
 import { amber, deepPurple } from '@mui/material/colors';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
+import { Theme } from "@mui/material";
+
+type ThemeTypes = Theme["palette"]
 
 const lightTheme: any = {
 	// palette values for light mode
@@ -18,11 +21,9 @@ const darkTheme: any = {
 	},
 };
 
-export const getDesignTokens = (mode: PaletteMode) => ({
-	palette: {
-		mode,
-		...(mode === 'light' ? lightTheme : darkTheme),
-	},
+export const getDesignTokens = (mode: PaletteMode):ThemeTypes => ({
+			mode,
+			...(mode === 'light' ? lightTheme : darkTheme),
 });
 
 // Create a theme instance.
