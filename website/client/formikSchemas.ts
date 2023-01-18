@@ -442,3 +442,18 @@ export const changeEmailSchema = yup.object({
 export const changeEmailCodeSchema = yup.object({
     code: yup.string().required('A code is required'),
 });
+
+export const graphFilterSchema = yup.object({
+    person: yup.boolean(),
+    personAccount: yup.boolean(),
+    item: yup.boolean(),
+    store: yup.boolean(),
+    mention: yup.boolean(),
+    item_personAccount: yup.boolean(),
+    item_person: yup.boolean(),
+    item_store: yup.boolean(),
+    person_personAccount: yup.boolean(),
+    mention_personAccount: yup.boolean(),
+    start: yup.date(),
+    end: yup.date()
+})
