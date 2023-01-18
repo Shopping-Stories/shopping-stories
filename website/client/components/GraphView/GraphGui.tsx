@@ -1,5 +1,5 @@
 import ForceGraph2D, { ForceGraphMethods, GraphData, LinkObject, NodeObject } from "react-force-graph-2d";
-import React, { useCallback, useState, useRef, useMemo, useLayoutEffect, useEffect } from "react";
+import React, { useCallback, useState, useRef, useMemo, useLayoutEffect, /*useEffect*/ } from "react";
 import { Entry } from "new_types/api_types";
 
 import NodeList from '@components/GraphView/NodeList';
@@ -7,8 +7,8 @@ import {
     setNodeSVGIcon,
     getLinkKeys,
     getNodeType,
-    ledgerKeys,
-    getledgerKeys,
+    // ledgerKeys,
+    // getledgerKeys,
     getNodeKeys, filterEntry, EntryInfo, makeLinkSnake
 } from "@components/GraphView/util";
 import Drawer from '@mui/material/Drawer';
@@ -426,9 +426,9 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
         // setGraphHeight(graphGridRef?.current?.getBoundingClientRect().height)
         // setGraphWidth(graphGridRef?.current?.clientWidth)
         setGraphHeight(graphGridRef?.current?.clientHeight)
-        console.log(graphWidth, graphHeight)
+        // console.log(graphWidth, graphHeight)
     })
-    console.log("render");
+    // console.log("render");
     return (
         <Box component={"main"} sx={{flexGrow: 1, overflow: 'auto'}} alignItems={"stretch"}>
             

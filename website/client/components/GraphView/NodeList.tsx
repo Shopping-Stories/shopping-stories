@@ -19,7 +19,10 @@ import Tooltip from "@mui/material/Tooltip";
 import { makeLinkSnake } from "@components/GraphView/util";
 
 const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleInfo, parent }: LinkListItemProps) => {
-    const { id, linkType} = link
+    const {
+        id,
+        // linkType
+    } = link
     const {nodeType, label} = node
     return (
             <ListItemButton

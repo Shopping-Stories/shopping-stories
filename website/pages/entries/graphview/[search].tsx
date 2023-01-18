@@ -44,18 +44,24 @@ const EntryGraphView = ({search,title}:GraphGuiPageProps) => {
     // const router = useRouter();
     // const { search } = router.query;
 
-    const { data, refetch, isLoading, isFetching, error } = useQuery({
+    const { data,
+        isLoading,
+        isFetching,
+        error,
+        // refetch
+    } = useQuery({
         queryKey:['entries', search],
         queryFn: () => doSearch(search),
-});
-
+    });
+    console.log(error)
     // console.log("Query Result:", error ? error : data?.entries);
 
     // TODO: "fetching" component
     return (
         <>
             {(isFetching || isLoading) && <LoadingPage title={title}/>}
-            {!!data && data.entries !== undefined && (
+            {!!data && data.entries !== undefined &&  (
+                
                 <ForceGraph entries={data.entries} />
             )}
         </>

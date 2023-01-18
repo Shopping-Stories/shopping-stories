@@ -54,23 +54,23 @@ export const getNodeType = (nodeType:string):EKey => {
     }
 }
 
-export const getNodeInfo = (entry:Entry, t:EKey) => {
+// export const getNodeInfo = (entry:Entry, t:EKey) => {
+//
+// }
 
-}
-
-type LedgerKeys = Pick<Entry, "ledger"| "date"| "Date Year"| "_Month"| "Day"| "liber_book">
-type BaseKeys = Pick<Entry, keyof LedgerKeys | "context"| "phrases"| "mentions">
-type ItemKeys = Pick<Entry, "store_owner"|
-    "item"| "itemID"| "amount"| "amount_is_combo"|
-    "Quantity"| "Commodity"| "type"|
-    "price"| "price_is_combo"|
-    "currency"| "currency_type"| "sterling"|
-    "currency_totaling_contextless"| "commodity_totaling_contextless"|
-    "debit_or_credit"
-    >
-type Person = Pick<Entry, "people" | "peopleID">
-type PersonAccount = Pick<Entry, "account_name" | "accountHolderID">
-type NodeInfo = Pick<Entry, "item" | "account_name" | "store_owner" | "mentions" | "_id" | keyof BaseKeys | keyof ItemKeys | keyof Person | keyof PersonAccount>
+// type LedgerKeys = Pick<Entry, "ledger"| "date"| "Date Year"| "_Month"| "Day"| "liber_book">
+// type BaseKeys = Pick<Entry, keyof LedgerKeys | "context"| "phrases"| "mentions">
+// type ItemKeys = Pick<Entry, "store_owner"|
+//     "item"| "itemID"| "amount"| "amount_is_combo"|
+//     "Quantity"| "Commodity"| "type"|
+//     "price"| "price_is_combo"|
+//     "currency"| "currency_type"| "sterling"|
+//     "currency_totaling_contextless"| "commodity_totaling_contextless"|
+//     "debit_or_credit"
+//     >
+// type Person = Pick<Entry, "people" | "peopleID">
+// type PersonAccount = Pick<Entry, "account_name" | "accountHolderID">
+// type NodeInfo = Pick<Entry, "item" | "account_name" | "store_owner" | "mentions" | "_id" | keyof BaseKeys | keyof ItemKeys | keyof Person | keyof PersonAccount>
 
 const ledgerKeys: EKey[]  = ["ledger", "date", "Date Year", "_Month", "Day", "liber_book"]
 const base: EKey[] = [...ledgerKeys, "context", "phrases", "mentions"]
@@ -84,9 +84,12 @@ const item: EKey[] = [
     "debit_or_credit"
 ]
 const person: EKey[] = ["people", "peopleID"]
-const personAcct: EKey[] = ["account_name", "accountHolderID" ]
+const personAcct: EKey[] = ['account_name', 'accountHolderID'];
 
-export const getNodeKeys = (nodeType:string): EKey[] => ledgerKeys //[...ledgerKeys, getNodeType(nodeType)]
+export const getNodeKeys = (nodeType:string): EKey[] => {
+    console.log(nodeType)
+    return ledgerKeys;
+} //[...ledgerKeys, getNodeType(nodeType)]
 
 export const getLinkKeys = (linkType:string, ):EKey[] =>  {
 
@@ -132,13 +135,13 @@ export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {
     return img
 };
 
-export const setLinkSVGIcon = (t: string) => {
-    // const nodeIcons = {
-    const img = new Image()
-    // img.src = getLinkSrc(t)
-    return img
-    // AccountHolderObject:
-};
+// export const setLinkSVGIcon = (t: string) => {
+//     // const nodeIcons = {
+//     const img = new Image()
+//     // img.src = getLinkSrc(t)
+//     return img
+//     // AccountHolderObject:
+// };
 
 // const updateGInfo = (item: NodeInfo, itemID: GKey) => {
 //     if (!nodeProps || !nodeProps[itemID]) {
