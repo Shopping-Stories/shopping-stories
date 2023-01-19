@@ -150,7 +150,7 @@ const ResView: NextPage = () => {
         // console.log(JSON.stringify(toUp));
         console.log(toUp.files[0]);
         // console.log(JSON.stringify(toUp.files[0]));
-        const parse_url = "http://preprod.shoppingstories.org:4562/upload_and_parse_multi/";
+        const parse_url = "https://api.preprod.shoppingstories.org/upload_and_parse_multi/";
         const res = await fetch(parse_url, {
             method: "POST",
             headers: {
@@ -220,7 +220,7 @@ const ResView: NextPage = () => {
             }
         }
         
-        const checkUrl = "http://preprod.shoppingstories.org:4562/get_parser_progress";
+        const checkUrl = "https://api.preprod.shoppingstories.org/get_parser_progress";
         const res = await fetch(checkUrl);
         const text = await res.text();
 
@@ -242,7 +242,7 @@ const ResView: NextPage = () => {
     }
 
     const handleDelete = async () => {
-        const delUrl = "http://preprod.shoppingstories.org:4562/del_ready_files"
+        const delUrl = "https://api.preprod.shoppingstories.org/del_ready_files"
         let toDel: delFiles = {urls: [url]}
         
         const res = await fetch(delUrl, {
@@ -264,7 +264,7 @@ const ResView: NextPage = () => {
     }
 
     const handleDBSave = async () => {
-        const saveUrl = "http://preprod.shoppingstories.org:4562/create_entries";
+        const saveUrl = "https://api.preprod.shoppingstories.org/create_entries";
 
         let upMe: entriesToUp = {
             entries: rows.map((row) => {
