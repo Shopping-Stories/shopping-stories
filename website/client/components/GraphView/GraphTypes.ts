@@ -10,18 +10,18 @@ import {
     NoteObject,
     TobaccoMarkObject,
     MentionedItemsObject,
-    ItemOrServiceObject, EntriesQuery
+    ItemOrServiceObject,
 } from "../../../graphql/generated/graphql";
-import { LinkObject, NodeObject } from "react-force-graph-2d";
+import { LinkObject } from "react-force-graph-2d";
 
-interface Vertex extends NodeObject {
-    neighbors?: Neighbors;
-    info: NodeInfo;
-    canvasIcon?: HTMLImageElement;
-    listIcon?: HTMLImageElement;
-    focused: boolean
-}
-export type Node = Vertex & Required<Pick<NodeObject, 'id'>>
+// interface Vertex extends NodeObject {
+//     neighbors?: Neighbors;
+//     info: NodeInfo;
+//     canvasIcon?: HTMLImageElement;
+//     listIcon?: HTMLImageElement;
+//     focused: boolean
+// }
+// export type Node = Vertex & Required<Pick<NodeObject, 'id'>>
 
 export interface Link extends LinkObject {
     icon?: HTMLImageElement
@@ -35,12 +35,6 @@ export type Neighbors = { [key: string]: Node }
 export type NodeInfo = EntryResults
 
 export type AdjacencyList = { [key:string]: Set<string> };
-
-
-export interface GraphGuiProps {
-    result: EntriesQuery | undefined;
-}
-
 
 export type GKey = keyof NodeInfo | string;
 export type NestKey = keyof NestedArray;
