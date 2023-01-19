@@ -1,13 +1,13 @@
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Link from 'next/link';
-import Image from 'next/image';
-import styles from 'styles/About.module.css';
-import React, { useState } from 'react';
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Link from "next/link";
+import Image from "next/image";
+import styles from "styles/About.module.css";
+import React, { useState } from "react";
 
 interface TabPanelProps {
     children?: React.ReactNode;

@@ -2,10 +2,10 @@ import LinearProgress from '@mui/material/LinearProgress';
 import ColorBackground from './ColorBackground';
 import Header from './Header';
 
-const LoadingPage = () => {
+const LoadingPage = ({ title }:{title?:string}) => {
     return (
         <ColorBackground>
-            <Header />
+            {title !== "GraphView" && <Header title={title} />}
             <LinearProgress />
         </ColorBackground>
     );

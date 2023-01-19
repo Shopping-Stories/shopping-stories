@@ -26,7 +26,7 @@ import {
 import { AdvancedSearch, SearchType } from 'client/types';
 import { Entry } from 'new_types/api_types';
 // import { cloneWithoutTypename, flatten } from 'client/util';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+// import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Roles } from 'config/constants.config';
 import { useFormik } from 'formik';
 import { cloneDeep } from 'lodash';
@@ -54,7 +54,7 @@ const entriesData = [
     { label: 'Tobacco', value: 'tobaccoEntry' },
 ];
 
-const queryClient = new QueryClient();
+// const queryClient = new QueryClient();
 
 const downloadOptionsData = [
     { label: 'xlsx', value: 'xlsx' },
@@ -315,7 +315,7 @@ const ManagePlacesPage: NextPage = () => {
     };
 
     return (
-        <QueryClientProvider client={queryClient}>
+        // <QueryClientProvider client={queryClient}>
         <ColorBackground>
             <Header />
             <Container>
@@ -706,7 +706,7 @@ const ManagePlacesPage: NextPage = () => {
                 </DialogContentText>
             </ActionDialog>
         </ColorBackground>
-        </QueryClientProvider>
+        // {/*</QueryClientProvider>*/}
     );
 };
 
