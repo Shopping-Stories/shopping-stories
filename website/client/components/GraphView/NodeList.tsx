@@ -16,14 +16,16 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 import Tooltip from "@mui/material/Tooltip";
 // import ListItemAvatar from '@mui/material/ListItemAvatar';
 // import Avatar from '@mui/material/Avatar';
-import { makeLinkSnake } from "@components/GraphView/util";
+import { makeLinkID } from "@components/GraphView/util";
+import { ListSubheader } from "@mui/material";
 
 const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleInfo, parent }: LinkListItemProps) => {
     const {
         id,
-        // linkType
+        // color
     } = link
     const {nodeType, label} = node
+    const [hover, setHover] = useState(false)
     return (
             <ListItemButton
                 onMouseEnter={()=>focusOn(new Set<string|number>([link.id, parent.id, node.id]))}
@@ -33,6 +35,7 @@ const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleIn
             <ListItemIcon sx={{ pl: 2 }} onClick={()=>toggleInfo(node, link)}>
                 <NodeIcon
                     t={`${nodeType ? nodeType : id}`}
+                    // color={color}
                 />
             </ListItemIcon>
             </Tooltip>
@@ -109,7 +112,7 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
                                 key={key}
                                 node={v}
                                 parent={node}
-                                link={v.linkDict[makeLinkSnake(v.id.toString(), id.toString())[2]]}
+                                link={v.linkDict[makeLinkID(v.id.toString(), id.toString())[2]]}
                                 handleClickZoom={handleClickZoom}
                                 focusOn={focusOn}
                                 focusOff={focusOff}
@@ -127,12 +130,18 @@ const NodeList = ({ gData, handleClickZoom, focusOn, focusOff, toggleInfo}: Node
     // console.log("nodelist render");
     return (
         <>
-            <Toolbar>
-                <SubdirectoryArrowRightIcon />
-                <ListItemText primary="Nodes" secondary="Edges" />
-            </Toolbar>
-            <Divider />
+            {/*<Toolbar>*/}
+            {/*    /!*<SubdirectoryArrowRightIcon />*!/*/}
+            {/*    /!*<ListItemText primary="Nodes" secondary="Edges" />*!/*/}
+            {/*</Toolbar>*/}
+            {/*<Divider />*/}
         <List>
+            <ListSubheader>
+                <ListItemIcon><SubdirectoryArrowRightIcon /></ListItemIcon>
+                
+                <ListItemText primary="Nodes" secondary="Edges" />
+            </ListSubheader>
+            <Divider />
             {gData.nodes.filter(node => !!node).map(node =>
                     <NodeListItem
                         handleClickZoom={handleClickZoom}

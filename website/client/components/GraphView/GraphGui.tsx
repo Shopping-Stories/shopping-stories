@@ -1,15 +1,23 @@
 import ForceGraph2D, { ForceGraphMethods, GraphData, LinkObject, NodeObject } from "react-force-graph-2d";
-import React, { useCallback, useState, useRef, useMemo, useLayoutEffect, /*useEffect*/ } from "react";
+import React, { useCallback, useState, useRef, useMemo, useLayoutEffect, useEffect } from "react";
 import { Entry } from "new_types/api_types";
 
 import NodeList from '@components/GraphView/NodeList';
 import {
     setNodeSVGIcon,
-    getLinkKeys,
+    getInfoKeys,
     getNodeType,
     // ledgerKeys,
     // getledgerKeys,
-    getNodeKeys, filterEntry, EntryInfo, makeLinkSnake
+    getNodeKeys,
+    filterEntry,
+    EntryScalarInfo,
+    makeLinkSnake,
+    makeEntryInfo,
+    InfoDisplay,
+    GraphTypeKey,
+    NodeTypeKey,
+    LinkTypeKey, makeLinkID, EntryInfoProps
 } from "@components/GraphView/util";
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
@@ -25,51 +33,6 @@ import {useTheme} from "@mui/material";
 // import ListItemText from '@mui/material/ListItemText';
 // import Container from "@mui/material/Container";
 // import Toolbar from "@mui/material/Toolbar";
-
-// type GeneralEdge = Omit<Entry, "peopleID" | "account_name" | "accountHolderID" | "item" | "itemID" >
-// type ProviderEdge = Omit<GeneralEdge, "account_name" | "accountHolderID" | "item" | "itemID" >
-// type ConsumerEdge = Omit<Entry, "account_name" | "accountHolderID" | "item" | "itemID" >
-// type LinkInfo = ProviderEdge | ConsumerEdge | GeneralEdge
-// type LinkInfo = Omit<Entry, "peopleID" | "account_name" | "accountHolderID" | "item" | "itemID" >
-// type LinkInfo = Omit<Entry, "a" | "b">
-
-type NodeDict = { [key: string]: NodeObject }
-type LinkDict = { [key: string]: LinkObject }
-declare module "react-force-graph-2d" {
-    interface NodeObject {
-        id: string | number;
-        x?: number;
-        y?: number;
-        // other properties you want to access from `NodeObject` here
-        label: string;
-        // other properties you want to add to the object here
-        neighbors: NodeDict;
-        linkDict: LinkDict;
-        entries: Set<number>;
-        entryKeys: (keyof Entry)[]
-        nodeType: string;
-        canvasIcon?: HTMLImageElement;
-        // listIcon?: HTMLImageElement;
-        color?: string
-    }
-    interface LinkObject {
-        id: string | number;
-        source: string | number | NodeObject;
-        target: string | number | NodeObject;
-        entries: Set<number>;
-        entryKeys: (keyof Entry)[]
-        linkType: string;
-        label?: string;
-        color?: string
-        // canvasIcon?: HTMLImageElement;
-    }
-    interface GraphData {
-        nodes: NodeObject[],
-        links: LinkObject[],
-        // nodeDict?: NodeDict,
-        // linkDict?: LinkDict
-    }
-}
 
 const initFilter = {
     nodeTypes: {
@@ -88,6 +51,13 @@ const initFilter = {
     },
     dateRange: undefined,
     search: undefined
+}
+
+const comparator = (a:NodeObject, b:NodeObject) => {
+    if (a.nodeType === "store") return -1
+    if (!a.nodeType) return -1
+    if (!b.nodeType) return 1
+    return a.nodeType + a.label < b.nodeType + b.label ? -1 : 1
 }
 
 export interface GraphGuiProps {
@@ -110,12 +80,6 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
         }
     }, [palette])
     
-    const comparator = (a:NodeObject, b:NodeObject) => {
-        if (!a.nodeType) return 1
-        if (!b.nodeType) return -1
-        return a.nodeType < b.nodeType ? 1 : -1
-    }
-    
     const graphDict: GraphProps = useMemo(() => {
         // if (!entries) return {nodes:[], links:[]}
         // console.log(entries)
@@ -124,23 +88,24 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
         let linkProps = graphProps.linkProps
         let index = 0
         
-        const makeNode = (t:string, nodeID:string) => {
+        const makeNode = (t:NodeTypeKey | "type", nodeID:string) => {
             if (!nodeProps[nodeID]) {
                 nodeProps[nodeID] = {
                     id: nodeID,
-                    nodeType: t,
-                    label: t !== "mention" ? entries[index][getNodeType(t)] : "",
+                    nodeType: t === "type" ? "item" : t,
+                    label: t !== "type" ? entries[index][getNodeType(t)] : entries[index].type,
                     entries: new Set<number>(),
                     entryKeys: getNodeKeys(t),
                     linkKeys: new Set<string>(),
-                    neiKeys: new Set<string>()
+                    neiKeys: new Set<string>(),
+                    color: "inherit"
                 };
             }
             nodeProps[nodeID].entries.add(index)
         }
         
         const makeLink = (v1:string, v2:string) => {
-            let [source, target, linkID] = makeLinkSnake(v1, v2)
+            let [source, target, linkID] = makeLinkID(v1, v2)
             if (!linkProps || !linkProps[linkID]) {
                 let t = makeLinkSnake(nodeProps[v1].nodeType, nodeProps[v2].nodeType)[2]
                 linkProps[linkID] = {
@@ -149,7 +114,8 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
                     target: target,
                     linkType: t,
                     entries: new Set<number>(),
-                    entryKeys: getLinkKeys(t),
+                    entryKeys: getInfoKeys(t),
+                    color: linkColors[t]
                     // label:
                 }
                 nodeProps[v1].linkKeys.add(linkID)
@@ -159,7 +125,7 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
         }
         
         const addNeighbors = (node:string, neighbors:Set<string>) => {
-            if (!nodeProps || node === '' || !nodeProps[node]) return
+            if (!nodeProps || !nodeProps[node]) return
             if (!nodeProps[node].neiKeys) {
                 nodeProps[node].neiKeys = new Set<string>();
             }
@@ -179,14 +145,17 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
         const processEntry = (e: Entry) => {
             let toItem = new Set<string>()
             let toAccount = new Set<string>()
-            let personID = e.peopleID?.match(/'([^']+)'/)
+            // let matcher = e.peopleID?.match(/'([^']+)'/)
+            // let personID = matcher ? matcher[1] : null
+            // console.log(personID)
             if (!e._id) return
             if (e.store_owner) {
                 makeNode("store", e.store_owner)
                 toItem.add(e.store_owner)
             }
             if (e.itemID){
-                makeNode("item", e.itemID)
+                if (e.item) makeNode("item", e.itemID)
+                else makeNode("type", e.itemID)
             }
             if (e.accountHolderID) {
                 makeNode("personAccount", e.accountHolderID)
@@ -196,26 +165,26 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
             if (e.mentions) {
                 for (let mention in e.mentions) {
                     if (nodeProps[mention]){
-                        makeNode("Mention", mention)
+                        makeNode("mention", mention)
                         nodeProps[mention].label = mention
                         toAccount.add(mention)
                         toItem.add(mention)
                     }
                 }
             }
-            if (typeof personID === "string"){
-                makeNode("person", personID)
-                toAccount.add(personID)
-            }
+            // if (personID){
+            //     makeNode("person", personID)
+            //     toAccount.add(personID)
+            // }
             if (e.itemID){
                 addNeighbors(e.itemID, toItem)
             }
             if (e.accountHolderID){
                 addNeighbors(e.accountHolderID, toAccount)
             }
-            if (typeof personID === "string") {
-                addNeighbors(personID, toAccount)
-            }
+            // if (personID) {
+            //     addNeighbors(personID, toAccount)
+            // }
         };
         
         for (const [i, entry] of entries.entries()) {
@@ -224,7 +193,7 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
             processEntry(entry)
         }
         return graphProps
-    }, [entries])
+    }, [entries, linkColors])
     
     const [filter, setFilter] = useState<GraphPredicates | undefined>(initFilter)
     
@@ -245,45 +214,108 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
         setFilter(newFilter)
     },[filter])
     
+    const filteredKeys = useMemo<GraphKeys>(()=>{
+        const {nodeProps, linkProps} = graphDict
+        let nodes = new Set<GraphKey>()
+        let links = new Set<GraphKey>()
+        
+        if (!filter) {
+            return {
+                nodes: new Set<GraphKey>(Object.keys(nodeProps)),
+                links: new Set<GraphKey>(Object.keys(linkProps))
+            }
+        }
+    
+        const {dateRange, linkTypes, nodeTypes} = filter
+    
+        // subtractive filter so if nothing is false everything stays, return early
+        if (linkTypes &&
+            Object.values(linkTypes).every(p => p) &&
+            nodeTypes &&
+            Object.values(nodeTypes).every(p => p)
+        ) {
+            return {
+                nodes: new Set<GraphKey>(Object.keys(nodeProps)),
+                links: new Set<GraphKey>(Object.keys(linkProps))
+            }
+        }
+    
+        const nodePredicates = (node: NodeProps) => {
+            return nodeTypes === undefined ||
+                (!!nodeTypes[node.nodeType as keyof NodeTypePredicates] &&
+                    nodeTypes[node.nodeType as keyof NodeTypePredicates] === true
+                )
+        }
+    
+        const linkPredicates = (link: LinkProps) => {
+            if (!linkTypes) return true
+            let datePred = (!dateRange) ||
+                (Object.values(link.entries)
+                        .map((ek) => entries[ek])
+                        .some((e) => {
+                            if (!e.date) return false
+                            let date = new Date(e.date)
+                            return (!dateRange.start || !dateRange.end) || (dateRange.start <= date && date <= dateRange.end)
+                        })
+                )
+        
+            let srcKey = link.source
+            let targKey = link.target
+
+            return datePred &&
+                (nodes.has(srcKey) && nodes.has(targKey)) && // if the node isn't in the map then it was filtered out
+                (!linkTypes || linkTypes[link.linkType as keyof LinkTypePredicates] === true)
+        }
+    
+        Object.keys(nodeProps).forEach(k => {
+            if (nodePredicates(nodeProps[k])) nodes.add(k)
+        })
+        // console.log(nodes)
+        Object.keys(linkProps).forEach(k => {
+            if (linkPredicates(linkProps[k])) links.add(k)
+        })
+        return {nodes: nodes, links: links}
+    }, [filter, graphDict, entries])
+    
     const graph: GraphData = useMemo(() =>{
         const {nodeProps, linkProps} = graphDict
         
         let nodeDict: NodeDict = {}
         let nodes: NodeObject[] = []
         
-        for (let [k, v] of Object.entries(nodeProps)){
-            // let newEntries = new Set<number>()
-            // for (let k of v.entries){
-            //     newEntries.add(k)
-            // }
-            let node: NodeObject = {
-                id: k,
-                nodeType: v.nodeType,
-                label: v.label,
-                entries: new Set<number>(v.entries),
-                entryKeys: [...v.entryKeys],
-                neighbors: {},
-                linkDict: {},
-                canvasIcon: setNodeSVGIcon(v.nodeType, mode)
+        for (let [k, v] of Object.entries(nodeProps)) {
+            if (filteredKeys.nodes.has(k)) {
+                let node: NodeObject = {
+                    id: k,
+                    nodeType: v.nodeType,
+                    label: v.label,
+                    entries: new Set<number>(v.entries),
+                    entryKeys: [...v.entryKeys],
+                    neighbors: {},
+                    linkDict: {},
+                    canvasIcon: setNodeSVGIcon(v.nodeType, mode)
+                }
+                nodes.push(node)
+                nodeDict[k] = node
             }
-            nodes.push(node)
-            nodeDict[k] = node
         }
-        
+        nodes.sort(comparator)
         let linkDict: LinkDict = {}
         let links: LinkObject[] = []
         
-        for (let [k, l] of Object.entries(linkProps)){
-            let link: LinkObject = {
-                id: k,
-                source: nodeDict[l.source],
-                target: nodeDict[l.target],
-                linkType: l.linkType,
-                entries: new Set<number>(l.entries),
-                entryKeys: [...l.entryKeys]
+        for (let [k, l] of Object.entries(linkProps)) {
+            if (filteredKeys.links.has(k)) {
+                let link: LinkObject = {
+                    id: k,
+                    source: nodeDict[l.source],
+                    target: nodeDict[l.target],
+                    linkType: l.linkType,
+                    entries: new Set<number>(l.entries),
+                    entryKeys: [...l.entryKeys]
+                }
+                links.push(link)
+                linkDict[k] = link
             }
-            links.push(link)
-            linkDict[k] = link
         }
         
         for (let node of nodes){
@@ -296,80 +328,29 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
                 node.linkDict[l] = linkDict[l]
             }
         }
-        nodes.sort(comparator)
         
-        if (!filter) {
-            return {  nodes: nodes, links: links }
-        }
-        
-        const {dateRange, linkTypes, nodeTypes} = filter
-    
-        // subtractive filter so if nothing is false everything stays, return early
-        if (linkTypes &&
-            Object.values(linkTypes).every(p => p !== false) &&
-            nodeTypes &&
-            Object.values(nodeTypes).every(p => p !== false)
-        ) {
-            return { nodes: nodes, links: links  }
-        }
-        
-        const nodePredicates = (node: NodeObject) => {
-            return nodeTypes === undefined ||
-                (!!nodeTypes[node.nodeType as keyof NodeTypePredicates] &&
-                    nodeTypes[node.nodeType as keyof NodeTypePredicates] === true
-                )
-        }
-        
-        const linkPredicates = (link: LinkObject) => {
-            if (!linkTypes) return true
-            let datePred =
-                (!dateRange) ||
-                (Object.values(link.entries)
-                        .map((ek) => entries[ek])
-                        .some((e) => {
-                            if (!e.date) return false
-                            let date = new Date(e.date)
-                            return (!dateRange.start || !dateRange.end) || (dateRange.start <= date && date <= dateRange.end)
-                        })
-                )
-        
-            let srcKey: keyof NodeDict = typeof link.source === "object" ? link.source.id : link.source
-            let targKey: keyof NodeDict = typeof link.target === "object" ? link.target.id : link.target
-        
-        
-            return datePred &&
-                (!!nodeDict[srcKey] && !!nodeDict[targKey]) && // if the node isn't in the map then it was filtered out
-                (!filter.linkTypes || filter.linkTypes[link.linkType as keyof LinkTypePredicates] === true)
-        }
-        
-        nodes = nodes.filter(nodePredicates)
-        nodeDict = Object.fromEntries(nodes.map((node) => [node.id, node]),);
-        
-        links = links.filter(linkPredicates)
-        linkDict = Object.fromEntries(links.map((link) => [link.id, link]),);
-
+ 
         for (let n of nodes) {
             n.linkDict = Object.fromEntries(Object.entries(n.linkDict).filter(e => !!linkDict[e[0]]))
             n.neighbors = Object.fromEntries(Object.entries(n.neighbors).filter(e => !!nodeDict[e[0]]))
         }
-        nodes.sort(comparator)
         
         return {nodes: nodes, links:links}
-    }, [mode, graphDict, filter, entries])
+    }, [mode, graphDict, filter, entries, filteredKeys])
     
     const toggleInfo = useCallback((node:NodeObject, link?:LinkObject)=>{
-        let info:Partial<Entry>[] = []
+        let info:EntryInfoProps[] = []
         // let entryProps = getNodeKeys(node.nodeType)
         if (node && link===undefined) {
             for (let e of node.entries){
-                info.push(filterEntry(entries[e], node.entryKeys))
+                info.push(makeEntryInfo(entries[e], node.nodeType as GraphTypeKey))
             }
             setGraphPanelInfo({name:node.label, info:info, entityType:node.nodeType})
             return
         }
         if (node && link) {
             for (let e of link.entries){
-                info.push(filterEntry(entries[e], link.entryKeys))
+                info.push(makeEntryInfo(entries[e], link.linkType as GraphTypeKey))
             }
             setGraphPanelInfo({name:node.label, info:info, entityType:node.nodeType})
         }
@@ -384,13 +365,31 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
         setFocusedItems(empty)
     }, [])
     
-    const handleZoom:nodeHandler = useCallback((node )=> {
+    const handleNodeZoom:nodeHandler = useCallback((node )=> {
         if (graphRef.current) {
             graphRef.current.zoom(5, 200);
             graphRef.current.centerAt(node.x, node.y, 200);
         }
+        toggleInfo(node)
+    },[graphRef, toggleInfo]);
+    
+    const handleLinkZoom = useCallback((link:LinkObject) => {
+        if (typeof link.source !== "object" || typeof link.target !== "object") return
         
-    },[graphRef]);
+        let ux = link.source.x
+        let uy = link.source.y
+        
+        let vx = link.target.x
+        let vy = link.target.y
+        
+        if (! (ux && uy && vx && vy)) return
+        
+        if (graphRef.current) {
+            graphRef.current.zoom(5, 200);
+            graphRef.current.centerAt((ux+vx)/2, (uy+vy)/2, 200);
+        }
+        toggleInfo(link.source as NodeObject, link)
+    }, [graphRef, toggleInfo])
     
     const paintNodes = useCallback((node:NodeObject, ctx:CanvasRenderingContext2D)=> {
         // let node = node//nodeMap[node.id]
@@ -414,7 +413,7 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
     const [graphWidth, setGraphWidth] = useState<number | undefined>(undefined)
     const [graphHeight, setGraphHeight] = useState<number | undefined>(undefined)
     
-    useLayoutEffect(() => {
+    useEffect(() => {
         // setGraphWidth(graphGridRef?.current?.clientWidth)
         setGraphHeight(graphGridRef?.current?.clientHeight)
         setGraphWidth(graphGridRef?.current?.getBoundingClientRect().width)
@@ -457,7 +456,7 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
                         {graphRef && (
                             <NodeList
                                 gData={graph}
-                                handleClickZoom={handleZoom}
+                                handleClickZoom={handleNodeZoom}
                                 focusOn={focusOn}
                                 focusOff={focusOff}
                                 toggleInfo={toggleInfo}
@@ -475,16 +474,18 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
                         height={graphHeight}
                         // autoPauseRedraw={false}
                         linkColor={(l) => linkColors[l.linkType as keyof typeof linkColors]}
-                        linkWidth={link => focusedItems.has(link.id) ? 2.5 : 1.4}
+                        linkWidth={link => focusedItems.has(link.id) ? 6 : 3}
                         linkDirectionalParticles={4}
-                        linkDirectionalParticleWidth={link => focusedItems.has(link.id) ? 4 : 0}
+                        linkDirectionalParticleWidth={link => focusedItems.has(link.id) ? 8 : 0}
                         // TODO: Figure out canvas interaction with next.js
                         nodeLabel={(node) =>
                             node?.label ? node.label.toString() : node.id.toString()
                         }
+                        nodeRelSize={12}
                         // nodeCanvasObjectMode={()=>'after'}
                         nodeCanvasObject={(node, ctx) => paintNodes(node, ctx)}
-                        onNodeClick={handleZoom}
+                        onNodeClick={handleNodeZoom}
+                        onLinkClick={handleLinkZoom}
                         // enablePointerInteraction={true}
                     />
                     <GraphFilterPanel makePredicates={makePredicates}/>
@@ -505,9 +506,47 @@ const GraphGui = ({entries}: GraphGuiProps): JSX.Element => {
 };
 export default GraphGui;
 
+type NodeDict = { [key: string]: NodeObject }
+type LinkDict = { [key: string]: LinkObject }
+declare module "react-force-graph-2d" {
+    interface NodeObject {
+        id: string | number;
+        x?: number;
+        y?: number;
+        // other properties you want to access from `NodeObject` here
+        label: string;
+        // other properties you want to add to the object here
+        neighbors: NodeDict;
+        linkDict: LinkDict;
+        entries: Set<number>;
+        entryKeys: (keyof Entry)[]
+        nodeType: NodeTypeKey;
+        canvasIcon?: HTMLImageElement;
+        // listIcon?: HTMLImageElement;
+        color?: string
+    }
+    interface LinkObject {
+        id: string | number;
+        source: string | number | NodeObject;
+        target: string | number | NodeObject;
+        entries: Set<number>;
+        entryKeys: (keyof Entry)[]
+        linkType: LinkTypeKey;
+        label?: string;
+        color?: string
+        // canvasIcon?: HTMLImageElement;
+    }
+    interface GraphData {
+        nodes: NodeObject[],
+        links: LinkObject[],
+        // nodeDict?: NodeDict,
+        // linkDict?: LinkDict
+    }
+}
+
 //Graph types that must be declared in this file
-type NKey = keyof NodeObject | string | number
-type focusHandler = (elements:Set<NKey>) => void ;
+type GraphKey = keyof NodeObject | LinkObject | string | number
+type focusHandler = (elements:Set<GraphKey>) => void ;
 type nodeHandler = (node:NodeObject) => void;
 type itemHandler = (node:NodeObject, link?:LinkObject) => void
 
@@ -519,7 +558,7 @@ export interface GraphFilterPanelProps {
 export interface GraphInfoPanelProps {
     // width: number;
     name: string | undefined;
-    info: EntryInfo[] | undefined;
+    info?: EntryInfoProps[]
     entityType: string | undefined
     // startDate: Date,
     // endDate: Date,
@@ -560,6 +599,7 @@ interface LinkProps extends LinkPicks {
     source: string;
     target: string;
 }
+
 interface GraphProps {
     nodeProps: {
         [key:string] : NodeProps
@@ -567,6 +607,11 @@ interface GraphProps {
     linkProps: {
         [key:string] : LinkProps
     };
+}
+
+interface GraphKeys {
+    nodes:  Set<GraphKey>
+    links: Set<GraphKey>
 }
 
 interface NodeTypePredicates {

@@ -53,14 +53,14 @@ const EntryGraphView = ({search,title}:GraphGuiPageProps) => {
         queryKey:['entries', search],
         queryFn: () => doSearch(search),
     });
-    console.log(error)
     // console.log("Query Result:", error ? error : data?.entries);
-
     // TODO: "fetching" component
+    // TODO: figure refetch logic
     return (
         <>
             {(isFetching || isLoading) && <LoadingPage title={title}/>}
-            {!!data && data.entries !== undefined &&  (
+            {error && console.log(error)}
+            {(error && console.log(error)) || !!data && data.entries !== undefined &&  (
                 
                 <ForceGraph entries={data.entries} />
             )}

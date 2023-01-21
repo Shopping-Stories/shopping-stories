@@ -9,9 +9,11 @@ import StorefrontIcon from "@mui/icons-material/Storefront";
 
 interface NodeIconProps {
     t: string;
+    // color?: string
 }
 
 const NodeIcon = ({ t }: NodeIconProps) => {
+
     switch (t) {
         case "item":
             return <ShoppingBasketIcon />;
