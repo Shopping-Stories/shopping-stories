@@ -35,6 +35,11 @@ import {
 // import Slider from '@mui/material/Slider';
 
 import { GraphInfoPanelProps } from "@components/GraphView/GraphGui";
+import { Currency, Ledger, Entry } from "../../../new_types/api_types";
+import { displayNames } from "@components/GraphView/util";
+import EntryInfoItem from "@components/GraphView/EntryInfoItem";
+import { color } from "@mui/system";
+import { ListSubheader } from "@mui/material";
 
 // import Entry from "new_types/api_types"
 // import { graphFilterSchema } from "../../formikSchemas";
@@ -76,6 +81,35 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     justifyContent: 'flex-start',
 }));
 
+const ObjInfoDisplay = ({name, info}:{name:(keyof typeof displayNames), info:(Ledger | Currency)}) => {
+    return (
+        <>
+            <Divider />
+            <ListItem>
+                <ListItemText
+                    sx={{ my: 0 }}
+                    primary={name}
+                    primaryTypographyProps={{
+                        fontSize: 20,
+                        fontWeight: 'medium',
+                        letterSpacing: 0,
+                    }}
+                />
+            </ListItem>
+            {/*<Box>*/}
+                {Object.entries(info).map(([k,v]) => (
+                    <ListItem key={k}>
+                    <ListItemText
+                        primary={`${displayNames[k as keyof typeof displayNames]}: ${v}`}
+                    />
+                    </ListItem>
+                ))}
+            {/*</Box>*/}
+            <Divider/>
+        </>
+    )
+}
+
 const GraphInfoPanel = ({ name, info, entityType }: GraphInfoPanelProps) => {
     // const [infoOpen, setInfoOpen] = useState(!!info);
     //
@@ -107,7 +141,7 @@ const GraphInfoPanel = ({ name, info, entityType }: GraphInfoPanelProps) => {
             {/*    }}*/}
             {/*>*/}
             {/*    <Toolbar />*/}
-                <Toolbar>
+            {/*    <Toolbar>*/}
                     {/*<Box sx={{ flexGrow: 1 }} />*/}
                     {/*<IconButton*/}
                     {/*    edge={'end'}*/}
@@ -121,7 +155,8 @@ const GraphInfoPanel = ({ name, info, entityType }: GraphInfoPanelProps) => {
                     {/*    /!*<MenuOpenIcon />*!/*/}
                     {/*    <ChevronLeftIcon />*/}
                     {/*</IconButton>*/}
-                </Toolbar>
+                {/*</Toolbar>*/}
+            <Toolbar/>
             {/*</AppBar>*/}
             <Drawer
                 sx={{
@@ -148,33 +183,24 @@ const GraphInfoPanel = ({ name, info, entityType }: GraphInfoPanelProps) => {
                         {/*        // <CloseIcon />*/}
                         {/*    )}*/}
                         {/*</IconButton>*/}
-                        <Typography>Selection Info</Typography>
+                        {/*<Typography variant={""}>Selection Info</Typography>*/}
+                        <ListItem>
+                            <ListItemText
+                                primary={`Name: ${name}`}
+                                secondary={`Entity: ${entityType}`}
+                                primaryTypographyProps={{variant: "h5", }}
+                                secondaryTypographyProps={{variant: "h6", }}
+                            />
+                        </ListItem>
                     </DrawerHeader>
                     <Divider />
+                    <ListSubheader>Associated Entries</ListSubheader>
                     <List>
-                        <ListItem>
-                            <ListItemText primary={`Name: ${name}`} secondary={`Entity: ${entityType}`} />
-                        </ListItem>
         
                         {info &&
                             name &&
-                            info.map((e) => (
-                                <>
-                                    <Divider />
-                                    {Object.entries(e)
-                                        .filter(e => !!e[1])
-                                        .map(([k, v]) => (
-                                            <ListItem key={k}>
-                                                {
-                                                    <ListItemText
-                                                        secondary={`${k}: ${v}`}
-                                                        // secondary={`${k}: ${v ? v.toString(): "N/A"}`}
-                                                    />
-                                                }
-                                            </ListItem>
-                                        ))}
-                                    <Divider />
-                                </>
+                            info.map((e,i) => (
+                                <EntryInfoItem key={i} {...e}/>
                             ))}
                     </List>
                     <Divider />

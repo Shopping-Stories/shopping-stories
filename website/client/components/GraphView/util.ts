@@ -3,130 +3,240 @@ import { PaletteMode } from "@mui/material";
 
 import { Currency, Entry, Ledger } from "../../../new_types/api_types";
 // import { NodeInfo } from "@components/GraphView/GraphTypes";
+interface NodeTypes {
+    person: EntryKey
+    item: EntryKey
+    personAccount: EntryKey
+    store:  EntryKey
+    help:  EntryKey
+    mention: EntryKey
+}
 
-const getNodeSrc = (t:string, mode: PaletteMode) => {
-    switch (mode) {
-        case 'light': {
-            switch (t) {
-                case 'person':
-                    return '/SVG/person_black_24dp.svg'
-                case 'personAccount':
-                    return '/SVG/person_black_24dp.svg'
-                case 'item':
-                    return '/SVG/shopping_basket_black_24dp.svg'
-                case 'store':
-                    return '/SVG/storefront_black_24dp.svg'
-                default:
-                    return '/SVG/help_black_24dp.svg'
-            }
-        }
-        case 'dark': {
-            switch (t) {
-                case 'person':
-                    return '/SVG/person_white_24dp.svg'
-                case 'personAccount':
-                    return '/SVG/person_white_24dp.svg'
-                case 'item':
-                    return '/SVG/shopping_basket_white_24dp.svg'
-                case 'store':
-                    return '/SVG/storefront_white_24dp.svg'
-                default:
-                    return '/SVG/help_white_24dp.svg'
-            }
-        }
+interface LinkTypes {
+    item_personAccount: EntryKey
+    item_person: EntryKey
+    item_store: EntryKey
+    person_personAccount: EntryKey,
+    mention_personAccount: EntryKey
+}
+
+export type NodeTypeKey = keyof NodeTypes
+export type LinkTypeKey = keyof LinkTypes
+export type GraphTypeKey = NodeTypeKey | LinkTypeKey
+
+type NodeIcons = { [key in NodeTypeKey] : string }
+
+interface SvgIcons {
+    light: NodeIcons
+    dark: NodeIcons
+}
+
+const svgIconMap: SvgIcons = {
+    light: {
+        person: '/SVG/person_black_24dp.svg',
+        item: '/SVG/shopping_basket_black_24dp.svg',
+        personAccount: '/SVG/person_black_24dp.svg',
+        store: '/SVG/storefront_black_24dp.svg',
+        mention: '/SVG/help_black_24dp.svg',
+        help: '/SVG/help_black_24dp.svg'
+    },
+    dark: {
+        person: '/SVG/person_white_24dp.svg',
+        item: '/SVG/shopping_basket_white_24dp.svg',
+        personAccount: '/SVG/person_white_24dp.svg',
+        store: '/SVG/storefront_white_24dp.svg',
+        mention: '/SVG/help_white_24dp.svg',
+        help: '/SVG/help_white_24dp.svg'
     }
 }
 
-type EKey = keyof Entry;
-
-export const getNodeType = (nodeType:string):EKey => {
-    switch (nodeType) {
-        case "item":
-            return "item"
-        case "personAccount":
-            return "account_name"
-        case "store":
-            return "store_owner"
-        case "mention":
-            return "mentions"
-        default:
-            return "_id"
+const getNodeSrc = (t:string, mode: PaletteMode) => {
+    if (!mode || !svgIconMap[mode as keyof SvgIcons][t as keyof NodeIcons]){
+        return svgIconMap.light.help
     }
+    return svgIconMap[mode as keyof SvgIcons][t as keyof NodeTypes]
+}
+
+type EntryKey = keyof Entry;
+
+const nodeTypeMap: NodeTypes = {
+    item: "item",
+    person: "peopleID",
+    personAccount: "account_name",
+    store: "store_owner",
+    mention: "mentions",
+    help: "_id"
+}
+
+export const getNodeType = (nodeType:string):EntryKey => {
+    if (!nodeTypeMap[nodeType as keyof NodeTypes]){
+        return "_id"
+    }
+    else return nodeTypeMap[nodeType as keyof NodeTypes]
 }
 
 // export const getNodeInfo = (entry:Entry, t:EKey) => {
 //
 // }
 
-// type LedgerKeys = Pick<Entry, "ledger"| "date"| "Date Year"| "_Month"| "Day"| "liber_book">
-// type BaseKeys = Pick<Entry, keyof LedgerKeys | "context"| "phrases"| "mentions">
-// type ItemKeys = Pick<Entry, "store_owner"|
-//     "item"| "itemID"| "amount"| "amount_is_combo"|
-//     "Quantity"| "Commodity"| "type"|
-//     "price"| "price_is_combo"|
-//     "currency"| "currency_type"| "sterling"|
-//     "currency_totaling_contextless"| "commodity_totaling_contextless"|
-//     "debit_or_credit"
-//     >
-// type Person = Pick<Entry, "people" | "peopleID">
-// type PersonAccount = Pick<Entry, "account_name" | "accountHolderID">
-// type NodeInfo = Pick<Entry, "item" | "account_name" | "store_owner" | "mentions" | "_id" | keyof BaseKeys | keyof ItemKeys | keyof Person | keyof PersonAccount>
+type LedgerKeys = Pick<Entry, "ledger"| "date"| "Date Year"| "_Month"| "Day"| "liber_book">
 
-const ledgerKeys: EKey[]  = ["ledger", "date", "Date Year", "_Month", "Day", "liber_book"]
-const base: EKey[] = [...ledgerKeys, "context", "phrases", "mentions"]
-const item: EKey[] = [
-    "store_owner",
+export const getNodeKeys = (nodeType:string): EntryKey[] => {
+    if (nodeType === "adfas") console.log(nodeType)
+    return ledgerKeys;
+} //[...ledgerKeys, getNodeType(nodeType)]
+
+export const getInfoKeys = (graphType: GraphTypeKey):EntryKey[] =>  {
+    switch (graphType) {
+        case "item_personAccount":
+            return item_personAccount
+        case "item_person":
+            return item_person
+        case "item_store":
+            return item_store
+        case "person_personAccount":
+            return person_personAccount
+        case "mention_personAccount":
+            return base
+        default:
+            return ledgerKeys
+    }
+}
+
+const ledgerKeys: EntryKey[]  = ["ledger", "date", "Date Year", "_Month", "Day", "liber_book"]
+const base: EntryKey[] = [...ledgerKeys, "context", "phrases", "mentions"]
+const item: (keyof ItemEdgeKeys)[] = [
+    "store_owner", "type",
     "item", "itemID", "amount", "amount_is_combo",
-    "Quantity", "Commodity", "type",
+    "Quantity", "Commodity",
     "price", "price_is_combo",
     "currency", "currency_type", "sterling",
     "currency_totaling_contextless", "commodity_totaling_contextless",
     "debit_or_credit"
 ]
-const person: EKey[] = ["people", "peopleID"]
-const personAcct: EKey[] = ['account_name', 'accountHolderID'];
 
-export const getNodeKeys = (nodeType:string): EKey[] => {
-    console.log(nodeType)
-    return ledgerKeys;
-} //[...ledgerKeys, getNodeType(nodeType)]
+const person: EntryKey[] = ["people", "peopleID"]
+const personAcct: EntryKey[] = ['account_name', 'accountHolderID'];
+const item_personAccount = [...base, ...item, ...personAcct]
+const item_person = [...base, ...person, ...item]
+const item_store = [...base, ...item, ...personAcct]
+const person_personAccount = [...base, ...person, ...personAcct]
 
-export const getLinkKeys = (linkType:string, ):EKey[] =>  {
+const entryComplex = new Set<EntryKey>(["currency" , "ledger" , "sterling" , "mentions" , "people" ,"context" ,"phrases"])
+type EntryNonInfo = Omit<Entry,
+    "itemID" | "amount_is_combo" | "price_is_combo" |
+    "commodity_totaling_contextless" | "currency_totaling_contextless" |
+    "peopleID" | "accountHolderID" | "_id">
+// itemID: "Item ID",
+// amount_is_combo: boolean,
+// price_is_combo: boolean,
+// phrases: any,
+// currency_totaling_contextless: boolean,
+// commodity_totaling_contextless: boolean,
+// peopleID: "",
+// accountHolderID: string,
+// _id: string,
+export type EntryScalarInfo = Omit<Entry, "currency" | "ledger" | "sterling" | "mentions" | "people" |"context" |"phrases" |"_id" | keyof EntryNonInfo>
+type FullEntryInfo = Currency | Ledger | EntryScalarInfo
 
-    switch (linkType) {
-        case "item_personAccount":
-            return [...base, ...item, ...personAcct]
-        case "item_person":
-            return [...base, ...person, ...person]
-        case "item_store":
-            return [...base, ...item, ...personAcct]
-        case "person_personAccount":
-            return [...base, ...person, ...personAcct]
-        case "mention_personAccount":
-            return base
-        default:
-            return []
-    }
+interface EntryObjects {
+    ledger?: Ledger,
+    currency?: Currency,
+    sterling?: Currency,
 }
-export type EntryInfo = Omit<Partial<Currency> & Partial<Ledger> & Entry, "ledger" | "currency">
-export const filterEntry = (e:Entry, keys:EKey[]):EntryInfo => {
-    let entryInfo: EntryInfo = {}
+
+export interface EntryInfoProps extends EntryScalarInfo{
+    ledger?: Partial<Ledger>
+    currency?: Partial<Currency>,
+    sterling?: Partial<Currency>,
+    people?: Entry["peopleID"],
+    mentions?: Entry["mentions"],
+    context?: Entry["context"],
+    phrases?: Entry["phrases"],
+    scalars?: EntryScalarInfo
+}
+
+export const makeEntryInfo = (e:Entry, t:(NodeTypeKey | LinkTypeKey)):EntryInfoProps => {
+    let keys: EntryKey[] = getInfoKeys(t)
+    let scalarInfo: EntryScalarInfo = {}
+    let entryInfo: EntryInfoProps = {}
+    
+    // console.log(keys)
     for (let key of keys){
-        if (key === "ledger" || key === "currency"){
-            for (let [k, v] of Object.entries(e[key as keyof Entry])){
-                entryInfo[k as keyof EntryInfo] = v
+        if (!!displayNames[key as keyof typeof displayNames]) {
+            if (!entryComplex.has(key)) {
+                scalarInfo[key as keyof typeof scalarInfo] = e[key]
+            } else if (e[key]) {
+                entryInfo[key as keyof typeof entryInfo] = e[key]
             }
         }
-        else {
-            entryInfo[key] = e[key]
-        }
     }
+    entryInfo.scalars = scalarInfo
     return entryInfo
 }
+export type Display = {
+    [key in keyof (EntryScalarInfo & Currency & Ledger & EntryObjects)]: string
+}
 
-export const makeLinkSnake = (x:string, y:string):string[] => {
-    let arr = [x, y].sort();
-    return [...arr, `${arr[0]}_${arr[1]}`]
+type InfoKey = keyof EntryScalarInfo & Currency & Ledger & EntryObjects
+
+export const displayNames = {
+    amount: "Amount",
+    item: "Item",
+    price: "Price",
+    date: "Date",
+    Marginalia: "Marginalia",
+    currency_type: "Currency Type",
+    account_name: "Account Name",
+    store_owner: "Store Owner",
+    "Date Year": "Date Year",
+    "_Month": "Month",
+    Day: "Day",
+    debit_or_credit: "Payment",
+    Quantity: "Quantity",
+    Commodity: "Commodity",
+    type: "Type",
+    liber_book: "Liber Book",
+    pounds: "Pounds",
+    shillings: "Shillings",
+    pennies: "Pennies",
+    farthings: "Farthings",
+    reel: "Reel",
+    folio_year: "Folio Year",
+    folio_page: "Folio Page",
+    entry_id: "Entry ID",
+    ledger: "Ledger Information",
+    currency: "Currency Information",
+    sterling: "Sterling Information",
+    // itemID: "Item ID",
+    // amount_is_combo: boolean,
+    // price_is_combo: boolean,
+    // phrases: any,
+    // currency_totaling_contextless: boolean,
+    // commodity_totaling_contextless: boolean,
+    // peopleID: "",
+    // accountHolderID: string,
+    // _id: string,
+}
+
+const itemPersonAccount = new Set<NodeTypeKey>(["item", "personAccount"])
+const itemPerson = new Set<NodeTypeKey>(["item", "person"])
+const itemStore = new Set<NodeTypeKey>(["item", "store"])
+const personPersonAccount = new Set<NodeTypeKey>(["person", "personAccount"])
+// const mentionPersonAccount = new Set<NodeTypeKeys>(["mention", "personAccount"])
+
+export const makeLinkSnake = (x: NodeTypeKey, y: NodeTypeKey):[NodeTypeKey, NodeTypeKey, LinkTypeKey] =>  {
+    if (itemPersonAccount.has(x) && itemPersonAccount.has(y)) return [x, y, "item_personAccount"]
+    if (itemPerson.has(x) && itemPerson.has(y)) return [x, y, "item_person"]
+    if (itemStore.has(x) && itemStore.has(y)) return [x, y, "item_store"]
+    if (personPersonAccount.has(x) && personPersonAccount.has(y)) return [x, y,  "person_personAccount"]
+    // else linkType = "mention_personAccount"
+    return [x, y, "mention_personAccount"]
+}
+
+export const makeLinkID = (x:string, y:string):string[] => {
+    let arr = [x,y].sort()
+    return [arr[0], arr[1], `${arr[0]}_${arr[1]}`]
 }
 
 export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {
@@ -134,6 +244,39 @@ export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {
     img.src = getNodeSrc(t, mode)
     return img
 };
+
+export type LinkInfoDisplay = {
+    [key in LinkInfoKeys] : {
+        displayName: string
+        info: LinkInfo
+    }
+}
+
+export type NodeInfoDisplay = {
+    [key in NodeInfoKeys] : {
+        displayName: string
+        info: NodeInfo
+    }
+}
+
+// type BaseNodeKeys = Pick<Entry, keyof LedgerKeys | "context"| "phrases"| "mentions">
+type StoreKeys = Pick<Entry, "store_owner">
+type ItemKeys = Pick<Entry, "item"| "itemID"| "type">
+type Person = Pick<Entry, "people" | "peopleID">
+type PersonAccount = Pick<Entry, "account_name" | "accountHolderID">
+type Mention = Pick<Entry, "mentions">
+type NodeInfo = Pick<Entry, keyof (ItemKeys | Person | PersonAccount | Mention | StoreKeys)>
+type NodeInfoKeys = keyof NodeInfo
+
+type BaseEdgeKeys = Pick<Entry, keyof LedgerKeys | "context"| "phrases"| "mentions">
+type StoreEdgeKeys = Pick<Entry, keyof StoreKeys>
+type PersonEdgeKeys = Pick<Entry, keyof Person>
+type PersonAccountEdgeKeys = Pick<Entry, keyof PersonAccount>
+type MentionEdgeKeys = Pick<Entry, keyof Mention>
+type ItemEdgeKeys = Pick<Entry, keyof Omit<Entry, keyof (StoreEdgeKeys | PersonEdgeKeys | PersonAccountEdgeKeys | MentionEdgeKeys)>>
+type LinkInfo = Pick<Entry, keyof (StoreEdgeKeys | PersonEdgeKeys | PersonAccountEdgeKeys | MentionEdgeKeys | ItemEdgeKeys | BaseEdgeKeys)>
+type LinkInfoKeys = keyof LinkInfo
+
 
 // export const setLinkSVGIcon = (t: string) => {
 //     // const nodeIcons = {
