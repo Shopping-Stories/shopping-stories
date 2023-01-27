@@ -121,7 +121,7 @@ function App({
             ...theme,
             palette: getDesignTokens(mode)
         }
-    ), [mode]);
+    ), [mode, theme]);
     // console.log(customTheme)
     
     const queryClient = new QueryClient();
