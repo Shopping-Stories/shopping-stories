@@ -21,6 +21,7 @@ import ParserOutputEditor from '@components/ParserOutputEditor';
 import Typography from '@mui/material/Typography';
 import ParserEditorDialog, { rowType } from '@components/ParserEditorDialog';
 import URLTable from '@components/URLTable';
+import Card from '@mui/material/Card';
 
 interface sfile {
     file: string
@@ -331,12 +332,13 @@ const ResView: NextPage = () => {
                 <QueryClientProvider client={queryClient}>
                     <ColorBackground>
                         <Header />
-                        <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                            <Paper sx={{ ...PaperStyles, marginBottom: "0px", marginTop: "2vh", width: "fit-content", padding: "1.5vh" }}>
+                        <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center"}}>
+                            <Paper sx={{ ...PaperStyles, marginBottom: "0px", marginTop: "2vh", width: "fit-content", padding: "1.25vh"}}>
+                                <Typography variant='h4' sx={{marginBottom: "1.5vh"}} align="center">{url.split("/")[4].replace(".json", "")}</Typography>
                                 <Typography variant='h5' align="center">{text}</Typography>
-                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => { handleBack() }}><Typography variant='h5'>Back</Typography></Button></Box>
-                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button></Box>
-                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => { handleBack() }}><Typography variant='h5'>Back</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button></Box>
                             </Paper>
                         </Box>
                         {
@@ -344,7 +346,7 @@ const ResView: NextPage = () => {
                                 sx={{
                                     backgroundColor: 'var(--secondary-bg)',
                                     ...PaperStyles,
-                                    marginTop: "2vh",
+                                    marginTop: "1vh",
                                 }}
                             >
                                 <Stack spacing={2}>
@@ -382,7 +384,7 @@ const ResView: NextPage = () => {
                         <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Box>
                                 <Paper sx={{ ...PaperStyles, width: "fit-content", margin: "0", marginTop: "2vh" }}>
-                                    <Button variant="contained" sx={{ width: "8vw" }} component="label">
+                                    <Button variant="contained" sx={{ width: "8vw", fontSize: "1.5vh"}} component="label">
                                         Upload File
                                         <input hidden multiple type="file" onChange={handleUpload} />
                                     </Button>
