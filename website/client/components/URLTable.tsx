@@ -12,8 +12,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-
-
 interface urlList {
     strings: Array<string>
 }
@@ -52,6 +50,7 @@ const URLTable = (props: URLTable) => {
     );
 
 
+
     if (loading) {
         return <LoadingPage />;
     }
@@ -74,8 +73,8 @@ const URLTable = (props: URLTable) => {
                     }
                     return (
                         <TableRow key={index} hover onClick={(event) => handleClick(event, value)}>
-                            <TableCell align='center' sx={{fontSize: "1.5vh"}}>
-                                {value.split("/")[value.split("/").length - 1].replace(".json", "")}
+                            <TableCell align='center' sx={{fontSize: "1.5vh", cursor: "pointer"}}>
+                                    {value.split("/")[value.split("/").length - 1].replace(".json", "")}
                             </TableCell>
                         </TableRow>
                     );
