@@ -21,7 +21,6 @@ import ParserOutputEditor from '@components/ParserOutputEditor';
 import Typography from '@mui/material/Typography';
 import ParserEditorDialog, { rowType } from '@components/ParserEditorDialog';
 import URLTable from '@components/URLTable';
-import Card from '@mui/material/Card';
 
 interface sfile {
     file: string
