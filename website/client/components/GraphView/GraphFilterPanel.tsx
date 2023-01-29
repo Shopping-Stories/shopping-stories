@@ -3,7 +3,7 @@ import Checkbox from "@mui/material/Checkbox";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import StorefrontOutlinedIcon from "@mui/icons-material/StorefrontOutlined";
 import ShoppingBasketOutlinedIcon from "@mui/icons-material/ShoppingBasketOutlined";
-// import React, { useState } from "react";
+import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import Slider from "@mui/material/Slider";
 import { GraphFilterPanelProps } from "@components/GraphView/GraphGui";
@@ -14,7 +14,8 @@ import Divider from '@mui/material/Divider';
 import PersonIcon from "@mui/icons-material/Person";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
-
+import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
+import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOver";
 // import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 // import Collapse from "@mui/material/Collapse";
 // import List from "@mui/material/List";
@@ -24,14 +25,19 @@ import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 // import LegendToggleIcon from "@mui/icons-material/LegendToggle";
 // import Fab from "@mui/material/Fab";
 
-const GraphFilterPanel = ({makePredicates}: GraphFilterPanelProps) => {
+const GraphFilterPanel = ({makePredicates, dates}: GraphFilterPanelProps) => {
     // const [open, setOpen] = useState(false);
     // const handleClick = () => {
     //     setOpen(!open);
     // };
-
+    const [range, setRange] = useState<number[]>(dates.map(m=>m.value))
+    const handleChange = (e:Event, newValue: number | number[]) => {
+        console.log(e)
+        setRange(newValue as number[]);
+    };
+    // console.log(range, dates)
     return (
-        <Box>
+        <>
             <Box
                 position={"absolute"}
                 sx={{
@@ -43,8 +49,9 @@ const GraphFilterPanel = ({makePredicates}: GraphFilterPanelProps) => {
                 }}
             >
                 <Toolbar>
-                    <Box sx={{ alignItems: 'flex-start', flexWrap: 'wrap',}}>
-                        <Divider sx={{mb:1}}/>
+                    {/*<Divider sx={{mb:1}} />*/}
+                    <Box sx={{ alignItems: 'flex-start', flexWrap: 'wrap', display: 'flex',
+                        borderTop: (theme) => `1px solid ${theme.palette.divider}`}}>
                         <FormControl >
                         {/*<Typography>Node Filters</Typography>*/}
                             <FormLabel component={"legend"}>Node Filters</FormLabel>
@@ -103,25 +110,60 @@ const GraphFilterPanel = ({makePredicates}: GraphFilterPanelProps) => {
                                             }
                                         />
                                     } label={""}/>
+                                    <FormControlLabel control={
+                                        <Checkbox
+                                            // checked={!!filter && !filter.nodeTypes?.item}
+                                            icon={<RecordVoiceOverOutlinedIcon />}
+                                            checkedIcon={
+                                                <RecordVoiceOverOutlinedIcon
+                                                    color={'error'}
+                                                />
+                                            }
+                                            name={'item'}
+                                            onChange={(e) =>
+                                                makePredicates(
+                                                    'node',
+                                                    'mention',
+                                                    !e.target.checked,
+                                                )
+                                            }
+                                        />
+                                    } label={""}/>
                                 </Box>
                             </FormGroup>
                         </FormControl>
-                        <FormControl>
-                            <FormGroup>
-                            <Box>
-                                <FormLabel component={"legend"}>Date Range</FormLabel>
+                        <Divider
+                            orientation="vertical"
+                            flexItem
+                            sx={{mr:2 }}
+                        />
+                        {
+                            <FormControl>
                                 <FormGroup>
-                                    {/*<Typography sx={{ ml: 1 }}>Date Range</Typography>*/}
-                                    <Slider sx={{ ml: 1, mr: 2 }} />
+                                    <Box>
+                                        <FormLabel component={"legend"}>Date Range</FormLabel>
+                                        <FormGroup>
+                                            {/**/}
+                                            {
+                                                dates.length !== 0
+                                                ? <Slider
+                                                    sx={{ ml: 1, mr: 2 }}
+                                                    marks={dates}
+                                                    value={range}
+                                                    onChange={handleChange}
+                                                />
+                                                : <Typography sx={{ ml: 1 }}>N/A</Typography>
+                                            }
+                                        </FormGroup>
+                                    </Box>
                                 </FormGroup>
-                            </Box>
-                            </FormGroup>
-                        </FormControl>
+                            </FormControl>
+                        }
                     </Box>
                 </Toolbar>
             </Box>
             <Box alignSelf={"flex-end"} position={"relative"}>
-                <Box position={"absolute"} bottom={"100px"} left={"30px"} alignItems={"flex-start"}>
+                <Box position={"absolute"} bottom={"30px"} left={"30px"} alignItems={"flex-start"}>
                     <Typography sx={{mb:1}} variant={"h5"} width={"100%"}>Legend</Typography>
                     <Breadcrumbs separator={" "}  sx={{mt:1, mb:1}}>
                         <Typography>Nodes</Typography>
@@ -130,6 +172,7 @@ const GraphFilterPanel = ({makePredicates}: GraphFilterPanelProps) => {
                         <Chip icon={<PersonIcon/>} label={"Person"}/>
                         <Chip icon={<StorefrontIcon/>} label={"Store"}/>
                         <Chip icon={<ShoppingBasketIcon/>} label={"Item"}/>
+                        <Chip icon={<RecordVoiceOverIcon/>} label={"Mentioned"}/>
                     </Breadcrumbs>
                     {/*<Divider orientation={"vertical"} variant={"middle"} flexItem={true}/>*/}
                     {/*<Divider sx={{mt:1,mb:1}}/>*/}
@@ -149,11 +192,23 @@ const GraphFilterPanel = ({makePredicates}: GraphFilterPanelProps) => {
                               color={"warning"}
                               deleteIcon={<StorefrontIcon/>}
                         />
+                        <Chip icon={<ShoppingBasketIcon/>}
+                              label={"Item - Mentioned"}
+                              onDelete={()=>{}}
+                              color={"secondary"}
+                              deleteIcon={<RecordVoiceOverIcon/>}
+                        />
                         <Chip icon={<PersonIcon/>}
                               label={"Person - Person"}
                               onDelete={()=>{}}
                               color={"info"}
                               deleteIcon={<PersonIcon/>}
+                        />
+                        <Chip icon={<PersonIcon/>}
+                              label={"Person - Mentioned"}
+                              onDelete={()=>{}}
+                              color={"error"}
+                              deleteIcon={<RecordVoiceOverIcon/>}
                         />
                         {/*<Chip icon={<ShoppingBasketOutlinedIcon/>}*/}
                         {/*      label={"Mention-to-Person"}*/}
@@ -162,10 +217,10 @@ const GraphFilterPanel = ({makePredicates}: GraphFilterPanelProps) => {
                         {/*      deleteIcon={<PersonIcon/>}*/}
                         {/*/>*/}
                     </Breadcrumbs>
-                    <Divider sx={{mt:1}}/>
+                    <Divider sx={{mt:1,}}/>
                 </Box>
             </Box>
-        </Box>
+        </>
     )
 }
 

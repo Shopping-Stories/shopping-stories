@@ -1,5 +1,7 @@
+import React, { useState, memo  } from "react";
 import { NodeListItemProps, LinkListItemProps, NodeListProps } from "@components/GraphView/GraphGui";
-import { useState, memo  } from "react";
+import { makeLinkID } from "@components/GraphView/util";
+
 import NodeIcon from '@components/GraphView/NodeIcon';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -10,20 +12,27 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import Toolbar from "@mui/material/Toolbar";
+import Drawer from "@mui/material/Drawer";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
+import Tooltip from "@mui/material/Tooltip";
+
+// import { useTheme } from "@mui/material";
+// import ListSubheader from "@mui/material/ListSubheader"
 // import IconButton from "@mui/material/IconButton";
 // import InfoIcon from '@mui/icons-material/Info';
-import Tooltip from "@mui/material/Tooltip";
 // import ListItemAvatar from '@mui/material/ListItemAvatar';
 // import Avatar from '@mui/material/Avatar';
-import { makeLinkSnake } from "@components/GraphView/util";
+
 
 const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleInfo, parent }: LinkListItemProps) => {
     const {
         id,
+        // color,
         // linkType
     } = link
     const {nodeType, label} = node
+    // const [hover, setHover] = useState(false)
+    // const theme = useTheme()
     return (
             <ListItemButton
                 onMouseEnter={()=>focusOn(new Set<string|number>([link.id, parent.id, node.id]))}
@@ -33,9 +42,15 @@ const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleIn
             <ListItemIcon sx={{ pl: 2 }} onClick={()=>toggleInfo(node, link)}>
                 <NodeIcon
                     t={`${nodeType ? nodeType : id}`}
+                    // linkType={linkType}
                 />
             </ListItemIcon>
             </Tooltip>
+            {/*<Divider*/}
+            {/*    orientation="vertical"*/}
+            {/*    flexItem*/}
+            {/*    sx={{mr:2, color: `${color}`}}*/}
+            {/*/>*/}
             <Tooltip title={"Click text to zoom"}>
                 <ListItemText
                     onClick={() => handleClickZoom(node)}
@@ -109,7 +124,7 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
                                 key={key}
                                 node={v}
                                 parent={node}
-                                link={v.linkDict[makeLinkSnake(v.id.toString(), id.toString())[2]]}
+                                link={v.linkDict[makeLinkID(v.id.toString(), id.toString())[2]]}
                                 handleClickZoom={handleClickZoom}
                                 focusOn={focusOn}
                                 focusOff={focusOff}
@@ -126,25 +141,45 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
 const NodeList = ({ gData, handleClickZoom, focusOn, focusOff, toggleInfo}: NodeListProps): JSX.Element => {
     // console.log("nodelist render");
     return (
-        <>
+        <Drawer
+            variant="permanent"
+            anchor="left"
+            open
+            sx={{
+                // width: 240,
+                flexShrink: 0,
+                position: 'relative',
+                [`& .MuiDrawer-paper`]: {
+                    // width: 240,
+                    width: `16.67%`,
+                    // boxSizing: 'border-box',
+                },
+            }}
+        >
+            {/*<Divider />*/}
             <Toolbar>
                 <SubdirectoryArrowRightIcon />
-                <ListItemText primary="Nodes" secondary="Edges" />
+                <ListItemText primary="Nodes" secondary="Links" />
             </Toolbar>
-            <Divider />
-        <List>
-            {gData.nodes.filter(node => !!node).map(node =>
-                    <NodeListItem
-                        handleClickZoom={handleClickZoom}
-                        key={node.id}
-                        node={node}
-                        focusOn={focusOn}
-                        focusOff={focusOff}
-                        toggleInfo={toggleInfo}
-                    />
-                )}
+            <List>
+                {/*<ListSubheader>*/}
+                {/*    <ListItemIcon><SubdirectoryArrowRightIcon /></ListItemIcon>*/}
+                {/*    */}
+                {/*    <ListItemText primary="Nodes" secondary="Edges" />*/}
+                {/*</ListSubheader>*/}
+                <Divider />
+                {gData.nodes.filter(node => !!node).map(node =>
+                        <NodeListItem
+                            handleClickZoom={handleClickZoom}
+                            key={node.id}
+                            node={node}
+                            focusOn={focusOn}
+                            focusOff={focusOff}
+                            toggleInfo={toggleInfo}
+                        />
+                    )}
             </List>
-        </>
+        </Drawer>
     );
 };
 
