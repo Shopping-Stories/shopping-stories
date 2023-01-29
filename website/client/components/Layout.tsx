@@ -1,11 +1,13 @@
 import Header from '@components/Header';
+
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid'
+
 // import ColorBackground from "@components/ColorBackground";
 // import ImageBackground from "@components/ImageBackground";
 // import Box from "@mui/material/Typography";
-// import CssBaseline from "@mui/material/CssBaseline";
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid'
 // import Toolbar from "@mui/material/Toolbar";
+
 export default function Layout({children}:any) {
     // console.log(children?.props?.title)
     return (

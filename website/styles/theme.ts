@@ -9,15 +9,22 @@ const lightTheme: any = {
 	// palette values for light mode
 	primary: {
 		main: '#283618',
+		light: '#ab47bc'
 	},
 	secondary: {
 		main: '#606C38',
+		light: '#ab47bc'
 	},
 };
 
 const darkTheme: any = {
 	primary: {
 		main: '#606c38',
+		light: '#ab47bc'
+	},
+	secondary: {
+		main: '#606C38',
+		light: '#ab47bc'
 	},
 };
 

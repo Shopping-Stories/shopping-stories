@@ -84,6 +84,7 @@ const Header = ({ title }: HeaderConfig) => {
                         sx={{
                             display: 'flex',
                             justifyContent: 'space-between',
+                            alignItems: 'center'
                         }}
                     >
                         <Fab sx={LogoFabStyles} aria-label="home">
@@ -106,8 +107,7 @@ const Header = ({ title }: HeaderConfig) => {
                     </Container>
                 </Toolbar>
             </AppBar>
-            {/*{(title === 'GraphView') && <Toolbar/>}*/}
-            <Toolbar/>
+            {(title !== 'GraphView') && <Toolbar/>}
             </>
     );
 };

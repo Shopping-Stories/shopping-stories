@@ -3,7 +3,7 @@ import { PaletteMode } from "@mui/material";
 
 import { Currency, Entry, Ledger } from "../../../new_types/api_types";
 // import { NodeInfo } from "@components/GraphView/GraphTypes";
-interface NodeTypes {
+export interface NodeTypes {
     person: EntryKey
     item: EntryKey
     personAccount: EntryKey
@@ -12,10 +12,11 @@ interface NodeTypes {
     mention: EntryKey
 }
 
-interface LinkTypes {
+export interface LinkTypes {
     item_personAccount: EntryKey
     item_person: EntryKey
     item_store: EntryKey
+    item_mention: EntryKey
     person_personAccount: EntryKey,
     mention_personAccount: EntryKey
 }
@@ -25,10 +26,20 @@ export type LinkTypeKey = keyof LinkTypes
 export type GraphTypeKey = NodeTypeKey | LinkTypeKey
 
 type NodeIcons = { [key in NodeTypeKey] : string }
+type LinkTypeDict = { [key in LinkTypeKey] : "inherit" | "disabled" | "action" | "primary" | "secondary" | "error" | "info" | "success" | "warning" }
 
 interface SvgIcons {
     light: NodeIcons
     dark: NodeIcons
+}
+
+export const linkColors: LinkTypeDict = {
+    item_personAccount: "success",
+    item_person: "success",
+    item_store: "warning",
+    item_mention: "info",
+    person_personAccount: "error",
+    mention_personAccount: "secondary"
 }
 
 const svgIconMap: SvgIcons = {
@@ -37,7 +48,7 @@ const svgIconMap: SvgIcons = {
         item: '/SVG/shopping_basket_black_24dp.svg',
         personAccount: '/SVG/person_black_24dp.svg',
         store: '/SVG/storefront_black_24dp.svg',
-        mention: '/SVG/help_black_24dp.svg',
+        mention: '/SVG/record_voice_over_black_24dp.svg',
         help: '/SVG/help_black_24dp.svg'
     },
     dark: {
@@ -45,10 +56,11 @@ const svgIconMap: SvgIcons = {
         item: '/SVG/shopping_basket_white_24dp.svg',
         personAccount: '/SVG/person_white_24dp.svg',
         store: '/SVG/storefront_white_24dp.svg',
-        mention: '/SVG/help_white_24dp.svg',
+        mention: '/SVG/record_voice_over_white_24dp.svg',
         help: '/SVG/help_white_24dp.svg'
     }
 }
+
 
 const getNodeSrc = (t:string, mode: PaletteMode) => {
     if (!mode || !svgIconMap[mode as keyof SvgIcons][t as keyof NodeIcons]){
@@ -56,6 +68,12 @@ const getNodeSrc = (t:string, mode: PaletteMode) => {
     }
     return svgIconMap[mode as keyof SvgIcons][t as keyof NodeTypes]
 }
+
+export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {
+    const img = new Image()
+    img.src = getNodeSrc(t, mode)
+    return img
+};
 
 type EntryKey = keyof Entry;
 
@@ -137,7 +155,7 @@ type EntryNonInfo = Omit<Entry,
 // accountHolderID: string,
 // _id: string,
 export type EntryScalarInfo = Omit<Entry, "currency" | "ledger" | "sterling" | "mentions" | "people" |"context" |"phrases" |"_id" | keyof EntryNonInfo>
-type FullEntryInfo = Currency | Ledger | EntryScalarInfo
+// type FullEntryInfo = Currency | Ledger | EntryScalarInfo
 
 interface EntryObjects {
     ledger?: Ledger,
@@ -166,9 +184,11 @@ export const makeEntryInfo = (e:Entry, t:(NodeTypeKey | LinkTypeKey)):EntryInfoP
         if (!!displayNames[key as keyof typeof displayNames]) {
             if (!entryComplex.has(key)) {
                 scalarInfo[key as keyof typeof scalarInfo] = e[key]
-            } else if (e[key]) {
+            } else if (!!e[key]) {
                 entryInfo[key as keyof typeof entryInfo] = e[key]
             }
+        } else if (!!e[key]) {
+            entryInfo[key as keyof typeof entryInfo] = e[key]
         }
     }
     entryInfo.scalars = scalarInfo
@@ -178,7 +198,7 @@ export type Display = {
     [key in keyof (EntryScalarInfo & Currency & Ledger & EntryObjects)]: string
 }
 
-type InfoKey = keyof EntryScalarInfo & Currency & Ledger & EntryObjects
+// type InfoKey = keyof EntryScalarInfo & Currency & Ledger & EntryObjects
 
 export const displayNames = {
     amount: "Amount",
@@ -223,27 +243,23 @@ const itemPersonAccount = new Set<NodeTypeKey>(["item", "personAccount"])
 const itemPerson = new Set<NodeTypeKey>(["item", "person"])
 const itemStore = new Set<NodeTypeKey>(["item", "store"])
 const personPersonAccount = new Set<NodeTypeKey>(["person", "personAccount"])
-// const mentionPersonAccount = new Set<NodeTypeKeys>(["mention", "personAccount"])
+const mentionPersonAccount = new Set<NodeTypeKey>(["mention", "personAccount"])
+// const itemMention = new Set<NodeTypeKey>(["mention", "personAccount"])
 
 export const makeLinkSnake = (x: NodeTypeKey, y: NodeTypeKey):[NodeTypeKey, NodeTypeKey, LinkTypeKey] =>  {
     if (itemPersonAccount.has(x) && itemPersonAccount.has(y)) return [x, y, "item_personAccount"]
     if (itemPerson.has(x) && itemPerson.has(y)) return [x, y, "item_person"]
     if (itemStore.has(x) && itemStore.has(y)) return [x, y, "item_store"]
     if (personPersonAccount.has(x) && personPersonAccount.has(y)) return [x, y,  "person_personAccount"]
+    if (mentionPersonAccount.has(x) && mentionPersonAccount.has(y)) return [x, y,  "mention_personAccount"]
     // else linkType = "mention_personAccount"
-    return [x, y, "mention_personAccount"]
+    return [x, y, "item_mention"]
 }
 
 export const makeLinkID = (x:string, y:string):string[] => {
     let arr = [x,y].sort()
     return [arr[0], arr[1], `${arr[0]}_${arr[1]}`]
 }
-
-export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {
-    const img = new Image()
-    img.src = getNodeSrc(t, mode)
-    return img
-};
 
 export type LinkInfoDisplay = {
     [key in LinkInfoKeys] : {
