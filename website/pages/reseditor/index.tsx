@@ -150,7 +150,7 @@ const ResView: NextPage = () => {
         // console.log(JSON.stringify(toUp));
         console.log(toUp.files[0]);
         // console.log(JSON.stringify(toUp.files[0]));
-        const parse_url = "http://preprod.shoppingstories.org:4562/upload_and_parse_multi/";
+        const parse_url = "https://api.preprod.shoppingstories.org/upload_and_parse_multi/";
         const res = await fetch(parse_url, {
             method: "POST",
             headers: {
@@ -220,7 +220,7 @@ const ResView: NextPage = () => {
             }
         }
         
-        const checkUrl = "http://preprod.shoppingstories.org:4562/get_parser_progress";
+        const checkUrl = "https://api.preprod.shoppingstories.org/get_parser_progress";
         const res = await fetch(checkUrl);
         const text = await res.text();
 
@@ -242,7 +242,7 @@ const ResView: NextPage = () => {
     }
 
     const handleDelete = async () => {
-        const delUrl = "http://preprod.shoppingstories.org:4562/del_ready_files"
+        const delUrl = "https://api.preprod.shoppingstories.org/del_ready_files"
         let toDel: delFiles = {urls: [url]}
         
         const res = await fetch(delUrl, {
@@ -264,7 +264,7 @@ const ResView: NextPage = () => {
     }
 
     const handleDBSave = async () => {
-        const saveUrl = "http://preprod.shoppingstories.org:4562/create_entries";
+        const saveUrl = "https://api.preprod.shoppingstories.org/create_entries";
 
         let upMe: entriesToUp = {
             entries: rows.map((row) => {
@@ -331,12 +331,13 @@ const ResView: NextPage = () => {
                 <QueryClientProvider client={queryClient}>
                     <ColorBackground>
                         <Header />
-                        <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-                            <Paper sx={{ ...PaperStyles, marginBottom: "0px", marginTop: "2vh", width: "fit-content", padding: "1.5vh" }}>
+                        <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center"}}>
+                            <Paper sx={{ ...PaperStyles, marginBottom: "0px", marginTop: "2vh", width: "fit-content", padding: "1.25vh"}}>
+                                <Typography variant='h4' sx={{marginBottom: "1.5vh"}} align="center">{url.split("/")[4].replace(".json", "")}</Typography>
                                 <Typography variant='h5' align="center">{text}</Typography>
-                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => { handleBack() }}><Typography variant='h5'>Back</Typography></Button></Box>
-                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button></Box>
-                                <Box sx={{ width: "100%", paddingTop: "1vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => { handleBack() }}><Typography variant='h5'>Back</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button></Box>
                             </Paper>
                         </Box>
                         {
@@ -344,7 +345,7 @@ const ResView: NextPage = () => {
                                 sx={{
                                     backgroundColor: 'var(--secondary-bg)',
                                     ...PaperStyles,
-                                    marginTop: "2vh",
+                                    marginTop: "1vh",
                                 }}
                             >
                                 <Stack spacing={2}>
@@ -382,7 +383,7 @@ const ResView: NextPage = () => {
                         <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Box>
                                 <Paper sx={{ ...PaperStyles, width: "fit-content", margin: "0", marginTop: "2vh" }}>
-                                    <Button variant="contained" sx={{ width: "8vw" }} component="label">
+                                    <Button variant="contained" sx={{ width: "8vw", fontSize: "1.5vh"}} component="label">
                                         Upload File
                                         <input hidden multiple type="file" onChange={handleUpload} />
                                     </Button>

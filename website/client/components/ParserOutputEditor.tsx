@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Popover from '@mui/material/Popover';
 import Typography  from '@mui/material/Typography';
 import {rowType} from './ParserEditorDialog';
-
+import { moneyToString } from './EntryPaginationTable';
 
 interface ParserOutputEditor {
     url: string;
@@ -117,10 +117,7 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
                 // Colony: row?.money?.colony,
                 Quantity: row?.Quantity,
                 Commodity: row?.Commodity,
-                Pounds: row?.pounds,
-                Shilling: row?.shillings,
-                Pence: row?.pennies,
-                Farthings: row?.farthings,
+                Money: moneyToString(row?.pounds, row?.shillings, row?.pennies, row?.farthings),
                 CurrencyType: row?.currency_type,
                 EntryID: row?.entry_id,
                 // Ledger: row?.ledger?.folio_year,
@@ -138,7 +135,6 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
     const columnNames: string[] = [
         "Errors",
         'Account Name',
-        'Dr/Cr',
         'Amount',
         'Item',
         // 'Account Holder ID',
@@ -147,12 +143,10 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
         // 'Store',
         // 'Comments',
         // 'Colony',
+        'Dr/Cr',
         'Quantity',
         'Commodity',
-        'Pounds',
-        'Shilling',
-        'Pence',
-        'Farthings',
+        'Money',
         "Currency Type",
         'EntryID',
         // 'Ledger Year',
@@ -214,7 +208,7 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
     });
     // console.log(data?.entries)
     return (
-        <Box sx={{height: "80vh", flexDirection: "column", display: "flex", alignItems: "stretch"}}>
+        <Box sx={{height: "73vh", flexDirection: "column", display: "flex", alignItems: "stretch"}}>
             <Paper sx={{height: '100%',width: '100%', overflow: 'hidden' }}>
             <DataGrid rows={rows} columns={columns} autoPageSize getRowId={(row) => row.id} 
                 componentsProps={{

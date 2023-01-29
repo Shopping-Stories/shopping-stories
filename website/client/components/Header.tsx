@@ -22,6 +22,7 @@ const defaultNavLinks: NavLink[] = [
     { title: `about`, path: `/about` },
     { title: `search`, path: `/entries` },
     { title: `glossary`, path: `/glossary/items` },
+    { title: `parser`, path: `/reseditor`}
 ];
 
 const adminNavLinks: NavLink[] = [

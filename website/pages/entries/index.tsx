@@ -501,6 +501,7 @@ const ManagePlacesPage: NextPage = () => {
                                                 loading={isLoading}
                                                 variant="contained"
                                                 type="submit"
+                                                sx={{marginTop: "0.2vh"}}
                                             >
                                                 Search
                                             </LoadingButton>
@@ -510,6 +511,7 @@ const ManagePlacesPage: NextPage = () => {
                                             loading={isLoading}
                                             variant="contained"
                                             onClick={toGraph}
+                                            sx={{marginTop: "0.5vh"}}
                                         >
                                             Graph View
                                             {/*<Link*/}

@@ -25,9 +25,35 @@ interface EntryQueryResult {
     entries: (Entry)[];
 }
 
+export function getFarthInsert(farthings: number|undefined) {
+    let farthInsert = "";
+    if (farthings != undefined && farthings != 0) {
+        farthInsert = "." + (farthings/4).toString().replace("0.", "");
+    }
+    return farthInsert;
+}
+
+export function moneyToString(pounds: number|undefined, shillings: number|undefined, pence: number|undefined, farthings: number|undefined) {
+    if (pence == undefined) {
+        pence = 0;
+    }
+    if (pounds == undefined || pounds == 0) {
+        if (shillings == undefined || shillings == 0) {
+            return pence + getFarthInsert(farthings) + "d";
+        }
+        else {
+            return shillings + "/" + pence + getFarthInsert(farthings);
+        }
+    }
+    else {
+        return "£" + pounds + "/" + shillings + "/" + pence + getFarthInsert(farthings);
+    }
+}
+
 const doSearch = async (search: string): Promise<EntryQueryResult> => {
-    const res = await fetch("https://api.preprod.shoppingstories.org:443/search/" + search);
+    const res = await fetch("https://api.preprod.shoppingstories.org/search/" + search);
     // console.log(await res.text());
+    console.log(res);
     let toret: EntryQueryResult = JSON.parse(await res.text());
     return toret;
   };
@@ -86,7 +112,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
     useEffect(() => {
         if (setRows !== undefined) {
             setRows(data?.entries || []);
-            console.log(data?.entries);
+            // console.log(data?.entries);
             let thing: GridRowsProp = data?.entries.map((row) => {return {
                 AccountName: row?.account_name,
                 "Dr/Cr": row?.debit_or_credit,
@@ -100,18 +126,10 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 // Colony: row?.money?.colony,
                 Quantity: row?.Quantity,
                 Commodity: row?.Commodity,
-                $Pounds: row?.currency?.pounds,
-                $Shilling: row?.currency?.shillings,
-                $Pence: row?.currency?.pennies,
-                $Farthings: row?.currency?.farthings,
-                "£Pounds": row?.sterling?.pounds,
-                "£Shilling": row?.sterling?.shillings,
-                "£Pence": row?.sterling?.pennies,
-                "£Farthings": row?.sterling?.farthings,
-                EntryID: row?.ledger?.entry_id,
+                Currency: moneyToString(row?.currency?.pounds, row?.currency?.shillings, row?.currency?.pennies, row?.currency?.farthings),
+                Sterling: moneyToString(row?.sterling?.pounds, row?.sterling?.shillings, row?.sterling?.pennies, row?.sterling?.farthings),
                 // Ledger: row?.ledger?.folio_year,
-                Reel: row?.ledger?.reel,
-                FolioPage: row?.ledger?.folio_page,
+                Page: row?.ledger?.folio_page,
                 id: row?._id,
             }}) || [];
             
@@ -126,29 +144,21 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
 
     const columnNames: string[] = [
         'Account Name',
-        'Dr/Cr',
         'Amount',
         'Item',
         // 'Account Holder ID',
         'Date',
-        'Owner',
         // 'Store',
         // 'Comments',
         // 'Colony',
+        'Dr/Cr',
         'Quantity',
         'Commodity',
-        '$ Pounds',
-        '$ Shilling',
-        '$ Pence',
-        '$ Farthings',
-        '£ Pounds',
-        '£ Shilling',
-        '£ Pence',
-        '£ Farthings',
-        'EntryID',
+        'Currency',
+        'Sterling',
         // 'Ledger Year',
-        'Reel',
-        'FolioPage',
+        'Owner',
+        'Page',
     ];
 
     const [rows, editRows] = useState<GridRowsProp>([] as GridRowsProp);
@@ -169,7 +179,8 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 "Reel", 
                 "EntryID", 
                 "Quantity", 
-                "Commodity", 
+                "Commodity",
+                "Page",
                 "Colony", 
                 "$ Pounds", 
                 "$ Shilling", 
@@ -179,9 +190,8 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 '£ Shilling',
                 '£ Pence',
                 '£ Farthings',
-                "Amount",
                 "Dr/Cr"
-            ].includes(str) ? 0.3 : 0.5)}
+            ].includes(str) ? 0.2 : 0.5)}
     });
     return (
         <Box sx={{height: '60vh', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
@@ -268,7 +278,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
             /> */}
-            <DataGrid rows={rows} columns={columns} autoPageSize getRowId={(row) => row.id} disableSelectionOnClick/>
+            <DataGrid rows={rows ?? []} columns={columns} autoPageSize getRowId={(row) => row.id} disableSelectionOnClick/>
         </Paper>
         </Box>
     );
