@@ -19,19 +19,20 @@ const Navbar = ({ navLinks, isLoggedIn }: NavBarProps) => {
         <Toolbar
             component="nav"
             sx={{
-                display: { xs: `none`, md: `flex` },
+                display: { xs: `none`, md: `flex`, alignItems: 'center' },
             }}
         >
-            <Stack direction="row" spacing={4}>
+            <Stack direction="row" spacing={2}>
                 {navLinks.map(({ title, path }, i) => (
-                    <MuiNextLink
-                        key={`${title}${i}`}
-                        href={path}
-                        variant="button"
-                        sx={{ color: `#FFFFFF`, opacity: 0.7 }}
-                    >
-                        {title}
-                    </MuiNextLink>
+                    <Button key={`${title}${i}`}>
+                        <MuiNextLink
+                            href={path}
+                            variant="button"
+                            sx={{ color: `#FFFFFF`, opacity: 0.7 }}
+                        >
+                            {title}
+                        </MuiNextLink>
+                    </Button>
                 ))}
                 {isLoggedIn ? (
                     <Button
@@ -50,8 +51,8 @@ const Navbar = ({ navLinks, isLoggedIn }: NavBarProps) => {
                         Sign In
                     </Button>
                 )}
-            </Stack>
             <ThemeSwitch />
+            </Stack>
         </Toolbar>
     );
 };
