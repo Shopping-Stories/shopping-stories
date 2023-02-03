@@ -68,6 +68,8 @@ const comparator = (a:NodeObject, b:NodeObject) => {
     return a.nodeType + a.label < b.nodeType + b.label ? -1 : 1
 }
 
+const mdy = (m?:string,d?:string,y?:string) => `${m}/${d}/${y}`
+
 const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
     const [filter, setFilter] = useState<GraphPredicates | undefined>(initFilter)
@@ -171,15 +173,19 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             // let personID = matcher ? matcher[1] : null
             // console.log(personID)
             if (!e._id) return
-            if (e.store_owner || e.Marginalia) {
-                if (e.Marginalia && (!e.store_owner || !nodeProps[e.store_owner])){
-                    makeNode("store", e.Marginalia)
-                    toItem.add(e.Marginalia)
-                } else if (e.store_owner && !e.Marginalia){
-                    makeNode("store", e.store_owner)
-                    toItem.add(e.store_owner)
-                }
+            if (e.store) {
+                makeNode("store", e.store)
+                toItem.add(e.store)
             }
+            // if (e.store_owner || e.Marginalia) {
+            //     if (e.Marginalia){
+            //         makeNode("store", e.Marginalia)
+            //         toItem.add(e.Marginalia)
+            //     } else if (e.store_owner && !e.Marginalia){
+            //         makeNode("store", e.store_owner)
+            //         toItem.add(e.store_owner)
+            //     }
+            // }
             if (e.itemID){
                 if (e.item) makeNode("item", e.itemID)
                 else makeNode("type", e.itemID)
@@ -237,29 +243,91 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         return graphProps
     }, [entries, linkColors])
     
+    const dates = useMemo<string[]>(()=> {
+        let dates = new Set<string>()
+        for (let {month, Day, date_year} of entries){
+            if (month && Day && date_year){
+                let ds = mdy(month, Day, date_year)
+                // console.log(ds)
+                let date = new Date(ds)
+                if (date.toString() !== "Invalid Date")
+                    dates.add(ds)
+            }
+        }
+        let dArr: string[] = Array.from(dates) //.filter(d=>d.toString() !== "Invalid Date")
+        dArr.sort((a, b)=>{return new Date(a).getTime() < new Date(b).getTime() ? -1 : 1})
+        // console.log(dArr)
+        // let marks: Array<{ value:number, label:Date }> = dArr.map((d,v)=>({
+        //     value:v,
+        //     label:d
+        // }))
+        // console.log(dArr)
+        return dArr
+    }, [entries])
+    
+    const makePredicates:filterHandler = useCallback((
+        field,
+        t,
+        check,
+        dateRange
+    )=>{
+        // console.log(field, t, check, dateRange)
+        if (!filter) {
+            setFilter(initFilter);
+            return
+        }
+        let newFilter = { ...filter };
+        if (t) {
+            if (field === 'node' && newFilter.nodeTypes) {
+                newFilter.nodeTypes = { ...newFilter.nodeTypes, [t]: check };
+                if (t === 'personAccount') {
+                    newFilter.nodeTypes = {
+                        ...newFilter.nodeTypes,
+                        person: check,
+                    };
+                }
+            }
+            if (field === 'link' && newFilter.linkTypes) {
+                newFilter.linkTypes = { ...newFilter.linkTypes, [t]: check };
+            }
+        }
+        if (field === 'date') {
+            newFilter.dateRange = dateRange//{ ...newFilter.dateRange, end: dateRange.end, start: dateRange.start };
+        }
+        // console.log("old filter: ", filter.nodeTypes)
+        // console.log("new filter: ", newFilter.nodeTypes)
+        // console.log("new filter dr: ", newFilter.dateRange)
+        // console.log(newFilter)
+        setFilter(newFilter)
+    },[filter])
+    
     const filteredKeys = useMemo<GraphKeys>(()=>{
         const {nodeProps, linkProps} = graphDict
-        let nodes = new Set<GraphKey>()
-        let links = new Set<GraphKey>()
         
         if (!filter) {
             return {
                 nodes: new Set<GraphKey>(Object.keys(nodeProps)),
-                links: new Set<GraphKey>(Object.keys(linkProps))
+                links: new Set<GraphKey>(Object.keys(linkProps)),
+                newEntries: new Set<number>(entries.map((_,i)=>i))
             }
         }
     
-        const {dateRange, linkTypes, nodeTypes} = filter
-    
+        const {dateRange, nodeTypes} = filter
+        // console.log(dateRange)
         // subtractive filter so if nothing is false everything stays, return early
-        if (linkTypes &&
-            Object.values(linkTypes).every(p => p) &&
+        if (
+            // linkTypes &&
+            // Object.values(linkTypes).every(p => p) &&
             nodeTypes &&
             Object.values(nodeTypes).every(p => p)
+            && (!dateRange || !dateRange.start || !dateRange.end)
         ) {
+            let ne = new Set<number>(entries.map((_,i)=>i))
+            // console.log("ne", ne)
             return {
                 nodes: new Set<GraphKey>(Object.keys(nodeProps)),
-                links: new Set<GraphKey>(Object.keys(linkProps))
+                links: new Set<GraphKey>(Object.keys(linkProps)),
+                newEntries: ne
             }
         }
     
@@ -271,37 +339,79 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         }
     
         const linkPredicates = (link: LinkProps) => {
-            if (!linkTypes) return true
+            // if (!linkTypes) return true
             // if the node isn't in the map then it was filtered out
-            if (!nodes.has(link.source) || !nodes.has(link.target) || (!linkTypes[link.linkType]))
-                return false
-    
-            return (!dateRange) ||
-                (Object.values(link.entries)
-                        .map((ek: number) => entries[ek])
-                        .some((e) => {
-                            let date = new Date()
-                            let dateBool = e["Date Year"] && e._Month && e.Day
-                            if (dateBool){
-                                date = new Date(`${e._Month} ${e.Day}, ${e["Date Year"]}`)
-                            }
-                            else if (e.date && !dateBool) {
-                                date = new Date(e.date)
-                            }
-                            return (!dateRange.start || !dateRange.end) || ((!!e.date || !!dateBool) &&
-                                (dateRange.start <= date && date <= dateRange.end))
-                        })
-                )
+            // console.log(link.source, link.target)
+            return nodes.has(link.source) && nodes.has(link.target) &&
+                Array.from(link.entries).some(e=>newEntries.has(e));
+            
         }
-    
+        
+        const datePredicates = (e: number, start: Date, end:Date) => {
+            // return (!dateRange) ||
+            // if (!dateRange || !dateRange.start || !dateRange.end) {
+            //     // console.log(289)
+            //     return true
+            // }
+            const {month, Day, date_year} = entries[e]
+            if (month && Day && date_year) {
+                let date = mdy(month, Day, date_year)
+                let dt = new Date(date)
+                // console.log(dt.toString());
+                if (dt.toString() === 'Invalid Date') return false;
+                let ret =
+                    // (!!e.date || !!dateBool) &&
+                    (start.getTime() <= dt.getTime() &&
+                        dt.getTime() <= end.getTime());
+                // console.log(date)
+                // if (ret) newEntries.add(e)
+                return ret;
+            }
+            return false
+            // let start = new Date(dateRange.start)
+            // let end = new Date(dateRange.end)
+            // let dr = Array.from(link.entries)
+            //     .map((ek: number) => {
+            //         // console.log(ek)
+            //         return entries[ek];
+            //     })
+            //     .some((e) => {
+            //         const {month, Day, date_year} = e
+            //         // else if (e.date && !dateBool) {
+            //         //     date = new Date(e.date)
+            //         // }
+            //     });
+            // // console.log(dr)
+            // return dr
+        }
+        let nodes = new Set<GraphKey>()
+        let links = new Set<GraphKey>()
+        let newEntries = new Set<number>()
+        
+        if (dateRange && dateRange.start && dateRange.end){
+            let start = new Date(dateRange.start)
+            let end = new Date(dateRange.end)
+            entries.forEach((_, i)=> {
+                if (datePredicates(i, start, end))
+                    newEntries.add(i)
+            })
+        } else {
+            newEntries = new Set<number>(entries.map((_,i)=>i))
+        }
+        
+
+        // console.log(newEntries)
         Object.keys(nodeProps).forEach(k => {
             if (nodePredicates(nodeProps[k])) nodes.add(k)
         })
         // console.log(nodes)
         Object.keys(linkProps).forEach(k => {
-            if (linkPredicates(linkProps[k])) links.add(k)
+            let lp = linkPredicates(linkProps[k])
+            // console.log(lp)
+            if (lp) links.add(k)
         })
-        return {nodes: nodes, links: links}
+        
+        return {nodes: nodes, links: links, newEntries: newEntries}
     }, [filter, graphDict, entries])
     
     const graph: GraphData = useMemo(() =>{
@@ -333,13 +443,18 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         let links: LinkObject[] = []
         
         for (let [k, l] of Object.entries(linkProps)) {
+            const {source, target, linkType} = l
             if (filteredKeys.links.has(k)) {
                 let link: LinkObject = {
                     id: k,
-                    source: nodeDict[l.source],
-                    target: nodeDict[l.target],
-                    linkType: l.linkType,
-                    entries: new Set<number>(l.entries),
+                    source: nodeDict[source],
+                    target: nodeDict[target],
+                    linkType: linkType,
+                    entries: new Set<number>(
+                        Array
+                            .from(l.entries)
+                            .filter(i=>filteredKeys.newEntries.has(i))
+                    ),
                     entryKeys: [...l.entryKeys]
                 }
                 links.push(link)
@@ -349,89 +464,44 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         
         for (let node of nodes){
             for (let nei of nodeProps[node.id].neiKeys){
+                // if (filteredKeys.nodes.has(nei))
                 node.neighbors[nei] = nodeDict[nei]
             }
             
             // console.log(nodeProps[node.id].linkKeys)
             for (let l of nodeProps[node.id].linkKeys){
+            // if (filteredKeys.links.has(l))
                 node.linkDict[l] = linkDict[l]
             }
         }
-        
  
         for (let n of nodes) {
-            n.linkDict = Object.fromEntries(Object.entries(n.linkDict).filter(e => !!linkDict[e[0]]))
-            n.neighbors = Object.fromEntries(Object.entries(n.neighbors).filter(e => !!nodeDict[e[0]]))
+            n.linkDict = Object.fromEntries(Object.entries(n.linkDict).filter(e => filteredKeys.links.has(e[0])))
+            n.neighbors = Object.fromEntries(Object.entries(n.neighbors).filter(e => filteredKeys.nodes.has(e[0])))
             n.value = Math.max(n.value, Math.min(Object.keys(n.neighbors).length / 2, 15))
         }
-        
+        // console.log(nodeDict)
         return {nodes: nodes, links:links, nodeDict:nodeDict, linkDict:linkDict}
     }, [ graphDict, filteredKeys])
-    
-    const dates = useMemo<Marks>(()=> {
-        let dates = new Set<Date>()
-        for (let l of graph.links){
-            for (let ei of l.entries){
-                let e = entries[ei]
-                let date = new Date()
-                let dateBool = e["Date Year"] && e._Month && e.Day
-                if (dateBool){
-                    date = new Date(`${e._Month} ${e.Day}, ${e["Date Year"]}`)
-                }
-                else if (e.date && !dateBool) {
-                    date = new Date(e.date)
-                }
-                else if (!e.date && !dateBool){
-                    continue
-                }
-                dates.add(date)
-            }
-        }
-        let dArr: Date[] = Object.values(dates);
-        dArr.sort()
-        let marks: Array<{ value:number, label:Date }> = dArr.map((d,v)=>({value:v, label:d}))
-        return marks
-    }, [graph, entries])
-    
-    // Interaction Callbacks
-    const makePredicates = useCallback((nodeOrLink:string, t:string, check:boolean)=>{
-        if (!filter) {
-            setFilter(initFilter);
-            return
-        }
-        let newFilter = { ...filter };
-        if (nodeOrLink === "node" && newFilter.nodeTypes){
-            newFilter.nodeTypes = {...newFilter.nodeTypes, [t]:check}
-            if (t === 'personAccount'){
-                newFilter.nodeTypes = {...newFilter.nodeTypes, person:check}
-            }
-        }
-        if (nodeOrLink === "link" && newFilter.linkTypes) {
-            newFilter.linkTypes = {...newFilter.linkTypes, [t]:check}
-        }
-        // console.log("old filter: ", filter.nodeTypes)
-        // console.log("new filter: ", newFilter.nodeTypes)
-        setFilter(newFilter)
-    },[filter])
     
     const toggleInfo = useCallback((node:NodeObject, link?:LinkObject)=>{
         let info:EntryInfoProps[] = []
         // let entryProps = getNodeKeys(node.nodeType)
-        if (node && link===undefined) {
+        if (node && !link) {
             for (let e of node.entries){
-                info.push(makeEntryInfo(entries[e], node.nodeType as GraphTypeKey))
+                if (filteredKeys.newEntries.has(e))
+                   info.push(makeEntryInfo(entries[e], node.nodeType as GraphTypeKey))
             }
-            setGraphPanelInfo({name:node.label, info:info, entityType:node.nodeType})
-            return
         }
         if (node && link) {
             for (let e of link.entries){
-                info.push(makeEntryInfo(entries[e], link.linkType as GraphTypeKey))
+                if (filteredKeys.newEntries.has(e))
+                    info.push(makeEntryInfo(entries[e], link.linkType as GraphTypeKey))
             }
-            setGraphPanelInfo({name:node.label, info:info, entityType:node.nodeType})
         }
+        setGraphPanelInfo({name:node.label, info:info, entityType:node.nodeType})
         // console.log(info)
-    }, [entries, dates])
+    }, [entries, filteredKeys])
     
     const handleNodeZoom:nodeHandler = useCallback((node )=> {
         if (graphRef.current) {
@@ -443,7 +513,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             // graphRef.current?.resumeAnimation()
         }
         toggleInfo(node)
-    },[graphRef, toggleInfo, graph]);
+    },[graphRef, toggleInfo]);
     
     const handleLinkZoom = useCallback((link:LinkObject) => {
         if (typeof link.source !== "object" || typeof link.target !== "object") return
@@ -492,15 +562,14 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     
     const fetchEntries = (id: string | number | undefined) => {
         setRightClicked(id)
-        if (!!id) {
+        if (id) {
             fetchMore(graphDict.nodeProps[id].label);
             // graphRef.current?.resumeAnimation()
             // setFocusedItems(new Set([id]))
             // setTimeout(()=>focusOn([...graphDict.nodeProps[rightClicked].neiKeys.values(), rightClicked]), 2000)
             // setTimeout(() => handleNodeZoom(graph.nodes.filter((v) => v.id === rightClicked)[0],), 2000,);
         }
-            
-        handleClose()
+        // handleClose()
     }
     
     const handleClose = () => {
@@ -513,7 +582,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         console.log("engine stop", rightClicked)
         if (rightClicked && graph.nodeDict)
             handleNodeZoom(graph.nodeDict[rightClicked])
-        setRightClicked(undefined)
+            setRightClicked(undefined)
     }, [rightClicked, handleNodeZoom, graph.nodeDict])
     
     // Post-mount effects
@@ -642,7 +711,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             onEngineStop={engineStopCB}
                             // enablePointerInteraction={true}
                         />
-                        <GraphFilterPanel makePredicates={makePredicates} dates={dates}/>
+                        <GraphFilterPanel makePredicates={makePredicates} dates={dates.map(d=>new Date(d))}/>
                     </Box>
                 </Grid>
                 <Grid item xs={3}>
@@ -743,15 +812,6 @@ interface GraphProps {
 
 //Graph types that must be declared in this file
 type GraphKey = keyof NodeObject | LinkObject | string | number
-type focusHandler = (elements:Set<GraphKey>) => void ;
-type nodeHandler = (node:NodeObject) => void;
-type itemHandler = (node:NodeObject, link?:LinkObject) => void
-
-export interface GraphFilterPanelProps {
-    makePredicates: (nodeOrLink:string, t:string, check:boolean) => void;
-    filter?: GraphPredicates
-    dates: Array<{ value:number, label:Date }>
-}
 
 export interface GraphInfoPanelProps {
     // width: number;
@@ -788,41 +848,37 @@ export interface LinkListItemProps {
 interface GraphKeys {
     nodes:  Set<GraphKey>
     links: Set<GraphKey>
+    newEntries: Set<number>
 }
 
 type NodeTypePredicates = {
     [key in NodeTypeKey]? : boolean
 }
 
-// interface NodeTypePredicates {
-//     person?: boolean,
-//     personAccount?: boolean,
-//     item?: boolean,
-//     store?: boolean,
-//     mention?: boolean,
-// }
-
 type LinkTypePredicates = {
     [key in LinkTypeKey]?: boolean
 }
-
-// interface LinkTypePredicates {
-//     item_personAccount?: boolean,
-//     item_person?: boolean,
-//     item_store?: boolean,
-//     person_personAccount?: boolean,
-//     mention_personAccount?: boolean,
-// }
 
 interface DateRange {
     start: Date | undefined,
     end: Date | undefined
 }
 
-type Marks = Array<{ value:number, label:Date }>
+// type Marks = Array<{ value:number, label:string }>
 export interface GraphPredicates {
     nodeTypes?: NodeTypePredicates;
     linkTypes?: LinkTypePredicates;
     dateRange?: DateRange
     search: string | undefined
 }
+
+export interface GraphFilterPanelProps {
+    makePredicates: filterHandler
+    filter?: GraphPredicates
+    dates: Array<Date>
+}
+
+type focusHandler = (elements:Set<GraphKey>) => void ;
+type nodeHandler = (node:NodeObject) => void;
+type itemHandler = (node:NodeObject, link?:LinkObject) => void
+type filterHandler = (field:string, t?:string, check?:boolean, dateRange?:DateRange) => void;
