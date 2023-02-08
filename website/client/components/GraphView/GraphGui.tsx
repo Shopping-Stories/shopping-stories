@@ -73,7 +73,7 @@ const mdy = (m?:string,d?:string,y?:string) => `${m}/${d}/${y}`
 const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
     const [filter, setFilter] = useState<GraphPredicates | undefined>(initFilter)
-    const [focusedItems, setFocusedItems] = useState<Set<string | number>>(new Set<string | number>())
+    const [focusedItems, setFocusedItems] = useState<Set<string | number>>(new Set())
     const [graphPanelInfo, setGraphPanelInfo] = useState<GraphInfoPanelProps>();
     const [contextMenu, setContextMenu] = useState<{
         mouseX: number;
@@ -234,11 +234,20 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         // const entrySet = new Set<string>()
         for (const [i, entry] of entries.entries()) {
             index = i
+            const {date_year, Day, month} = entry
+            if (!date_year || !Day || !month)
+                continue
+            if (date_year){
+                let dateCheck = new Date(`1/1/${date_year}`)
+                if (dateCheck.toString() === "Invalid Date")
+                    continue
+            }
+            processEntry(entry);
+            
             // console.log(index, entry._id)
             // if (entry && entry._id && !entrySet.has(entry._id)) {
             //     entrySet.add(entry._id);
             // }
-                processEntry(entry);
         }
         return graphProps
     }, [entries, linkColors])
@@ -247,7 +256,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         let dates = new Set<string>()
         for (let {month, Day, date_year} of entries){
             if (month && Day && date_year){
-                let ds = mdy(month, Day, date_year)
+                let dy = date_year.replace(/[\[\]']+/g,'')
+                let ds = mdy(month, Day, dy)
                 // console.log(ds)
                 let date = new Date(ds)
                 if (date.toString() !== "Invalid Date")
@@ -355,7 +365,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             // }
             const {month, Day, date_year} = entries[e]
             if (month && Day && date_year) {
-                let date = mdy(month, Day, date_year)
+                let dy = date_year.replace(/[\[\]']+/g,'')
+                let date = mdy(month, Day, dy)
                 let dt = new Date(date)
                 // console.log(dt.toString());
                 if (dt.toString() === 'Invalid Date') return false;
@@ -499,7 +510,9 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                     info.push(makeEntryInfo(entries[e], link.linkType as GraphTypeKey))
             }
         }
-        setGraphPanelInfo({name:node.label, info:info, entityType:node.nodeType})
+        if (node || link){
+            setGraphPanelInfo({name:node.label, info:info, entityType:node.nodeType})
+        }
         // console.log(info)
     }, [entries, filteredKeys])
     
@@ -546,8 +559,9 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         setFocusedItems(empty)
     }, [])
     
-    const handleNodeRightClick = (node: NodeObject, event: MouseEvent) => {
+    const handleNodeRightClick = useCallback( (node: NodeObject, event: MouseEvent) => {
         event.preventDefault()
+        // setFocusedItems(new Set([node.id]))
         setContextMenu(
             contextMenu === null
                 ? {
@@ -558,22 +572,26 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 :
                 null,
         );
-    }
+    }, [contextMenu])
     
-    const fetchEntries = (id: string | number | undefined) => {
+    const fetchEntries = useCallback(() => {
+        // let id = Array.from(focusedItems)[0]
+        let id = contextMenu?.id
         setRightClicked(id)
         if (id) {
+            console.log("id", id)
             fetchMore(graphDict.nodeProps[id].label);
             // graphRef.current?.resumeAnimation()
             // setFocusedItems(new Set([id]))
             // setTimeout(()=>focusOn([...graphDict.nodeProps[rightClicked].neiKeys.values(), rightClicked]), 2000)
             // setTimeout(() => handleNodeZoom(graph.nodes.filter((v) => v.id === rightClicked)[0],), 2000,);
         }
-        // handleClose()
-    }
+        handleClose()
+    }, [contextMenu, fetchMore, graphDict.nodeProps])
     
     const handleClose = () => {
         setContextMenu(null);
+        // setFocusedItems(new Set())
         // setRightClicked(undefined)
         // graphRef.current?.resumeAnimation()
     };
@@ -705,7 +723,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                                 node.fx = node.x;
                                 node.fy = node.y;
                             }}
-                            nodeVal={v => Math.max(Object.keys(v.neighbors).length, 5)}
+                            // nodeVal={v => Math.max(Object.keys(v.neighbors).length, 5)}
+                            nodeVal={n=>n.value}
                             cooldownTime={rightClicked ? 2000 : 15000}
                             // cooldownTicks={100}
                             onEngineStop={engineStopCB}
@@ -736,7 +755,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             }
             marginThreshold={0}
         >
-            <MenuItem onClick={()=>fetchEntries(contextMenu?.id)}>Search Related Nodes</MenuItem>
+            <MenuItem onClick={fetchEntries}>Search Related Nodes</MenuItem>
             {/*<MenuItem onClick={handleClose}>Copy</MenuItem>*/}
             {/*<MenuItem onClick={handleClose}>Print</MenuItem>*/}
             {/*<MenuItem onClick={handleClose}>Highlight</MenuItem>*/}
