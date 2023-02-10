@@ -42,7 +42,7 @@
         "axios": "^0.21.4",
         "babel-plugin-import": "^1.13.3",
         "class-transformer": "^0.4.0",
-        "class-validator": "^0.13.1",
+        "class-validator": "^0.14.0",
         "clsx": "^1.1.1",
         "d3-force": "^3.0.0",
         "export-from-json": "^1.4.0",
