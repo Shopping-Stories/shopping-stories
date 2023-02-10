@@ -81,7 +81,7 @@ const nodeTypeMap: NodeTypes = {
     item: "item",
     person: "peopleID",
     personAccount: "account_name",
-    store: "store_owner",
+    store: "store",
     mention: "mentions",
     help: "_id"
 }
@@ -97,7 +97,7 @@ export const getNodeType = (nodeType:string):EntryKey => {
 //
 // }
 
-type LedgerKeys = Pick<Entry, "ledger"| "date"| "Date Year"| "_Month"| "Day"| "liber_book">
+type LedgerKeys = Pick<Entry, "ledger"| "date"| "date_year"| "month"| "Day"| "liber_book">
 
 export const getNodeKeys = (nodeType:string): EntryKey[] => {
     if (nodeType === "adfas") console.log(nodeType)
@@ -121,7 +121,7 @@ export const getInfoKeys = (graphType: GraphTypeKey):EntryKey[] =>  {
     }
 }
 
-const ledgerKeys: EntryKey[]  = ["ledger", "date", "Date Year", "_Month", "Day", "liber_book"]
+const ledgerKeys: EntryKey[]  = ["ledger", "date", "date_year", "month", "Day", "liber_book"]
 const base: EntryKey[] = [...ledgerKeys, "context", "phrases", "mentions"]
 const item: (keyof ItemEdgeKeys)[] = [
     "store_owner", "type",
@@ -209,8 +209,8 @@ export const displayNames = {
     currency_type: "Currency Type",
     account_name: "Account Name",
     store_owner: "Store Owner",
-    "Date Year": "Date Year",
-    "_Month": "Month",
+    date_year: "date_year",
+    month: "Month",
     Day: "Day",
     debit_or_credit: "Payment",
     Quantity: "Quantity",
