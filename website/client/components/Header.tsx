@@ -42,10 +42,10 @@ const Header = ({ title }: HeaderConfig) => {
     const { groups, isLoggedIn } = useAuth();
     const authLinks = isLoggedIn ? adminNavLinks : [];
     const uniqueNavLinks = uniqWith([...navLinks, ...authLinks], isEqual);
-    const [, setWidth] = useState(0);
+    const [width, setWidth] = useState("100%");
     useEffect(() => {
         if (title && title === 'GraphView') {
-            setWidth(240);
+            setWidth("83.34%");
         }
     },[title]);
 
@@ -71,8 +71,8 @@ const Header = ({ title }: HeaderConfig) => {
                 sx={{
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                     // width: `calc(100% - ${width}px)`,
-                    width: `85%`,
-                    ml: `15%`
+                    width: width,
+                    ml: `calc(100% - ${width})px`
                     // ml: `${width}px`,
                 }}
             >

@@ -5,6 +5,10 @@ import { AdvancedSearch, OptionsType } from 'client/types';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Entry } from "new_types/api_types";
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+import Button from "@mui/material/Button";
+import AddCircle from "@mui/icons-material/AddCircle";
 
 interface EntryPaginationTable {
     queryDef: string;
@@ -69,9 +73,11 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         setIsLoading,
         reQuery,
         setRows,
+        isAdminOrModerator
     } = props;
 
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [editable, setEditable] = useState<boolean>(false)
     setRowsPerPage;
     
     const [setOptions] = useState<OptionsType>({
@@ -79,7 +85,6 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         skip: null,
     });
     setOptions;
-
     
     const {data, refetch, isLoading} =
         useQuery(
@@ -143,8 +148,6 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
 
     // Avoid a layout jump when reaching the last page with empty rows.
 
-
-
     const columnNames: string[] = [
         'Account Name',
         'Amount',
@@ -170,7 +173,8 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
     const columns: GridColDef[] = columnNames.map((str: string) : GridColDef => {
         return {
             field: str.split(" ").join(""), 
-            headerName: str, 
+            headerName: str,
+            editable: isAdminOrModerator,
             flex: [
                 "Purchaser",
                 "Account Name", 
@@ -198,6 +202,24 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 "Dr/Cr"
             ].includes(str) ? 0.2 : 0.5)}
     });
+    
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [value, setValue] = useState('');
+    
+    const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
+        const field = event.currentTarget.dataset.field!;
+        const id = event.currentTarget.parentElement!.dataset.id!;
+        const row = rows.find((r) => r.id === id)!;
+        setValue(row[field]);
+        setAnchorEl(event.currentTarget);
+    };
+    
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+    
+    const open = Boolean(anchorEl);
+    
     return (
         <Box sx={{height: '60vh', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
         <Paper sx={{height: '100%',width: '100%', overflow: 'hidden' }}>
@@ -283,10 +305,122 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 ActionsComponent={TablePaginationActions}
             /> */}
-            <DataGrid rows={rows ?? []} columns={columns} autoPageSize getRowId={(row) => row.id} disableSelectionOnClick/>
+            <DataGrid
+                editMode={'row'}
+                rows={rows ?? []}
+                columns={columns}
+                autoPageSize
+                getRowId={(row) => row.id}
+                isRowSelectable={(params) => params && isAdminOrModerator && editable}
+                components={{ Toolbar: EditToolbar }}
+                // disableRowSelectionOnClick
+                componentsProps={{
+                    toolbar: {
+                        isAdminOrModerator: isAdminOrModerator,
+                        editable: isAdminOrModerator && editable,
+                        setEditable: setEditable
+                    }
+                //     cell: {
+                //         onMouseEnter: handlePopoverOpen,
+                //         onMouseLeave: handlePopoverClose,
+                //     },
+                }}
+            />
         </Paper>
+        <Popover
+            sx={{
+                pointerEvents: 'none',
+            }}
+            open={open}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+            }}
+            onClose={handlePopoverClose}
+            // disableRestoreFocus
+        >
+            <Typography sx={{ p: 1 }}>{`${value}`}</Typography>
+        </Popover>
         </Box>
     );
 };
 
 export default EntryPaginationTable;
+
+interface EditToolbarProps {
+    editable: boolean
+    setEditable: (value: boolean) => void;
+    isAdminOrModerator: boolean
+    // selectedCellParams?: SelectedCellParams;
+    // cellModesModel: GridCellModesModel;
+    // setCellModesModel: (value: GridCellModesModel) => void;
+    // cellMode: 'view' | 'edit';
+}
+
+const EditToolbar = (props: EditToolbarProps) => {
+    
+    const { editable, isAdminOrModerator,  setEditable } = props;
+    if (!isAdminOrModerator){
+        return (<> </>)
+    }
+    //
+    const handleSaveOrEdit = () => {
+        if (editable){
+        
+        } else {
+            setEditable(true)
+        }
+    };
+    //
+    const handleCancel = () => {
+        setEditable(false)
+    };
+    
+    const handleMouseDown = (event: React.MouseEvent) => {
+        // Keep the focus in the cell
+        event.preventDefault();
+    };
+    
+    return (
+        <Box
+            sx={{
+                borderBottom: 1,
+                borderColor: 'divider',
+                p: 1,
+            }}
+        >
+            <Button
+                variant="contained"
+                startIcon={<AddCircle />}
+                // onClick={}
+            >
+                Create
+            </Button>
+            <Button
+                onClick={handleSaveOrEdit}
+                onMouseDown={handleMouseDown}
+                // disabled={!editable}
+                variant="outlined"
+                sx={{ ml: 1 }}
+            >
+                {editable ? 'Save' : 'Edit'}
+            </Button>
+            {   editable &&
+                <Button
+                    onClick={handleCancel}
+                    onMouseDown={handleMouseDown}
+                    // disabled={!editable}
+                    variant="outlined"
+                    sx={{ ml: 1 }}
+                >
+                    Cancel
+                </Button>
+            }
+        </Box>
+    );
+}
