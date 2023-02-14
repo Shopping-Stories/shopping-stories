@@ -11,8 +11,9 @@ import { NavLink } from 'client/types';
 import { Roles } from 'config/constants.config';
 import { isEqual, uniqWith } from 'lodash';
 import Image from 'next/image';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LogoFabStyles } from 'styles/styles';
+// import Box from '@mui/material/Box';
 // import { styled } from '@mui/system';
 // import Typography from "@mui/material/Typography";
 
@@ -21,7 +22,7 @@ const defaultNavLinks: NavLink[] = [
     { title: `about`, path: `/about` },
     { title: `search`, path: `/entries` },
     { title: `glossary`, path: `/glossary/items` },
-    { title: `parser results`, path: `/reseditor`}
+    { title: `parser`, path: `/reseditor`}
 ];
 
 const adminNavLinks: NavLink[] = [
@@ -61,18 +62,16 @@ const Header = ({ title }: HeaderConfig) => {
     }, [groups, isLoggedIn]);
 
     return (
-        <Fragment>
-            {/*<HideOnScroll>*/}
-
-             <AppBar
+        <>
+            <AppBar
                 //  position="relative"
-                // position="fixed"
-                position={title === "GraphView" ? "fixed" : "relative"}
+                position="fixed"
+                // position={title === 'GraphView' ? 'fixed' : 'relative'}
                 sx={{
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                     // width: `calc(100% - ${width}px)`,
-                    width: width,
-                    ml: `calc(100% - ${width})px`
+                    width: `${width}`,
+                    ml: `calc(100% - ${width}px)`,
                     // ml: `${width}px`,
                 }}
             >
@@ -86,6 +85,7 @@ const Header = ({ title }: HeaderConfig) => {
                         sx={{
                             display: 'flex',
                             justifyContent: 'space-between',
+                            alignItems: 'center'
                         }}
                     >
                         <Fab sx={LogoFabStyles} aria-label="home">
@@ -129,7 +129,7 @@ const Header = ({ title }: HeaderConfig) => {
             {/*)}*/}
             {/*</HideOnScroll>*/}
             {/*<Offset />*/}
-        </Fragment>
+        </>
     );
 };
 
