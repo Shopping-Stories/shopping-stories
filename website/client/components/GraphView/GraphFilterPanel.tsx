@@ -7,15 +7,24 @@ import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import Slider from "@mui/material/Slider";
 import { GraphFilterPanelProps } from "@components/GraphView/GraphGui";
-import { Breadcrumbs, Chip, FormControl, FormControlLabel, FormLabel } from "@mui/material";
-import FormGroup from "@mui/material/FormGroup";
-import Toolbar from "@mui/material/Toolbar";
+import  Chip from "@mui/material/Chip";
+import  Breadcrumbs  from "@mui/material/Breadcrumbs";
+import Stack from "@mui/material/Stack";
+
 import Divider from '@mui/material/Divider';
 import PersonIcon from "@mui/icons-material/Person";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOver";
+import Grid from "@mui/material/Grid";
+import Switch from "@mui/material/Switch";
+
+// import FormGroup from "@mui/material/FormGroup";
+// import Button from "@mui/material/Button";
+// import Toolbar from "@mui/material/Toolbar";
+// import RemoveIcon from "@mui/icons-material/Remove";
+// import Fab from "@mui/material/Fab";
 // import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 // import Collapse from "@mui/material/Collapse";
 // import List from "@mui/material/List";
@@ -30,138 +39,155 @@ const GraphFilterPanel = ({makePredicates, dates}: GraphFilterPanelProps) => {
     // const handleClick = () => {
     //     setOpen(!open);
     // };
-    const [range, setRange] = useState<number[]>(dates.map(m=>m.value))
-    const handleChange = (e:Event, newValue: number | number[]) => {
-        console.log(e)
-        setRange(newValue as number[]);
+    const [range, setRange] = useState<number[]>([1, dates.length])
+    const [checked, setChecked] = useState<boolean>(false)
+    
+    const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (e.target.checked) {
+                makePredicates("date", undefined, e.target.checked,
+                    { start: dates[range[0]-1], end: dates[range[1]-1] }
+                )
+            }
+            else {
+                makePredicates("date", undefined, e.target.checked, undefined)
+            }
+            setChecked(e.target.checked)
+    }
+    
+    const handleChange = (e:Event, newValue: number[]) => {
+        if (!newValue.length)
+            console.log(e?.target)
+        if (checked)
+            // makePredicates("date", undefined, false, undefined)
+            setChecked(false)
+        // if (range[0] !== newValue[0] || range[1] !== newValue[1])
+        setRange(newValue);
     };
     // console.log(range, dates)
     return (
-        <>
-            <Box
+        <Box >
+            <Grid
                 position={"absolute"}
                 sx={{
+                    display: 'flex',
                     left: '15px',
                     top: '15px',
-                    display: 'flex',
-                    alignItems: 'flex-start',
+                    // alignItems: 'flex-start',
                     flexWrap: 'wrap',
+                    flexGrow: 1,
+                    width: "50vw",
+                    borderTop: (theme) => `1px solid ${theme.palette.divider}`
                 }}
             >
-                <Toolbar>
-                    {/*<Divider sx={{mb:1}} />*/}
-                    <Box sx={{ alignItems: 'flex-start', flexWrap: 'wrap', display: 'flex',
-                        borderTop: (theme) => `1px solid ${theme.palette.divider}`}}>
-                        <FormControl >
-                        {/*<Typography>Node Filters</Typography>*/}
-                            <FormLabel component={"legend"}>Node Filters</FormLabel>
-                            <FormGroup>
-                                <Box>
-                                    <FormControlLabel control={
-                                        <Checkbox
-                                            // checked={!!filter && !filter.nodeTypes?.person}
-                                            icon={<PersonOutlinedIcon />}
-                                            checkedIcon={
-                                                <PersonOutlinedIcon color={'error'} />
-                                            }
-                                            name={'person'}
-                                            onChange={(e) =>
-                                                makePredicates(
-                                                    'node',
-                                                    'personAccount',
-                                                    !e.target.checked,
-                                                )
-                                            }
-                                        />
-                                    } label={""}/>
-                                    <FormControlLabel control={
-                                        <Checkbox
-                                            // checked={!!filter && !filter.nodeTypes?.store}
-                                            icon={<StorefrontOutlinedIcon />}
-                                            checkedIcon={
-                                                <StorefrontOutlinedIcon color={'error'} />
-                                            }
-                                            name={'store'}
-                                            onChange={(e) =>
-                                                makePredicates(
-                                                    'node',
-                                                    'store',
-                                                    !e.target.checked,
-                                                )
-                                            }
-                                        />
-                                    } label={""}/>
-                                    <FormControlLabel control={
-                                        <Checkbox
-                                            // checked={!!filter && !filter.nodeTypes?.item}
-                                            icon={<ShoppingBasketOutlinedIcon />}
-                                            checkedIcon={
-                                                <ShoppingBasketOutlinedIcon
-                                                    color={'error'}
-                                                />
-                                            }
-                                            name={'item'}
-                                            onChange={(e) =>
-                                                makePredicates(
-                                                    'node',
-                                                    'item',
-                                                    !e.target.checked,
-                                                )
-                                            }
-                                        />
-                                    } label={""}/>
-                                    <FormControlLabel control={
-                                        <Checkbox
-                                            // checked={!!filter && !filter.nodeTypes?.item}
-                                            icon={<RecordVoiceOverOutlinedIcon />}
-                                            checkedIcon={
-                                                <RecordVoiceOverOutlinedIcon
-                                                    color={'error'}
-                                                />
-                                            }
-                                            name={'item'}
-                                            onChange={(e) =>
-                                                makePredicates(
-                                                    'node',
-                                                    'mention',
-                                                    !e.target.checked,
-                                                )
-                                            }
-                                        />
-                                    } label={""}/>
-                                </Box>
-                            </FormGroup>
-                        </FormControl>
-                        <Divider
-                            orientation="vertical"
-                            flexItem
-                            sx={{mr:2 }}
+                <Grid
+                    item
+                    xs={4}
+                >
+                    <Typography gutterBottom mt={1}>Node Filters</Typography>
+                    <Stack direction={"row"}>
+                        <Checkbox
+                            // checked={!!filter && !filter.nodeTypes?.person}
+                            icon={<PersonOutlinedIcon />}
+                            checkedIcon={
+                                <PersonOutlinedIcon color={'error'} />
+                            }
+                            name={'person'}
+                            onChange={(e) =>
+                                makePredicates(
+                                    'node',
+                                    'personAccount',
+                                    !e.target.checked,
+                                )
+                            }
                         />
+                        <Checkbox
+                            // checked={!!filter && !filter.nodeTypes?.item}
+                            icon={<ShoppingBasketOutlinedIcon />}
+                            checkedIcon={
+                                <ShoppingBasketOutlinedIcon
+                                    color={'error'}
+                                />
+                            }
+                            name={'item'}
+                            onChange={(e) =>
+                                makePredicates(
+                                    'node',
+                                    'item',
+                                    !e.target.checked,
+                                )
+                            }
+                        />
+                        <Checkbox
+                            // checked={!!filter && !filter.nodeTypes?.item}
+                            icon={<RecordVoiceOverOutlinedIcon />}
+                            checkedIcon={
+                                <RecordVoiceOverOutlinedIcon
+                                    color={'error'}
+                                />
+                            }
+                            name={'item'}
+                            onChange={(e) =>
+                                makePredicates(
+                                    'node',
+                                    'mention',
+                                    !e.target.checked,
+                                )
+                            }
+                        />
+                        <Checkbox
+                            // checked={!!filter && !filter.nodeTypes?.store}
+                            icon={<StorefrontOutlinedIcon />}
+                            checkedIcon={
+                                <StorefrontOutlinedIcon color={'error'} />
+                            }
+                            name={'store'}
+                            onChange={(e) =>
+                                makePredicates(
+                                    'node',
+                                    'store',
+                                    !e.target.checked,
+                                )
+                            }
+                        />
+                    </Stack>
+                </Grid>
+                <Grid
+                    item
+                    xs={8}
+                    sx={{
+                        borderLeft : (theme) => `1px solid ${theme.palette.divider}`,
+                        alignItems: 'center'
+                    }}
+                >
+                    <Box sx={{ml: 1}}>
+                        <Typography gutterBottom mt={1}>Date Range</Typography>
+                        <Stack direction={"row"} alignItems={'center'}>
                         {
-                            <FormControl>
-                                <FormGroup>
-                                    <Box>
-                                        <FormLabel component={"legend"}>Date Range</FormLabel>
-                                        <FormGroup>
-                                            {/**/}
-                                            {
-                                                dates.length !== 0
-                                                ? <Slider
-                                                    sx={{ ml: 1, mr: 2 }}
-                                                    marks={dates}
-                                                    value={range}
-                                                    onChange={handleChange}
-                                                />
-                                                : <Typography sx={{ ml: 1 }}>N/A</Typography>
-                                            }
-                                        </FormGroup>
-                                    </Box>
-                                </FormGroup>
-                            </FormControl>
+                            dates.length !== 0
+                            ? <>
+                                <Slider
+                                sx={{ ml: 1, mr: 2 }}
+                                size={dates.length < 25 ? "medium" : "small"}
+                                // marks={dates.map((d,i)=>({value:i,label:d.toLocaleString().split(' ')[0]}))}
+                                marks={true}
+                                value={range}
+                                min={1}
+                                max={dates.length}
+                                onChange={(e, v)=>handleChange(e, v as number[])}
+                                valueLabelDisplay="auto"
+                                valueLabelFormat={x=> dates ? dates[x-1].toLocaleString().split(', ')[0] : x}
+                                />
+                                <Switch
+                                    checked={checked}
+                                    onChange={handleCheck}
+                                />
+                            </>
+                            : <Typography sx={{ ml: 1 }}>N/A</Typography>
                         }
+                        </Stack>
                     </Box>
-                </Toolbar>
-            </Box>
+                </Grid>
+            </Grid>
             <Box alignSelf={"flex-end"} position={"relative"}>
                 <Box position={"absolute"} bottom={"30px"} left={"30px"} alignItems={"flex-start"}>
                     <Typography sx={{mb:1}} variant={"h5"} width={"100%"}>Legend</Typography>
@@ -181,46 +207,45 @@ const GraphFilterPanel = ({makePredicates, dates}: GraphFilterPanelProps) => {
                         <Typography variant={"h6"}>-</Typography>
                         {/*<ArrowRightIcon/>*/}
                         <Chip icon={<ShoppingBasketIcon/>}
-                              label={"Item - Person"}
+                              // label={"Item - Person"}
+                              label={"<->"}
                               onDelete={()=>{}}
                               color={"success"}
                               deleteIcon={<PersonIcon/>}
                         />
                         <Chip icon={<ShoppingBasketIcon/>}
-                              label={"Item - Store"}
+                              // label={"Item - Store"}
+                              label={"<->"}
                               onDelete={()=>{}}
                               color={"warning"}
                               deleteIcon={<StorefrontIcon/>}
                         />
                         <Chip icon={<ShoppingBasketIcon/>}
-                              label={"Item - Mentioned"}
+                              // label={"Item - Mentioned"}
+                              label={"<->"}
                               onDelete={()=>{}}
                               color={"secondary"}
                               deleteIcon={<RecordVoiceOverIcon/>}
                         />
                         <Chip icon={<PersonIcon/>}
-                              label={"Person - Person"}
+                              // label={"Person - Person"}
+                              label={"<->"}
                               onDelete={()=>{}}
                               color={"info"}
                               deleteIcon={<PersonIcon/>}
                         />
                         <Chip icon={<PersonIcon/>}
-                              label={"Person - Mentioned"}
+                              // label={"Person - Mentioned"}
+                              label={"<->"}
                               onDelete={()=>{}}
                               color={"error"}
                               deleteIcon={<RecordVoiceOverIcon/>}
                         />
-                        {/*<Chip icon={<ShoppingBasketOutlinedIcon/>}*/}
-                        {/*      label={"Mention-to-Person"}*/}
-                        {/*      onDelete={()=>{}}*/}
-                        {/*      color={"primary"}*/}
-                        {/*      deleteIcon={<PersonIcon/>}*/}
-                        {/*/>*/}
                     </Breadcrumbs>
                     <Divider sx={{mt:1,}}/>
                 </Box>
             </Box>
-        </>
+        </Box>
     )
 }
 
