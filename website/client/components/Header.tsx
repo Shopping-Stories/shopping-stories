@@ -108,28 +108,8 @@ const Header = ({ title }: HeaderConfig) => {
                     </Container>
                 </Toolbar>
             </AppBar>
-            {/*{title && title === 'GraphView' && (*/}
-            {/*    <AppBar*/}
-            {/*        // anchor="right"*/}
-            {/*        color="transparent"*/}
-            {/*        position="fixed"*/}
-            {/*        sx={{*/}
-            {/*            zIndex: (theme) => theme.zIndex.drawer+1,*/}
-            {/*            width: `calc(100% - ${width}px)`,*/}
-            {/*            ml: `${width}px`*/}
-            {/*            // mr: `${drawerWidth}px`*/}
-            {/*        }}*/}
-            {/*    >*/}
-            {/*        <Toolbar>*/}
-            {/*        <Typography sx={{ flexGrow: 1 }} variant="h6" noWrap component="div">*/}
-            {/*            Nodes*/}
-            {/*        </Typography>*/}
-            {/*    </Toolbar>*/}
-            {/*    </AppBar>*/}
-            {/*)}*/}
-            {/*</HideOnScroll>*/}
-            {/*<Offset />*/}
-        </>
+            {(title !== 'GraphView') && <Toolbar/>}
+            </>
     );
 };
 

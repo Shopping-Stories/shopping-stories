@@ -24,7 +24,7 @@ import {
     SearchEntryDef,
 } from 'client/graphqlDefs';
 import { AdvancedSearch, SearchType } from 'client/types';
-import { Entry } from 'new_types/api_types';
+import { Entry, ParserOutput } from "new_types/api_types";
 // import { cloneWithoutTypename, flatten } from 'client/util';
 // import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Roles } from 'config/constants.config';
@@ -190,54 +190,58 @@ const ManagePlacesPage: NextPage = () => {
                         <Grid item xs={12}>
                             {/* Advanced Search View */}
                             {/*<FormGroup>*/}
-                                <form onSubmit={searchForm.handleSubmit}>
-                                    <TextFieldWithFormikValidation
-                                        fullWidth
-                                        variant={'filled'}
-                                        name={'search'}
-                                        formikForm={searchForm}
-                                        label={'Search'}
-                                        fieldName={'search'}
-                                    />
-                                    <Stack direction={"row"} spacing={2} sx={{mt:1, mb:1}}>
+                            <form onSubmit={searchForm.handleSubmit}>
+                                <TextFieldWithFormikValidation
+                                    fullWidth
+                                    variant={'filled'}
+                                    name={'search'}
+                                    formikForm={searchForm}
+                                    label={'Search'}
+                                    fieldName={'search'}
+                                />
+                                <Stack
+                                    direction={'row'}
+                                    spacing={2}
+                                    sx={{ mt: 1, mb: 1 }}
+                                >
                                     {/*<ButtonGroup*/}
                                     {/*    variant="contained"*/}
                                     {/*    fullWidth*/}
                                     {/*>*/}
-                                        <LoadingButton
-                                            fullWidth
-                                            loading={isLoading}
-                                            variant="contained"
-                                            type="submit"
-                                            // sx={{ mt:1 }}
-                                        >
-                                            Search
-                                        </LoadingButton>
-                                        <LoadingButton
-                                            fullWidth
-                                            // loading={isLoading}
-                                            variant="contained"
-                                            type={"submit"}
-                                            // color={"secondary"}
-                                            onClick={toGraph}
-                                            // sx={{ mt:1 }}
-                                        >
-                                            Graph View
-                                            {/*<Link*/}
-                                            {/*    href={`/graphview/${search}`}*/}
-                                            {/*    href={{*/}
-                                            {/*        pathname: '/graphview/[search]',*/}
-                                            {/*        query: {*/}
-                                            {/*            search: `/entries/graphview/${searchForm.values.search}`*/}
-                                            {/*            advanced:*/}
-                                            {/*        }*/}
-                                            {/*    }}*/}
-                                            {/*    activeClassName="active"*/}
-                                            {/*></Link>*/}
-                                        </LoadingButton>
+                                    <LoadingButton
+                                        fullWidth
+                                        loading={isLoading}
+                                        variant="contained"
+                                        type="submit"
+                                        // sx={{ mt:1 }}
+                                    >
+                                        Search
+                                    </LoadingButton>
+                                    <LoadingButton
+                                        fullWidth
+                                        // loading={isLoading}
+                                        variant="contained"
+                                        type={'submit'}
+                                        // color={"secondary"}
+                                        onClick={toGraph}
+                                        // sx={{ mt:1 }}
+                                    >
+                                        Graph View
+                                        {/*<Link*/}
+                                        {/*    href={`/graphview/${search}`}*/}
+                                        {/*    href={{*/}
+                                        {/*        pathname: '/graphview/[search]',*/}
+                                        {/*        query: {*/}
+                                        {/*            search: `/entries/graphview/${searchForm.values.search}`*/}
+                                        {/*            advanced:*/}
+                                        {/*        }*/}
+                                        {/*    }}*/}
+                                        {/*    activeClassName="active"*/}
+                                        {/*></Link>*/}
+                                    </LoadingButton>
                                     {/*</ButtonGroup>*/}
-                                    </Stack>
-                                </form>
+                                </Stack>
+                            </form>
                             {/*</FormGroup>*/}
                             {/*</Paper>*/}
                         </Grid>
@@ -285,9 +289,7 @@ const ManagePlacesPage: NextPage = () => {
                                             : SearchEntryDef
                                     }
                                     onEditClick={(row: any) =>
-                                        router.push(
-                                            `/entries/update/${row.id}`,
-                                        )
+                                        router.push(`/entries/update/${row.id}`)
                                     }
                                     onDeleteClick={async (row: any) => {
                                         setPlaceToDelete({
@@ -295,6 +297,12 @@ const ManagePlacesPage: NextPage = () => {
                                         });
                                         handleOpenDelete();
                                     }}
+                                    onViewClick={(row: ParserOutput) =>
+                                        router.push({
+                                            pathname: `/entries/view/${row.entry_id}`,
+                                            query: { entry: row },
+                                        })
+                                    }
                                     search={search}
                                     reQuery={reQuery}
                                     setRows={setRows}
