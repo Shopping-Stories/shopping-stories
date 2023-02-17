@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useFormik, Formik, FieldArray, Form } from 'formik';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -7,8 +8,15 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import { useFormik, Formik, FieldArray, Form } from 'formik';
+import AddCircle from "@mui/icons-material/AddCircle";
 import Box from "@mui/material/Box";
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import FormControl from '@mui/material/FormControl';
+
+
 import {
     Entry,
     EntryKey,
@@ -17,9 +25,9 @@ import {
     ParserOutputKey,
     // ParserStringKeys, ParserBooleanKeys, ParserStringArrayKeys, ParserNumberKeys,
     Currency, Ledger,
-    TobaccoEntry, TobaccoEntryKey, TobaccoMarkKey
+    TobaccoEntry, TobaccoEntryKey, TobaccoMarkKey, TobaccoMark
 } from "new_types/api_types";
-import { EntryScalarInfo } from "@components/GraphView/util";
+import { InputLabel } from "@mui/material";
 
 type ExcludedField = keyof Pick<ParserOutput,
     "amount_is_combo"|
@@ -57,6 +65,52 @@ const toDisplayCase = (k:string) => {
     return k.replace(/(_|^)([^_]?)/g, function(_, prep, letter) {
         return (prep && ' ') + letter.toUpperCase();
     });
+}
+
+const handleSubmit = async (newEntry: Partial<ParserOutput>, dType: string | undefined) => {
+    let saveUrl = `https://api.preprod.shoppingstories.org/${dType?.toLowerCase()}_entry/`;
+    if (!dType) return
+    let q = newEntry.entry_id
+    let req = {}
+    let reqBody = JSON.stringify(newEntry)
+    console.log(reqBody)
+    if (dType === "Edit"){
+        if (!q) return
+        req = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            entry_id: newEntry.entry_id,
+            body: reqBody
+        }
+        saveUrl = saveUrl + "?" + new URLSearchParams({entry_id: q}).toString()
+    } else if (dType === "Create") {
+        req = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            many: false,
+            body: reqBody
+        }
+    }
+    console.log(saveUrl)
+    if (!newEntry.entry_id) {
+        return
+    }
+    const res = await fetch(saveUrl, req);
+    
+    const text = await res.text();
+    if (res.status == 200) {
+        let message = JSON.parse(text);
+        console.log(message);
+    }
+    else {
+        console.log("ERROR: " + text);
+    }
 }
 
 const fieldNames = Object.fromEntries(
@@ -99,9 +153,9 @@ const EntryDialog = ({dialogType, entry, setDialog}: EntryDialogProps) => {
             commodity_totaling_contextless: entry?.commodity_totaling_contextless ,
             account_name: entry?.account_name,
             entry_id: entry?.ledger?.entry_id,
-            reel: entry?.ledger?.reel,
+            reel: entry?.ledger?.reel ? Number(entry.ledger.reel) : undefined,
+            folio_page: entry?.ledger?.folio_page ? Number(entry.ledger.folio_page) : undefined,
             folio_year: entry?.ledger?.folio_year,
-            folio_page: entry?.ledger?.folio_page,
             store: entry?.store,
             store_owner: entry?.store_owner,
             "Date Year": entry?.date_year,
@@ -120,8 +174,8 @@ const EntryDialog = ({dialogType, entry, setDialog}: EntryDialogProps) => {
             original_entry: entry?.original_entry,
             tobacco_location: entry?.tobacco_location,
             tobacco_amount_off: entry?.tobacco_amount_off,
-            tobacco_marks: entry?.tobacco_marks,
-            tobacco_entries: entry?.tobacco_entries
+            // tobacco_marks: entry?.tobacco_marks,
+            // tobacco_entries: entry?.tobacco_entries
         }
     }, [entry])
     
@@ -141,6 +195,7 @@ const EntryDialog = ({dialogType, entry, setDialog}: EntryDialogProps) => {
                     initialValues={initFormValues}
                     onSubmit={(values) => {
                         console.log(values)
+                        handleSubmit(values, dialogType)
                     }}
                 >{({ 
                     values, 
@@ -150,7 +205,7 @@ const EntryDialog = ({dialogType, entry, setDialog}: EntryDialogProps) => {
                     handleBlur, 
                     isValid 
                 }) => (
-                <Form>
+                <Form noValidate>
                 <DialogContentText>Entry Info</DialogContentText>
                 <Grid container spacing={1}>
                     {entryInfo.map(k=>(
@@ -158,14 +213,16 @@ const EntryDialog = ({dialogType, entry, setDialog}: EntryDialogProps) => {
                             <TextField
                                 autoFocus
                                 margin="dense"
-                                id="k"
                                 label={fieldNames[k]}
                                 fullWidth
+                                name={k}
                                 disabled={dialogType === "View"}
                                 // sx={{m:1, width: '25ch'}}
                                 variant="outlined"
+                                onChange={handleChange}
                                 value={values[k as keyof typeof values]}
-                                defaultValue={entry ? entry[k as EntryKey] : ""}
+                                defaultValue={values[k as keyof typeof values]}
+                                // defaultValue={entry ? entry[k as EntryKey] : ""}
                             />
                         </Grid>
                     ))}
@@ -176,13 +233,16 @@ const EntryDialog = ({dialogType, entry, setDialog}: EntryDialogProps) => {
                         <Grid item xs={3} key={k}>
                             <TextField
                                 autoFocus
+                                name={k}
                                 margin="dense"
                                 disabled={dialogType === "View" || (k == "entry_id" && dialogType === "Edit") }
                                 label={fieldNames[k]}
                                 fullWidth
+                                onChange={handleChange}
                                 variant="outlined"
                                 value={values[k as keyof typeof values]}
-                                defaultValue={entry ? entry[k as EntryKey] : ""}
+                                defaultValue={values[k as keyof typeof values]}
+                                // defaultValue={entry ? entry[k as EntryKey] : ""}
                             />
                         </Grid>
                     ))}
@@ -192,45 +252,13 @@ const EntryDialog = ({dialogType, entry, setDialog}: EntryDialogProps) => {
                     {money.map(k=>(
                         <Grid item xs={3} key={k}>
                             <TextField
+                                name={k}
                                 autoFocus
                                 margin="dense"
                                 disabled={dialogType === "View" || (k == "entry_id" && dialogType === "Edit") }
                                 label={fieldNames[k]}
                                 fullWidth
-                                variant="outlined"
-                                value={values[k as keyof typeof values]}
-                                defaultValue={entry ? entry[k as EntryKey] : ""}
-                            />
-                        </Grid>
-                    ))}
-                </Grid>
-                <DialogContentText sx={{mt:3}}>Tobacco Marks</DialogContentText>
-                <Grid container spacing={1}>
-                    {money.map(k=>(
-                        <Grid item xs={3} key={k}>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                disabled={dialogType === "View" || (k == "entry_id" && dialogType === "Edit") }
-                                label={fieldNames[k]}
-                                fullWidth
-                                variant="outlined"
-                                value={values[k as keyof typeof values]}
-                                defaultValue={entry ? entry[k as EntryKey] : ""}
-                            />
-                        </Grid>
-                    ))}
-                </Grid>
-                <DialogContentText sx={{mt:3}}>Tobacco Entries</DialogContentText>
-                <Grid container spacing={1}>
-                    {money.map(k=>(
-                        <Grid item xs={3} key={k}>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                disabled={dialogType === "View" || (k == "entry_id" && dialogType === "Edit") }
-                                label={fieldNames[k]}
-                                fullWidth
+                                onChange={handleChange}
                                 variant="outlined"
                                 value={values[k as keyof typeof values]}
                                 defaultValue={entry ? entry[k as EntryKey] : ""}
@@ -239,29 +267,56 @@ const EntryDialog = ({dialogType, entry, setDialog}: EntryDialogProps) => {
                     ))}
                 </Grid>
                 <DialogContentText sx={{mt:3}}>People</DialogContentText>
-                <Grid container spacing={1}>
-                    {money.map(k=>(
+                <FieldArray
+                    name={"people"}
+                    render={ (arrayHelpers)=> (
+                    <>
+                    {dialogType !=="View" &&
+                        <Button
+                        startIcon={<AddCircle />}
+                        onClick={()=> arrayHelpers.push("")}
+                        >
+                          Add a Person
+                        </Button>
+                    }
+                    <Grid container spacing={1}>
+                        {values?.people?.map((person, k)=>(
                         <Grid item xs={3} key={k}>
-                            <TextField
+                            <FormControl variant="outlined">
+                            <InputLabel>Person</InputLabel>
+                            <OutlinedInput
+                                name={`people.${k}`}
                                 autoFocus
                                 margin="dense"
-                                disabled={dialogType === "View" || (k == "entry_id" && dialogType === "Edit") }
-                                label={fieldNames[k]}
-                                fullWidth
-                                variant="outlined"
-                                value={values[k as keyof typeof values]}
-                                defaultValue={entry ? entry[k as EntryKey] : ""}
+                                // disabled={dialogType === "View"}
+                                label={"Person"}
+                                // fullWidth
+                                // variant="outlined"
+                                value={person}
+                                onChange={handleChange}
+                                defaultValue={person}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={()=>arrayHelpers.remove(k)}
+                                            edge="end"
+                                        >
+                                            <DeleteIcon/>
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
                             />
-                        </Grid>
-                    ))}
-                </Grid>
+                            </FormControl>
+                        </Grid>))}
+                    </Grid>
+                </>)}/>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button type={"submit"}>Submit</Button>
+                </DialogActions>
                 </Form>
                 )}</Formik>
             </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose}>Cancel</Button>
-                <Button onClick={handleClose}>Submit</Button>
-            </DialogActions>
         </Dialog>
     )
 }

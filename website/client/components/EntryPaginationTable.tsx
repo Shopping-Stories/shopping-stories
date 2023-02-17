@@ -110,7 +110,7 @@ function toTitleCase(str: string) {
 const doSearch = async (search: string): Promise<EntryQueryResult> => {
     const res = await fetch("https://api.preprod.shoppingstories.org/search/" + search);
     // console.log(await res.text());
-    console.log(res);
+    // console.log(res);
     let toret: EntryQueryResult = JSON.parse(await res.text());
     return toret;
   };
