@@ -17,22 +17,6 @@ import {
 import Stack from "@mui/material/Stack";
 import EntryDialog from "@components/GraphView/EntryDialog";
 
-interface EntryPaginationTable {
-    queryDef: string;
-    search: string;
-    advanced: AdvancedSearch | null;
-    isAdvancedSearch: boolean;
-    onEditClick: (row: ParserOutput) => void;
-    onDeleteClick: (row: ParserOutput) => void;
-    onViewClick: (row: ParserOutput) => void;
-    setReQuery: Dispatch<SetStateAction<boolean>>;
-    setIsLoading: Dispatch<SetStateAction<boolean>>;
-    reQuery: boolean;
-    isAdmin: boolean;
-    isAdminOrModerator: boolean;
-    setRows: Dispatch<SetStateAction<Entry[]>>;
-}
-
 interface EntryQueryResult {
     entries: (Entry)[];
 }
@@ -134,6 +118,22 @@ const doSearch = async (search: string): Promise<EntryQueryResult> => {
 interface SelectedRowParams {
     id: GridRowId;
     field?: string;
+}
+
+interface EntryPaginationTable {
+    queryDef: string;
+    search: string;
+    advanced: AdvancedSearch | null;
+    isAdvancedSearch: boolean;
+    onEditClick: (row: ParserOutput) => void;
+    onDeleteClick: (row: ParserOutput) => void;
+    onViewClick: (row: ParserOutput) => void;
+    setReQuery: Dispatch<SetStateAction<boolean>>;
+    setIsLoading: Dispatch<SetStateAction<boolean>>;
+    reQuery: boolean;
+    isAdmin: boolean;
+    isAdminOrModerator: boolean;
+    setRows: Dispatch<SetStateAction<Entry[]>>;
 }
 
 const EntryPaginationTable = (props: EntryPaginationTable) => {
@@ -413,7 +413,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
             </Popover>
             */}
             <EntryDialog
-                entry={selectedRow && entryMap ? entryMap[selectedRow.id] : {}}
+                entry={dialog !== "Create" && selectedRow && entryMap ? entryMap[selectedRow.id] : {}}
                 dialogType={dialog}
                 setDialog={setDialog}
             />
@@ -448,7 +448,7 @@ const EditToolbar = (props: EditToolbarProps) => {
         >
             <Stack spacing={1} direction={"row"}>
                 <Button
-                    onClick={()=> setDialog("view")}
+                    onClick={()=> setDialog("View")}
                     variant="contained"
                     disabled={!selection}
                     color={"secondary"}
@@ -458,7 +458,7 @@ const EditToolbar = (props: EditToolbarProps) => {
                 {isAdminOrModerator &&
                     (<>
                         <Button
-                            onClick={() => setDialog("create")}
+                            onClick={() => setDialog("Create")}
                             variant="contained"
                             startIcon={<AddCircle />}
                             hidden={!isAdminOrModerator}
@@ -468,7 +468,7 @@ const EditToolbar = (props: EditToolbarProps) => {
                         </Button>
                         
                         <Button
-                            onClick={()=> setDialog("edit")}
+                            onClick={()=> setDialog("Edit")}
                             // onMouseDown={handleMouseDown}
                             disabled={!selection}
                             hidden={!isAdminOrModerator}
