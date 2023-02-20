@@ -14,7 +14,7 @@ import { ParserOutput } from 'new_types/api_types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Roles } from 'config/constants.config';
 import { NextPage } from 'next';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PaperStyles } from 'styles/styles';
 
 import ParserOutputEditor from '@components/ParserOutputEditor';
@@ -80,6 +80,7 @@ const ResView: NextPage = () => {
     const [progress, setProgress] = useState<number>(0);
 
     const [selectedRow, setSelectedRow] = useState<rowType | null>(null);
+    const [editedRow, setEditedRow] = useState<number>(0);
     const [url, setUrl] = useState("");
 
     const [errorText, setErrorText] = useState<string>("");
@@ -96,7 +97,7 @@ const ResView: NextPage = () => {
         setOpen(false)
 
         if (edited_row == null) {
-            let new_rows: GridValidRowModel[] = [];
+            var new_rows: GridValidRowModel[] = [];
             rows.map((row) => {
                 if (row.id < selectedRow!.id!) {
                     new_rows.push(row);
@@ -109,21 +110,26 @@ const ResView: NextPage = () => {
                     new_rows.push(row);
                 }
             })
-            editRows(new_rows);
-            setSelectedRow(null);
-            return;
         }
-        
-        setSelectedRow(null)
-        let new_rows = rows.map((row) => row)
-        new_rows[edited_row!.id!] = edited_row!
-        editRows(new_rows)
+        else {
+            var new_rows = rows.map((row) => row)
+            new_rows[edited_row!.id!] = edited_row!
+        }
+        if (edited_row != null) {
+            setEditedRow(edited_row!.id!);
+        }
+        editRows(new_rows);
+        setSelectedRow(null);
     }
 
     const handleCloseNoSave = () => {
         setOpen(false)
         setSelectedRow(null)
     }
+
+    useEffect(() => {
+        console.log(rows[editedRow])
+    }, [rows, editedRow])
 
     const getBase64 = (file: Blob, cb: (content: string | ArrayBuffer | null) => void) => {
         let reader = new FileReader();
@@ -144,6 +150,7 @@ const ResView: NextPage = () => {
     }
 
     const doUpload = async (toUp: fileUploads) => {
+        await new Promise( resolve => setTimeout(resolve, 500) );
         console.log("toUp: ");
         console.log(toUp);
         console.log("Stringify");
@@ -271,6 +278,8 @@ const ResView: NextPage = () => {
                 return row.original;
             })
         }
+
+        console.log(upMe)
 
         const res = await fetch(saveUrl, {
             method: "POST",
