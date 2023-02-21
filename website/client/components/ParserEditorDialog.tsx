@@ -13,8 +13,9 @@ import Delete from '@mui/icons-material/Delete';
 import { Dispatch } from 'react';
 import { TransitionProps } from '@mui/material/transitions';
 import Slide from '@mui/material/Slide';
-import { ParserOutput, ParserOutputKey, ParserOutputKeys, ParserStringKeys, ParserNumberKeys } from 'new_types/api_types';
-import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { ParserOutput, ParserOutputKey, ParserOutputKeys, ParserStringKeys, ParserStringArrayKeys, ParserNumberKeys, tmStrToTMs, TobaccoMark, tmToStr, parseStringArray, TobaccoEntry } from 'new_types/api_types';
+import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import TobaccoFields from './TobaccoFields';
 
 interface ParserEditorDialog {
     row: rowType | null,
@@ -58,11 +59,11 @@ const oldKeyNewKeyMap: Record<string, string> = {"errors": "Errors", "account_na
 const splitPlaces = new Set<origKey>(["original_entry", "price", "date", "farthings_ster", "currency_colony", "tobacco_amount_off", "entry_id", "Day", "Commodity", "error_context"] as Array<origKey>)
 const oldCurrNewCurrMap: Record<string, string> = {"pounds": "Pounds", "pounds_ster": "Pounds", "shillings": "Shilling", "shillings_ster": "Shilling", "pennies": "Pence", "pennies_ster": "Pence", "farthings": "Farthings", "farthings_ster": "Farthings"}
 const currency_keys = new Set<origKey>(["pounds_ster", "pounds", "shillings_ster", "shillings", "pennies", "pennies_ster", "farthings", "farthings_ster"])
-const noDisplay = new Set<origKey>(["context", "liber_book", "amount_is_combo", "price_is_combo", "commodity_totaling_contextless", "currency_totaling_contextless"] as Array<origKey>)
-const notEditable = new Set<origKey>(["error_context", "type", "phrases", "mentions", "tobacco_entries", "tobacco_marks"] as Array<origKey>)
+const noDisplay = new Set<origKey>(["context", "liber_book", "amount_is_combo", "phrases", "price_is_combo", "commodity_totaling_contextless", "currency_totaling_contextless"] as Array<origKey>)
+const notEditable = new Set<origKey>(["error_context", "type", "mentions", "tobacco_entries"] as Array<origKey>)
 const longDisplay = new Set<origKey>(["text_as_parsed", "original_entry", "people", "mentions", "error_context", "errors"] as Array<origKey>)
 const errorKeys = ["errors", "error_context"] as Array<origKey>
-const titles = ["Entry Text", "Entry Info", "Extra Entry Info (Typically null values)", "Money (Sterling)", "Money (Currency)", "Tobacco", "Ledger Info", "Date Info", "Commodity Info", "Other nouns found in entry"]
+const titles = ["Entry Text", "Entry Info", "Extra Entry Info (Typically null values)", "Money (Sterling)", "Money (Currency)", "Tobacco", "Ledger Info", "Date Info", "Commodity Info", "Other nouns found in entry, separated by semicolons (e.g. Alexander; Johnson)"]
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -74,7 +75,6 @@ const Transition = React.forwardRef(function Transition(
 });
 
 
-
 const ParserEditorDialog = (props: ParserEditorDialog) => {
     const {
         row,
@@ -82,17 +82,58 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
         setClose
     } = props
 
-    const nrow = JSON.parse(JSON.stringify(row));
+    const nrow = React.useMemo(() => JSON.parse(JSON.stringify(row)), [row])
     
+    let [tobEntries, setTobEntries] = React.useState([{}] as Array<TobaccoEntry>)
 
     const deleteRow = () => {
-        setRow(null);
+        setRow(null)
     }
     
+    const [justSet, setJustSet] = React.useState(false);
 
     const intHandleClose = () => {
         setRow(nrow!)
+        setMiniOpen(false)
     }
+
+    const [miniOpen, setMiniOpen] = React.useState(false);
+
+    const handleMiniOpen = () => {
+        console.log(tobEntries)
+        setMiniOpen(true);
+    };
+  
+    const handleMiniClose = () => {
+        setMiniOpen(false);
+    };
+
+    const strNotNull = (value: string|undefined) => {
+        return (value != undefined) && (value != "")
+    }
+
+    const notNull = (tobEntry: TobaccoEntry) => {
+        return strNotNull(tobEntry.weight) || strNotNull(tobEntry.gross_weight) 
+    }
+
+    const handleMiniSave = () => {
+        console.log(tobEntries)
+        if (tobEntries != undefined && tobEntries.length > 0 && (notNull(tobEntries[0]))) {
+            if (nrow != undefined && nrow != null) {
+                nrow!.original!["tobacco_entries"] = tobEntries
+                console.log("Working!")
+                console.log(nrow!.original!)
+            }
+            else {
+            }
+        }
+        else {
+
+        }
+        setJustSet(false);
+        setMiniOpen(false);
+    };
+
 
     const getFormsFromRow = (row?: rowType) => {
         if (row == null || row == undefined || row?.original == null || row?.original == undefined) {
@@ -103,7 +144,19 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
         let errorNotPresent: boolean = ((row?.original!["errors"] == null) && (row?.original!["error_context"] == null))
         let splitTimes: number = 0
         let mtop = "1vh"
-    
+        
+        if (!justSet) {
+            console.log("RUN!")
+            console.log(row)
+            console.log("l")
+            if (row?.original!.tobacco_entries != undefined && row?.original!.tobacco_entries!.length != 0) {
+                tobEntries = row?.original!.tobacco_entries!
+            }
+            else {
+                tobEntries = [{}]
+            }
+        }
+
         const onRowValueChange = (key: origKey, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<any>) => {
             // Handles editing strings
             if (ParserStringKeys.has(key)) {
@@ -124,7 +177,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                 else if (currency_keys.has(key)) {
                     if (((row.original!.pounds_ster != null) && (row.original!.pounds != null)) || ((row.original!.shillings_ster != null) && (row.original!.shillings != null)) || ((row.original!.pennies_ster != null) && (row.original!.pennies != null)) || ((row.original!.farthings_ster != null) && (row.original!.farthings != null))) {
                         if (key.includes("ster")) {
-    
+                            
                         }
                         else {
                             (row[oldCurrNewCurrMap[key] as rowTypeKey] as number) = val
@@ -145,6 +198,27 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                 delete row.original![key]
                 console.log(row)
             }
+            else if (ParserStringArrayKeys.has(key)) {
+                console.log("String array")
+                try {
+                    let strArr = parseStringArray(event.target.value);
+                    (row[oldKeyNewKeyMap[key] as rowTypeKey] as unknown as Array<String>) = strArr
+                }
+                catch {
+                    console.log("Bad format!")
+                }
+            }
+            else if (key == "tobacco_marks") {
+                console.log("Tobacco Marks")
+                try {
+                    let newTMs: string = event.target.value
+                    let tmArr = tmStrToTMs(newTMs);
+                    (row.original![key] as unknown as Array<TobaccoMark>) = tmArr
+                }
+                catch {
+                    console.log("Bad format!")
+                }
+            }
             else {
                 console.log("Editing " + key + " is currently unsupported")
             }
@@ -158,6 +232,47 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
             if (errorKeys.includes(origKeys[a]) && errorNotPresent) {
     
             }
+            else if (origKeys[a] == "tobacco_marks") {
+                out.push(
+                    <TextField
+                        label={origKeys[a]}
+                        defaultValue={tmToStr(row?.original![origKeys[a]] as unknown as Array<TobaccoMark>)}
+                        key={origKeys[a]}
+                        onChange={(event) => onRowValueChange(origKeys[a], event)}
+                        sx={{ padding: "0.3vh", marginTop: mtop, width: "10vw" }}
+                    />
+                )
+            }
+            else if (origKeys[a] == "tobacco_entries") {
+                out.push(
+                    <TextField
+                    label={origKeys[a]}
+                    defaultValue={""}
+                    key={origKeys[a]}
+                    onClick={() => {
+                        if (row?.original![origKeys[a]] == undefined) {
+
+                        }
+                        else {
+                            setTobEntries(row?.original![origKeys[a]] as unknown as Array<TobaccoEntry>)
+                        }
+                        handleMiniOpen()
+                    }}
+                    sx={{ padding: "0.3vh", marginTop: mtop, width: "10vw" }}
+                />
+                )
+            }
+            else if (ParserStringArrayKeys.has(origKeys[a]) && origKeys[a] != "errors") {
+                out.push(
+                    <TextField
+                        label={origKeys[a]}
+                        defaultValue={row?.original![origKeys[a]] != undefined ? (row?.original![origKeys[a]] as unknown as Array<String>).join("; ") : ""}
+                        key={origKeys[a]}
+                        onChange={(event) => onRowValueChange(origKeys[a], event)}
+                        sx={{ padding: "0.3vh", marginTop: mtop, width: "10vw" }}
+                    />
+                )
+            }
             else if (notEditable.has(origKeys[a])) {
                 if (origKeys[a] == "type" as origKey) {
                     out.push(
@@ -170,6 +285,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                                 label="Type"
                                 onChange={(event) => {onRowValueChange(origKeys[a], event)}}
                                 sx={{ padding: "0vh", marginTop: "1.3vh", width: "10vw" }}
+                                key={origKeys[a]}
                             >
                                 <MenuItem value={"Cash"}>Cash</MenuItem>
                                 <MenuItem value={"Liber"}>Liber</MenuItem>
@@ -247,7 +363,10 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
         <Dialog
             fullScreen
             open={nrow != null}
-            onClose={setClose}
+            onClose={() => {
+                setClose()
+                setTobEntries([{}])
+            }}
             TransitionComponent={Transition}
         >
             <AppBar sx={{ position: 'relative' }}>
@@ -271,6 +390,64 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     </Button>
                 </Toolbar>
             </AppBar>
+            <div>
+                <Dialog open={miniOpen} onClose={handleMiniClose} fullWidth maxWidth={"lg"}>
+                    <DialogTitle align='center'>Tobacco Marks</DialogTitle>
+                    <DialogContent>
+                    <DialogContentText align='center'>
+                        This allows you to edit, add, and delete tobacco entries.
+                    </DialogContentText>
+                    <Box textAlign="center">
+                        <Button sx={{margin: "0.5vh"}} variant='contained' onClick={() => {
+                        setTobEntries(tobEntries.concat([{}]))
+                        }}>
+                            Add
+                        </Button>
+                    </Box>
+                    {
+                        tobEntries.map((value, index) => {
+                            return (
+                            <TobaccoFields key={index + (value.number ?? "")} tobacco_weight={value.weight} note_id={value.number} tare_weight={value.tare_weight} gross_weight={value.gross_weight} onEdit={
+                                (entry) => {
+                                    if (entry == null) {
+                                        let newTobEntries: Array<TobaccoEntry> = tobEntries.filter((_v, i) => (i != index))
+                                        if (newTobEntries.length == 0) {
+                                            newTobEntries = [{}]
+                                        }
+                                        setJustSet(true)
+                                        setTobEntries(newTobEntries)
+                                        
+                                    }
+                                    else {
+                                        console.log(entry)
+                                        let newTobEntries: Array<TobaccoEntry> = []
+                                        tobEntries.forEach((v, i) => {
+                                          if (i == index) {
+                                            newTobEntries.push(entry)
+                                          }
+                                          else {
+                                            newTobEntries.push(v)
+                                          }
+                                        })
+                                        if (newTobEntries.length == 0) {
+                                            newTobEntries = [{}]
+                                        }
+                                        console.log(newTobEntries)
+                                        setJustSet(true)
+                                        setTobEntries(newTobEntries)
+                                    }
+                                }
+                            }></TobaccoFields>)
+                        })
+                    }
+                    </DialogContent>
+                    <DialogActions>
+                    <Button variant='contained' onClick={handleMiniClose}>Cancel</Button>
+                    <Button variant='contained' onClick={handleMiniSave}>Save</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+            <Button onClick={handleMiniOpen}>Blah</Button>
             <Box sx={{ margin: "1vh", marginTop: "0vh" }}>
                 {getFormsFromRow(nrow)}
             </Box>
