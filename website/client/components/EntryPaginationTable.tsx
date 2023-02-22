@@ -4,6 +4,8 @@ import { AdvancedSearch, OptionsType } from 'client/types';
 import { Dispatch, SetStateAction, useEffect, useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Entry, ParserOutput } from "new_types/api_types";
+import {useEntryDispatch} from "@components/context/EntryContext";
+import { useRouter } from 'next/router';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import Button from "@mui/material/Button";
@@ -15,11 +17,8 @@ import {
     GridRowId, useGridApiRef
 } from "@mui/x-data-grid";
 import Stack from "@mui/material/Stack";
-import EntryDialog from "@components/GraphView/EntryDialog";
-
-interface EntryQueryResult {
-    entries: (Entry)[];
-}
+// import EntryDialog from "@components/GraphView/EntryDialog";
+import Toolbar from "@mui/material/Toolbar";
 
 const columnNames: string[] = [
     'Account Name',
@@ -54,24 +53,23 @@ const columns: GridColDef[] = columnNames.map((str: string) : GridColDef => {
             "Owner",
             "Comments",
             "Store"
-        ].includes(str) ? 1
-            : ([
-                "Reel",
-                "EntryID",
-                "Quantity",
-                "Commodity",
-                "Page",
-                "Colony",
-                "$ Pounds",
-                "$ Shilling",
-                "$ Pence",
-                "$ Farthings",
-                '£ Pounds',
-                '£ Shilling',
-                '£ Pence',
-                '£ Farthings',
-                "Dr/Cr"
-            ].includes(str) ? 0.2 : 0.5)}
+        ].includes(str) ? 1 : ([
+            "Reel",
+            "EntryID",
+            "Quantity",
+            "Commodity",
+            "Page",
+            "Colony",
+            "$ Pounds",
+            "$ Shilling",
+            "$ Pence",
+            "$ Farthings",
+            '£ Pounds',
+            '£ Shilling',
+            '£ Pence',
+            '£ Farthings',
+            "Dr/Cr"
+        ].includes(str) ? 0.2 : 0.5)}
 });
 
 export function getFarthInsert(farthings: number|undefined) {
@@ -107,52 +105,42 @@ function toTitleCase(str: string) {
     });
 }
 
-const doSearch = async (search: string): Promise<EntryQueryResult> => {
-    const res = await fetch("https://api.preprod.shoppingstories.org/search/" + search);
-    // console.log(await res.text());
-    // console.log(res);
-    let toret: EntryQueryResult = JSON.parse(await res.text());
-    return toret;
-  };
-
 interface SelectedRowParams {
     id: GridRowId;
     field?: string;
 }
 
 interface EntryPaginationTable {
-    queryDef: string;
-    search: string;
-    advanced: AdvancedSearch | null;
-    isAdvancedSearch: boolean;
-    onEditClick: (row: ParserOutput) => void;
-    onDeleteClick: (row: ParserOutput) => void;
-    onViewClick: (row: ParserOutput) => void;
-    setReQuery: Dispatch<SetStateAction<boolean>>;
-    setIsLoading: Dispatch<SetStateAction<boolean>>;
-    reQuery: boolean;
+    // queryDef: string;
+    // search: string;
+    // advanced: AdvancedSearch | null;
+    // isAdvancedSearch: boolean;
+    // setReQuery: Dispatch<SetStateAction<boolean>>;
+    // setIsLoading: Dispatch<SetStateAction<boolean>>;
+    // reQuery: boolean;
+    // setRows: Dispatch<SetStateAction<Entry[]>>;
     isAdmin: boolean;
     isAdminOrModerator: boolean;
-    setRows: Dispatch<SetStateAction<Entry[]>>;
+    handleEntryAction: (action: string, payload: Entry | undefined) => void
+    entries: Entry[]
 }
 
 const EntryPaginationTable = (props: EntryPaginationTable) => {
     const {
         // queryDef,
-        search,
+        // search,
         advanced,
         setReQuery,
         setIsLoading,
         reQuery,
         setRows,
         isAdminOrModerator,
-        onDeleteClick,
-        onEditClick,
-        onViewClick
+        handleEntryAction,
+        entries
     } = props;
 
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    
+    const router = useRouter();
     const [selectedRow, setSelectedRow] =
         useState<SelectedRowParams| null>(null);
     // const [selectedRow, setSelectedRow] = useState()
@@ -161,6 +149,9 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
     const handleClose = () => {
         setDialog(undefined);
     };
+    
+    const dispatch = useEntryDispatch()
+    
     const gridRef = useGridApiRef()
     // setRowsPerPage;
     
@@ -170,25 +161,25 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
     // });
     // setOptions;
     
-    const {data, refetch, isLoading} = useQuery({
-        queryKey: ["entries", search],
-        queryFn: () => doSearch(search),
-    });
+    // const {data, refetch, isLoading} = useQuery({
+    //     queryKey: ["entries", search],
+    //     queryFn: () => doSearch(search),
+    // });
 
     // console.log(data);
 
-    useEffect(() => {
-        if (reQuery) {
-            refetch();
-            setReQuery(false);
-        }
-    }, [refetch, reQuery, setReQuery]);
-
-    useEffect(() => {
-        if (setIsLoading !== undefined) {
-            setIsLoading(isLoading);
-        }
-    }, [isLoading, setIsLoading]);
+    // useEffect(() => {
+    //     if (reQuery) {
+    //         refetch();
+    //         setReQuery(false);
+    //     }
+    // }, [refetch, reQuery, setReQuery]);
+    //
+    // useEffect(() => {
+    //     if (setIsLoading !== undefined) {
+    //         setIsLoading(isLoading);
+    //     }
+    // }, [isLoading, setIsLoading]);
 
     // const rows = data?.rows ?? [];
     
@@ -203,13 +194,22 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
     }, [setSelectedRow]);
     
     const entryMap = useMemo<{[key:string]: Entry} | undefined>(()=>{
-        if (!data || !data.entries) return {id: {}}
-        return Object.fromEntries(data?.entries.map(e=>[e._id, e]))
-    }, [data])
+        if (!entries.length) return {id: {}}
+        return Object.fromEntries(entries.map(e=>[e._id, e]))
+    }, [entries])
+    
+    const handleACtionClick = useCallback((action: string) => {
+        if (entryMap && selectedRow?.id){
+            handleEntryAction(action, entryMap[selectedRow.id])
+        }
+        else{
+            handleEntryAction(action, undefined)
+        }
+    },[entryMap, selectedRow])
     
     // console.log("entryMap", entryMap)
     const rows = useMemo<GridRowsProp>(()=>{
-        return data?.entries.map((row) => {
+        return entries.map((row) => {
             return {
                 AccountName: row?.account_name,
                 "Dr/Cr": row?.debit_or_credit,
@@ -230,7 +230,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 id: row?._id,
             }
         }) || [];
-    }, [data?.entries])
+    }, [entries])
     
     // useEffect(() => {
     //     if (setRows !== undefined) {
@@ -367,6 +367,62 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                     ActionsComponent={TablePaginationActions}
                 /> */}
+                {/*<EditToolbar isAdminOrModerator={isAdminOrModerator} selection={!!selectedRow} setAction={handleEntryAction}/>*/}
+                <Box
+                    sx={{
+                        borderBottom: 1,
+                        borderColor: 'divider',
+                        p: 1,
+                    }}
+                >
+                    {/*<Toolbar>*/}
+                    <Stack spacing={1} direction={"row"}>
+                        <Button
+                            onClick={()=> handleACtionClick("View")}
+                            variant="contained"
+                            disabled={!selectedRow}
+                            color={"secondary"}
+                        >
+                            View
+                        </Button>
+                        {isAdminOrModerator &&
+                            (<>
+                                <Button
+                                    onClick={() => handleACtionClick("Create")}
+                                    variant="contained"
+                                    startIcon={<AddCircle />}
+                                    hidden={!isAdminOrModerator}
+                                    // onclick={()=> setDialog("create")}
+                                >
+                                    Create
+                                </Button>
+                    
+                                <Button
+                                    onClick={()=> handleACtionClick("Edit")}
+                                    // onMouseDown={handleMouseDown}
+                                    disabled={!selectedRow}
+                                    hidden={!isAdminOrModerator}
+                                    variant="contained"
+                                    color={"warning"}
+                                >
+                                    edit
+                                </Button>
+                    
+                                <Button
+                                    onClick={()=> handleACtionClick("Delete")}
+                                    // onMouseDown={handleMouseDown}
+                                    disabled={!selectedRow}
+                                    hidden={!isAdminOrModerator}
+                                    variant="contained"
+                                    color={"error"}
+                                >
+                                    Delete
+                                </Button>
+                            </>)
+                        }
+                    </Stack>
+                    {/*</Toolbar>*/}
+                </Box>
                 <DataGrid
                     editMode={'row'}
                     rows={rows ?? []}
@@ -374,16 +430,16 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                     autoPageSize
                     getRowId={(row) => row.id}
                     // isRowSelectable={(params) => params && isAdminOrModerator && editable}
-                    components={{ Toolbar: EditToolbar }}
+                    // components={{ Toolbar: EditToolbar }}
                     // disableRowSelectionOnClick
                     componentsProps={{
-                        toolbar: {
-                            isAdminOrModerator: isAdminOrModerator,
-                            // editable: isAdminOrModerator && editable,
-                            // setEditable: setEditable,
-                            setDialog: setDialog,
-                            selection: !!selectedRow
-                        },
+                        // toolbar: {
+                        //     isAdminOrModerator: isAdminOrModerator,
+                        //     // editable: isAdminOrModerator && editable,
+                        //     // setEditable: setEditable,
+                        //     setDialog: setDialog,
+                        //     selection: !!selectedRow
+                        // },
                         cell: {
                             onFocus: handleCellFocus
                     //         onMouseEnter: handlePopoverOpen,
@@ -412,11 +468,11 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 <Typography sx={{ p: 1 }}>{`${value}`}</Typography>
             </Popover>
             */}
-            <EntryDialog
-                entry={dialog !== "Create" && selectedRow && entryMap ? entryMap[selectedRow.id] : {}}
-                dialogType={dialog}
-                setDialog={setDialog}
-            />
+            {/*<EntryDialog*/}
+            {/*    entry={dialog !== "Create" && selectedRow && entryMap ? entryMap[selectedRow.id] : {}}*/}
+            {/*    dialogType={dialog}*/}
+            {/*    setDialog={setDialog}*/}
+            {/*/>*/}
         </Box>
     );
 };
@@ -428,7 +484,7 @@ interface EditToolbarProps {
     // setEditable: (value: boolean) => void;
     isAdminOrModerator: boolean
     selection: boolean
-    setDialog: (dialog:string) => void
+    setAction: (dialog:string) => void
     // cellModesModel: GridCellModesModel;
     // setCellModesModel: (value: GridCellModesModel) => void;
     // cellMode: 'view' | 'edit';
@@ -436,7 +492,7 @@ interface EditToolbarProps {
 
 const EditToolbar = (props: EditToolbarProps) => {
     
-    const { isAdminOrModerator, selection, setDialog } = props;
+    const { isAdminOrModerator, selection, setAction } = props;
     
     return (
         <Box
@@ -446,9 +502,10 @@ const EditToolbar = (props: EditToolbarProps) => {
                 p: 1,
             }}
         >
+            {/*<Toolbar>*/}
             <Stack spacing={1} direction={"row"}>
                 <Button
-                    onClick={()=> setDialog("View")}
+                    onClick={()=> setAction("View")}
                     variant="contained"
                     disabled={!selection}
                     color={"secondary"}
@@ -458,7 +515,7 @@ const EditToolbar = (props: EditToolbarProps) => {
                 {isAdminOrModerator &&
                     (<>
                         <Button
-                            onClick={() => setDialog("Create")}
+                            onClick={() => setAction("Create")}
                             variant="contained"
                             startIcon={<AddCircle />}
                             hidden={!isAdminOrModerator}
@@ -468,7 +525,7 @@ const EditToolbar = (props: EditToolbarProps) => {
                         </Button>
                         
                         <Button
-                            onClick={()=> setDialog("Edit")}
+                            onClick={()=> setAction("Edit")}
                             // onMouseDown={handleMouseDown}
                             disabled={!selection}
                             hidden={!isAdminOrModerator}
@@ -491,6 +548,7 @@ const EditToolbar = (props: EditToolbarProps) => {
                     </>)
                 }
             </Stack>
+            {/*</Toolbar>*/}
         </Box>
     );
 }

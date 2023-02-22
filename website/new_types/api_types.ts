@@ -122,10 +122,10 @@ export interface ParserOutput {
     folio_reference?: string
     text_as_parsed?: string
     original_entry?: string
-    tobacco_marks?: Array<Map<string, string>>
     tobacco_location?: string
     tobacco_amount_off?: string
-    tobacco_entries?: Array<Map<string, string>>
+    tobacco_marks?: Array<TobaccoMark>
+    tobacco_entries?: Array<TobaccoEntry>
 }
 export type ParserOutputKey = keyof ParserOutput 
 
