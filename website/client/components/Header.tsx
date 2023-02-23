@@ -27,7 +27,7 @@ const defaultNavLinks: NavLink[] = [
 
 const adminNavLinks: NavLink[] = [
     { title: `documents`, path: `/documents` },
-    { title: `settings`, path: `/dashboard/settings` },
+    { title: `dashboard`, path: `/dashboard/settings` },
 ];
 // TODO: figure out why this is here
 // const Offset = styled('div')(
