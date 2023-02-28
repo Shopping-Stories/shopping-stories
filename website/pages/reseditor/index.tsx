@@ -122,6 +122,35 @@ const ResView: NextPage = () => {
         setSelectedRow(null);
     }
 
+    const handleDuplicate = (new_row: rowType) => {
+        setOpen(false)
+
+        if (new_row == null || new_row == undefined) {
+
+        }
+        else {
+            let new_rows: GridValidRowModel[] = new Array()
+            rows.forEach((value, index) => {
+                if (index == new_row.id!) {
+                    new_rows.push(value)
+                    let new_new_row = {...new_row}
+                    new_new_row.id! += 1
+                    new_rows.push(new_new_row)
+                }
+                else if (index < new_row.id!) {
+                    new_rows.push(value)
+                }
+                else {
+                    value.id! += 1
+                    new_rows.push(value)
+                }
+            })
+            console.log(new_rows)
+            editRows(new_rows)
+            setSelectedRow(null)
+        }
+    }
+
     const handleCloseNoSave = () => {
         setOpen(false)
         setSelectedRow(null)
@@ -378,7 +407,7 @@ const ResView: NextPage = () => {
                                 </Stack>
                             </Paper>
                         }
-                        <ParserEditorDialog row={selectedRow} setRow={handleDialogClose} setClose={handleCloseNoSave}></ParserEditorDialog>
+                        <ParserEditorDialog row={selectedRow} setRow={handleDialogClose} setClose={handleCloseNoSave} onDuplicate={handleDuplicate}></ParserEditorDialog>
 
                     </ColorBackground>
                 </QueryClientProvider>

@@ -20,7 +20,8 @@ import TobaccoFields from './TobaccoFields';
 interface ParserEditorDialog {
     row: rowType | null,
     setRow: Dispatch<rowType|null>,
-    setClose: () => void
+    setClose: () => void,
+    onDuplicate: Dispatch<rowType>
 }
 
 export interface rowType {
@@ -60,7 +61,7 @@ const splitPlaces = new Set<origKey>(["original_entry", "price", "date", "farthi
 const oldCurrNewCurrMap: Record<string, string> = {"pounds": "Pounds", "pounds_ster": "Pounds", "shillings": "Shilling", "shillings_ster": "Shilling", "pennies": "Pence", "pennies_ster": "Pence", "farthings": "Farthings", "farthings_ster": "Farthings"}
 const currency_keys = new Set<origKey>(["pounds_ster", "pounds", "shillings_ster", "shillings", "pennies", "pennies_ster", "farthings", "farthings_ster"])
 const noDisplay = new Set<origKey>(["context", "liber_book", "amount_is_combo", "phrases", "price_is_combo", "commodity_totaling_contextless", "currency_totaling_contextless"] as Array<origKey>)
-const notEditable = new Set<origKey>(["error_context", "type", "mentions", "tobacco_entries"] as Array<origKey>)
+const notEditable = new Set<origKey>(["error_context", "type", "tobacco_entries"] as Array<origKey>)
 const longDisplay = new Set<origKey>(["text_as_parsed", "original_entry", "people", "mentions", "error_context", "errors"] as Array<origKey>)
 const errorKeys = ["errors", "error_context"] as Array<origKey>
 const titles = ["Entry Text", "Entry Info", "Extra Entry Info (Typically null values)", "Money (Sterling)", "Money (Currency)", "Tobacco", "Ledger Info", "Date Info", "Commodity Info", "Other nouns found in entry, separated by semicolons (e.g. Alexander; Johnson)"]
@@ -79,7 +80,8 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     const {
         row,
         setRow,
-        setClose
+        setClose,
+        onDuplicate
     } = props
 
     const nrow = React.useMemo(() => JSON.parse(JSON.stringify(row)), [row])
@@ -121,14 +123,12 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
         if (tobEntries != undefined && tobEntries.length > 0 && (notNull(tobEntries[0]))) {
             if (nrow != undefined && nrow != null) {
                 nrow!.original!["tobacco_entries"] = tobEntries
-                console.log("Working!")
-                console.log(nrow!.original!)
             }
             else {
             }
         }
         else {
-
+            delete nrow!.original!["tobacco_entries"]
         }
         setJustSet(false);
         setMiniOpen(false);
@@ -144,11 +144,9 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
         let errorNotPresent: boolean = ((row?.original!["errors"] == null) && (row?.original!["error_context"] == null))
         let splitTimes: number = 0
         let mtop = "1vh"
-        
+        let mtop2 = "1.3vh"
+
         if (!justSet) {
-            console.log("RUN!")
-            console.log(row)
-            console.log("l")
             if (row?.original!.tobacco_entries != undefined && row?.original!.tobacco_entries!.length != 0) {
                 tobEntries = row?.original!.tobacco_entries!
             }
@@ -245,9 +243,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
             }
             else if (origKeys[a] == "tobacco_entries") {
                 out.push(
-                    <TextField
-                    label={origKeys[a]}
-                    defaultValue={""}
+                    <Button
                     key={origKeys[a]}
                     onClick={() => {
                         if (row?.original![origKeys[a]] == undefined) {
@@ -257,9 +253,14 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                             setTobEntries(row?.original![origKeys[a]] as unknown as Array<TobaccoEntry>)
                         }
                         handleMiniOpen()
+                        
                     }}
-                    sx={{ padding: "0.3vh", marginTop: mtop, width: "10vw" }}
-                />
+                    sx={{ padding: "0.3vh", marginTop: mtop2, height: "57px", width: "10vw", border: "2px solid", color: "#8f8f8f"}}
+                    variant="outlined"
+                    >
+                        <Typography fontFamily={["Arial"]} sx={{color: "white"}}>Edit tobacco entries</Typography>
+                        
+                    </Button>
                 )
             }
             else if (ParserStringArrayKeys.has(origKeys[a]) && origKeys[a] != "errors") {
@@ -346,7 +347,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
             }
     
             if (splitPlaces.has(origKeys[a])) {
-                out.push(<div />)
+                out.push(<div key={origKeys[a] + "div"} />)
                 out.push(<Typography sx={{ marginTop: "2vh", marginLeft: "0.2vw", marginBottom: "0.2vh" }} key={splitTimes}>{titles[splitTimes++]}</Typography>)
             }
         }
@@ -385,6 +386,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                         Editing Row
                     </Typography>
+                    <Button color="inherit" onClick={() => onDuplicate(nrow!)}>Duplicate</Button>
                     <Button autoFocus color="inherit" onClick={intHandleClose}>
                         save
                     </Button>
@@ -401,7 +403,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                         <Button sx={{margin: "0.5vh"}} variant='contained' onClick={() => {
                         setTobEntries(tobEntries.concat([{}]))
                         }}>
-                            Add
+                            Add Tobacco Entry
                         </Button>
                     </Box>
                     {
@@ -416,7 +418,6 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                                         }
                                         setJustSet(true)
                                         setTobEntries(newTobEntries)
-                                        
                                     }
                                     else {
                                         console.log(entry)
@@ -447,7 +448,6 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     </DialogActions>
                 </Dialog>
             </div>
-            <Button onClick={handleMiniOpen}>Blah</Button>
             <Box sx={{ margin: "1vh", marginTop: "0vh" }}>
                 {getFormsFromRow(nrow)}
             </Box>
