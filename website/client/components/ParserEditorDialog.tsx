@@ -102,7 +102,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     const [miniOpen, setMiniOpen] = React.useState(false);
 
     const handleMiniOpen = () => {
-        console.log(tobEntries)
+        // console.log(tobEntries)
         setMiniOpen(true);
     };
   
@@ -119,7 +119,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     }
 
     const handleMiniSave = () => {
-        console.log(tobEntries)
+        // console.log(tobEntries)
         if (tobEntries != undefined && tobEntries.length > 0 && (notNull(tobEntries[0]))) {
             if (nrow != undefined && nrow != null) {
                 nrow!.original!["tobacco_entries"] = tobEntries
@@ -158,7 +158,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
         const onRowValueChange = (key: origKey, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<any>) => {
             // Handles editing strings
             if (ParserStringKeys.has(key)) {
-                console.log("String key");
+                // console.log("String key");
                 (row.original![key] as unknown as string) = event.target.value
                 if (Object.keys(oldKeyNewKeyMap).includes(key as string)) {
                     (row[oldKeyNewKeyMap[key] as rowTypeKey] as string) = event.target.value
@@ -166,7 +166,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
             }
             // Handles editing numbers
             else if (ParserNumberKeys.has(key)) {
-                console.log("Number key detected");
+                // console.log("Number key detected");
                 let val = parseInt(event.target.value);
                 (row.original![key] as unknown as number) = val
                 if (Object.keys(oldKeyNewKeyMap).includes(key as string)) {
@@ -188,16 +188,16 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
             }
             // Handles setting the old value to null
             else if ((event.target.value == null) || (event.target.value == "")) {
-                console.log("Deleting null key detected");
+                // console.log("Deleting null key detected");
                 if (key == "errors") {
                     delete row.original!["error_context"]
                 }
                 delete row[oldKeyNewKeyMap[key] as rowTypeKey]
                 delete row.original![key]
-                console.log(row)
+                // console.log(row)
             }
             else if (ParserStringArrayKeys.has(key)) {
-                console.log("String array")
+                // console.log("String array")
                 try {
                     let strArr = parseStringArray(event.target.value);
                     (row[oldKeyNewKeyMap[key] as rowTypeKey] as unknown as Array<String>) = strArr
@@ -420,7 +420,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                                         setTobEntries(newTobEntries)
                                     }
                                     else {
-                                        console.log(entry)
+                                        // console.log(entry)
                                         let newTobEntries: Array<TobaccoEntry> = []
                                         tobEntries.forEach((v, i) => {
                                           if (i == index) {
@@ -433,7 +433,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                                         if (newTobEntries.length == 0) {
                                             newTobEntries = [{}]
                                         }
-                                        console.log(newTobEntries)
+                                        // console.log(newTobEntries)
                                         setJustSet(true)
                                         setTobEntries(newTobEntries)
                                     }

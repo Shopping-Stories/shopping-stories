@@ -14,7 +14,7 @@ import { ParserOutput } from 'new_types/api_types';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Roles } from 'config/constants.config';
 import { NextPage } from 'next';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { PaperStyles } from 'styles/styles';
 
 import ParserOutputEditor from '@components/ParserOutputEditor';
@@ -80,7 +80,7 @@ const ResView: NextPage = () => {
     const [progress, setProgress] = useState<number>(0);
 
     const [selectedRow, setSelectedRow] = useState<rowType | null>(null);
-    const [editedRow, setEditedRow] = useState<number>(0);
+    const [_editedRow, setEditedRow] = useState<number>(0);
     const [url, setUrl] = useState("");
 
     const [errorText, setErrorText] = useState<string>("");
@@ -145,7 +145,7 @@ const ResView: NextPage = () => {
                     new_rows.push(value)
                 }
             })
-            console.log(new_rows)
+            // console.log(new_rows)
             editRows(new_rows)
             setSelectedRow(null)
         }
@@ -156,9 +156,9 @@ const ResView: NextPage = () => {
         setSelectedRow(null)
     }
 
-    useEffect(() => {
-        console.log(rows[editedRow])
-    }, [rows, editedRow])
+    // useEffect(() => {
+    //     console.log(rows[editedRow])
+    // }, [rows, editedRow])
 
     const getBase64 = (file: Blob, cb: (content: string | ArrayBuffer | null) => void) => {
         let reader = new FileReader();
@@ -180,11 +180,11 @@ const ResView: NextPage = () => {
 
     const doUpload = async (toUp: fileUploads) => {
         await new Promise( resolve => setTimeout(resolve, 500) );
-        console.log("toUp: ");
-        console.log(toUp);
-        console.log("Stringify");
+        // console.log("toUp: ");
+        // console.log(toUp);
+        // console.log("Stringify");
         // console.log(JSON.stringify(toUp));
-        console.log(toUp.files[0]);
+        // console.log(toUp.files[0]);
         // console.log(JSON.stringify(toUp.files[0]));
         const parse_url = "https://api.preprod.shoppingstories.org/upload_and_parse_multi/";
         const res = await fetch(parse_url, {
@@ -289,11 +289,11 @@ const ResView: NextPage = () => {
             },
             body: JSON.stringify(toDel)
         });
-        const text = await res.text();
+        // const text = await res.text();
 
         if (res.status == 200) {
-            let result: message = JSON.parse(text);
-            console.log(result);
+            // let result: message = JSON.parse(text);
+            // console.log(result);
         }
 
         handleBack()
@@ -308,7 +308,7 @@ const ResView: NextPage = () => {
             })
         }
 
-        console.log(upMe)
+        // console.log(upMe)
 
         const res = await fetch(saveUrl, {
             method: "POST",
@@ -322,7 +322,7 @@ const ResView: NextPage = () => {
         const text = await res.text();
         if (res.status == 200) {
             let mess: message = JSON.parse(text);
-            console.log(mess.message);
+            // console.log(mess.message);
             if (!mess.error) {
                 handleDelete();
             }
