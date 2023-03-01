@@ -73,6 +73,7 @@ const mdy = (m?:string,d?:string,y?:string) => `${m}/${d}/${y}`
 const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
     const [filter, setFilter] = useState<GraphPredicates | undefined>(initFilter)
+    const [nodeLabelsVisible, setNodeLabelsVisible] =  useState<boolean>(false)
     const [focusedItems, setFocusedItems] = useState<Set<string | number>>(new Set())
     const [graphPanelInfo, setGraphPanelInfo] = useState<GraphInfoPanelProps>();
     const [contextMenu, setContextMenu] = useState<{
@@ -275,12 +276,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         return dArr
     }, [entries])
     
-    const makePredicates:filterHandler = useCallback((
-        field,
-        t,
-        check,
-        dateRange
-    )=>{
+    const makePredicates:filterHandler = useCallback((field, t, check, dateRange)=>{
         // console.log(field, t, check, dateRange)
         if (!filter) {
             setFilter(initFilter);
@@ -516,6 +512,10 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         // console.log(info)
     }, [entries, filteredKeys])
     
+    const toggleNodeLabels = useCallback((visible: boolean) => {
+        setNodeLabelsVisible(visible)
+    }, [])
+    
     const handleNodeZoom:nodeHandler = useCallback((node )=> {
         if (graphRef.current) {
             // graphRef.current?.pauseAnimation()
@@ -655,7 +655,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     }, [graph])
     
     // Main render callback
-    const paintNodes = useCallback((node:NodeObject, ctx:CanvasRenderingContext2D)=> {
+    const paintNodes = useCallback((node:NodeObject, ctx:CanvasRenderingContext2D, globalScale)=> {
         // let node = node//nodeMap[node.id]
         if (!node || node.x === undefined || node.y === undefined) {
             return;
@@ -673,9 +673,25 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 ctx.drawImage(node.darkIcon, node.x - size / 2, node.y - size / 2, size, size,);
             else
                 ctx.drawImage(node.lightIcon, node.x - size / 2, node.y - size / 2, size, size,);
+            
+            if (nodeLabelsVisible){
+                const label = node.label;
+                const fontSize = 12/globalScale
+                const textWidth = ctx.measureText(label).width;
+                const txtBox = [textWidth, fontSize].map(n => n + fontSize * 0.2); // some padding
+                ctx.font = `${fontSize}px Sans-Serif`;
+                ctx.fillStyle = mode === "light" ? 'white' : 'black';
+                ctx.fillRect(node.x - txtBox[0] / 2, node.y - (txtBox[1] / 2) + size/2, txtBox[0], txtBox[1]);
+        
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = mode !== "light" ? 'white' : 'black';
+                // ctx.fillStyle = node.color;
+                ctx.fillText(label, node.x, node.y + size/2);
+            }
         }
         
-    },[focusedItems, palette, mode])
+    },[focusedItems, palette, mode, nodeLabelsVisible])
     
     return (<>
         <Box component={"main"} sx={{flexGrow: 1, overflow: 'hidden'}} alignItems={"stretch"}>
@@ -707,11 +723,11 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             linkDirectionalParticleWidth={link => focusedItems.has(link.id) ? 8 : 0}
                             // TODO: Figure out canvas interaction with next.js
                             nodeLabel={(node) =>
-                                node?.label ? node.label.toString() : node.id.toString()
+                                (node?.label && !nodeLabelsVisible) ? node.label.toString() : ""
                             }
                             nodeRelSize={relSize}
                             // nodeCanvasObjectMode={()=>'after'}
-                            nodeCanvasObject={(node, ctx) => paintNodes(node, ctx)}
+                            nodeCanvasObject={(node, ctx, globalScale) => paintNodes(node, ctx, globalScale)}
                             onNodeClick={handleNodeZoom}
                             onNodeRightClick={(node,e)=> {
                                 // graphRef.current?.pauseAnimation()
@@ -730,7 +746,12 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             onEngineStop={engineStopCB}
                             // enablePointerInteraction={true}
                         />
-                        <GraphFilterPanel makePredicates={makePredicates} dates={dates.map(d=>new Date(d))}/>
+                        <GraphFilterPanel
+                            makePredicates={makePredicates}
+                            dates={dates.map(d=>new Date(d))}
+                            toggleNodeLabels={toggleNodeLabels}
+                            nodeLabels={nodeLabelsVisible}
+                        />
                     </Box>
                 </Grid>
                 <Grid item xs={3}>
@@ -893,6 +914,8 @@ export interface GraphPredicates {
 
 export interface GraphFilterPanelProps {
     makePredicates: filterHandler
+    toggleNodeLabels: (visible: boolean) => void
+    nodeLabels: boolean
     filter?: GraphPredicates
     dates: Array<Date>
 }

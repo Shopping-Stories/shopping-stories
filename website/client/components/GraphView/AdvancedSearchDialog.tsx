@@ -38,19 +38,18 @@ interface EntryDialogProps {
     setSearch: (search:string) => void
     setAdvanced: (open:boolean) => void
     open: boolean
-    fuzzy: boolean
+    // fuzzy: boolean
 }
 
-const AdvancedSearchDialog = ({setSearch, setAdvanced, open, fuzzy}: EntryDialogProps) => {
+const AdvancedSearchDialog = ({setSearch, setAdvanced, open}: EntryDialogProps) => {
     // console.log(dialogType, entry)
-    // const [fuzzy, setFuzzy] = useState<boolean>(false)
+    const [fuzzy, setFuzzy] = useState<boolean>(false)
     
     const initFormValues: Partial<AdvancedSearchOptions> = useMemo(()=>{
         return {}
     }, [])
     
     const handleSubmit = async (search: Partial<AdvancedSearchOptions>, fuzzy: boolean) => {
-        console.log(fuzzy)
         let req = "https://api.preprod.shoppingstories.org/itemsearch"
         let query = new URLSearchParams(Object.entries(search).map(e=>e)).toString()
         
@@ -59,6 +58,7 @@ const AdvancedSearchDialog = ({setSearch, setAdvanced, open, fuzzy}: EntryDialog
         } else {
             req += "/?" + query
         }
+        console.log(req)
         setSearch(req)
     }
     
@@ -94,7 +94,7 @@ const AdvancedSearchDialog = ({setSearch, setAdvanced, open, fuzzy}: EntryDialog
                 <DialogContentText sx={{mt:3}}>Advanced Search</DialogContentText>
                 <Grid container spacing={1}>
                     {fields.map(k =>
-                        <Grid item xs={3} key={k}>
+                        <Grid item xs={4} key={k}>
                             <TextField
                                 autoFocus
                                 name={k}
@@ -108,28 +108,28 @@ const AdvancedSearchDialog = ({setSearch, setAdvanced, open, fuzzy}: EntryDialog
                                 }
                                 onChange={handleChange}
                                 variant="outlined"
-                                value={values[k as keyof typeof values]}
+                                // value={values[k as keyof typeof values]}
                                 // defaultValue={values[k as keyof typeof values]}
                             />
                         </Grid>
                     )}
                 </Grid>
                 <DialogActions>
-                    <Button
-                        type={"submit"}
-                        // onClick={()=>setFuzzy(false)}
-                    >
-                        Submit Advanced Search
-                    </Button>
-                    {/*<ButtonGroup>*/}
-                    {/*    <Button*/}
-                    {/*        type={"submit"}*/}
-                    {/*        // onClick={()=>setFuzzy(true)}*/}
-                    {/*    >*/}
-                    {/*        Submit Advanced Fuzzy Search*/}
-                    {/*    </Button>*/}
-                    {/*</ButtonGroup>*/}
-                    {/*<Button onClick={handleClose}>Cancel</Button>*/}
+                    <ButtonGroup color={'primary'} variant={'contained'}>
+                        <Button
+                            type={"submit"}
+                            onClick={()=>setFuzzy(false)}
+                        >
+                            Advanced Search
+                        </Button>
+                        <Button
+                            type={"submit"}
+                            onClick={()=>setFuzzy(true)}
+                        >
+                            Fuzzy Advanced Search
+                        </Button>
+                    </ButtonGroup>
+                    <Button onClick={handleClose} color={'error'} variant={'contained'}> Cancel</Button>
                 </DialogActions>
                 </Form>
                 )}</Formik>

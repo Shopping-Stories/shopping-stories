@@ -25,6 +25,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import ButtonGroup from "@mui/material/ButtonGroup";
 // import AddCircle from '@mui/icons-material/AddCircle';
 // import Select from '@mui/material/Select';
 // import Box from '@mui/material/Box';
@@ -38,7 +39,7 @@ interface EntryQueryResult {
 }
 
 const doSearch = async (search: string, fuzzy: boolean): Promise<EntryQueryResult> => {
-    console.log(fuzzy)
+    // console.log(fuzzy)
     const res = await fetch(`https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`);
     // console.log(await res.text());
     // console.log(res);
@@ -79,7 +80,7 @@ const EntriesPage: NextPage = () => {
     const {data, refetch, isLoading} = useQuery({
         queryKey: ["entries", search],
         queryFn: () => advanced ? doAdvSearch(search) : doSearch(search, fuzzy),
-        // notifyOnChangeProps: ["data"]
+        enabled: search !== ''
     });
     
     const toGraph = () => {
@@ -161,31 +162,43 @@ const EntriesPage: NextPage = () => {
                                     
                                     {/*    </FormGroup>*/}
                                     {/*</FormControl>*/}
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={fuzzy}
-                                                onChange={handleFuzzyChange}
-                                            />
-                                        }
-                                        // label={`Fuzzy: ${fuzzy ? "on" : "off"}`}
-                                        label={"Fuzzy"}
-                                        labelPlacement="start"
-                                        name={"fuzzy"}
-                                    />
+                                    {/*<FormControlLabel*/}
+                                    {/*    control={*/}
+                                    {/*        <Switch*/}
+                                    {/*            checked={fuzzy}*/}
+                                    {/*            onChange={handleFuzzyChange}*/}
+                                    {/*        />*/}
+                                    {/*    }*/}
+                                    {/*    // label={`Fuzzy: ${fuzzy ? "on" : "off"}`}*/}
+                                    {/*    label={"Fuzzy"}*/}
+                                    {/*    labelPlacement="start"*/}
+                                    {/*    name={"fuzzy"}*/}
+                                    {/*/>*/}
+                                    {/*<Divider flexItem orientation={"vertical"}/>*/}
+                                    <ButtonGroup variant="contained" fullWidth>
+                                        <LoadingButton
+                                            fullWidth
+                                            loading={search !== '' && isLoading}
+                                            // variant="contained"
+                                            type="submit"
+                                            // sx={{ mt:1 }}
+                                        >
+                                            Search
+                                        </LoadingButton>
+                                        <LoadingButton
+                                            fullWidth
+                                            loading={search !== '' && isLoading}
+                                            // variant="contained"
+                                            type="submit"
+                                            // sx={{ mt:1 }}
+                                        >
+                                            Fuzzy Search
+                                        </LoadingButton>
+                                    </ButtonGroup>
                                     <Divider flexItem orientation={"vertical"}/>
                                     <LoadingButton
                                         fullWidth
-                                        loading={isLoading}
-                                        variant="contained"
-                                        type="submit"
-                                        // sx={{ mt:1 }}
-                                    >
-                                        Search
-                                    </LoadingButton>
-                                    <LoadingButton
-                                        fullWidth
-                                        loading={isLoading}
+                                        loading={search !== '' && isLoading}
                                         variant="contained"
                                         type="submit"
                                         onClick={()=>setAdvanced(true)}
@@ -195,7 +208,7 @@ const EntriesPage: NextPage = () => {
                                     <Divider flexItem orientation={"vertical"}/>
                                     <LoadingButton
                                         fullWidth
-                                        // loading={isLoading}
+                                        loading={search !== '' && isLoading}
                                         variant="contained"
                                         // type={'submit'}
                                         color={"secondary"}
