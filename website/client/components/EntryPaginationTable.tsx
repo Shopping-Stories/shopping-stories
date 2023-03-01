@@ -75,7 +75,7 @@ const columns: GridColDef[] = columnNames.map((str: string) : GridColDef => {
 export function getFarthInsert(farthings: number|undefined) {
     let farthInsert = "";
     if (farthings != undefined && farthings != 0) {
-        farthInsert = "." + (farthings/4).toString().replace("0.", "");
+        farthInsert = "." + (farthings/12).toString().replace("0.", "");
     }
     return farthInsert;
 }

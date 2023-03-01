@@ -23,8 +23,8 @@ const darkTheme: any = {
 		light: '#ab47bc'
 	},
 	secondary: {
-		main: '#606C38',
-		light: '#ab47bc'
+		main: '#879d3f',
+		light: '#ab47bc',
 	},
 };
 
