@@ -28,7 +28,7 @@ interface EntryQueryResult {
 export function getFarthInsert(farthings: number|undefined) {
     let farthInsert = "";
     if (farthings != undefined && farthings != 0) {
-        farthInsert = "." + (farthings/4).toString().replace("0.", "");
+        farthInsert = "." + (farthings/12).toString().replace("0.", "");
     }
     return farthInsert;
 }
@@ -49,6 +49,8 @@ export function moneyToString(pounds: number|undefined, shillings: number|undefi
         return "£" + pounds + "/" + shillings + "/" + pence + getFarthInsert(farthings);
     }
 }
+
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 const doSearch = async (search: string): Promise<EntryQueryResult> => {
     const res = await fetch("https://api.preprod.shoppingstories.org/search/" + search);
@@ -119,11 +121,12 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 Amount: row?.amount,
                 Item: toTitleCase((row?.item ?? "")),
                 // AccountHolderID: row?.accountHolderID,
-                Date: row?.ledger?.folio_year,
+                Date: (row?.Day ?? "") + " " + (row?.month == undefined ? "" : months[parseInt(row?.month) - 1]) + " " + row?.date_year,
                 Owner: row?.store_owner,
                 // Store: row?.meta?.store,
                 // Comments: row?.meta?.comments,
                 // Colony: row?.money?.colony,
+                Store: row?.store,
                 Quantity: row?.Quantity,
                 Commodity: row?.Commodity,
                 Currency: moneyToString(row?.currency?.pounds, row?.currency?.shillings, row?.currency?.pennies, row?.currency?.farthings),
@@ -151,6 +154,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         // 'Store',
         // 'Comments',
         // 'Colony',
+        "Store",
         'Dr/Cr',
         'Quantity',
         'Commodity',
@@ -173,7 +177,8 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                 "Relevant Item", 
                 "Item",
                 "Owner", 
-                "Comments"
+                "Comments",
+                "Store"
             ].includes(str) ? 1 
             : ([
                 "Reel", 

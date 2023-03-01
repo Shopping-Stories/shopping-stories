@@ -60,7 +60,11 @@ const EntryGraphView = ({search,title}:GraphGuiPageProps) => {
     const [params, setParams] = useState<EntriesQueryOptions>(
         [{
             queryKey: ["entries", search],
-            queryFn: ({ queryKey }) => doSearch(queryKey[1])
+            queryFn: ({ queryKey }) => doSearch(queryKey[1]),
+            refetchInterval: false,
+            // retry: false,
+            // retryOnMount: false,
+            refetchOnWindowFocus: false
         }])
     
     const queries = useQueries<EntriesQueryOptions>(
@@ -73,7 +77,11 @@ const EntryGraphView = ({search,title}:GraphGuiPageProps) => {
             ...params,
             {
                 queryKey: ["entries", newSearch],
-                queryFn: ({ queryKey }) => doSearch(queryKey[1])
+                queryFn: ({ queryKey }) => doSearch(queryKey[1]),
+                refetchInterval: false,
+                // retry: false,
+                // retryOnMount: false,
+                refetchOnWindowFocus: false
             }
             
         ]
@@ -88,10 +96,10 @@ const EntryGraphView = ({search,title}:GraphGuiPageProps) => {
     // TODO: figure refetch logic
     return (
         <>
-            {queries.some(q => q.isFetching || q.isLoading)  &&
-                // console.log(queries) &&
-              <LoadingPage title={title}/>}
-            {!queries.some(q => q.error && console.log(q.error)) &&
+            {queries.some(q => q.isFetching || q.isLoading)
+                ? // console.log(queries) &&
+                <LoadingPage title={title}/>
+                : !queries.some(q => q.error && console.log(q.error)) &&
                 <ForceGraph
                     // entries={entries.length ? entries : test}
                     entries={entries}

@@ -71,6 +71,9 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
                     let error_rows = ""
                     let entry: any
                     for (entry in value.entries) {
+                        if (value.entries[entry].item == "Currency" && value.entries[entry].errors == null) {
+                            value.entries[entry].errors = ["Check Item"]
+                        }
                         if (value.entries[entry].errors != null) {
                             error_rows += entry.toString() + ", "
                         }
@@ -126,7 +129,6 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
                 original: row,
                 id: n++
             }}) || [];
-            
             
             editRows(thing);
         }

@@ -1,4 +1,4 @@
-import React, { useState, memo  } from "react";
+import React, { useState, memo, useRef } from "react";
 import { NodeListItemProps, LinkListItemProps, NodeListProps } from "@components/GraphView/GraphGui";
 import { makeLinkID } from "@components/GraphView/util";
 
@@ -15,6 +15,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Drawer from "@mui/material/Drawer";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
 
 // import { useTheme } from "@mui/material";
 // import ListSubheader from "@mui/material/ListSubheader"
@@ -74,10 +75,11 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
     const {id, neighbors, nodeType, label} = node
     const [open, setOpen] = useState(false);
     const handleClickOpen = () => setOpen(!open);
-    
+    const nodeRef = useRef<HTMLDivElement | undefined>()
     return (
-        <>
+        <Box component={'div'} ref={nodeRef}>
             <ListItemButton
+                // component={'div'}
                 onMouseEnter={()=>focusOn(new Set<string|number>([node.id]))}
                 onMouseLeave={()=>focusOff(new Set<string|number>())}
             >
@@ -118,7 +120,7 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
             >
                 <List component="nav" disablePadding>
                     {neighbors && Object.entries(neighbors)
-                        // .filter(([key, v]) => (!!v && !!v.linkDict[getLinkKey(key, id.toString())]))
+                        .filter(([key, v]) => (!!v && !!v.linkDict[makeLinkID(key, id.toString())[2]]))
                         .map(([key, v]) => (
                             <LinkListItem
                                 key={key}
@@ -134,7 +136,7 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
                 </List>
             </Collapse>
             <Divider/>
-        </>
+        </Box>
     );
 };
 
