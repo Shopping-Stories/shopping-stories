@@ -1,9 +1,9 @@
 import { Box, Button, Paper, Stack } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { TobaccoEntry } from 'new_types/api_types';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
-interface ParserEditorDialog {
+interface Tobacco {
     tobacco_weight?: string
     gross_weight?: string
     tare_weight?: string
@@ -12,7 +12,7 @@ interface ParserEditorDialog {
 }
 
 
-const TobaccoFields = (props: ParserEditorDialog) => {
+const TobaccoFields = (props: Tobacco) => {
     const {
         tobacco_weight,
         gross_weight,
