@@ -6,6 +6,8 @@ export interface Currency {
     farthings: number;
 }
 
+export type CurrencyKey = keyof Currency
+
 export interface Ledger {
     reel: string
     folio_year: string
@@ -13,10 +15,14 @@ export interface Ledger {
     entry_id: string
 }
 
+export type LedgerKey = keyof Ledger
+
 export interface TobaccoMark {
     mark_number?: string;
     mark_text?: string;
 }
+
+export type TobaccoMarkKey = keyof TobaccoMark
 
 export interface TobaccoEntry {
     number?: string;
@@ -24,6 +30,8 @@ export interface TobaccoEntry {
     tare_weight?: string;
     weight?: string;
 }
+
+export type TobaccoEntryKey = keyof TobaccoEntry
 
 export interface Entry {
     amount?: string;
@@ -68,6 +76,8 @@ export interface Entry {
     "_id"?: string;
 }
 
+export type EntryKey = keyof Entry
+
 export interface ParserOutput {
     errors?: Array<string>
     error_context?: Array<Array<string | Array<string>>>
@@ -76,7 +86,7 @@ export interface ParserOutput {
     item?: string
     price?: string
     price_is_combo?: boolean
-    phrases?: Array<Object>
+    phrases?: Array<Map<string, string | Array<string>>>
     date?: string
     pounds?: number
     pounds_ster?: number
@@ -112,20 +122,111 @@ export interface ParserOutput {
     folio_reference?: string
     text_as_parsed?: string
     original_entry?: string
-    tobacco_marks?: Array<TobaccoMark>
     tobacco_location?: string
     tobacco_amount_off?: string
+    tobacco_marks?: Array<TobaccoMark>
     tobacco_entries?: Array<TobaccoEntry>
 }
 export type ParserOutputKey = keyof ParserOutput 
 
-export const ParserOutputKeys = ["errors", "error_context", "context", "text_as_parsed", "original_entry", "store", "debit_or_credit", "account_name", "amount", "amount_is_combo", "item", "price", "type", "liber_book",  "price_is_combo", "phrases", "date", "pounds_ster", "shillings_ster", "pennies_ster", "farthings_ster", "pounds", "shillings", "pennies", "farthings", "currency_type", "currency_colony", "currency_totaling_contextless", "commodity_totaling_contextless", "tobacco_location", "tobacco_entries", "tobacco_marks", "tobacco_amount_off",  "Marginalia", "store_owner", "reel", "folio_reference", "folio_year", "folio_page", "entry_id", "Date Year", "_Month", "Day", "Quantity", "Commodity", "people", "mentions"] as Array<ParserOutputKey>
+export const ParserOutputKeys = [
+    "errors",
+    "error_context",
+    "context",
+    "store",
+    "debit_or_credit",
+    "account_name",
+    "amount",
+    "amount_is_combo",
+    "tobacco_amount_off",
+    "item",
+    "price",
+    "text_as_parsed",
+    "original_entry",
+    "type",
+    "liber_book",
+     "price_is_combo",
+    "phrases",
+    "date",
+    "pounds_ster",
+    "shillings_ster",
+    "pennies_ster",
+    "farthings_ster",
+    "pounds",
+    "shillings",
+    "pennies",
+    "farthings",
+    "currency_type",
+    "currency_totaling_contextless",
+    "commodity_totaling_contextless",
+    "tobacco_location",
+    "tobacco_entries",
+    "tobacco_marks",
+    "Marginalia",
+    "store_owner",
+    "reel",
+    "folio_reference",
+    "folio_year",
+    "folio_page",
+    "entry_id",
+    "Date Year",
+    "_Month",
+    "Day",
+    "Quantity",
+    "Commodity",
+    "people",
+    "mentions"
+] as Array<ParserOutputKey>
 
-export const ParserStringKeys = new Set<ParserOutputKey>(["amount", "currency_colony", "item", "price", "tobacco_amount_off", "date", "Marginalia", "account_name", "store_owner", "folio_reference", "folio_year", "entry_id", "Date Year", "_Month", "Day", "tobacco_location", "debit_or_credit", "Quantity", "Commodity", "type", "liber_book", "store"] as Array<ParserOutputKey>)
-export const ParserStringArrayKeys = new Set<ParserOutputKey>(["errors", "people", "mentions"] as Array<ParserOutputKey>)
-export const ParserBooleanKeys = new Set<ParserOutputKey>(["amount_is_combo", "price_is_combo", "currency_totaling_contextless", "commodity_totaling_contextless"] as Array<ParserOutputKey>)
-export const ParserNumberKeys = new Set<ParserOutputKey>(["pounds", "pounds_ster", "shillings", "shillings_ster", "pennies", "pennies_ster", "farthings", "farthings_ster", "reel", "folio_page"] as Array<ParserOutputKey>)
+export const ParserStringKeys = new Set<ParserOutputKey>([
+    "amount",
+    "item",
+    "price",
+    "tobacco_amount_off",
+    "date",
+    "Marginalia",
+    "account_name",
+    "store_owner",
+    "folio_reference",
+    "folio_year",
+    "entry_id",
+    "Date Year",
+    "_Month",
+    "Day",
+    "tobacco_location",
+    "debit_or_credit",
+    "Quantity",
+    "Commodity",
+    "type",
+    "liber_book",
+    "store"
+] as Array<ParserOutputKey>)
 
+export const ParserStringArrayKeys = new Set<ParserOutputKey>([
+    "errors",
+    "people",
+    "mentions"
+] as Array<ParserOutputKey>)
+
+export const ParserBooleanKeys = new Set<ParserOutputKey>([
+    "amount_is_combo",
+    "price_is_combo",
+    "currency_totaling_contextless",
+    "commodity_totaling_contextless"
+] as Array<ParserOutputKey>)
+
+export const ParserNumberKeys = new Set<ParserOutputKey>([
+    "pounds",
+    "pounds_ster",
+    "shillings",
+    "shillings_ster",
+    "pennies",
+    "pennies_ster",
+    "farthings",
+    "farthings_ster",
+    "reel",
+    "folio_page"
+] as Array<ParserOutputKey>)
 
 // Function to convert tobacco mark to string for editing purposes
 export const tmToStr = (tms: Array<TobaccoMark>) => {
@@ -136,9 +237,9 @@ export const tmToStr = (tms: Array<TobaccoMark>) => {
         str += value.mark_text
         str += ", "
     })
-
+    
     return str
-}  
+}
 
 // Converts the string from tmToStr back to a tobacco mark
 export const tmStrToTMs = (tmstr: string) => {

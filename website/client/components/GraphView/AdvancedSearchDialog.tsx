@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useFormik, Formik, FieldArray, Form, getIn } from 'formik';
 import {advancedSearchSchema} from "../../formikSchemas";
+import {SearchAction} from "@components/context/SearchContext";
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -20,9 +21,12 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import FormLabel from '@mui/material/FormLabel';
 import Stack from "@mui/material/Stack";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import Divider from "@mui/material/Divider";
+// import { useRouter } from "next/router";
 
-interface AdvancedSearchOptions {
-    // search: string,
+export interface AdvancedSearchOptions {
     item: string,
     cat: string,
     subcat: string,
@@ -35,35 +39,39 @@ interface AdvancedSearchOptions {
 }
 
 interface EntryDialogProps {
-    setSearch: (search:string) => void
-    setAdvanced: (open:boolean) => void
+    setSearch: (search:SearchAction) => void
+    setAdvancedOpen: (open:boolean) => void
+    setFuzzy: (fuzzy:boolean) => void
     open: boolean
-    // fuzzy: boolean
+    fuzzy: boolean
+    toGraph: (query:string) => void
 }
 
-const AdvancedSearchDialog = ({setSearch, setAdvanced, open}: EntryDialogProps) => {
+const AdvancedSearchDialog = ({setSearch, setAdvancedOpen, open, fuzzy, setFuzzy, toGraph}: EntryDialogProps) => {
     // console.log(dialogType, entry)
-    const [fuzzy, setFuzzy] = useState<boolean>(false)
+    // const [fuzzy, setFuzzy] = useState<boolean>(false)
     
     const initFormValues: Partial<AdvancedSearchOptions> = useMemo(()=>{
         return {}
     }, [])
     
-    const handleSubmit = async (search: Partial<AdvancedSearchOptions>, fuzzy: boolean) => {
-        let req = "https://api.preprod.shoppingstories.org/itemsearch"
-        let query = new URLSearchParams(Object.entries(search).map(e=>e)).toString()
-        
-        if (fuzzy){
-            req += "-fuzzy/?" + query
-        } else {
-            req += "/?" + query
-        }
-        console.log(req)
-        setSearch(req)
+    const handleSubmit = async (search: Partial<AdvancedSearchOptions>) => {
+        setSearch({
+            type: fuzzy ? "FUZZY_ADVANCED" : "ADVANCED",
+            payload: new URLSearchParams(Object.entries(search).map(e => e)).toString()
+        })
     }
     
+    // const toAdvGraph = (search: Partial<AdvancedSearchOptions>, fuzzy: boolean)  => {
+    //     const path = `/entries/graphview/${makeReq(search, fuzzy)}`;
+    //     router.push({
+    //         pathname: path,
+    //         query: {fuzzy:fuzzy, advanced:true}
+    //     });
+    // }
+    
     const handleClose = () => {
-        setAdvanced(false);
+        setAdvancedOpen(false);
     };
     
     return (
@@ -80,7 +88,7 @@ const AdvancedSearchDialog = ({setSearch, setAdvanced, open}: EntryDialogProps) 
                     validationSchema={advancedSearchSchema}
                     onSubmit={(values) => {
                         console.log(values)
-                        handleSubmit(values, fuzzy).then(handleClose)
+                        handleSubmit(values).then(handleClose)
                     }}
                 >{({ 
                     values, 
@@ -88,10 +96,10 @@ const AdvancedSearchDialog = ({setSearch, setAdvanced, open}: EntryDialogProps) 
                     errors, 
                     handleChange, 
                     handleBlur, 
-                    isValid 
+                    // isValid
                 }) => (
                 <Form noValidate>
-                <DialogContentText sx={{mt:3}}>Advanced Search</DialogContentText>
+                {/*<DialogContentText sx={{mt:3}}>Advanced Search</DialogContentText>*/}
                 <Grid container spacing={1}>
                     {fields.map(k =>
                         <Grid item xs={4} key={k}>
@@ -115,21 +123,39 @@ const AdvancedSearchDialog = ({setSearch, setAdvanced, open}: EntryDialogProps) 
                     )}
                 </Grid>
                 <DialogActions>
-                    <ButtonGroup color={'primary'} variant={'contained'}>
+                    <Stack direction={'row'} spacing={2}>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={fuzzy}
+                                    onChange={e => setFuzzy(e.target.checked)}
+                                />
+                            }
+                            // label={`Fuzzy: ${fuzzy ? "on" : "off"}`}
+                            label={"Fuzzy"}
+                            labelPlacement="start"
+                            name={"fuzzy"}
+                        />
+                        <Divider flexItem orientation={"vertical"}/>
                         <Button
                             type={"submit"}
-                            onClick={()=>setFuzzy(false)}
+                            // onClick={()=>setFuzzy(false)}
+                            variant={'contained'}
+                            color={'success'}
                         >
-                            Advanced Search
+                            Submit
                         </Button>
+                        <Divider flexItem orientation={"vertical"}/>
                         <Button
-                            type={"submit"}
-                            onClick={()=>setFuzzy(true)}
+                            onClick={()=>toGraph(new URLSearchParams(Object.entries(values).map(e => e)).toString())}
+                            variant={"contained"}
+                            color={'secondary'}
                         >
-                            Fuzzy Advanced Search
+                            Graph View
                         </Button>
-                    </ButtonGroup>
-                    <Button onClick={handleClose} color={'error'} variant={'contained'}> Cancel</Button>
+                        <Divider flexItem orientation={"vertical"}/>
+                        <Button onClick={handleClose} color={'error'} variant={'contained'}> Cancel</Button>
+                    </Stack>
                 </DialogActions>
                 </Form>
                 )}</Formik>

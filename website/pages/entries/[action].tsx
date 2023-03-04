@@ -36,11 +36,15 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import FormLabel from '@mui/material/FormLabel';
 import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import useAuth, { isInGroup } from '@hooks/useAuth.hook';
 
 
 import Stack from "@mui/material/Stack";
 import { PaperStyles } from "../../styles/styles";
 import FormGroup from "@mui/material/FormGroup";
+import Divider from "@mui/material/Divider";
+import { Roles } from "../../config/constants.config";
 
 type ExcludedField = keyof Pick<ParserOutput,
     "amount_is_combo"|
@@ -80,52 +84,6 @@ const toDisplayCase = (k:string) => {
     });
 }
 
-const handleSubmit = async (newEntry: Partial<ParserOutput>, dType: string | undefined, id?: string) => {
-    let saveUrl = `https://api.preprod.shoppingstories.org/${dType?.toLowerCase()}_entry`;
-    console.log(saveUrl, newEntry)
-    if (!dType) return
-    let req = {}
-    let reqBody = JSON.stringify(newEntry)
-    console.log(reqBody)
-    if (dType === "Edit"){
-        if (!id) return
-        req = {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            // entry_id: newEntry.entry_id,
-            body: reqBody
-        }
-        saveUrl = saveUrl + "?" + new URLSearchParams({entry_id: id}).toString()
-    } else if (dType === "Create") {
-        req = {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            // many: false,
-            body: reqBody
-        }
-    }
-    console.log(saveUrl)
-    // if (!newEntry.entry_id) {
-    //     return
-    // }
-    const res = await fetch(saveUrl, req);
-    
-    const text = await res.text();
-    if (res.status == 200) {
-        let message = JSON.parse(text);
-        console.log(message);
-    }
-    else {
-        console.log("ERROR: " + text);
-    }
-}
-
 const fieldNames = Object.fromEntries(
     ParserOutputKeys
         .filter(k=>!excludedFields.has(k))
@@ -142,6 +100,11 @@ const EntryPage = () => {
     const router = useRouter()
     const action = router.query.action as string
     const entry = useEntry()
+    const { groups } = useAuth();
+    const isAdmin = isInGroup(Roles.Admin, groups);
+    const isModerator = isInGroup(Roles.Moderator, groups);
+    const isAdminOrModerator = isAdmin || isModerator;
+    const disabled = action === "View" || !isAdminOrModerator
     console.log(action, entry)
     // const [open, setOpen] = useState<boolean>(!!action)
     const initFormValues: Partial<ParserOutput> = useMemo(()=>{
@@ -194,6 +157,74 @@ const EntryPage = () => {
         }
     }, [entry])
     
+    const handleSubmit = async (newEntry: Partial<ParserOutput>, dType: string | undefined, id?: string) => {
+        let saveUrl = `https://api.preprod.shoppingstories.org/${dType?.toLowerCase()}_entry`;
+        console.log(saveUrl, newEntry)
+        if (!dType) return
+        let req = {}
+        let reqBody = JSON.stringify(newEntry)
+        console.log(reqBody)
+        if (dType === "Edit"){
+            if (!id) return
+            req = {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                // entry_id: newEntry.entry_id,
+                body: reqBody
+            }
+            saveUrl = saveUrl + "?" + new URLSearchParams({entry_id: id}).toString()
+        } else if (dType === "Create") {
+            req = {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                // many: false,
+                body: reqBody
+            }
+        }
+        console.log(saveUrl)
+        // if (!newEntry.entry_id) {
+        //     return
+        // }
+        const res = await fetch(saveUrl, req);
+        
+        const text = await res.text();
+        if (res.status == 200) {
+            let message = JSON.parse(text);
+            console.log(message);
+        }
+        else {
+            console.log("ERROR: " + text);
+        }
+    }
+    
+    const handleDelete = () => {
+        // const id = entry?._id
+        // if (!id) return
+        // let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
+        // let req = {
+        //     method: "POST",
+        //     headers: {
+        //         "Accept": "application/json",
+        //         "Content-Type": "application/json"
+        //     }
+        // }
+        // fetch(saveUrl, req).then(p => {
+        //     console.log(p)
+        // })
+        router.push('/entries/');
+    }
+    
+    const handleActionChange = (newAction: string) => {
+        const path = `/entries/${newAction}`;
+        router.push(path);
+    }
+    
     // const handleClose = () => {
     //     setDialog(undefined);
     // };
@@ -210,7 +241,7 @@ const EntryPage = () => {
             >
                 <Formik
                     validateOnBlur
-                    initialValues={initFormValues}
+                    initialValues={action !== 'Create' ? initFormValues : {}}
                     // validationSchema={entrySchema}
                     onSubmit={(values) => {
                         console.log(values)
@@ -226,7 +257,12 @@ const EntryPage = () => {
                        isValid
                    }) => (
                     <Form noValidate>
-                        <FormLabel>Entry Info</FormLabel>
+                        <FormGroup>
+                        <Typography variant={'h6'} gutterBottom>{action} Entry</Typography>
+                            <FormLabel>
+                                <Divider flexItem sx={{mt:1, mb:1}}>Entry Info</Divider>
+                            </FormLabel>
+                            
                         <Grid container spacing={1}>
                             {entryInfo.map(k=>(
                                 <Grid item xs={3} key={k}>
@@ -236,7 +272,7 @@ const EntryPage = () => {
                                         label={fieldNames[k]}
                                         fullWidth
                                         name={k}
-                                        disabled={action === "View"}
+                                        disabled={disabled}
                                         // sx={{m:1, width: '25ch'}}
                                         variant="outlined"
                                         onChange={handleChange}
@@ -252,7 +288,11 @@ const EntryPage = () => {
                                 </Grid>
                             ))}
                         </Grid>
-                        <FormLabel sx={{mt:3}}>Ledger Info</FormLabel>
+                        </FormGroup>
+                        <FormGroup>
+                        <FormLabel sx={{mt:3}}>
+                            <Divider flexItem sx={{mt:1, mb:1}}>Ledger Info</Divider>
+                        </FormLabel>
                         <Grid container spacing={1}>
                             {ledger.map(k=>(
                                 <Grid item xs={3} key={k}>
@@ -260,39 +300,7 @@ const EntryPage = () => {
                                         autoFocus
                                         name={k}
                                         margin="dense"
-                                        disabled={
-                                            action === "View"
-                                            // || (k == "entry_id" && action === "Edit")
-                                        }
-                                        label={fieldNames[k]}
-                                        fullWidth
-                                        onBlur={handleBlur}
-                                        error={
-                                            touched[k as keyof typeof values] &&
-                                            !!errors[k as keyof typeof values]
-                                        }
-                                        onChange={handleChange}
-                                        variant="outlined"
-                                        // value={values[k as keyof typeof values]}
-                                        defaultValue={values[k as keyof typeof values]}
-                                        // defaultValue={entry ? entry[k as EntryKey] : ""}
-                                    />
-                                </Grid>
-                            ))}
-                        </Grid>
-                        <FormGroup>
-                        <FormLabel sx={{mt:3}}>Currency Info</FormLabel>
-                        <Grid container spacing={1}>
-                            {money.map(k=>(
-                                <Grid item xs={3} key={k}>
-                                    <TextField
-                                        name={k}
-                                        autoFocus
-                                        margin="dense"
-                                        disabled={
-                                            action === "View"
-                                            // || (k == "entry_id" && action === "Edit")
-                                        }
+                                        disabled={disabled}
                                         label={fieldNames[k]}
                                         fullWidth
                                         onBlur={handleBlur}
@@ -311,13 +319,46 @@ const EntryPage = () => {
                         </Grid>
                         </FormGroup>
                         <FormGroup>
-                            {(!!values?.people?.length || action === "Create")  && <FormLabel>People</FormLabel>}
+                        <FormLabel sx={{mt:3}}>
+                            <Divider flexItem sx={{mt:1, mb:1}}>Currency Info</Divider>
+                        </FormLabel>
+                        <Grid container spacing={1}>
+                            {money.map(k=>(
+                                <Grid item xs={3} key={k}>
+                                    <TextField
+                                        name={k}
+                                        autoFocus
+                                        margin="dense"
+                                        disabled={disabled}
+                                        label={fieldNames[k]}
+                                        fullWidth
+                                        onBlur={handleBlur}
+                                        error={
+                                            touched[k as keyof typeof values] &&
+                                            !!errors[k as keyof typeof values]
+                                        }
+                                        onChange={handleChange}
+                                        variant="outlined"
+                                        // value={values[k as keyof typeof values]}
+                                        defaultValue={values[k as keyof typeof values]}
+                                        // defaultValue={entry ? entry[k as EntryKey] : ""}
+                                    />
+                                </Grid>
+                            ))}
+                        </Grid>
+                        </FormGroup>
+                        <FormGroup>
+                        {(!!values?.people?.length || action !== "View")  &&
+                          <FormLabel sx={{mt:3}}>
+                            <Divider flexItem sx={{mt:1, mb:1}}>People</Divider>
+                          </FormLabel>
+                        }
                         <FieldArray
                             name={"people"}
                             render={ (arrayHelpers)=> (
                             <>
                             <Box>
-                            {action && action !== "View" &&
+                            {!disabled &&
                               <Button
                                 startIcon={<AddCircle />}
                                 onClick={()=> arrayHelpers.push("")}
@@ -329,13 +370,14 @@ const EntryPage = () => {
                             <Grid container spacing={1}>
                                 {values?.people?.map((person, k)=>(
                                 <Grid item xs={3} key={k}>
+                                    <FormControl>
                                     <FormGroup row>
                                     <InputLabel>Person</InputLabel>
                                     <OutlinedInput
                                         name={`people.${k}`}
                                         // autoFocus
                                         margin="dense"
-                                        // disabled={action === "View"}
+                                        disabled={disabled}
                                         label={"Person"}
                                         // fullWidth
                                         // variant="outlined"
@@ -349,27 +391,34 @@ const EntryPage = () => {
                                         defaultValue={person}
                                         endAdornment={
                                             <InputAdornment position="end">
-                                                <IconButton
+                                                { !disabled &&
+                                                  <IconButton
                                                     onClick={()=>arrayHelpers.remove(k)}
                                                     edge="end"
-                                                >
+                                                  >
                                                     <DeleteIcon/>
-                                                </IconButton>
+                                                  </IconButton>
+                                                }
                                             </InputAdornment>
                                         }
                                     />
                                     </FormGroup>
+                                    </FormControl>
                                 </Grid>))}
                             </Grid>
                         </>)}/>
                         </FormGroup>
                         <FormGroup>
-                            {(!!values?.tobacco_entries?.length || action === "Create") && <FormLabel>Tobacco Entries</FormLabel>}
+                        {(!!values?.tobacco_entries?.length || action !== "View") &&
+                          <FormLabel sx={{mt:3}}>
+                            <Divider flexItem sx={{mt:1, mb:1}}>Tobacco Entries</Divider>
+                          </FormLabel>
+                        }
                         <FieldArray
                             name={"tobacco_entries"}
                             render={ (arrayHelpers)=> (<>
                             <Box>
-                                {action !=="View" &&
+                                {!disabled &&
                                   <Button
                                     startIcon={<AddCircle />}
                                     onClick={()=> arrayHelpers.push("")}
@@ -381,12 +430,13 @@ const EntryPage = () => {
                                 {values?.tobacco_entries?.map((t, k)=>(
                                 <Grid container spacing={1} key={k} alignItems={"center"}>
                                     <Grid item xs={12}>
-                                        <FormGroup row>
+                                        <Stack direction={'row'}>
+                                        {/*<FormGroup row>*/}
                                         <TextField
                                             name={`tobacco_entries.${k}.number`}
                                             autoFocus
                                             margin="dense"
-                                            // disabled={action === "View"}
+                                            disabled={disabled}
                                             label={"number"}
                                             // fullWidth
                                             // variant="outlined"
@@ -398,7 +448,7 @@ const EntryPage = () => {
                                             name={`tobacco_entries.${k}.gross_weight`}
                                             autoFocus
                                             margin="dense"
-                                            // disabled={action === "View"}
+                                            disabled={disabled}
                                             label={"Gross Weight"}
                                             // fullWidth
                                             // variant="outlined"
@@ -410,7 +460,7 @@ const EntryPage = () => {
                                             name={`tobacco_entries.${k}.tare_weight`}
                                             autoFocus
                                             margin="dense"
-                                            // disabled={action === "View"}
+                                            disabled={disabled}
                                             label={"Tare Weight"}
                                             // fullWidth
                                             // variant="outlined"
@@ -422,7 +472,7 @@ const EntryPage = () => {
                                             name={`tobacco_entries.${k}.weight`}
                                             autoFocus
                                             margin="dense"
-                                            // disabled={action === "View"}
+                                            disabled={disabled}
                                             label={"Weight"}
                                             // fullWidth
                                             // variant="outlined"
@@ -430,23 +480,38 @@ const EntryPage = () => {
                                             onChange={handleChange}
                                             defaultValue={t.weight}
                                         />
-                                        <Button
-                                            endIcon={<DeleteIcon/>}
-                                            onClick={()=>arrayHelpers.remove(k)}
-                                        >
-                                        </Button>
-                                        </FormGroup>
+                                        { !disabled &&
+                                            <IconButton
+                                                onClick={()=>arrayHelpers.remove(k)}
+                                                edge="end"
+                                            >
+                                                <DeleteIcon/>
+                                            </IconButton>
+                                        }
+                                        {/*<Button*/}
+                                        {/*    // variant={'contained'}*/}
+                                        {/*    endIcon={<DeleteIcon/>}*/}
+                                        {/*    onClick={()=>arrayHelpers.remove(k)}*/}
+                                        {/*>*/}
+                                        {/*    Delete*/}
+                                        {/*</Button>*/}
+                                        {/*</FormGroup>*/}
+                                        </Stack>
                                     </Grid>
                                 </Grid>
                         ))}</>)}/>
                         </FormGroup>
                         <FormGroup>
-                            {(!!values?.tobacco_marks?.length || action === "Create") && <FormLabel>Tobacco Marks</FormLabel>}
+                        {(!!values?.tobacco_marks?.length || action !== "View") &&
+                          <FormLabel sx={{mt:3}}>
+                            <Divider flexItem sx={{mt:1, mb:1}}>Tobacco Marks</Divider>
+                          </FormLabel>
+                        }
                         <FieldArray
                             name={"tobacco_marks"}
                             render={ (arrayHelpers)=> (<>
                             <Box>
-                                {action !=="View" &&
+                                {!disabled &&
                                   <Button
                                     startIcon={<AddCircle />}
                                     onClick={()=> arrayHelpers.push("")}
@@ -463,7 +528,7 @@ const EntryPage = () => {
                                             name={`tobacco_marks.${k}.mark_number`}
                                             autoFocus
                                             margin="dense"
-                                            // disabled={action === "View"}
+                                            disabled={disabled}
                                             label={"Mark Number"}
                                             // fullWidth
                                             // variant="outlined"
@@ -475,7 +540,7 @@ const EntryPage = () => {
                                             name={`tobacco_marks.${k}.mark_text`}
                                             autoFocus
                                             margin="dense"
-                                            // disabled={action === "View"}
+                                            disabled={disabled}
                                             label={"Mark Text"}
                                             // fullWidth
                                             // variant="outlined"
@@ -483,18 +548,66 @@ const EntryPage = () => {
                                             onChange={handleChange}
                                             defaultValue={t.mark_text}
                                         />
-                                        <Button
-                                            endIcon={<DeleteIcon/>}
+                                        { !disabled &&
+                                          <IconButton
                                             onClick={()=>arrayHelpers.remove(k)}
-                                        >
-                                        </Button>
+                                            edge="end"
+                                          >
+                                            <DeleteIcon/>
+                                          </IconButton>
+                                        }
+                                        {/*<Button*/}
+                                        {/*    endIcon={<DeleteIcon/>}*/}
+                                        {/*    onClick={()=>arrayHelpers.remove(k)}*/}
+                                        {/*>*/}
+                                        {/*</Button>*/}
                                     </FormGroup>
                                 </Grid>
                             </Grid>
                     ))}</>)}/>
                     </FormGroup>
+                        <Divider sx={{mt:2, mb:2}}/>
                         <Grid container>
-                        {action !== "View" && <Button type={"submit"}>Submit</Button>}
+                            <Stack direction={'row'}>
+                                {isAdminOrModerator &&
+                                  <>
+                                    <Button
+                                      onClick={()=>handleActionChange('Edit')}
+                                      variant={"contained"}
+                                      color={"warning"}
+                                    >
+                                      Edit
+                                    </Button>
+                                    {/*<Button*/}
+                                    {/*  sx={{ml:1}}*/}
+                                    {/*  onClick={()=>handleActionChange('Create')}*/}
+                                    {/*  startIcon={<AddCircle />}*/}
+                                    {/*  variant={"contained"}*/}
+                                    {/*>*/}
+                                    {/*  Create*/}
+                                    {/*</Button>*/}
+                                    <Button
+                                      sx={{ml:1}}
+                                      onClick={handleDelete}
+                                      variant={"contained"}
+                                      color={'error'}
+                                    >
+                                      Delete
+                                    </Button>
+                                  </>
+                                }
+                                {!disabled &&
+                                  <Button
+                                    sx={{ml:1}}
+                                    type={"submit"}
+                                    variant={"contained"}
+                                    color={'success'}
+                                  >
+                                    Submit
+                                  </Button>
+                                }
+                                
+                            </Stack>
                         </Grid>
                     </Form>
                 )}</Formik>

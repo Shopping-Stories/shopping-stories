@@ -31,7 +31,7 @@ type EntryProviderProps = {
     initialValue?: Entry
 }
 
-export const EntryProvider = ({
+const EntryProvider = ({
     children,
     initialValue = {}
 }: EntryProviderProps) => {
@@ -44,6 +44,6 @@ export const EntryProvider = ({
         </EntryDispatchContext.Provider>
     )
 }
-
+export default EntryProvider
 export const useEntry = () => useContext(EntryStateContext)
 export const useEntryDispatch = () => useContext(EntryDispatchContext)

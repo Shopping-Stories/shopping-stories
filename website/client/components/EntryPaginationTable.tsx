@@ -160,7 +160,7 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
         else{
             handleEntryAction(action, undefined)
         }
-    },[entryMap, selectedRow])
+    },[entryMap, selectedRow, handleEntryAction])
     
     // console.log("entryMap", entryMap)
     const rows = useMemo<GridRowsProp>(()=>{
@@ -189,9 +189,9 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
     
     
     return (
-        <Box sx={{height: '60vh', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
-            <Paper sx={{height: '100%',width: '100%', overflow: 'hidden' }}>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider', p: 1, }}>
+        <Box sx={{height:"80vh", width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
+            <Paper sx={{height: '100%',width: '100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
+                <Stack sx={{ borderBottom: 1, borderColor: 'divider', p: 1, }}>
                     <Stack spacing={1} direction={"row"}>
                         <Button
                             onClick={()=> handleACtionClick("View")}
@@ -234,20 +234,22 @@ const EntryPaginationTable = (props: EntryPaginationTable) => {
                             </>)
                         }
                     </Stack>
-                </Box>
-                <DataGrid
-                    editMode={'row'}
-                    rows={rows ?? []}
-                    columns={columns}
-                    autoPageSize
-                    getRowId={(row) => row.id}
-                    // isRowSelectable={(params) => params && isAdminOrModerator && editable}
-                    // components={{ Toolbar: EditToolbar }}
-                    // disableRowSelectionOnClick
-                    componentsProps={{
-                        cell: { onFocus: handleCellFocus },
-                    }}
-                />
+                </Stack>
+                    <DataGrid
+                        editMode={'row'}
+                        rows={rows ?? []}
+                        columns={columns}
+                        autoPageSize
+                        getRowId={(row) => row.id}
+                        // isRowSelectable={(params) => params && isAdminOrModerator && editable}
+                        // components={{ Toolbar: EditToolbar }}
+                        // disableRowSelectionOnClick
+                        // rowsPerPageOptions={[5, 10, 20]}
+                        pagination
+                        componentsProps={{
+                            cell: { onFocus: handleCellFocus },
+                        }}
+                    />
             </Paper>
         </Box>
     );

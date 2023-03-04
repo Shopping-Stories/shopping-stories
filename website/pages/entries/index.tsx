@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { NextPage } from 'next';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
@@ -17,6 +17,7 @@ import { Roles } from 'config/constants.config';
 import { PaperStyles } from 'styles/styles';
 import { useEntryDispatch } from "@components/context/EntryContext";
 import AdvancedSearchDialog from "@components/GraphView/AdvancedSearchDialog";
+import { useSearch, useSearchDispatch } from "@components/context/SearchContext";
 
 import Divider from "@mui/material/Divider";
 import Switch from "@mui/material/Switch";
@@ -38,55 +39,60 @@ interface EntryQueryResult {
     entries: (Entry)[];
 }
 
-const doSearch = async (search: string, fuzzy: boolean): Promise<EntryQueryResult> => {
-    // console.log(fuzzy)
-    const res = await fetch(`https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`);
-    // console.log(await res.text());
-    // console.log(res);
-    let toret: EntryQueryResult = JSON.parse(await res.text());
-    return toret;
-};
-
-const doAdvSearch = async (query: string): Promise<EntryQueryResult> => {
-    const res = await fetch(query);
-    // console.log(await res.text());
-    // console.log(res);
-    let toret: EntryQueryResult = JSON.parse(await res.text());
-    return toret;
-};
-
 const EntriesPage: NextPage = () => {
     const { groups, loading } = useAuth();
     const router = useRouter();
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isModerator = isInGroup(Roles.Moderator, groups);
     const isAdminOrModerator = isAdmin || isModerator;
-    const [search, setSearch] = useState<string>('');
-    const [advanced, setAdvanced] = useState<boolean>(false)
-    const [fuzzy, setFuzzy] = useState<boolean>(false)
+    // const [search, setSearch] = useState<string>('');
+    const {search, fuzzy, advanced} = useSearch()
+    const searchDispatch = useSearchDispatch()
+    const [fuzzToggle, setFuzzToggle] = useState<boolean>(true)
+    const [advancedOpen, setAdvancedOpen] = useState<boolean>(false)
     const dispatch = useEntryDispatch()
-
     const searchForm = useFormik<SearchType>({
         initialValues: {
-            search: '',
+            search: !advanced ? search : '',
         },
         validationSchema: searchSchema,
         onSubmit: (values: any) => {
             if (values.search)
-                setSearch(values.search)
+                searchDispatch({type: fuzzToggle ? "FUZZY_SIMPLE" : "SIMPLE", payload: values.search})
         },
     });
-
-    const {data, refetch, isLoading} = useQuery({
-        queryKey: ["entries", search],
-        queryFn: () => advanced ? doAdvSearch(search) : doSearch(search, fuzzy),
-        enabled: search !== ''
+    
+    // console.log(search)
+    
+    const doSearch = useCallback(async () => {
+        const req = advanced
+            ? `https://api.preprod.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
+            : `https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
+        const res = await fetch(req);
+        let toret: EntryQueryResult = JSON.parse(await res.text());
+        console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
+        console.log(req)
+        console.log(toret);
+        return toret;
+    },[search, fuzzy, advanced])
+    
+    // const queryClient = useQueryClient()
+    
+    const {data, isLoading} = useQuery({
+        queryKey: ["entries", search, fuzzy, advanced],
+        queryFn: doSearch,
+        // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
+        enabled: search !== '',
+        keepPreviousData: true,
+        staleTime: 1000
     });
     
-    const toGraph = () => {
-        const path = `/entries/graphview/${searchForm.values.search}`;
-
-        router.push(path);
+    const toGraph = (query:string) => {
+        const path = `/entries/graphview/${query}`;
+        router.push({
+            pathname: path,
+            query: {search:query, fuzzy:fuzzToggle, advanced:advancedOpen}
+        });
     };
     
     const handleEntryAction = useCallback((action: string, payload: Entry | undefined) => {
@@ -104,7 +110,7 @@ const EntriesPage: NextPage = () => {
             }
             fetch(saveUrl, req).then(p => {
                 console.log(p)
-                refetch().then(q => console.log(q.status))
+                // refetch().then(q => console.log(q.status))
             })
             return
         }
@@ -116,16 +122,16 @@ const EntriesPage: NextPage = () => {
             })
         }
         router.push(path);
-    },[dispatch, router, refetch])
+    },[dispatch, router])
     
     const handleFuzzyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFuzzy(e.target.checked)
+        setFuzzToggle(e.target.checked)
     };
     
     
-    if (loading) {
-        return <LoadingPage />;
-    }
+    // if (loading) {
+    //     return <LoadingPage />;
+    // }
 
     return (
         // <QueryClientProvider client={queryClient}>
@@ -162,48 +168,50 @@ const EntriesPage: NextPage = () => {
                                     
                                     {/*    </FormGroup>*/}
                                     {/*</FormControl>*/}
-                                    {/*<FormControlLabel*/}
-                                    {/*    control={*/}
-                                    {/*        <Switch*/}
-                                    {/*            checked={fuzzy}*/}
-                                    {/*            onChange={handleFuzzyChange}*/}
-                                    {/*        />*/}
-                                    {/*    }*/}
-                                    {/*    // label={`Fuzzy: ${fuzzy ? "on" : "off"}`}*/}
-                                    {/*    label={"Fuzzy"}*/}
-                                    {/*    labelPlacement="start"*/}
-                                    {/*    name={"fuzzy"}*/}
-                                    {/*/>*/}
-                                    {/*<Divider flexItem orientation={"vertical"}/>*/}
-                                    <ButtonGroup variant="contained" fullWidth>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={fuzzToggle}
+                                                onChange={handleFuzzyChange}
+                                            />
+                                        }
+                                        // label={`Fuzzy: ${fuzzy ? "on" : "off"}`}
+                                        label={"Fuzzy"}
+                                        labelPlacement="start"
+                                        name={"fuzzy"}
+                                    />
+                                    <Divider flexItem orientation={"vertical"}/>
+                                    {/*<ButtonGroup variant="contained" fullWidth>*/}
                                         <LoadingButton
                                             fullWidth
                                             loading={search !== '' && isLoading}
-                                            // variant="contained"
+                                            variant="contained"
                                             type="submit"
+                                            // onClick={()=>setFuzzy(false)}
                                             // sx={{ mt:1 }}
                                         >
                                             Search
                                         </LoadingButton>
-                                        <LoadingButton
-                                            fullWidth
-                                            loading={search !== '' && isLoading}
-                                            // variant="contained"
-                                            type="submit"
-                                            // sx={{ mt:1 }}
-                                        >
-                                            Fuzzy Search
-                                        </LoadingButton>
-                                    </ButtonGroup>
+                                    {/*    <LoadingButton*/}
+                                    {/*        fullWidth*/}
+                                    {/*        loading={search !== '' && isLoading}*/}
+                                    {/*        // variant="contained"*/}
+                                    {/*        type="submit"*/}
+                                    {/*        onClick={()=>setFuzzy(true)}*/}
+                                    {/*        // sx={{ mt:1 }}*/}
+                                    {/*    >*/}
+                                    {/*        Fuzzy Search*/}
+                                    {/*    </LoadingButton>*/}
+                                    {/*</ButtonGroup>*/}
                                     <Divider flexItem orientation={"vertical"}/>
                                     <LoadingButton
                                         fullWidth
                                         loading={search !== '' && isLoading}
                                         variant="contained"
                                         type="submit"
-                                        onClick={()=>setAdvanced(true)}
+                                        onClick={()=>setAdvancedOpen(true)}
                                     >
-                                        Advanced Search
+                                        Advanced Options
                                     </LoadingButton>
                                     <Divider flexItem orientation={"vertical"}/>
                                     <LoadingButton
@@ -212,7 +220,7 @@ const EntriesPage: NextPage = () => {
                                         variant="contained"
                                         // type={'submit'}
                                         color={"secondary"}
-                                        onClick={toGraph}
+                                        onClick={()=>toGraph(searchForm.values.search)}
                                         // sx={{ mt:1 }}
                                     >
                                         Graph View
@@ -234,7 +242,14 @@ const EntriesPage: NextPage = () => {
                     </Grid>
                 </Paper>
             </>
-            <AdvancedSearchDialog setSearch={setSearch} setAdvanced={setAdvanced} open={advanced} fuzzy={fuzzy}/>
+            <AdvancedSearchDialog
+                setSearch={searchDispatch}
+                open={advancedOpen}
+                setAdvancedOpen={setAdvancedOpen}
+                fuzzy={fuzzToggle}
+                setFuzzy={setFuzzToggle}
+                toGraph={toGraph}
+            />
         </ColorBackground>
 
         // {/*</QueryClientProvider>*/}

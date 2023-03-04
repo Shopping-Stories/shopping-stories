@@ -12,7 +12,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { getDesignTokens } from 'styles/theme';
 import { Client, dedupExchange, fetchExchange, Provider } from 'urql';
 import {useTheme} from "@mui/material";
-import { EntryProvider } from "@components/context/EntryContext";
+import EntryProvider from "@components/context/EntryContext";
+import SearchProvider from "@components/context/SearchContext";
 // import {
 //     addAuthToOperation,
 //     didAuthError,
@@ -142,7 +143,9 @@ function App({
                             <CssBaseline />
                             <Layout>
                                 <EntryProvider>
-                                    <Component {...pageProps} />
+                                    <SearchProvider>
+                                        <Component {...pageProps} />
+                                    </SearchProvider>
                                 </EntryProvider>
                             </Layout>
                         </ThemeProvider>
