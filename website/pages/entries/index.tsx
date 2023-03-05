@@ -48,7 +48,7 @@ const EntriesPage: NextPage = () => {
     // const [search, setSearch] = useState<string>('');
     const {search, fuzzy, advanced} = useSearch()
     const searchDispatch = useSearchDispatch()
-    const [fuzzToggle, setFuzzToggle] = useState<boolean>(true)
+    const [fuzzToggle, setFuzzToggle] = useState<boolean>(search !== '' ? fuzzy : true)
     const [advancedOpen, setAdvancedOpen] = useState<boolean>(false)
     const dispatch = useEntryDispatch()
     const searchForm = useFormik<SearchType>({
