@@ -18,11 +18,13 @@ const ForceGraph = dynamic(() => import('../../../client/components/GraphView/Gr
 
 
 export const getServerSideProps: GetServerSideProps = async context => {
-    let search = context.query.search as string
+    const {search, fuzzy, advanced} = context.query
     // console.log("Search:", arg);
     return {
         props: {
-            search: search,
+            search: search as string,
+            fuzzy: Boolean(fuzzy),
+            advanced: Boolean(advanced),
             title: 'GraphView'
         },
     };
@@ -34,6 +36,8 @@ export interface EntryQueryResult {
 
 interface GraphGuiPageProps {
     search: string
+    fuzzy: boolean,
+    advanced: boolean
     title: string
 }
 
@@ -46,8 +50,8 @@ type EntriesQueryKey = string[]
 type EntriesQueryOptions = UseQueryOptions<EntryQueryResult, Error, EntryQueryResult, EntriesQueryKey>[]
 
 //possibly change to server side rendered
-const EntryGraphView = ({search,title}:GraphGuiPageProps) => {
-    
+const EntryGraphView = ({search,fuzzy, advanced,title}:GraphGuiPageProps) => {
+    console.log(search, fuzzy, advanced)
     const doSearch = async (arg:string = search): Promise<EntryQueryResult> => {
         const res = await fetch("https://api.preprod.shoppingstories.org:443/search/" + arg);
         // console.log(await res.text());

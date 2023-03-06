@@ -1,29 +1,17 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useRouter } from 'next/router';
-import { useFormik, Formik, FieldArray, Form, getIn } from 'formik';
+import { Formik, FieldArray, Form, getIn } from 'formik';
 import {useEntry} from "@components/context/EntryContext";
-import {entrySchema} from "../../client/formikSchemas";
 import {
-    Entry,
-    EntryKey,
     ParserOutput,
     ParserOutputKeys,
     ParserOutputKey,
     // ParserStringKeys, ParserBooleanKeys, ParserStringArrayKeys, ParserNumberKeys,
-    Currency, Ledger,
-    TobaccoEntry, TobaccoEntryKey, TobaccoMarkKey, TobaccoMark
 } from "new_types/api_types";
 import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
-import LoadingPage from '@components/LoadingPage';
-
 
 import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import AddCircle from "@mui/icons-material/AddCircle";
@@ -46,55 +34,11 @@ import FormGroup from "@mui/material/FormGroup";
 import Divider from "@mui/material/Divider";
 import { Roles } from "../../config/constants.config";
 
-type ExcludedField = keyof Pick<ParserOutput,
-    "amount_is_combo"|
-    "price_is_combo"|
-    "commodity_totaling_contextless"|
-    "currency_totaling_contextless"|
-    "errors"|
-    "error_context"|
-    "context"|
-    "type"|
-    "liber_book"|
-    "phrases"|
-    "mentions"
-    >
-type IncludedField = keyof Omit<ParserOutputKey, ExcludedField>
-
-const noDisplay = [
-    "amount_is_combo",
-    "price_is_combo",
-    "commodity_totaling_contextless",
-    "currency_totaling_contextless",
-    "errors",
-    "error_context",
-    "context",
-    "error_context",
-    "type",
-    "liber_book",
-    "phrases",
-    "mentions"
-] as Array<ExcludedField>
-
-const excludedFields = new Set<ParserOutputKey>(noDisplay)
-
 const toDisplayCase = (k:string) => {
     return k.replace(/(_|^)([^_]?)/g, function(_, prep, letter) {
         return (prep && ' ') + letter.toUpperCase();
     });
 }
-
-const fieldNames = Object.fromEntries(
-    ParserOutputKeys
-        .filter(k=>!excludedFields.has(k))
-        .map(k => [k as IncludedField, toDisplayCase(k as string)])
-)
-
-// interface EntryDialogProps {
-//     dialogType?: string
-//     entry?: Entry
-//     setDialog: (dialog:string|undefined) => void
-// }
 
 const EntryPage = () => {
     const router = useRouter()
@@ -254,7 +198,6 @@ const EntryPage = () => {
                        errors,
                        handleChange,
                        handleBlur,
-                       isValid
                    }) => (
                     <Form noValidate>
                         <FormGroup>
@@ -354,7 +297,7 @@ const EntryPage = () => {
                           </FormLabel>
                         }
                         <FieldArray
-                            name={"people"}
+                            name="people"
                             render={ (arrayHelpers)=> (
                             <>
                             <Box>
@@ -619,6 +562,44 @@ const EntryPage = () => {
 
 export default EntryPage
 
+const fieldNames = Object.fromEntries(
+    ParserOutputKeys
+        .filter(k=>!excludedFields.has(k))
+        .map(k => [k as IncludedField, toDisplayCase(k as string)])
+)
+
+type ExcludedField = keyof Pick<ParserOutput,
+    "amount_is_combo"|
+    "price_is_combo"|
+    "commodity_totaling_contextless"|
+    "currency_totaling_contextless"|
+    "errors"|
+    "error_context"|
+    "context"|
+    "type"|
+    "liber_book"|
+    "phrases"|
+    "mentions"
+    >
+type IncludedField = keyof Omit<ParserOutputKey, ExcludedField>
+
+const noDisplay = [
+    "amount_is_combo",
+    "price_is_combo",
+    "commodity_totaling_contextless",
+    "currency_totaling_contextless",
+    "errors",
+    "error_context",
+    "context",
+    "error_context",
+    "type",
+    "liber_book",
+    "phrases",
+    "mentions"
+] as Array<ExcludedField>
+
+const excludedFields = new Set<ParserOutputKey>(noDisplay)
+
 const money = [
     "currency_type",
     "pounds_ster",
@@ -631,23 +612,23 @@ const money = [
     // "farthings",
 ]
 
-const tobacco = [
-    "tobacco_location",
-    // "tobacco_marks",
-    // "tobacco_entries"
-]
-
-const tobaccoEntry = [
-    "number",
-    "gross_weight",
-    "tare_weight",
-    "weight",
-]
-
-const tobaccoMark = [
-    "mark_number",
-    "mark_text"
-]
+// const tobacco = [
+//     "tobacco_location",
+//     // "tobacco_marks",
+//     // "tobacco_entries"
+// ]
+//
+// const tobaccoEntry = [
+//     "number",
+//     "gross_weight",
+//     "tare_weight",
+//     "weight",
+// ]
+//
+// const tobaccoMark = [
+//     "mark_number",
+//     "mark_text"
+// ]
 
 const ledger = [
     "entry_id",

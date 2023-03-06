@@ -5,7 +5,7 @@ import {
     ReactNode,
     Dispatch,
 } from 'react'
-import { Entry, ParserOutput } from "new_types/api_types";
+import { Entry } from "new_types/api_types";
 
 type EntryState = Entry
 export type EntryAction = {

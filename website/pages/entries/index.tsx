@@ -2,12 +2,12 @@ import { useState, useCallback } from "react";
 import { NextPage } from 'next';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
 import EntryPaginationTable from "@components/EntryPaginationTable";
-import LoadingPage from '@components/LoadingPage';
+// import LoadingPage from '@components/LoadingPage';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 import useAuth, { isInGroup } from '@hooks/useAuth.hook';
 import { searchSchema } from 'client/formikSchemas';
@@ -17,7 +17,7 @@ import { Roles } from 'config/constants.config';
 import { PaperStyles } from 'styles/styles';
 import { useEntryDispatch } from "@components/context/EntryContext";
 import AdvancedSearchDialog from "@components/GraphView/AdvancedSearchDialog";
-import { useSearch, useSearchDispatch } from "@components/context/SearchContext";
+import { useSearch, useSearchDispatch, SearchAction } from "@components/context/SearchContext";
 
 import Divider from "@mui/material/Divider";
 import Switch from "@mui/material/Switch";
@@ -26,21 +26,20 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import ButtonGroup from "@mui/material/ButtonGroup";
-// import AddCircle from '@mui/icons-material/AddCircle';
-// import Select from '@mui/material/Select';
-// import Box from '@mui/material/Box';
-// import Button from '@mui/material/Button';
-// import Container from '@mui/material/Container';
-// import DialogContentText from '@mui/material/DialogContentText';
-// import FormGroup from '@mui/material/FormGroup';
 
 interface EntryQueryResult {
     entries: (Entry)[];
 }
 
+const getType = (fz:boolean, adv:boolean): SearchAction["type"] => {
+    if (fz && adv) return "FUZZY_ADVANCED"
+    if (!fz && adv) return "ADVANCED"
+    if (fz && !adv) return "FUZZY_SIMPLE"
+    return "SIMPLE"
+}
+
 const EntriesPage: NextPage = () => {
-    const { groups, loading } = useAuth();
+    const { groups } = useAuth();
     const router = useRouter();
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isModerator = isInGroup(Roles.Moderator, groups);
@@ -58,7 +57,7 @@ const EntriesPage: NextPage = () => {
         validationSchema: searchSchema,
         onSubmit: (values: any) => {
             if (values.search)
-                searchDispatch({type: fuzzToggle ? "FUZZY_SIMPLE" : "SIMPLE", payload: values.search})
+                searchDispatch({type: getType(fuzzToggle, advancedOpen), payload: values.search})
         },
     });
     
@@ -89,6 +88,7 @@ const EntriesPage: NextPage = () => {
     
     const toGraph = (query:string) => {
         const path = `/entries/graphview/${query}`;
+        searchDispatch({type: getType(fuzzToggle, advancedOpen), payload: query})
         router.push({
             pathname: path,
             query: {search:query, fuzzy:fuzzToggle, advanced:advancedOpen}

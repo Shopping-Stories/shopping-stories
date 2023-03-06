@@ -1,31 +1,19 @@
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import { AdvancedSearch, OptionsType } from 'client/types';
-import { Dispatch, SetStateAction, useEffect, useState, useMemo, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo, useCallback } from 'react';
 import { Entry, ParserOutput, ParserOutputKey, ParserOutputKeys } from "new_types/api_types";
-import {useEntryDispatch} from "@components/context/EntryContext";
-import { useRouter } from 'next/router';
-import Popover from '@mui/material/Popover';
-import Typography from '@mui/material/Typography';
 import Button from "@mui/material/Button";
 import AddCircle from "@mui/icons-material/AddCircle";
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import {
     GridColDef,
     GridRowsProp,
     DataGrid,
     GridRowId,
-    useGridApiRef,
-    GridCsvExportOptions,
     GridToolbarExport,
     GridToolbarContainer,
-    useGridApiContext,
     GridColumnVisibilityModel
 } from "@mui/x-data-grid";
 import Stack from "@mui/material/Stack";
-// import EntryDialog from "@components/GraphView/EntryDialog";
-import Toolbar from "@mui/material/Toolbar";
 
 interface SelectedRowParams {
     id: GridRowId;
@@ -45,22 +33,9 @@ const EntryPaginationTable = ({
     entries
 }: EntryPaginationTable) => {
 
-
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const router = useRouter();
+    // const router = useRouter();
     const [selectedRow, setSelectedRow] =
         useState<SelectedRowParams| null>(null);
-    // const [selectedRow, setSelectedRow] = useState()
-    const [dialog, setDialog] = useState<string | undefined>(undefined)
-    // const [open, setOpen] = useState<boolean>(!!dialogType)
-    const handleClose = () => {
-        setDialog(undefined);
-    };
-    
-    const dispatch = useEntryDispatch()
-    
-    const gridRef = useGridApiRef()
-    // setRowsPerPage;
     
     const handleCellFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
         const row = event.currentTarget.parentElement;
@@ -130,8 +105,7 @@ const EntryPaginationTable = ({
             }
         }) || [];
     }, [entries])
-    console.log(cols)
-    console.log(hiddenCols)
+    console.log(cols, hiddenCols)
     return (
         <Box sx={{height:"80vh", width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
             <Paper sx={{height: '100%',width: '100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
