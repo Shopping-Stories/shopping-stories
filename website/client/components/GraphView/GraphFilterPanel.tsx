@@ -17,8 +17,11 @@ import StorefrontIcon from "@mui/icons-material/Storefront";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOver";
+// import VisibilityIcon from '@mui/icons-material/Visibility';
+// import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Grid from "@mui/material/Grid";
 import Switch from "@mui/material/Switch";
+import { ToggleButton } from "@mui/material";
 
 // import FormGroup from "@mui/material/FormGroup";
 // import Button from "@mui/material/Button";
@@ -34,25 +37,34 @@ import Switch from "@mui/material/Switch";
 // import LegendToggleIcon from "@mui/icons-material/LegendToggle";
 // import Fab from "@mui/material/Fab";
 
-const GraphFilterPanel = ({makePredicates, dates}: GraphFilterPanelProps) => {
+const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}: GraphFilterPanelProps) => {
     // const [open, setOpen] = useState(false);
     // const handleClick = () => {
     //     setOpen(!open);
     // };
     const [range, setRange] = useState<number[]>([1, dates.length])
     const [checked, setChecked] = useState<boolean>(false)
-    
+    // const [labels, setLabels] = useState(()=> ['nodes', 'edges'])
     const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-            if (e.target.checked) {
-                makePredicates("date", undefined, e.target.checked,
-                    { start: dates[range[0]-1], end: dates[range[1]-1] }
-                )
-            }
-            else {
-                makePredicates("date", undefined, e.target.checked, undefined)
-            }
-            setChecked(e.target.checked)
+        if (e.target.checked) {
+            makePredicates("date", undefined, e.target.checked,
+                { start: dates[range[0]-1], end: dates[range[1]-1] }
+            )
+        }
+        else {
+            makePredicates("date", undefined, e.target.checked, undefined)
+        }
+        setChecked(e.target.checked)
     }
+    
+    // const handleLabels = (e:React.MouseEvent<HTMLElement>, newLabels: string[]) => {
+    //     console.log(e.target)
+    //     console.log(newLabels)
+    //     setLabels(newLabels)
+    //     toggleNodeLabels(!('nodes' in newLabels))
+    //     // if ('edges' in newLabels)
+    //     //     toggleNodeLabels(!nodeLabels)
+    // }
     
     const handleChange = (e:Event, newValue: number[]) => {
         if (!newValue.length)
@@ -81,7 +93,7 @@ const GraphFilterPanel = ({makePredicates, dates}: GraphFilterPanelProps) => {
             >
                 <Grid
                     item
-                    xs={4}
+                    xs={2}
                 >
                     <Typography gutterBottom mt={1}>Node Filters</Typography>
                     <Stack direction={"row"}>
@@ -162,30 +174,60 @@ const GraphFilterPanel = ({makePredicates, dates}: GraphFilterPanelProps) => {
                     <Box sx={{ml: 1}}>
                         <Typography gutterBottom mt={1}>Date Range</Typography>
                         <Stack direction={"row"} alignItems={'center'}>
-                        {
-                            dates.length !== 0
-                            ? <>
-                                <Slider
-                                sx={{ ml: 1, mr: 2 }}
-                                size={dates.length < 25 ? "medium" : "small"}
-                                // marks={dates.map((d,i)=>({value:i,label:d.toLocaleString().split(' ')[0]}))}
-                                marks={true}
-                                value={range}
-                                min={1}
-                                max={dates.length}
-                                onChange={(e, v)=>handleChange(e, v as number[])}
-                                valueLabelDisplay="auto"
-                                valueLabelFormat={x=> dates ? dates[x-1].toLocaleString().split(', ')[0] : x}
-                                />
-                                <Switch
-                                    checked={checked}
-                                    onChange={handleCheck}
-                                />
-                            </>
-                            : <Typography sx={{ ml: 1 }}>N/A</Typography>
-                        }
+                            {
+                                dates.length !== 0
+                                    ? <>
+                                        <Slider
+                                            sx={{ ml: 1, mr: 2 }}
+                                            size={dates.length < 25 ? "medium" : "small"}
+                                            // marks={dates.map((d,i)=>({value:i,label:d.toLocaleString().split(' ')[0]}))}
+                                            marks={true}
+                                            value={range}
+                                            min={1}
+                                            max={dates.length}
+                                            onChange={(e, v)=>handleChange(e, v as number[])}
+                                            valueLabelDisplay="auto"
+                                            valueLabelFormat={x=> dates ? dates[x-1].toLocaleString().split(', ')[0] : x}
+                                        />
+                                        <Switch
+                                            checked={checked}
+                                            onChange={handleCheck}
+                                        />
+                                    </>
+                                    : <Typography sx={{ ml: 1 }}>N/A</Typography>
+                            }
                         </Stack>
                     </Box>
+                </Grid>
+                <Grid item xs={2}
+                      sx={{
+                          borderLeft : (theme) => `1px solid ${theme.palette.divider}`,
+                          alignItems: 'center'
+                      }}
+                >
+                    <Typography gutterBottom mt={1} ml={1}>Toggle Labels</Typography>
+                    <Stack direction={'row'} ml={1}>
+                        {/*<ToggleButtonGroup*/}
+                        {/*    value={labels}*/}
+                        {/*    onChange={handleLabels}*/}
+                        {/*>*/}
+                        
+                        {/*</ToggleButtonGroup>*/}
+                        <ToggleButton
+                            selected={nodeLabels}
+                            value={"nodes"}
+                            onChange={() => toggleNodeLabels(!nodeLabels)}
+                        >
+                            Nodes
+                        </ToggleButton>
+                        <ToggleButton
+                            selected={nodeLabels}
+                            value={"edges"}
+                            onChange={() => toggleNodeLabels(!nodeLabels)}
+                        >
+                            Edges
+                        </ToggleButton>
+                    </Stack>
                 </Grid>
             </Grid>
             <Box alignSelf={"flex-end"} position={"relative"}>
@@ -207,36 +249,36 @@ const GraphFilterPanel = ({makePredicates, dates}: GraphFilterPanelProps) => {
                         <Typography variant={"h6"}>-</Typography>
                         {/*<ArrowRightIcon/>*/}
                         <Chip icon={<ShoppingBasketIcon/>}
-                              // label={"Item - Person"}
-                              label={"<->"}
+                              label={"Item - Person"}
+                            // label={"<->"}
                               onDelete={()=>{}}
                               color={"success"}
                               deleteIcon={<PersonIcon/>}
                         />
                         <Chip icon={<ShoppingBasketIcon/>}
-                              // label={"Item - Store"}
-                              label={"<->"}
+                              label={"Item - Store"}
+                            // label={"<->"}
                               onDelete={()=>{}}
                               color={"warning"}
                               deleteIcon={<StorefrontIcon/>}
                         />
                         <Chip icon={<ShoppingBasketIcon/>}
-                              // label={"Item - Mentioned"}
-                              label={"<->"}
+                              label={"Item - Mentioned"}
+                            // label={"<->"}
                               onDelete={()=>{}}
                               color={"secondary"}
                               deleteIcon={<RecordVoiceOverIcon/>}
                         />
                         <Chip icon={<PersonIcon/>}
-                              // label={"Person - Person"}
-                              label={"<->"}
+                              label={"Person - Person"}
+                            // label={"<->"}
                               onDelete={()=>{}}
                               color={"info"}
                               deleteIcon={<PersonIcon/>}
                         />
                         <Chip icon={<PersonIcon/>}
-                              // label={"Person - Mentioned"}
-                              label={"<->"}
+                              label={"Person - Mentioned"}
+                            // label={"<->"}
                               onDelete={()=>{}}
                               color={"error"}
                               deleteIcon={<RecordVoiceOverIcon/>}
