@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Formik, Form } from 'formik';
-import {advancedSearchSchema} from "../../formikSchemas";
+import {advancedSearchSchema} from "../formikSchemas";
 import {SearchAction} from "@components/context/SearchContext";
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
