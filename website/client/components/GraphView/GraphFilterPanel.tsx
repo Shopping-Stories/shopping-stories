@@ -17,11 +17,8 @@ import StorefrontIcon from "@mui/icons-material/Storefront";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOver";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Grid from "@mui/material/Grid";
 import Switch from "@mui/material/Switch";
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 
 // import FormGroup from "@mui/material/FormGroup";
 // import Button from "@mui/material/Button";
@@ -37,33 +34,24 @@ import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 // import LegendToggleIcon from "@mui/icons-material/LegendToggle";
 // import Fab from "@mui/material/Fab";
 
-const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}: GraphFilterPanelProps) => {
+const GraphFilterPanel = ({makePredicates, dates}: GraphFilterPanelProps) => {
     // const [open, setOpen] = useState(false);
     // const handleClick = () => {
     //     setOpen(!open);
     // };
     const [range, setRange] = useState<number[]>([1, dates.length])
     const [checked, setChecked] = useState<boolean>(false)
-    const [labels, setLabels] = useState(()=> ['nodes', 'edges'])
-    const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.checked) {
-            makePredicates("date", undefined, e.target.checked,
-                { start: dates[range[0]-1], end: dates[range[1]-1] }
-            )
-        }
-        else {
-            makePredicates("date", undefined, e.target.checked, undefined)
-        }
-        setChecked(e.target.checked)
-    }
     
-    const handleLabels = (e:React.MouseEvent<HTMLElement>, newLabels: string[]) => {
-        console.log(e.target)
-        console.log(newLabels)
-        setLabels(newLabels)
-        toggleNodeLabels(!('nodes' in newLabels))
-        // if ('edges' in newLabels)
-        //     toggleNodeLabels(!nodeLabels)
+    const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (e.target.checked) {
+                makePredicates("date", undefined, e.target.checked,
+                    { start: dates[range[0]-1], end: dates[range[1]-1] }
+                )
+            }
+            else {
+                makePredicates("date", undefined, e.target.checked, undefined)
+            }
+            setChecked(e.target.checked)
     }
     
     const handleChange = (e:Event, newValue: number[]) => {
@@ -93,7 +81,7 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
             >
                 <Grid
                     item
-                    xs={2}
+                    xs={4}
                 >
                     <Typography gutterBottom mt={1}>Node Filters</Typography>
                     <Stack direction={"row"}>
@@ -199,36 +187,6 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
                         </Stack>
                     </Box>
                 </Grid>
-                <Grid item xs={2}
-                      sx={{
-                          borderLeft : (theme) => `1px solid ${theme.palette.divider}`,
-                          alignItems: 'center'
-                      }}
-                >
-                    <Typography gutterBottom mt={1} ml={1}>Toggle Labels</Typography>
-                    <Stack direction={'row'} ml={1}>
-                        {/*<ToggleButtonGroup*/}
-                        {/*    value={labels}*/}
-                        {/*    onChange={handleLabels}*/}
-                        {/*>*/}
-                        
-                        {/*</ToggleButtonGroup>*/}
-                        <ToggleButton
-                            selected={nodeLabels}
-                            value={"nodes"}
-                            onChange={() => toggleNodeLabels(!nodeLabels)}
-                        >
-                            Nodes
-                        </ToggleButton>
-                        <ToggleButton
-                            selected={nodeLabels}
-                            value={"edges"}
-                            onChange={() => toggleNodeLabels(!nodeLabels)}
-                        >
-                            Edges
-                        </ToggleButton>
-                    </Stack>
-                </Grid>
             </Grid>
             <Box alignSelf={"flex-end"} position={"relative"}>
                 <Box position={"absolute"} bottom={"30px"} left={"30px"} alignItems={"flex-start"}>
@@ -249,36 +207,36 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
                         <Typography variant={"h6"}>-</Typography>
                         {/*<ArrowRightIcon/>*/}
                         <Chip icon={<ShoppingBasketIcon/>}
-                              label={"Item - Person"}
-                              // label={"<->"}
+                              // label={"Item - Person"}
+                              label={"<->"}
                               onDelete={()=>{}}
                               color={"success"}
                               deleteIcon={<PersonIcon/>}
                         />
                         <Chip icon={<ShoppingBasketIcon/>}
-                              label={"Item - Store"}
-                              // label={"<->"}
+                              // label={"Item - Store"}
+                              label={"<->"}
                               onDelete={()=>{}}
                               color={"warning"}
                               deleteIcon={<StorefrontIcon/>}
                         />
                         <Chip icon={<ShoppingBasketIcon/>}
-                              label={"Item - Mentioned"}
-                              // label={"<->"}
+                              // label={"Item - Mentioned"}
+                              label={"<->"}
                               onDelete={()=>{}}
                               color={"secondary"}
                               deleteIcon={<RecordVoiceOverIcon/>}
                         />
                         <Chip icon={<PersonIcon/>}
-                              label={"Person - Person"}
-                              // label={"<->"}
+                              // label={"Person - Person"}
+                              label={"<->"}
                               onDelete={()=>{}}
                               color={"info"}
                               deleteIcon={<PersonIcon/>}
                         />
                         <Chip icon={<PersonIcon/>}
-                              label={"Person - Mentioned"}
-                              // label={"<->"}
+                              // label={"Person - Mentioned"}
+                              label={"<->"}
                               onDelete={()=>{}}
                               color={"error"}
                               deleteIcon={<RecordVoiceOverIcon/>}
