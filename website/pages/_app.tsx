@@ -12,6 +12,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { getDesignTokens } from 'styles/theme';
 import { Client, dedupExchange, fetchExchange, Provider } from 'urql';
 import {useTheme} from "@mui/material";
+import EntryProvider from "@components/context/EntryContext";
+import SearchProvider from "@components/context/SearchContext";
 // import {
 //     addAuthToOperation,
 //     didAuthError,
@@ -135,16 +137,20 @@ function App({
                 />
             </Head>
             <Provider value={client}>
-                            <QueryClientProvider client={queryClient}>
-                <ColorModeContext.Provider value={colorMode}>
-                    <ThemeProvider theme={customTheme}>
-                        <CssBaseline />
-                        <Layout>
-                            <Component {...pageProps} />
-                        </Layout>
-                    </ThemeProvider>
-                </ColorModeContext.Provider>
-                            </QueryClientProvider>
+                <QueryClientProvider client={queryClient}>
+                    <ColorModeContext.Provider value={colorMode}>
+                        <ThemeProvider theme={customTheme}>
+                            <CssBaseline />
+                            <Layout>
+                                <EntryProvider>
+                                    <SearchProvider>
+                                        <Component {...pageProps} />
+                                    </SearchProvider>
+                                </EntryProvider>
+                            </Layout>
+                        </ThemeProvider>
+                    </ColorModeContext.Provider>
+                </QueryClientProvider>
             </Provider>
         </CacheProvider>
     );

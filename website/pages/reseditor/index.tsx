@@ -80,6 +80,7 @@ const ResView: NextPage = () => {
     const [progress, setProgress] = useState<number>(0);
 
     const [selectedRow, setSelectedRow] = useState<rowType | null>(null);
+    const [_editedRow, setEditedRow] = useState<number>(0);
     const [url, setUrl] = useState("");
 
     const [errorText, setErrorText] = useState<string>("");
@@ -96,7 +97,7 @@ const ResView: NextPage = () => {
         setOpen(false)
 
         if (edited_row == null) {
-            let new_rows: GridValidRowModel[] = [];
+            var new_rows: GridValidRowModel[] = [];
             rows.map((row) => {
                 if (row.id < selectedRow!.id!) {
                     new_rows.push(row);
@@ -109,21 +110,55 @@ const ResView: NextPage = () => {
                     new_rows.push(row);
                 }
             })
-            editRows(new_rows);
-            setSelectedRow(null);
-            return;
         }
-        
-        setSelectedRow(null)
-        let new_rows = rows.map((row) => row)
-        new_rows[edited_row!.id!] = edited_row!
-        editRows(new_rows)
+        else {
+            var new_rows = rows.map((row) => row)
+            new_rows[edited_row!.id!] = edited_row!
+        }
+        if (edited_row != null) {
+            setEditedRow(edited_row!.id!);
+        }
+        editRows(new_rows);
+        setSelectedRow(null);
+    }
+
+    const handleDuplicate = (new_row: rowType) => {
+        setOpen(false)
+
+        if (new_row == null || new_row == undefined) {
+
+        }
+        else {
+            let new_rows: GridValidRowModel[] = new Array()
+            rows.forEach((value, index) => {
+                if (index == new_row.id!) {
+                    new_rows.push(value)
+                    let new_new_row = {...new_row}
+                    new_new_row.id! += 1
+                    new_rows.push(new_new_row)
+                }
+                else if (index < new_row.id!) {
+                    new_rows.push(value)
+                }
+                else {
+                    value.id! += 1
+                    new_rows.push(value)
+                }
+            })
+            // console.log(new_rows)
+            editRows(new_rows)
+            setSelectedRow(null)
+        }
     }
 
     const handleCloseNoSave = () => {
         setOpen(false)
         setSelectedRow(null)
     }
+
+    // useEffect(() => {
+    //     console.log(rows[editedRow])
+    // }, [rows, editedRow])
 
     const getBase64 = (file: Blob, cb: (content: string | ArrayBuffer | null) => void) => {
         let reader = new FileReader();
@@ -144,11 +179,12 @@ const ResView: NextPage = () => {
     }
 
     const doUpload = async (toUp: fileUploads) => {
-        console.log("toUp: ");
-        console.log(toUp);
-        console.log("Stringify");
+        await new Promise( resolve => setTimeout(resolve, 500) );
+        // console.log("toUp: ");
+        // console.log(toUp);
+        // console.log("Stringify");
         // console.log(JSON.stringify(toUp));
-        console.log(toUp.files[0]);
+        // console.log(toUp.files[0]);
         // console.log(JSON.stringify(toUp.files[0]));
         const parse_url = "https://api.preprod.shoppingstories.org/upload_and_parse_multi/";
         const res = await fetch(parse_url, {
@@ -253,11 +289,11 @@ const ResView: NextPage = () => {
             },
             body: JSON.stringify(toDel)
         });
-        const text = await res.text();
+        // const text = await res.text();
 
         if (res.status == 200) {
-            let result: message = JSON.parse(text);
-            console.log(result);
+            // let result: message = JSON.parse(text);
+            // console.log(result);
         }
 
         handleBack()
@@ -272,6 +308,8 @@ const ResView: NextPage = () => {
             })
         }
 
+        // console.log(upMe)
+
         const res = await fetch(saveUrl, {
             method: "POST",
             headers: {
@@ -284,7 +322,7 @@ const ResView: NextPage = () => {
         const text = await res.text();
         if (res.status == 200) {
             let mess: message = JSON.parse(text);
-            console.log(mess.message);
+            // console.log(mess.message);
             if (!mess.error) {
                 handleDelete();
             }
@@ -369,7 +407,7 @@ const ResView: NextPage = () => {
                                 </Stack>
                             </Paper>
                         }
-                        <ParserEditorDialog row={selectedRow} setRow={handleDialogClose} setClose={handleCloseNoSave}></ParserEditorDialog>
+                        <ParserEditorDialog row={selectedRow} setRow={handleDialogClose} setClose={handleCloseNoSave} onDuplicate={handleDuplicate}></ParserEditorDialog>
 
                     </ColorBackground>
                 </QueryClientProvider>
