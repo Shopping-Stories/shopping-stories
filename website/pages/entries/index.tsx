@@ -81,7 +81,7 @@ const EntriesPage: NextPage = () => {
         queryKey: ["entries", search, fuzzy, advanced],
         queryFn: doSearch,
         // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
-        enabled: search !== '',
+        enabled: search !== '' && !advancedOpen,
         keepPreviousData: true,
         staleTime: 1000
     });
@@ -243,7 +243,7 @@ const EntriesPage: NextPage = () => {
                 </Paper>
             </>
             <AdvancedSearchDialog
-                setSearch={searchDispatch}
+                // setSearch={searchDispatch}
                 open={advancedOpen}
                 setAdvancedOpen={setAdvancedOpen}
                 fuzzy={fuzzToggle}

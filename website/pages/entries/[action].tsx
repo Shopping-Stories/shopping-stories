@@ -4,8 +4,6 @@ import { Formik, FieldArray, Form, getIn } from 'formik';
 import {useEntry} from "@components/context/EntryContext";
 import {
     ParserOutput,
-    ParserOutputKeys,
-    ParserOutputKey,
     // ParserStringKeys, ParserBooleanKeys, ParserStringArrayKeys, ParserNumberKeys,
 } from "new_types/api_types";
 import ColorBackground from '@components/ColorBackground';
@@ -33,12 +31,7 @@ import { PaperStyles } from "../../styles/styles";
 import FormGroup from "@mui/material/FormGroup";
 import Divider from "@mui/material/Divider";
 import { Roles } from "../../config/constants.config";
-
-const toDisplayCase = (k:string) => {
-    return k.replace(/(_|^)([^_]?)/g, function(_, prep, letter) {
-        return (prep && ' ') + letter.toUpperCase();
-    });
-}
+import { entryInfoFields, ledgerFields, moneyFields, parsedFieldNames } from "../../client/entryUtils";
 
 const EntryPage = () => {
     const router = useRouter()
@@ -207,12 +200,12 @@ const EntryPage = () => {
                             </FormLabel>
                             
                         <Grid container spacing={1}>
-                            {entryInfo.map(k=>(
+                            {entryInfoFields.map(k=>(
                                 <Grid item xs={3} key={k}>
                                     <TextField
                                         autoFocus
                                         margin="dense"
-                                        label={fieldNames[k]}
+                                        label={parsedFieldNames[k]}
                                         fullWidth
                                         name={k}
                                         disabled={disabled}
@@ -237,14 +230,14 @@ const EntryPage = () => {
                             <Divider flexItem sx={{mt:1, mb:1}}>Ledger Info</Divider>
                         </FormLabel>
                         <Grid container spacing={1}>
-                            {ledger.map(k=>(
+                            {ledgerFields.map(k=>(
                                 <Grid item xs={3} key={k}>
                                     <TextField
                                         autoFocus
                                         name={k}
                                         margin="dense"
                                         disabled={disabled}
-                                        label={fieldNames[k]}
+                                        label={parsedFieldNames[k]}
                                         fullWidth
                                         onBlur={handleBlur}
                                         error={
@@ -266,14 +259,14 @@ const EntryPage = () => {
                             <Divider flexItem sx={{mt:1, mb:1}}>Currency Info</Divider>
                         </FormLabel>
                         <Grid container spacing={1}>
-                            {money.map(k=>(
+                            {moneyFields.map(k=>(
                                 <Grid item xs={3} key={k}>
                                     <TextField
                                         name={k}
                                         autoFocus
                                         margin="dense"
                                         disabled={disabled}
-                                        label={fieldNames[k]}
+                                        label={parsedFieldNames[k]}
                                         fullWidth
                                         onBlur={handleBlur}
                                         error={
@@ -561,100 +554,3 @@ const EntryPage = () => {
 }
 
 export default EntryPage
-
-const fieldNames = Object.fromEntries(
-    ParserOutputKeys
-        .filter(k=>!excludedFields.has(k))
-        .map(k => [k as IncludedField, toDisplayCase(k as string)])
-)
-
-type ExcludedField = keyof Pick<ParserOutput,
-    "amount_is_combo"|
-    "price_is_combo"|
-    "commodity_totaling_contextless"|
-    "currency_totaling_contextless"|
-    "errors"|
-    "error_context"|
-    "context"|
-    "type"|
-    "liber_book"|
-    "phrases"|
-    "mentions"
-    >
-type IncludedField = keyof Omit<ParserOutputKey, ExcludedField>
-
-const noDisplay = [
-    "amount_is_combo",
-    "price_is_combo",
-    "commodity_totaling_contextless",
-    "currency_totaling_contextless",
-    "errors",
-    "error_context",
-    "context",
-    "error_context",
-    "type",
-    "liber_book",
-    "phrases",
-    "mentions"
-] as Array<ExcludedField>
-
-const excludedFields = new Set<ParserOutputKey>(noDisplay)
-
-const money = [
-    "currency_type",
-    "pounds_ster",
-    "shillings_ster",
-    "pennies_ster",
-    "pounds",
-    "shillings",
-    "pennies",
-    // "farthings_ster",
-    // "farthings",
-]
-
-// const tobacco = [
-//     "tobacco_location",
-//     // "tobacco_marks",
-//     // "tobacco_entries"
-// ]
-//
-// const tobaccoEntry = [
-//     "number",
-//     "gross_weight",
-//     "tare_weight",
-//     "weight",
-// ]
-//
-// const tobaccoMark = [
-//     "mark_number",
-//     "mark_text"
-// ]
-
-const ledger = [
-    "entry_id",
-    "reel",
-    "folio_reference",
-    "folio_year",
-    "folio_page",
-]
-
-const entryInfo = [
-    "store",
-    "store_owner",
-    "debit_or_credit",
-    "account_name",
-    // "amount_is_combo",
-    "item",
-    "amount",
-    "price",
-    "Quantity",
-    "Commodity",
-    // "text_as_parsed",
-    // "original_entry",
-    "Marginalia",
-    "Day",
-    "_Month",
-    "Date Year",
-    "date",
-    // "people",
-]
