@@ -27,7 +27,7 @@ const defaultNavLinks: NavLink[] = [
 
 const adminNavLinks: NavLink[] = [
     { title: `documents`, path: `/documents` },
-    { title: `settings`, path: `/dashboard/settings` },
+    { title: `dashboard`, path: `/dashboard/settings` },
 ];
 // TODO: figure out why this is here
 // const Offset = styled('div')(
@@ -46,7 +46,7 @@ const Header = ({ title }: HeaderConfig) => {
     const [width, setWidth] = useState("100%");
     useEffect(() => {
         if (title && title === 'GraphView') {
-            setWidth("83.33%");
+            setWidth("83.34%");
         }
     },[title]);
 

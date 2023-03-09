@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Popover from '@mui/material/Popover';
 import Typography  from '@mui/material/Typography';
 import {rowType} from './ParserEditorDialog';
-import { moneyToString } from './EntryPaginationTable';
+import { moneyToString } from "../entryUtils";
 
 interface ParserOutputEditor {
     url: string;

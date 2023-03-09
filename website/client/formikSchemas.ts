@@ -249,7 +249,7 @@ export const createEntrySchema = yup.object({
     }),
 });
 
-export const advancedSearchSchema = yup.object({
+export const advancedSearchSchemaOLD = yup.object({
     reel: yup.string(),
     storeOwner: yup.string(),
     folioYear: yup.string(),
@@ -442,6 +442,81 @@ export const changeEmailSchema = yup.object({
 export const changeEmailCodeSchema = yup.object({
     code: yup.string().required('A code is required'),
 });
+
+export const tobaccoMark = yup.object({
+    mark_number: yup.string(),
+    mark_text: yup.string(),
+})
+
+export const tobaccoEntry = yup.object({
+    number: yup.string(),
+    gross_weight: yup.string(),
+    tare_weight: yup.string(),
+    weight: yup.string(),
+})
+
+
+
+export const entrySchema = yup.object({
+    // phrases: Array<Map<string, string | Array<string>>>
+    // context: Array<Array<string>>
+    amount: yup.string(),
+    amount_is_combo: yup.boolean(),
+    item: yup.string(),
+    price: yup.string(),
+    price_is_combo: yup.boolean(),
+    date: yup.string(),
+    pounds: yup.number().default(0).required(),
+    shillings: yup.number().default(0).required(),
+    pennies: yup.number().default(0).required(),
+    pounds_ster: yup.number().default(0).required(),
+    shillings_ster: yup.number().default(0).required(),
+    pennies_ster: yup.number().default(0).required(),
+    farthings_ster: yup.number().default(0),
+    Marginalia: yup.string(),
+    farthings: yup.number(),
+    currency_type: yup.string(),
+    currency_colony: yup.string(),
+    currency_totaling_contextless: yup.boolean(),
+    commodity_totaling_contextless: yup.boolean(),
+    account_name: yup.string(),
+    store: yup.string(),
+    reel: yup.number().required().default(0),
+    store_owner: yup.string().required().default('n/a'),
+    folio_year: yup.string().required().default('n/a'),
+    folio_reference: yup.string().required().default('n/a'),
+    folio_page: yup.number().required().default(0),
+    entry_id: yup.string().required(),
+    "Date Year": yup.string(),
+    "_Month": yup.string(),
+    Day: yup.string(),
+    debit_or_credit: yup.string(),
+    Quantity: yup.string(),
+    Commodity: yup.string(),
+    people: yup.array().of(yup.string()),
+    type: yup.string(),
+    liber_book: yup.string(),
+    mentions: yup.array().of(yup.string()),
+    text_as_parsed: yup.string(),
+    original_entry: yup.string(),
+    tobacco_entries: tobaccoEntry,
+    tobacco_marks: tobaccoMark,
+    // tobacco_location: yup.string(),
+    // tobacco_amount_off: yup.string(),
+})
+
+export const advancedSearchSchema = yup.object({
+    // search: yup.string(),
+    item: yup.string(),
+    cat: yup.string(),
+    subcat: yup.string(),
+    amt: yup.string(),
+    acc_name: yup.string(),
+    person: yup.string(),
+    co: yup.string(),
+    year: yup.string(),
+    page: yup.string()
+})
 
 export const graphFilterSchema = yup.object({
     person: yup.boolean(),
