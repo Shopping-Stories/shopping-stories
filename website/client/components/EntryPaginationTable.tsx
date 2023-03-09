@@ -1,7 +1,11 @@
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import { useState, useMemo, useCallback } from 'react';
-import { Entry, ParserOutput, ParserOutputKey, ParserOutputKeys } from "new_types/api_types";
+import {
+    Entry,
+    EntryKey, EntryStringArrayKey, EntryObjKey, EntryBooleanKey,
+    EntryKeys, EntryStringArrayKeys, EntryObjKeys, EntryBooleanKeys
+} from "new_types/api_types";
 import Button from "@mui/material/Button";
 import AddCircle from "@mui/icons-material/AddCircle";
 import {
@@ -9,9 +13,9 @@ import {
     GridRowsProp,
     DataGrid,
     GridRowId,
+    // GridToolbar,
     GridToolbarExport,
-    GridToolbarContainer,
-    GridColumnVisibilityModel
+    GridColumnVisibilityModel,
 } from "@mui/x-data-grid";
 import Stack from "@mui/material/Stack";
 
@@ -62,50 +66,42 @@ const EntryPaginationTable = ({
     // console.log("entryMap", entryMap)
     const rows = useMemo<GridRowsProp>(()=>{
         return entries.map((row) => {
+            return entryToRow(row)
+            // if (!row) return {}
             // return {
-            //     amount: row?.amount,
-            //     item: row?.item,
-            //     price: row?.price,
-            //     date: (row?.Day ?? "") + " " + (row?.month == undefined ? "" : months[parseInt(row?.month) - 1]) + " " + row?.date_year,
-            //     pounds: row?.currency?.pounds ?? 0,
-            //     shillings: row?.currency?.shillings ?? 0,
-            //     pennies: row?.currency?.pennies ?? 0,
-            //     pounds_ster: row?.sterling?.pounds ?? 0,
-            //     shillings_ster: row?.sterling?.shillings ?? 0,
-            //     pennies_ster: row?.sterling?.pennies ?? 0,
-            //     account_name: row?.account_name,
-            //     reel: row?.ledger?.reel ? Number(row.ledger.reel) : 0,
-            //     folio_page: row?.ledger?.folio_page ? Number(row.ledger.folio_page) : 0,
-            //     folio_year: row?.ledger?.folio_year,
-            //     store: row?.store,
-            //     store_owner: row?.store_owner,
-            //     debit_or_credit: row?.debit_or_credit,
+            //     AccountName: row?.account_name,
+            //     "Dr/Cr": row?.debit_or_credit,
+            //     Amount: row?.amount,
+            //     Item: toTitleCase((row?.item ?? "")),
+            //     // AccountHolderID: row?.accountHolderID,
+            //     Date: (row?.Day ?? "") + " " + (row?.month == undefined ? "" : months[parseInt(row?.month) - 1]) + " " + row?.date_year,
+            //     Owner: row?.store_owner,
+            //     // Comments: row?.meta?.comments,
+            //     // Colony: row?.money?.colony,
+            //     Store: row?.store,
             //     Quantity: row?.Quantity,
             //     Commodity: row?.Commodity,
+            //     Currency: moneyToString(row?.currency?.pounds, row?.currency?.shillings, row?.currency?.pennies, row?.currency?.farthings),
+            //     Sterling: moneyToString(row?.sterling?.pounds, row?.sterling?.shillings, row?.sterling?.pennies, row?.sterling?.farthings),
+            //     // Ledger: row?.ledger?.folio_year,
+            //     Page: row?.ledger?.folio_page,
             //     id: row?._id,
+            //     // Hidden
+            //     "Date Year": row?.date_year,
+            //     Day: row.Day,
+            //     Marginalia: row.Marginalia,
+            //     Month: row.month,
+            //     "Currency Type": row.currency_type,
+            //     // Farthings: row.farthings
+            //
+            //
             // }
-            return {
-                AccountName: row?.account_name,
-                "Dr/Cr": row?.debit_or_credit,
-                Amount: row?.amount,
-                Item: toTitleCase((row?.item ?? "")),
-                // AccountHolderID: row?.accountHolderID,
-                Date: (row?.Day ?? "") + " " + (row?.month == undefined ? "" : months[parseInt(row?.month) - 1]) + " " + row?.date_year,
-                Owner: row?.store_owner,
-                // Comments: row?.meta?.comments,
-                // Colony: row?.money?.colony,
-                Store: row?.store,
-                Quantity: row?.Quantity,
-                Commodity: row?.Commodity,
-                Currency: moneyToString(row?.currency?.pounds, row?.currency?.shillings, row?.currency?.pennies, row?.currency?.farthings),
-                Sterling: moneyToString(row?.sterling?.pounds, row?.sterling?.shillings, row?.sterling?.pennies, row?.sterling?.farthings),
-                // Ledger: row?.ledger?.folio_year,
-                Page: row?.ledger?.folio_page,
-                id: row?._id,
-            }
         }) || [];
     }, [entries])
-    console.log(cols, hiddenCols)
+    // console.log('rows',rows)
+    // console.log('hidden cols', hiddenCols)
+    // console.log(cols)
+    // console.log(fieldNames)
     return (
         <Box sx={{height:"80vh", width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
             <Paper sx={{height: '100%',width: '100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
@@ -155,9 +151,10 @@ const EntryPaginationTable = ({
                 </Stack>
                     <DataGrid
                         editMode={'row'}
-                        rows={rows ?? []}
-                        columns={columns}
-                        // columns={cols}
+                        rows={rows}
+                        columns={cols}
+                        // columns={columns}
+                        initialState={{columns: {columnVisibilityModel: hiddenCols}}}
                         // columnVisibilityModel={hiddenCols}
                         autoPageSize
                         getRowId={(row) => row.id}
@@ -165,10 +162,17 @@ const EntryPaginationTable = ({
                         // disableRowSelectionOnClick
                         // rowsPerPageOptions={[5, 10, 20]}
                         pagination
-                        components={{Toolbar: ExportToolBar}}
+                        components={{
+                            // Toolbar: GridToolbar
+                            Toolbar:  GridToolbarExport
+                        }}
                         componentsProps={{
                             cell: { onFocus: handleCellFocus },
-                            toolbar: {csvOptions: {allColumns: true}}
+                            toolbar: {
+                                csvOptions: {
+                                // fields: [...visibleFields.values(), ...hiddenFields.values()]
+                                allColumns: true
+                            }}
                         }}
                     />
             </Paper>
@@ -177,17 +181,6 @@ const EntryPaginationTable = ({
 };
 
 export default EntryPaginationTable;
-
-const ExportToolBar = () => {
-    // const gridRef = useGridApiContext()
-    // const handleExport = (options: GridCsvExportOptions) => gridRef.current.exportDataAsCsv(options)
-    return (
-        <GridToolbarContainer>
-            <GridToolbarExport>
-            </GridToolbarExport>
-        </GridToolbarContainer>
-    )
-}
 
 function toTitleCase(str: string) {
     return str.replace(/\w\S*/g, function(txt){
@@ -200,153 +193,6 @@ const toDisplayCase = (k:string) => {
         return (prep && ' ') + letter.toUpperCase();
     });
 }
-type ExcludedField = keyof Pick<ParserOutput,
-    "amount_is_combo"|
-    "price_is_combo"|
-    "commodity_totaling_contextless"|
-    "currency_totaling_contextless"|
-    "errors"|
-    "error_context"|
-    "context"|
-    "type"|
-    "liber_book"|
-    "phrases"|
-    "mentions"|
-    "amount_is_combo" |
-    "price_is_combo" |
-    "phrases" |
-    "entry_id" |
-    "farthings_ster" |
-    "farthings" |
-    "Marginalia" |
-    "currency_type" |
-    "currency_colony" |
-    "currency_totaling_contextless" |
-    "commodity_totaling_contextless" |
-    "Date Year" |
-    "_Month" |
-    "Day" |
-    "context" |
-    "people" |
-    "type" |
-    "liber_book" |
-    "mentions" |
-    "folio_reference" |
-    "text_as_parsed" |
-    "original_entry" |
-    "tobacco_location" |
-    "tobacco_amount_off" |
-    "tobacco_marks" |
-    "tobacco_entries" 
-    >
-type IncludedField = keyof Omit<ParserOutputKey, ExcludedField>
-
-const noDisplay = [
-    "amount_is_combo",
-    "price_is_combo",
-    "commodity_totaling_contextless",
-    "currency_totaling_contextless",
-    "errors",
-    "error_context",
-    "context",
-    "type",
-    "liber_book",
-    "phrases",
-    "mentions",
-    "amount_is_combo" ,
-    "price_is_combo" ,
-    "phrases" ,
-    "entry_id" ,
-    "farthings_ster" ,
-    "farthings" ,
-    "Marginalia" ,
-    "currency_type" ,
-    "currency_colony" ,
-    "currency_totaling_contextless" ,
-    "commodity_totaling_contextless" ,
-    "Date Year" ,
-    "_Month" ,
-    "Day" ,
-    "context" ,
-    "people" ,
-    "type" ,
-    "liber_book" ,
-    "mentions" ,
-    "folio_reference" ,
-    "text_as_parsed" ,
-    "original_entry" ,
-    "tobacco_location" ,
-    "tobacco_amount_off" ,
-    "tobacco_marks" ,
-    "tobacco_entries"
-] as Array<ExcludedField>
-
-const excludedFields = new Set<ParserOutputKey>(noDisplay)
-
-const fieldNames = Object.fromEntries(
-    ParserOutputKeys
-        .filter(k=>!excludedFields.has(k))
-        .map(k => [k as IncludedField, toDisplayCase(k as string)])
-)
-
-const cols: GridColDef[] = Object.entries(fieldNames).map(([f, n]) => ({
-    field: f,
-    headerName: n,
-})) //+ [{field: }]
-
-const hiddenCols: GridColumnVisibilityModel = Object.fromEntries(noDisplay.map(n => [n, false]))
-
-const columnNames: string[] = [
-    'Account Name',
-    'Amount',
-    'Item',
-    // 'Account Holder ID',
-    'Date',
-    // 'Store',
-    // 'Comments',
-    // 'Colony',
-    "Store",
-    'Dr/Cr',
-    'Quantity',
-    'Commodity',
-    'Currency',
-    'Sterling',
-    // 'Ledger Year',
-    'Owner',
-    'Page',
-];
-
-const columns: GridColDef[] = columnNames.map((str: string) : GridColDef => {
-    return {
-        field: str.split(" ").join(""),
-        headerName: str,
-        // editable: isAdminOrModerator,
-        flex: [
-            "Purchaser",
-            "Account Name",
-            "Relevant Item",
-            "Item",
-            "Owner",
-            "Comments",
-            "Store"
-        ].includes(str) ? 1 : ([
-            "Reel",
-            "EntryID",
-            "Quantity",
-            "Commodity",
-            "Page",
-            "Colony",
-            "$ Pounds",
-            "$ Shilling",
-            "$ Pence",
-            "$ Farthings",
-            '£ Pounds',
-            '£ Shilling',
-            '£ Pence',
-            '£ Farthings',
-            "Dr/Cr"
-        ].includes(str) ? 0.2 : 0.5)}
-});
 
 export function getFarthInsert(farthings: number|undefined) {
     let farthInsert = "";
@@ -374,3 +220,119 @@ export function moneyToString(pounds: number|undefined, shillings: number|undefi
 }
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+const entryToRow = (entry: Entry) => {
+    const nonComplex: Partial<Entry> = Object.fromEntries(Object.entries(entry)
+        .filter(([k, v]) => !!v && (hiddenFields.has(k as HiddenField) || visibleFields.has(k as VisibleField)))
+        .map(e => e))
+    // console.log(nonComplex)
+    const complex = [
+        ['Item', toTitleCase((entry?.item ?? ""))],
+        ['Currency', moneyToString(entry?.currency?.pounds, entry?.currency?.shillings, entry?.currency?.pennies, entry?.currency?.farthings)],
+        ['Sterling', moneyToString(entry?.sterling?.pounds, entry?.sterling?.shillings, entry?.sterling?.pennies, entry?.sterling?.farthings)],
+        ['Date', (entry?.Day ?? "") + " " + (entry?.month == undefined ? "" : months[parseInt(entry?.month) - 1]) + " " + entry?.date_year],
+        ['Page', entry?.ledger?.folio_page],
+        ['id', entry._id]
+    ]
+    return {...Object.fromEntries(complex), ...nonComplex }// Object.fromEntries(complex)
+}
+
+type ExcludedField = Extract<EntryKey, EntryStringArrayKey | EntryObjKey | EntryBooleanKey>
+type VisibleField = Extract<EntryKey,
+    'account_name'| 'amount'| 'Quantity'| 'item'| 'Commodity' | 'store'| 'store_owner'
+    >
+type HiddenField = Exclude<EntryKey, VisibleField | ExcludedField>
+type IncludedField = Extract<EntryKey, VisibleField | HiddenField>
+type FieldNames = {
+    [k in IncludedField]: string;
+};
+
+const excludedFields = new Set<ExcludedField>([
+    ...EntryBooleanKeys.values(),
+    ...EntryStringArrayKeys.values(),
+    ...EntryObjKeys.values()
+] as ExcludedField[])
+
+const visibleFields = new Set<VisibleField>([
+    'account_name', 'amount', 'Quantity', 'item', 'Commodity', 'store', 'store_owner',
+]);
+
+const hiddenFields = new Set<HiddenField>(EntryKeys
+    .filter(k => !excludedFields.has(k as ExcludedField) && !visibleFields.has(k as VisibleField)
+) as HiddenField[])
+
+const fieldNames: FieldNames = Object.fromEntries(EntryKeys
+    .filter(k=>!excludedFields.has(k as ExcludedField))
+    .map(k => [k as EntryKey, k !== 'debit_or_credit' ? toDisplayCase(k as string) : 'Dr/Cr'])
+) as FieldNames
+
+const complexFields = new Set<string>(['Currency', 'Sterling', 'Date', 'Page'])
+
+const hiddenCols: GridColumnVisibilityModel = Object.fromEntries(
+    [...hiddenFields.values()].map(n => [n, false])
+)
+
+const flexOneFields = new Set<string>([
+    "Account Name",
+    "Relevant Item",
+    "Item",
+    "Store Owner",
+    "Store"
+    // "Purchaser",
+    // "Comments",
+])
+
+const flexHalfFields = new Set<string>([
+    "Reel",
+    "EntryID",
+    "Quantity",
+    "Commodity",
+    "Page",
+    "Colony",
+    "$ Pounds",
+    "$ Shilling",
+    "$ Pence",
+    "$ Farthings",
+    '£ Pounds',
+    '£ Shilling',
+    '£ Pence',
+    '£ Farthings',
+    "Dr/Cr"
+])
+
+const colNames: string[] = [...complexFields.values(), ...hiddenFields.values(), ...visibleFields.values()]
+
+const cols: GridColDef[] = colNames.map(str => (
+    complexFields.has(str) ? {
+        field: str,
+        headerName: str,
+        flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
+        disableExport: true
+    } :  {
+        field: str,
+        headerName: fieldNames[str as IncludedField],
+        flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
+    }
+))
+
+// const columnNames: string[] = [
+//     'Account Name',
+//     'Amount',
+//     'Item',
+//     'Date',
+//     "Store",
+//     'Dr/Cr',
+//     'Quantity',
+//     'Commodity',
+//     'Currency',
+//     'Sterling',
+//     'Owner',
+//     'Page',
+// ];
+//
+// const columns: GridColDef[] = columnNames.map((str: string) : GridColDef => ({
+//     field: str.split(" ").join(""),
+//     headerName: str,
+//     // editable: isAdminOrModerator,
+//     flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5
+// }));

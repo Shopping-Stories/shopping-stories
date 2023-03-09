@@ -78,6 +78,105 @@ export interface Entry {
 
 export type EntryKey = keyof Entry
 
+export const EntryKeys: EntryKey[] = [
+    // "errors",
+    // "error_context",
+    "context",
+    "store",
+    "debit_or_credit",
+    "account_name",
+    "amount",
+    "amount_is_combo",
+    "tobacco_amount_off",
+    "item",
+    "price",
+    "text_as_parsed",
+    "original_entry",
+    "type",
+    "liber_book",
+    "price_is_combo",
+    "phrases",
+    "date",
+    'sterling',
+    // "pounds_ster",
+    // "shillings_ster",
+    // "pennies_ster",
+    // "farthings_ster",
+    'currency',
+    // "pounds",
+    // "shillings",
+    // "pennies",
+    // "farthings",
+    "currency_type",
+    "currency_totaling_contextless",
+    "commodity_totaling_contextless",
+    "tobacco_location",
+    "tobacco_entries",
+    "tobacco_marks",
+    "Marginalia",
+    "store_owner",
+    "folio_reference",
+    'ledger',
+    // "reel",
+    // "folio_year",
+    // "folio_page",
+    // "entry_id",
+    "date_year",
+    "month",
+    "Day",
+    "Quantity",
+    "Commodity",
+    "people",
+    "mentions"
+]
+
+export const EntryStringKeys = new Set<EntryKey>([
+    "amount",
+    "item",
+    "price",
+    "tobacco_amount_off",
+    "date",
+    "Marginalia",
+    "account_name",
+    "store_owner",
+    "folio_reference",
+    "folio_year",
+    "entry_id",
+    "Date Year",
+    "_Month",
+    "Day",
+    "tobacco_location",
+    "debit_or_credit",
+    "Quantity",
+    "Commodity",
+    "type",
+    "liber_book",
+    "store"
+] as Array<EntryKey>)
+
+export type EntryStringArrayKey = Extract<EntryKey,
+    "errors" |"error_context"| "people"| "mentions" | "phrases"| 'tobacco_marks'| 'context'
+    >
+export const EntryStringArrayKeys = new Set<EntryKey>([
+    "errors", "error_context", "people", "mentions", "phrases", 'tobacco_marks', 'context'
+] as Array<EntryStringArrayKey>)
+
+export type EntryBooleanKey = Extract<EntryKey,
+    "amount_is_combo"| "price_is_combo"| "currency_totaling_contextless"| "commodity_totaling_contextless"
+    >
+
+export const EntryBooleanKeys = new Set<EntryKey>([
+    "amount_is_combo", "price_is_combo", "currency_totaling_contextless", "commodity_totaling_contextless"
+] as Array<EntryBooleanKey>)
+
+export type EntryObjKey = Extract<EntryKey,
+    'ledger'| 'currency'| 'sterling'| 'tobacco_entries'
+    >
+
+export const EntryObjKeys = new Set<EntryObjKey>([
+    'ledger', 'currency', 'sterling', 'tobacco_entries'
+])
+
 export interface ParserOutput {
     errors?: Array<string>
     error_context?: Array<Array<string | Array<string>>>
@@ -127,7 +226,7 @@ export interface ParserOutput {
     tobacco_marks?: Array<TobaccoMark>
     tobacco_entries?: Array<TobaccoEntry>
 }
-export type ParserOutputKey = keyof ParserOutput 
+export type ParserOutputKey = keyof ParserOutput
 
 export const ParserOutputKeys = [
     "errors",
@@ -204,8 +303,10 @@ export const ParserStringKeys = new Set<ParserOutputKey>([
 
 export const ParserStringArrayKeys = new Set<ParserOutputKey>([
     "errors",
+    "error_context",
     "people",
-    "mentions"
+    "mentions",
+    "phrases",
 ] as Array<ParserOutputKey>)
 
 export const ParserBooleanKeys = new Set<ParserOutputKey>([
