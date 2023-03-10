@@ -55,14 +55,13 @@ function a11yProps(index: number) {
     };
 }
 
-// interface AboutNav {
-//     isAdminOrModerator: boolean;
-// }
-// {
-//     isAdminOrModerator,
-//     }: AboutNav
+interface AboutNav {
+    isAdminOrModerator: boolean;
+}
 
-export default function VerticalTabs() {
+export default function VerticalTabs({
+    isAdminOrModerator,
+    }: AboutNav) {
     const queryClient = new QueryClient();
     const [value, setValue] = useState(0);
 
@@ -1189,14 +1188,14 @@ export default function VerticalTabs() {
                                                         research possibilities.
                                                         </p>
                                                     </Typography>
-                                                    {/* {isAdminOrModerator && hidden={!isAdminOrModerator}
-                                                    (<> */}
-                                                    <Button variant="contained" sx={{ width: "8vw", fontSize: "1.5vh"}} component="label" >
+                                                    {isAdminOrModerator && 
+                                                    (<>
+                                                    <Button variant="contained" sx={{ width: "8vw", fontSize: "1.5vh"}} component="label" hidden={!isAdminOrModerator}>
                                                         Upload File
-                                                        <input hidden multiple type="file" onChange={handleUpload} />
+                                                        <input hidden multiple type="file" onChange={handleUpload}/>
                                                     </Button>
-                                                    {/* </>)
-                                                    } */}
+                                                    </>)
+                                                    }
                                                     <Typography align="left">
                                                     <Card>
                                                         <CardContent>
@@ -1213,16 +1212,27 @@ export default function VerticalTabs() {
                                                                     textAlign: 'left',
                                                                     }}
                                                                     secondaryAction={
+                                                                    // <Box justifyContent="flex-start">
+                                                                    //     <IconButton
+                                                                    //     aria-label="delete"
+                                                                    //     edge="end"
+                                                                    //     onClick={() => handleDelete(nameFile(doc.Key))}
+                                                                    //     hidden={!isAdminOrModerator}
+                                                                    //     >
+                                                                    //     <DeleteIcon/>
+                                                                    //     </IconButton>
+                                                                    // </Box>
                                                                     <Box justifyContent="flex-start">
-                                                                        <IconButton
-                                                                        aria-label="delete"
-                                                                        edge="end"
-                                                                        onClick={() => handleDelete(nameFile(doc.Key))}
-                                                                        // hidden={!isAdminOrModerator}
-                                                                        >
-                                                                        <DeleteIcon />
-                                                                        </IconButton>
-                                                                    </Box>
+                                                                        {isAdminOrModerator && (
+                                                                            <IconButton
+                                                                            aria-label="delete"
+                                                                            edge="end"
+                                                                            onClick={() => handleDelete(nameFile(doc.Key))}
+                                                                            >
+                                                                            <DeleteIcon/>
+                                                                            </IconButton>
+                                                                        )}
+                                                                        </Box>
                                                                     }
                                                                 >
                                                                     <ListItemText
