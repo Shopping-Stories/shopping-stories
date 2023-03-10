@@ -46,14 +46,24 @@ export function moneyToString(pounds: number|undefined, shillings: number|undefi
 }
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
+type Entries<T> = {
+    [K in keyof T]: [K, T[K]];
+}[keyof T][];
+const getEntries = <T extends object>(obj: T) => Object.entries(obj) as Entries<T>;
 // Utils and types for processing non-parser format Entries
-
 export const entryToRow = (entry: Entry) => {
     const nonComplex: Partial<Entry> = Object.fromEntries(Object.entries(entry)
-        .filter(([k, v]) => !!v && (hiddenFields.has(k as HiddenField) || visibleFields.has(k as VisibleField)))
-        .map(e => e))
+        .filter(([k, v]) => !!v && (hiddenFields.has(k as HiddenField) || visibleFields.has(k as VisibleField))))
+        // .map(e => e))
     // console.log(nonComplex)
+    let currency = entry.currency ? getEntries(entry.currency) : []
+    let sterling = []
+    if (entry.sterling){
+        for (let denom of currency){
+            sterling.push([`Sterling_${denom[0]}`, entry.sterling[denom[0]]])
+        }
+    }
+    
     const complex = [
         ['Item', toTitleCase((entry?.item ?? ""))],
         ['Currency', moneyToString(entry?.currency?.pounds, entry?.currency?.shillings, entry?.currency?.pennies, entry?.currency?.farthings)],
@@ -62,15 +72,20 @@ export const entryToRow = (entry: Entry) => {
         ['Page', entry?.ledger?.folio_page],
         ['id', entry._id]
     ]
-    return {...Object.fromEntries(complex), ...nonComplex }// Object.fromEntries(complex)
+    return {
+        ...Object.fromEntries(complex),
+        ...Object.fromEntries(currency),
+        ...Object.fromEntries(sterling),
+        ...nonComplex }// Object.fromEntries(complex)
 }
 
-export type ExcludedField = Extract<EntryKey, EntryStringArrayKey | EntryObjKey | EntryBooleanKey>
+export type ExcludedField = Extract<EntryKey, EntryStringArrayKey  | EntryBooleanKey | EntryObjKey>//'currency' | 'sterling'>
 export type VisibleField = Extract<EntryKey,
     'account_name'| 'amount'| 'Quantity'| 'item'| 'Commodity' | 'store'| 'store_owner'
     >
-export type HiddenField = Exclude<EntryKey, VisibleField | ExcludedParsedField>
-export type IncludedField = Extract<EntryKey, VisibleField | HiddenField>
+
+export type HiddenField = Exclude<EntryKey, VisibleField | ExcludedField>
+export type IncludedField = Extract<EntryKey, VisibleField | HiddenField >
 export type FieldNames = {
     [k in IncludedField]: string;
 };
@@ -78,12 +93,15 @@ export type FieldNames = {
 export const excludedFields = new Set<ExcludedParsedField>([
     ...EntryBooleanKeys.values(),
     ...EntryStringArrayKeys.values(),
+    // ...['ledger', 'tobacco_entries'],
     ...EntryObjKeys.values()
 ] as ExcludedParsedField[])
 
 export const visibleFields = new Set<VisibleField>([
     'account_name', 'amount', 'Quantity', 'item', 'Commodity', 'store', 'store_owner',
 ]);
+
+// export const splitFields = new Set<CurrencyKey>(['pounds', 'shilling', 'pennies', 'farthings'] as Array<CurrencyKey>)
 
 export const hiddenFields = new Set<HiddenField>(EntryKeys
     .filter(k => !excludedFields.has(k as ExcludedParsedField) && !visibleFields.has(k as VisibleField)
@@ -94,9 +112,12 @@ export const fieldNames: FieldNames = Object.fromEntries(EntryKeys
     .map(k => [k as IncludedField, k !== 'debit_or_credit' ? toDisplayCase(k as string) : 'Dr/Cr'])
 ) as FieldNames
 
-export const complexFields = new Set<string>(['Currency', 'Sterling', 'Date', 'Page'])
-
-export const colNames: string[] = [...complexFields.values(), ...hiddenFields.values(), ...visibleFields.values()]
+export const complexFields = new Set<string>(['Date', 'Page', 'Currency', 'Sterling', ])
+export const splitFields = new Set<string>([
+    'pounds', 'shilling', 'pennies', 'farthings',
+    'Sterling_pounds', 'Sterling_shilling', 'Sterling_pennies', 'Sterling_farthings',
+])
+export const colNames: string[] = [...complexFields.values(), ...hiddenFields.values(), ...visibleFields.values(), ...splitFields.values()]
 
 // Utils and types for processing non-parser format Entries
 

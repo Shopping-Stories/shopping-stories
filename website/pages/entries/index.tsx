@@ -49,6 +49,7 @@ const EntriesPage: NextPage = () => {
     const searchDispatch = useSearchDispatch()
     const [fuzzToggle, setFuzzToggle] = useState<boolean>(search !== '' ? fuzzy : true)
     const [advancedOpen, setAdvancedOpen] = useState<boolean>(false)
+    const [advSubmitted, setAdvSubmitted] = useState<boolean>(false)
     const dispatch = useEntryDispatch()
     const searchForm = useFormik<SearchType>({
         initialValues: {
@@ -57,7 +58,8 @@ const EntriesPage: NextPage = () => {
         validationSchema: searchSchema,
         onSubmit: (values: any) => {
             if (values.search)
-                searchDispatch({type: getType(fuzzToggle, advancedOpen), payload: values.search})
+                setAdvSubmitted(false)
+                searchDispatch({type: getType(fuzzToggle, false), payload: values.search})
         },
     });
     
@@ -86,14 +88,14 @@ const EntriesPage: NextPage = () => {
         staleTime: 1000
     });
     
-    const toGraph = (query:string) => {
+    const toGraph = useCallback((query:string) => {
         const path = `/entries/graphview/${query}`;
-        searchDispatch({type: getType(fuzzToggle, advancedOpen), payload: query})
+        searchDispatch({type: getType(fuzzToggle, advSubmitted), payload: query})
         router.push({
             pathname: path,
-            query: {search:query, fuzzy:fuzzToggle, advanced:advancedOpen}
+            query: {search:query, fuzzy:fuzzToggle, advanced:advSubmitted}
         });
-    };
+    }, [advSubmitted, fuzzToggle, router, searchDispatch]);
     
     const handleEntryAction = useCallback((action: string, payload: Entry | undefined) => {
         console.log(action)
@@ -173,6 +175,7 @@ const EntriesPage: NextPage = () => {
                                             <Switch
                                                 checked={fuzzToggle}
                                                 onChange={handleFuzzyChange}
+                                                color={"secondary"}
                                             />
                                         }
                                         // label={`Fuzzy: ${fuzzy ? "on" : "off"}`}
@@ -187,6 +190,7 @@ const EntriesPage: NextPage = () => {
                                             loading={search !== '' && isLoading}
                                             variant="contained"
                                             type="submit"
+                                            color={"secondary"}
                                             // onClick={()=>setFuzzy(false)}
                                             // sx={{ mt:1 }}
                                         >
@@ -208,6 +212,7 @@ const EntriesPage: NextPage = () => {
                                         fullWidth
                                         loading={search !== '' && isLoading}
                                         variant="contained"
+                                        color={"secondary"}
                                         type="submit"
                                         onClick={()=>setAdvancedOpen(true)}
                                     >
@@ -249,6 +254,7 @@ const EntriesPage: NextPage = () => {
                 fuzzy={fuzzToggle}
                 setFuzzy={setFuzzToggle}
                 toGraph={toGraph}
+                setAdvSubmitted={setAdvSubmitted}
             />
         </ColorBackground>
 
