@@ -1,6 +1,8 @@
 import ForceGraph2D, { ForceGraphMethods, GraphData, LinkObject, NodeObject } from "react-force-graph-2d";
 import * as d3 from "d3-force"
 import React, { useCallback, useState, useRef, useMemo, useLayoutEffect, useEffect } from "react";
+import { useRouter } from "next/router";
+import { useEntryDispatch } from "@components/context/EntryContext";
 import { Entry } from "new_types/api_types";
 import NodeList from '@components/GraphView/NodeList';
 import {
@@ -82,6 +84,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         id: string | number | undefined
     } | null>(null);
     const [rightClicked, setRightClicked] = useState<string | number | undefined>()
+    
     const graphGridRef = useRef<HTMLDivElement>(null)
     const [graphWidth, setGraphWidth] = useState<number | undefined>(undefined)
     const [graphHeight, setGraphHeight] = useState<number | undefined>(undefined)
@@ -101,6 +104,9 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             item_mention: palette.secondary.main
         }
     }, [palette])
+    
+    const entryDispatch = useEntryDispatch()
+    const router = useRouter()
     
     // Graph Construction Values
     const graphDict: GraphProps = useMemo(() => {
@@ -235,15 +241,17 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         // const entrySet = new Set<string>()
         for (const [i, entry] of entries.entries()) {
             index = i
-            const {date_year, Day, month} = entry
-            if (!date_year || !Day || !month)
-                continue
-            if (date_year){
-                let dateCheck = new Date(`1/1/${date_year}`)
-                if (dateCheck.toString() === "Invalid Date")
+            if (!!entry) {
+                const { date_year, Day, month } = entry
+                if (!date_year || !Day || !month)
                     continue
+                if (date_year) {
+                    let dateCheck = new Date(`1/1/${date_year}`)
+                    if (dateCheck.toString() === "Invalid Date")
+                        continue
+                }
+                processEntry(entry);
             }
-            processEntry(entry);
             
             // console.log(index, entry._id)
             // if (entry && entry._id && !entrySet.has(entry._id)) {
@@ -255,14 +263,18 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     
     const dates = useMemo<string[]>(()=> {
         let dates = new Set<string>()
-        for (let {month, Day, date_year} of entries){
-            if (month && Day && date_year){
-                let dy = date_year.replace(/[\[\]']+/g,'')
-                let ds = mdy(month, Day, dy)
-                // console.log(ds)
-                let date = new Date(ds)
-                if (date.toString() !== "Invalid Date")
-                    dates.add(ds)
+        for (let entry of entries){
+            
+            if (!!entry){
+                let {month, Day, date_year} = entry
+                if (month && Day && date_year) {
+                    let dy = date_year.replace(/[\[\]']+/g, '')
+                    let ds = mdy(month, Day, dy)
+                    // console.log(ds)
+                    let date = new Date(ds)
+                    if (date.toString() !== "Invalid Date")
+                        dates.add(ds)
+                }
             }
         }
         let dArr: string[] = Array.from(dates) //.filter(d=>d.toString() !== "Invalid Date")
@@ -589,6 +601,17 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         handleClose()
     }, [contextMenu, fetchMore, graphDict.nodeProps])
     
+    // const toEntryView = useCallback((action: string = 'view', id: string) => {
+    //     const path = `/entries/${action}`;
+    //     if (payload && action && action !== "Create" ){
+    //         entryDispatch({
+    //             type: "CREATE",
+    //             payload: payload
+    //         })
+    //     }
+    //     router.push(path);
+    // }, [entryDispatch, router])
+    
     const handleClose = () => {
         setContextMenu(null);
         // setFocusedItems(new Set())
@@ -662,6 +685,21 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         }
         // const size = 24;
         const size = relSize * node.value
+        if (nodeLabelsVisible){
+            const label = node.label;
+            const fontSize = 12/globalScale
+            const textWidth = ctx.measureText(label).width;
+            const txtBox = [textWidth, fontSize].map(n => n + fontSize * 0.2); // some padding
+            ctx.font = `${fontSize}px Sans-Serif`;
+            ctx.fillStyle = mode === "light" ? 'white' : 'black';
+            ctx.fillRect(node.x - txtBox[0] / 2, node.y - (txtBox[1] / 2) + size/2, txtBox[0], txtBox[1]);
+        
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = mode !== "light" ? 'white' : 'black';
+            // ctx.fillStyle = node.color;
+            ctx.fillText(label, node.x, node.y + size/2);
+        }
         if (focusedItems.has(node.id)){
             ctx.beginPath();
             ctx.arc(node.x, node.y, size / 2, 0, 2 * Math.PI, false);
@@ -674,21 +712,6 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             else
                 ctx.drawImage(node.lightIcon, node.x - size / 2, node.y - size / 2, size, size,);
             
-            if (nodeLabelsVisible){
-                const label = node.label;
-                const fontSize = 12/globalScale
-                const textWidth = ctx.measureText(label).width;
-                const txtBox = [textWidth, fontSize].map(n => n + fontSize * 0.2); // some padding
-                ctx.font = `${fontSize}px Sans-Serif`;
-                ctx.fillStyle = mode === "light" ? 'white' : 'black';
-                ctx.fillRect(node.x - txtBox[0] / 2, node.y - (txtBox[1] / 2) + size/2, txtBox[0], txtBox[1]);
-                
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = mode !== "light" ? 'white' : 'black';
-                // ctx.fillStyle = node.color;
-                ctx.fillText(label, node.x, node.y + size/2);
-            }
         }
         
     },[focusedItems, palette, mode, nodeLabelsVisible])

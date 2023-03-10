@@ -141,13 +141,13 @@ function App({
                     <ColorModeContext.Provider value={colorMode}>
                         <ThemeProvider theme={customTheme}>
                             <CssBaseline />
-                            <Layout>
-                                <EntryProvider>
-                                    <SearchProvider>
+                            <EntryProvider>
+                                <SearchProvider>
+                                    <Layout>
                                         <Component {...pageProps} />
-                                    </SearchProvider>
-                                </EntryProvider>
-                            </Layout>
+                                    </Layout>
+                                </SearchProvider>
+                            </EntryProvider>
                         </ThemeProvider>
                     </ColorModeContext.Provider>
                 </QueryClientProvider>

@@ -45,8 +45,10 @@ const Header = ({ title }: HeaderConfig) => {
     const uniqueNavLinks = uniqWith([...navLinks, ...authLinks], isEqual);
     const [width, setWidth] = useState("100%");
     useEffect(() => {
+        // console.log(title)
         if (title && title === 'GraphView') {
             setWidth("83.34%");
+            
         }
     },[title]);
 
@@ -71,7 +73,7 @@ const Header = ({ title }: HeaderConfig) => {
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                     // width: `calc(100% - ${width}px)`,
                     width: `${width}`,
-                    ml: `calc(100% - ${width}px)`,
+                    ml: `calc(100% - ${width})`,
                     // ml: `${width}px`,
                 }}
             >

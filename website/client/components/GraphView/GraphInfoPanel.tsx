@@ -30,6 +30,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const GraphInfoPanel = ({ name, info, entityType }: GraphInfoPanelProps) => {
+    // console.log(info)
     return (
         <>
             <Toolbar/>

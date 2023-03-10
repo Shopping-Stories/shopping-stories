@@ -22,10 +22,20 @@ import {EntryInfoProps, displayNames } from "@components/GraphView/util";
 // import { Currency, Ledger, Entry } from "../../../new_types/api_types";
 // import { ListSubheader } from "@mui/material";
 
+
+
 const EntryInfoItem = (
-    {currency, ledger, sterling,  context, scalars,
+    {
+        currency,
+        ledger,
+        sterling,
+        context,
+        scalars,
+        // _id
                            // phrases, people
-    }:EntryInfoProps) => {
+    }:EntryInfoProps,
+    
+) => {
     
     const [open, setOpen] = useState(false)
     const [ledgerOpen, setLedgerOpen] = useState(false)

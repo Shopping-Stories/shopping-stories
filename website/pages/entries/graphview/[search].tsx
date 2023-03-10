@@ -9,7 +9,8 @@ import {
 } from "@tanstack/react-query";
 import LoadingPage from '@components/LoadingPage';
 import { Entry } from "new_types/api_types";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+// import { useSearch } from "@components/context/SearchContext";
 // import GraphGui from "@components/GraphView/GraphGui";
 const ForceGraph = dynamic(() => import('../../../client/components/GraphView/GraphGui'), {
     ssr: false,
@@ -23,8 +24,8 @@ export const getServerSideProps: GetServerSideProps = async context => {
     return {
         props: {
             search: search as string,
-            fuzzy: Boolean(fuzzy),
-            advanced: Boolean(advanced),
+            fuzzy: fuzzy === 'true',
+            advanced: advanced === 'advanced',
             title: 'GraphView'
         },
     };
@@ -46,25 +47,45 @@ export interface GraphGuiProps {
     fetchMore:  (newSearch: string) => void
 }
 
-type EntriesQueryKey = string[]
+type EntriesQueryKey = [string, string, boolean, boolean]//string[]
 type EntriesQueryOptions = UseQueryOptions<EntryQueryResult, Error, EntryQueryResult, EntriesQueryKey>[]
 
 //possibly change to server side rendered
-const EntryGraphView = ({search,fuzzy, advanced,title}:GraphGuiPageProps) => {
+const EntryGraphView = ({
+    search,
+    fuzzy,
+    advanced,
+    title
+}:GraphGuiPageProps) => {
+    // const {search, fuzzy, advanced} = useSearch()
+    console.log(title)
     console.log(search, fuzzy, advanced)
-    const doSearch = async (arg:string = search): Promise<EntryQueryResult> => {
-        const res = await fetch("https://api.preprod.shoppingstories.org:443/search/" + arg);
-        // console.log(await res.text());
-        // let toret: EntryQueryResult = JSON.parse(await res.text());
-        return JSON.parse(await res.text());
-    };
+    // const doSearch = async (arg:string = search): Promise<EntryQueryResult> => {
+    //     const res = await fetch("https://api.preprod.shoppingstories.org:443/search/" + arg);
+    //     // console.log(await res.text());
+    //     // let toret: EntryQueryResult = JSON.parse(await res.text());
+    //     return JSON.parse(await res.text());
+    // };
+    const doSearch = useCallback(async (search:string, fuzzy:boolean, advanced:boolean) => {
+        const req = advanced
+            ? `https://api.preprod.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
+            : `https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
+        const res = await fetch(req);
+        let toret: EntryQueryResult = JSON.parse(await res.text());
+        console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
+        console.log(req)
+        console.log(toret);
+        return toret;
+    },[])
     // const router = useRouter();
     // const { search } = router.query;
     
     const [params, setParams] = useState<EntriesQueryOptions>(
         [{
-            queryKey: ["entries", search],
-            queryFn: ({ queryKey }) => doSearch(queryKey[1]),
+            queryKey: ["entries", search, fuzzy, advanced],
+            queryFn: () => doSearch(search, fuzzy, advanced),
+            // queryKey: ["entries", search],
+            // queryFn: ({ queryKey }) => doSearch(queryKey[1]),
             refetchInterval: false,
             // retry: false,
             // retryOnMount: false,
@@ -80,8 +101,8 @@ const EntryGraphView = ({search,fuzzy, advanced,title}:GraphGuiPageProps) => {
         let newParams: EntriesQueryOptions = [
             ...params,
             {
-                queryKey: ["entries", newSearch],
-                queryFn: ({ queryKey }) => doSearch(queryKey[1]),
+                queryKey: ["entries", newSearch, false, false],
+                queryFn: ({ queryKey }) => doSearch(queryKey[1], queryKey[2], queryKey[3]),
                 refetchInterval: false,
                 // retry: false,
                 // retryOnMount: false,
