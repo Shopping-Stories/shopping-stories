@@ -18,6 +18,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Divider from "@mui/material/Divider";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -51,6 +54,13 @@ function a11yProps(index: number) {
         'aria-controls': `vertical-tabpanel-${index}`,
     };
 }
+
+// interface AboutNav {
+//     isAdminOrModerator: boolean;
+// }
+// {
+//     isAdminOrModerator,
+//     }: AboutNav
 
 export default function VerticalTabs() {
     const queryClient = new QueryClient();
@@ -363,34 +373,32 @@ export default function VerticalTabs() {
                                 </h1>
                             </Typography>
                             
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                 <Image
                                     src={'/FXCO_Research_01.jpg'}
-                                    // layout="responsive"
-                                    // width="100%"
                                     width={500}
-                                    // height="67%"
                                     height={335}
+                                    alt="Fairfax County Historic Records Center"
                                 />
-                            
                                 <Box
-                                    // alignSelf="center"
-                                    alignItems="center"
                                     sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        fontFamily: `Merriweather`,
-                                        // width:600,
-                                        // height:50,
-                                        // alignSelf: 'center',
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    fontFamily: `Merriweather`,
+                                    width: '100%',
+                                    maxWidth: 500,
+                                    textAlign: 'center',
+                                    margin: '0 auto',
                                     }}
                                 >
-                                    Conducting additional research at the
-                                    Fairfax County Historic Records Center.
+                                    Conducting additional research at the Fairfax County Historic Records Center.
                                 </Box>
+                                </Box>
+
                                 <Typography align="left">
                                 <p className={styles.about}>
                                     <Link href="https://www.historyrevealed.co/">
@@ -449,30 +457,32 @@ export default function VerticalTabs() {
                                     The Shopping Stories Project
                                 </h1>
                             </Typography>
-                            <Image
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Image
                                     src={'/C_1760_001D_John Glassford.jpg'}
-                                    // layout="responsive"
-                                    // width="100%"
                                     width={450}
-                                    // height="78%"
                                     height={350}
+                                    alt="John Glassford account (folio 1), Colchester store 1760/1761"
                                 />
-                            <Typography align="left">
                                 <Box
-                                    alignItems="center"
                                     sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        fontFamily: `Merriweather`,
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    fontFamily: `Merriweather`,
+                                    width: '100%',
+                                    maxWidth: 450,
+                                    textAlign: 'center',
+                                    margin: '0 auto',
                                     }}
                                 >
-                                    John Glassford account (folio 1), Colchester
-                                    store 1760/1761
+                                    John Glassford account (folio 1), Colchester store 1760/1761
                                 </Box>
+                                </Box>
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     Eighteenth-century ledgers detail tabular
                                     data: recording purchases, account holders,
@@ -494,7 +504,7 @@ export default function VerticalTabs() {
                                     alignItems="center"
                                     sx={{
                                         padding: '1rem',
-                                        bgcolor: '#FEFAE0',
+                                        bgcolor: `var(--box-quote)`,
                                         flexGrow: 0.5,
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -577,30 +587,32 @@ export default function VerticalTabs() {
                                     John Glassford & Company
                                 </h2>
                             </Typography>
-                            <Image
-                                        src={'/ColchesterToday.JPG'}
-                                        // layout="responsive"
-                                        // width="100%"
-                                        width={500}
-                                        // height="67%"
-                                        height={335}
-                                    />
-                            <Typography align="left">
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Image
+                                    src={'/ColchesterToday.JPG'}
+                                    width={500}
+                                    height={335}
+                                    alt="Colchester, Virginia, looks much changed today."
+                                />
                                 <Box
-                                    alignItems="center"
                                     sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        fontFamily: `Merriweather`,
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    fontFamily: `Merriweather`,
+                                    width: '100%',
+                                    maxWidth: 500,
+                                    textAlign: 'center',
+                                    margin: '0 auto',
                                     }}
                                 >
-                                    Colchester, Virginia, looks much changed
-                                    today.
+                                    Colchester, Virginia, looks much changed today.
                                 </Box>
+                                </Box>
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     Scotsman John Glassford controlled a major
                                     portion of the Chesapeake tobacco trade by
@@ -794,28 +806,31 @@ export default function VerticalTabs() {
                                     A Look at Ledgers
                                 </h1>
                             </Typography>
-                            <Image
-                                        src={'/C_1760_023_ElizabethConnell.jpg'}
-                                        // layout="responsive"
-                                        // width="100%"
-                                        width={500}
-                                        // height="100%"
-                                        height={500}
-                                    />
-                            <Typography align="left">
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Image
+                                    src={'/C_1760_023_ElizabethConnell.jpg'}
+                                    width={500}
+                                    height={500}
+                                    alt="Elizabeth Connell’s purchases and payments (folio 23), Colchester store 1760/1761"
+                                />
                                 <Box
                                     sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        fontFamily: `Merriweather`,
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    fontFamily: `Merriweather`,
+                                    width: '100%',
+                                    maxWidth: 500,
+                                    textAlign: 'center',
+                                    margin: '0 auto',
                                     }}
                                 >
-                                    Elizabeth Connell’s purchases and payments
-                                    (folio 23), Colchester store 1760/1761
+                                    Elizabeth Connell’s purchases and payments (folio 23), Colchester store 1760/1761
                                 </Box>
+                                </Box>
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     With no computers and databases to keep
                                     track of inventory and customers, businesses
@@ -902,15 +917,12 @@ export default function VerticalTabs() {
                                     Purchases and Payments
                                 </h1>
                             </Typography>
-                            <Image
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Image
                                     src={'/shutterstock_19824082.jpg'}
-                                    // layout="responsive"
-                                    // width="68%"
                                     width={340}
-                                    // height="100%"
                                     height={500}
                                 />
-                            <Typography align="left">
                                 <Box
                                     alignItems="center"
                                     sx={{
@@ -921,10 +933,13 @@ export default function VerticalTabs() {
                                         flexDirection: 'column',
                                         justifyContent: 'center',
                                         fontFamily: `Merriweather`,
+                                        width: 340,
                                     }}
                                 >
                                     Tobacco leaves
                                 </Box>
+                            </Box>
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     In the 18th-century, while customers could
                                     pay at the time of sale, many people made
@@ -1004,16 +1019,12 @@ export default function VerticalTabs() {
                                     Acknowledgements
                                 </h1>
                             </Typography>
-                            <Image
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Image
                                     src={'/FXCO_Research_02.JPG'}
-                                    // layout="responsive"
-                                    // width="100%"
                                     width={500}
-                                    // height="67%"
                                     height={335}
                                 />
-                            <Typography align="left">
-                                
                                 <Box
                                     alignItems="center"
                                     sx={{
@@ -1024,12 +1035,14 @@ export default function VerticalTabs() {
                                         flexDirection: 'column',
                                         justifyContent: 'center',
                                         fontFamily: `Merriweather`,
+                                        width: 500,
                                     }}
                                 >
-                                    Learning more about the people and places in
-                                    the ledgers requires a visit to the Fairfax
+                                    Learning more about the people and places in the ledgers requires a visit to the Fairfax
                                     County Historic Records Center.
                                 </Box>
+                                </Box>
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     Without the help of numerous individuals, we
                                     would not have been able to complete the
@@ -1176,46 +1189,62 @@ export default function VerticalTabs() {
                                                         research possibilities.
                                                         </p>
                                                     </Typography>
-                                                    <Button variant="contained" sx={{ width: "8vw", fontSize: "1.5vh"}} component="label">
+                                                    {/* {isAdminOrModerator && hidden={!isAdminOrModerator}
+                                                    (<> */}
+                                                    <Button variant="contained" sx={{ width: "8vw", fontSize: "1.5vh"}} component="label" >
                                                         Upload File
                                                         <input hidden multiple type="file" onChange={handleUpload} />
                                                     </Button>
+                                                    {/* </>)
+                                                    } */}
                                                     <Typography align="left">
-                                                    <List>
-                                                    {docs?.Contents?.filter(doc => doc.Key !== "Documentation/").map((doc: document) => (
-                                                        <ListItem
-                                                        sx={{
-                                                            '&:hover': {
-                                                              color: `var(--secondary)`,
-                                                            },
-                                                            display: 'flex',
-                                                            cursor: 'pointer',
-                                                            textAlign: 'left',
-                                                          }}
-                                                          
-                                                        secondaryAction={
-                                                            <Box  justifyContent="flex-start">
-                                                            <IconButton
-                                                                aria-label="delete"
-                                                                edge="end"
-                                                                onClick={() => handleDelete(nameFile(doc.Key))}
-                                                            >
-                                                                <DeleteIcon />
-                                                            </IconButton>
-                                                            </Box>
-                                                        }
-                                                        >
-                                                        <ListItemText
-                                                            primary={nameFile(doc.Key)}
-                                                            sx={{
-                                                            textAlign: 'left',
-                                                            }}
-                                                            onClick={() => handleGetDoc(nameFile(doc.Key))}
-                                                        />
-                                                        </ListItem>
-                                                    ))}
-                                                    </List>
+                                                    <Card>
+                                                        <CardContent>
+                                                            <List>
+                                                            {docs?.Contents?.filter(doc => doc.Key !== "Documentation/").map((doc: document, index) => (
+                                                                <React.Fragment key={index}>
+                                                                <ListItem
+                                                                    sx={{
+                                                                    '&:hover': {
+                                                                        color: `var(--secondary)`,
+                                                                    },
+                                                                    display: 'flex',
+                                                                    cursor: 'pointer',
+                                                                    textAlign: 'left',
+                                                                    }}
+                                                                    secondaryAction={
+                                                                    <Box justifyContent="flex-start">
+                                                                        <IconButton
+                                                                        aria-label="delete"
+                                                                        edge="end"
+                                                                        onClick={() => handleDelete(nameFile(doc.Key))}
+                                                                        // hidden={!isAdminOrModerator}
+                                                                        >
+                                                                        <DeleteIcon />
+                                                                        </IconButton>
+                                                                    </Box>
+                                                                    }
+                                                                >
+                                                                    <ListItemText
+                                                                    primary={nameFile(doc.Key)}
+                                                                    sx={{
+                                                                        textAlign: 'left',
+                                                                    }}
+                                                                    onClick={() => handleGetDoc(nameFile(doc.Key))}
+                                                                    />
+                                                                </ListItem>
+                                                                {index < docs?.Contents?.filter(doc => doc.Key !== "Documentation/").length - 1 && (
+                                                                    <Divider variant="middle" />
+                                                                )}
+                                                                </React.Fragment>
+                                                            ))}
+                                                            </List>
+                                                        </CardContent>
+                                                        </Card>
+
                                                 </Typography>
+                                                {/* </>)
+                                                    } */}
                                                 </Paper>
                                     </ColorBackground>
                                 </QueryClientProvider>
