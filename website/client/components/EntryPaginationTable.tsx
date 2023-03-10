@@ -14,8 +14,8 @@ import {
     GridRowsProp,
     DataGrid,
     GridRowId,
-    // GridToolbar,
-    GridToolbarExport,
+    GridToolbar,
+    // GridToolbarExport,
     GridColumnVisibilityModel,
 } from "@mui/x-data-grid";
 import Stack from "@mui/material/Stack";
@@ -25,8 +25,8 @@ import {
     entryToRow,
     fieldNames,
     hiddenFields,
-    IncludedField,
-} from '../entryUtils';
+    IncludedField, splitFields
+} from "../entryUtils";
 
 interface SelectedRowParams {
     id: GridRowId;
@@ -96,11 +96,11 @@ const EntryPaginationTable = ({
     }, [entries])
     
     const cols: GridColDef[] = useMemo(()=> (
-        colNames.map(str => (complexFields.has(str) ? {
+        colNames.map(str => (complexFields.has(str) || splitFields.has(str)? {
             field: str,
             headerName: str,
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
-            disableExport: true
+            disableExport: !splitFields.has(str)
         } :  {
             field: str,
             headerName: fieldNames[str as IncludedField],
@@ -109,7 +109,7 @@ const EntryPaginationTable = ({
     ))), [])
     
     const hiddenCols: GridColumnVisibilityModel = Object.fromEntries(
-        [...hiddenFields.values()].map(n => [n, false])
+        [...hiddenFields.values(), ...splitFields.values()].map(n => [n, false])
     )
     
     const handleCellFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
@@ -193,8 +193,8 @@ const EntryPaginationTable = ({
                         // rowsPerPageOptions={[5, 10, 20]}
                         pagination
                         components={{
-                            // Toolbar: GridToolbar
-                            Toolbar:  GridToolbarExport,
+                            Toolbar: GridToolbar,
+                            // Toolbar:  GridToolbarExport,
                             ExportIcon: ImportIcon
                         }}
                         componentsProps={{

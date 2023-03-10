@@ -58,6 +58,7 @@ const EntriesPage: NextPage = () => {
         validationSchema: searchSchema,
         onSubmit: (values: any) => {
             if (values.search)
+                setAdvSubmitted(false)
                 searchDispatch({type: getType(fuzzToggle, false), payload: values.search})
         },
     });
