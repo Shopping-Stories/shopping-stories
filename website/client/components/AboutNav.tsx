@@ -6,8 +6,21 @@ import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Link from "next/link";
 import Image from "next/image";
-import styles from "styles/About.module.css";
-import React, { useState } from "react";
+import styles from "../../styles/About.module.css";
+import React, { useState, useEffect } from "react";
+import { PaperStyles } from 'styles/styles';
+import Button from '@mui/material/Button';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ColorBackground from '@components/ColorBackground';
+import Header from '@components/Header';
+import List from "@mui/material/List";
+import DeleteIcon from '@mui/icons-material/Delete';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Divider from "@mui/material/Divider";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -42,12 +55,200 @@ function a11yProps(index: number) {
     };
 }
 
-export default function VerticalTabs() {
+interface AboutNav {
+    isAdminOrModerator: boolean;
+}
+
+export default function VerticalTabs({
+    isAdminOrModerator,
+    }: AboutNav) {
+    const queryClient = new QueryClient();
     const [value, setValue] = useState(0);
 
     const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
+
+    const [errorText, setErrorText] = useState<string>("");
+    const [url, setUrl] = useState("");
+    const [editing, setEditing] = useState(false);
+    const [docs, setDocs] = useState<documentObject>();
+    const [singleDoc, setDocument] = useState<Blob>();
+    const [uploadCount, setUploadCount] = useState(0);
+
+    interface sfile {
+        file: string
+        name: string
+    }
+    
+    interface fileError {
+        name: string,
+        reason: string
+    }
+    
+    interface fileErrorList {
+        files: Array<fileError>
+    }
+    
+    interface fileUploads {
+        files: Array<sfile>
+    }
+    
+    interface message {
+        message: string
+        error: boolean
+    }
+    
+    interface fileName {
+        name: string
+    }
+
+    interface document {
+        Key: string
+    }
+
+    interface documentObject {
+        Contents: [document]
+    }
+
+    const doUpload = async (toUp: fileUploads) => {
+        // console.log("toUp: ");
+        // console.log(toUp);
+        // console.log("Stringify");
+        console.log(JSON.stringify(toUp["files"][0]));
+        // console.log(toUp.file);
+        // console.log(JSON.stringify(toUp.files[0]));
+        const upload_url = "https://api.preprod.shoppingstories.org:443/upload_document/";
+        const res = await fetch(upload_url, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(toUp["files"][0])
+        });
+
+        const text = await res.text();
+        const errors: fileErrorList = JSON.parse(text);
+        console.log(text);
+    }
+
+    const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files == null) {
+            return;
+        }
+
+        const files: Array<sfile> = [];
+
+        for (let ix = 0; ix < e.target.files.length; ix++) {
+            const file = e.target.files[ix];
+            getBase64(file, (content) => {
+                if ((content != null) && (typeof content == typeof "asdas")) {
+                    const f: sfile = { "file": (content as unknown as string).split(",")[1], "name": file.name }
+                    files.push(f)
+                    if (ix == e.target.files!.length! - 1) {
+                        // console.log(files);
+                        // console.log(files.length);
+                        const toUpload: fileUploads = { files: files };
+                
+                        // console.log("To Upload: ");
+                        // console.log(toUpload);
+                        // console.log(toUpload.files);
+                        // console.log(toUpload.files.length);
+                        // console.log(toUpload);
+                        // console.log((toUpload.files)[0]);
+                
+                        // doUpload(toUpload);
+                        doUpload(toUpload).then(() => {
+                            setUploadCount((count) => count + 1);
+                          });
+                    }
+                }
+            });
+        }
+        // getDocs().then(d => setDocs(d));
+    }
+
+    const getBase64 = (file: Blob, cb: (content: string | ArrayBuffer | null) => void) => {
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            cb(reader.result)
+        };
+        reader.onerror = function (error) {
+            console.log('Error: ', error);
+        };
+    }
+
+    const handleDelete = async (name: string) => {
+
+        const delUrl = "https://api.preprod.shoppingstories.org:443/delete_document/" + name;
+        // let toDel: fileName = {name: fileName}
+        
+        const res = await fetch(delUrl, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        });
+        const text = await res.text();
+
+        if (res.status == 200) {
+            let result: message = JSON.parse(text);
+            // console.log(result);
+        }
+        setUploadCount((count) => count + 1);
+
+        // handleBack()
+    }
+
+    const getDocs = async () => {
+        const getUrl = "https://api.preprod.shoppingstories.org:443/list_all_documents"
+
+        const res = await fetch(getUrl);
+
+        let r = JSON.parse(await res.text());
+        // console.log(r);
+        return r;
+        // setDocs(JSON.parse(await res.text()));
+    }
+
+    useEffect(() => {
+        getDocs().then(d => setDocs(d));
+      }, [uploadCount]);
+
+    // console.log(docs);
+
+    
+    const getDoc = async (name: string) => {
+        const getUrl = "https://api.preprod.shoppingstories.org:443/get_document/" + name;
+        
+        const res = await fetch(getUrl);
+        const blob = await res.blob();
+      
+        setDocument(blob);
+    }
+
+    useEffect(() => {
+        if (singleDoc) {
+          const url = URL.createObjectURL(singleDoc);
+          const pdfWindow = window.open(url);
+      
+          if (!pdfWindow || pdfWindow.closed || typeof pdfWindow.closed === 'undefined') {
+            alert('Please allow popups for this site');
+          }
+        }
+      }, [singleDoc]);
+      
+      function handleGetDoc(name: string) {
+        getDoc(name);
+      }
+
+    function nameFile(name: string) {
+        var n=name.replace("Documentation/","");
+        return n;
+    }
 
     return (
         <div>
@@ -143,6 +344,17 @@ export default function VerticalTabs() {
                                 fontWeight: 'bold',
                             }}
                         />
+                        <Tab
+                            label="User's Guide"
+                            {...a11yProps(5)}
+                            sx={{
+                                borderRadius: 0.25,
+                                border: 1,
+                                bgcolor: '#DDA15E',
+                                boxShadow: 0.5,
+                                fontWeight: 'bold',
+                            }}
+                        />
                     </Tabs>
                 </Box>
                 <TabPanel value={value} index={0}>
@@ -158,27 +370,35 @@ export default function VerticalTabs() {
                                 <h1 className={styles.about}>
                                     About History Revealed
                                 </h1>
+                            </Typography>
+                            
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                 <Image
                                     src={'/FXCO_Research_01.jpg'}
-                                    layout="responsive"
-                                    width="100%"
-                                    height="67%"
+                                    width={500}
+                                    height={335}
+                                    alt="Fairfax County Historic Records Center"
                                 />
                                 <Box
-                                    alignItems="center"
                                     sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        fontFamily: `Merriweather`,
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    fontFamily: `Merriweather`,
+                                    width: '100%',
+                                    maxWidth: 500,
+                                    textAlign: 'center',
+                                    margin: '0 auto',
                                     }}
                                 >
-                                    Conducting additional research at the
-                                    Fairfax County Historic Records Center.
+                                    Conducting additional research at the Fairfax County Historic Records Center.
                                 </Box>
+                                </Box>
+
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     <Link href="https://www.historyrevealed.co/">
                                         <a className={styles.about}>
@@ -235,38 +455,33 @@ export default function VerticalTabs() {
                                 <h1 className={styles.about}>
                                     The Shopping Stories Project
                                 </h1>
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Image
+                                    src={'/C_1760_001D_John Glassford.jpg'}
+                                    width={450}
+                                    height={350}
+                                    alt="John Glassford account (folio 1), Colchester store 1760/1761"
+                                />
                                 <Box
                                     sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    fontFamily: `Merriweather`,
+                                    width: '100%',
+                                    maxWidth: 450,
+                                    textAlign: 'center',
+                                    margin: '0 auto',
                                     }}
                                 >
-                                    <Image
-                                        src={'/C_1760_001D_John Glassford.jpg'}
-                                        layout="responsive"
-                                        width="100%"
-                                        height="78%"
-                                    />
+                                    John Glassford account (folio 1), Colchester store 1760/1761
                                 </Box>
-                                <Box
-                                    alignItems="center"
-                                    sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        fontFamily: `Merriweather`,
-                                    }}
-                                >
-                                    John Glassford account (folio 1), Colchester
-                                    store 1760/1761
                                 </Box>
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     Eighteenth-century ledgers detail tabular
                                     data: recording purchases, account holders,
@@ -288,7 +503,7 @@ export default function VerticalTabs() {
                                     alignItems="center"
                                     sx={{
                                         padding: '1rem',
-                                        bgcolor: '#FEFAE0',
+                                        bgcolor: `var(--box-quote)`,
                                         flexGrow: 0.5,
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -370,38 +585,33 @@ export default function VerticalTabs() {
                                     The Power of the 18th-Century Ledgers of
                                     John Glassford & Company
                                 </h2>
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Image
+                                    src={'/ColchesterToday.JPG'}
+                                    width={500}
+                                    height={335}
+                                    alt="Colchester, Virginia, looks much changed today."
+                                />
                                 <Box
                                     sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    fontFamily: `Merriweather`,
+                                    width: '100%',
+                                    maxWidth: 500,
+                                    textAlign: 'center',
+                                    margin: '0 auto',
                                     }}
                                 >
-                                    <Image
-                                        src={'/ColchesterToday.JPG'}
-                                        layout="responsive"
-                                        width="100%"
-                                        height="67%"
-                                    />
+                                    Colchester, Virginia, looks much changed today.
                                 </Box>
-                                <Box
-                                    alignItems="center"
-                                    sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        fontFamily: `Merriweather`,
-                                    }}
-                                >
-                                    Colchester, Virginia, looks much changed
-                                    today.
                                 </Box>
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     Scotsman John Glassford controlled a major
                                     portion of the Chesapeake tobacco trade by
@@ -501,12 +711,17 @@ export default function VerticalTabs() {
                                 <h1 className={styles.about}>
                                     The Transcription and Database Process
                                 </h1>
-                                <Image
+                            </Typography>
+                            <Image
                                     src={'/shutterstock_445572439.jpg'}
-                                    layout="responsive"
-                                    width="100%"
-                                    height="67%"
+                                    // layout="responsive"
+                                    // width="100%"
+                                    width={500}
+                                    // height="67%"
+                                    height={335}
                                 />
+                            <Typography align="left">
+                                
                                 <p className={styles.about}>
                                     Going from original manuscripts to digital
                                     transcriptions is challenging. What started
@@ -589,36 +804,32 @@ export default function VerticalTabs() {
                                 <h1 className={styles.about}>
                                     A Look at Ledgers
                                 </h1>
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Image
+                                    src={'/C_1760_023_ElizabethConnell.jpg'}
+                                    width={500}
+                                    height={500}
+                                    alt="Elizabeth Connell’s purchases and payments (folio 23), Colchester store 1760/1761"
+                                />
                                 <Box
                                     sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
+                                    padding: '1rem',
+                                    bgcolor: '#DDA15E',
+                                    flexGrow: 0.5,
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    fontFamily: `Merriweather`,
+                                    width: '100%',
+                                    maxWidth: 500,
+                                    textAlign: 'center',
+                                    margin: '0 auto',
                                     }}
                                 >
-                                    <Image
-                                        src={'/C_1760_023_ElizabethConnell.jpg'}
-                                        layout="responsive"
-                                        width="100%"
-                                        height="100%"
-                                    />
+                                    Elizabeth Connell’s purchases and payments (folio 23), Colchester store 1760/1761
                                 </Box>
-                                <Box
-                                    sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        fontFamily: `Merriweather`,
-                                    }}
-                                >
-                                    Elizabeth Connell’s purchases and payments
-                                    (folio 23), Colchester store 1760/1761
                                 </Box>
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     With no computers and databases to keep
                                     track of inventory and customers, businesses
@@ -647,23 +858,16 @@ export default function VerticalTabs() {
                                 <h1 className={styles.about}>
                                     Ledgers: The Basics
                                 </h1>
-                                <Box
-                                    sx={{
-                                        padding: '1rem',
-                                        bgcolor: '#DDA15E',
-                                        flexGrow: 0.5,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <Image
+                            </Typography>
+                            <Image
                                         src={'/shutterstock_48906238.jpg'}
-                                        layout="responsive"
-                                        width="66%"
-                                        height="100%"
+                                        // layout="responsive"
+                                        // width="66%"
+                                        width={330}
+                                        // height="100%"
+                                        height={500}
                                     />
-                                </Box>
+                            <Typography align="left">
                                 <p className={styles.about}>
                                     Creation of ledgers started with waste books
                                     – similar to receipts. Then, at the
@@ -711,11 +915,12 @@ export default function VerticalTabs() {
                                 <h1 className={styles.about}>
                                     Purchases and Payments
                                 </h1>
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                 <Image
                                     src={'/shutterstock_19824082.jpg'}
-                                    layout="responsive"
-                                    width="68%"
-                                    height="100%"
+                                    width={340}
+                                    height={500}
                                 />
                                 <Box
                                     alignItems="center"
@@ -727,10 +932,13 @@ export default function VerticalTabs() {
                                         flexDirection: 'column',
                                         justifyContent: 'center',
                                         fontFamily: `Merriweather`,
+                                        width: 340,
                                     }}
                                 >
                                     Tobacco leaves
                                 </Box>
+                            </Box>
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     In the 18th-century, while customers could
                                     pay at the time of sale, many people made
@@ -809,11 +1017,12 @@ export default function VerticalTabs() {
                                 <h1 className={styles.about}>
                                     Acknowledgements
                                 </h1>
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                 <Image
                                     src={'/FXCO_Research_02.JPG'}
-                                    layout="responsive"
-                                    width="100%"
-                                    height="67%"
+                                    width={500}
+                                    height={335}
                                 />
                                 <Box
                                     alignItems="center"
@@ -825,12 +1034,14 @@ export default function VerticalTabs() {
                                         flexDirection: 'column',
                                         justifyContent: 'center',
                                         fontFamily: `Merriweather`,
+                                        width: 500,
                                     }}
                                 >
-                                    Learning more about the people and places in
-                                    the ledgers requires a visit to the Fairfax
+                                    Learning more about the people and places in the ledgers requires a visit to the Fairfax
                                     County Historic Records Center.
                                 </Box>
+                                </Box>
+                                <Typography align="left">
                                 <p className={styles.about}>
                                     Without the help of numerous individuals, we
                                     would not have been able to complete the
@@ -891,7 +1102,7 @@ export default function VerticalTabs() {
                                 padding: '1rem',
                             }}
                         >
-                            <Typography>
+                            <Typography align="left">
                                 <p className={styles.about}>
                                     <i className={styles.about}>
                                         High Life Below Stairs,
@@ -937,6 +1148,116 @@ export default function VerticalTabs() {
                                         </a>
                                     </Link>
                                 </p>
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                </TabPanel>
+                <TabPanel value={value} index={5}>
+                    <Grid container spacing={2}>
+                        <Paper
+                            sx={{
+                                backgroundColor: `var(--secondary-bg)`,
+                                margin: '2rem',
+                                padding: '1rem',
+                                justifyContent: 'center',
+                                width: 'calc(100% - 10px)',
+                            }}
+                        >
+                            <Typography>
+                                <h1 className={styles.about}>
+                                    User's Guide
+                                </h1>
+                                <QueryClientProvider client={queryClient}>
+                                    <ColorBackground>
+                                        <Header />
+                                                <Paper sx={{
+                                                    backgroundColor: `var(--secondary-bg)`,
+                                                    margin: '2rem',
+                                                    padding: '1rem',
+                                                    width: 'calc(100% - 100px)',
+                                                }}>
+                                                    <Typography align="left">
+                                                        <p className={styles.about}>
+                                                        The Shopping Stories
+                                                        database
+                                                        looks to provide users with an accessible entry into the complex,
+                                                        financial records of stores from the 18th
+                                                        century.
+                                                        To help user’s know how to use the database, be sure
+                                                        to check out our FAQs, search tips, and project manual for important information on the project and
+                                                        research possibilities.
+                                                        </p>
+                                                    </Typography>
+                                                    {isAdminOrModerator && 
+                                                    (<>
+                                                    <Button variant="contained" sx={{ width: "8vw", fontSize: "1.5vh"}} component="label" hidden={!isAdminOrModerator}>
+                                                        Upload File
+                                                        <input hidden multiple type="file" onChange={handleUpload}/>
+                                                    </Button>
+                                                    </>)
+                                                    }
+                                                    <Typography align="left">
+                                                    <Card>
+                                                        <CardContent>
+                                                            <List>
+                                                            {docs?.Contents?.filter(doc => doc.Key !== "Documentation/").map((doc: document, index) => (
+                                                                <React.Fragment key={index}>
+                                                                <ListItem
+                                                                    sx={{
+                                                                    '&:hover': {
+                                                                        color: `var(--secondary)`,
+                                                                    },
+                                                                    display: 'flex',
+                                                                    cursor: 'pointer',
+                                                                    textAlign: 'left',
+                                                                    }}
+                                                                    secondaryAction={
+                                                                    // <Box justifyContent="flex-start">
+                                                                    //     <IconButton
+                                                                    //     aria-label="delete"
+                                                                    //     edge="end"
+                                                                    //     onClick={() => handleDelete(nameFile(doc.Key))}
+                                                                    //     hidden={!isAdminOrModerator}
+                                                                    //     >
+                                                                    //     <DeleteIcon/>
+                                                                    //     </IconButton>
+                                                                    // </Box>
+                                                                    <Box justifyContent="flex-start">
+                                                                        {isAdminOrModerator && (
+                                                                            <IconButton
+                                                                            aria-label="delete"
+                                                                            edge="end"
+                                                                            onClick={() => handleDelete(nameFile(doc.Key))}
+                                                                            >
+                                                                            <DeleteIcon/>
+                                                                            </IconButton>
+                                                                        )}
+                                                                        </Box>
+                                                                    }
+                                                                >
+                                                                    <ListItemText
+                                                                    primary={nameFile(doc.Key)}
+                                                                    sx={{
+                                                                        textAlign: 'left',
+                                                                    }}
+                                                                    onClick={() => handleGetDoc(nameFile(doc.Key))}
+                                                                    />
+                                                                </ListItem>
+                                                                {index < docs?.Contents?.filter(doc => doc.Key !== "Documentation/").length - 1 && (
+                                                                    <Divider variant="middle" />
+                                                                )}
+                                                                </React.Fragment>
+                                                            ))}
+                                                            </List>
+                                                        </CardContent>
+                                                        </Card>
+
+                                                </Typography>
+                                                {/* </>)
+                                                    } */}
+                                                </Paper>
+                                    </ColorBackground>
+                                </QueryClientProvider>
                             </Typography>
                         </Paper>
                     </Grid>
