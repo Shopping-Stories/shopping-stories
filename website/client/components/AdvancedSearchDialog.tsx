@@ -34,12 +34,13 @@ interface EntryDialogProps {
     // setSearch: (search:SearchAction) => void
     setAdvancedOpen: (open:boolean) => void
     setFuzzy: (fuzzy:boolean) => void
+    setAdvSubmitted: (submitted:boolean) => void
     open: boolean
     fuzzy: boolean
     toGraph: (query:string) => void
 }
 
-const AdvancedSearchDialog = ({ setAdvancedOpen, open, fuzzy, setFuzzy, toGraph}: EntryDialogProps) => {
+const AdvancedSearchDialog = ({ setAdvancedOpen, open, fuzzy, setFuzzy, toGraph, setAdvSubmitted}: EntryDialogProps) => {
     // console.log(dialogType, entry)
     // const [fuzzy, setFuzzy] = useState<boolean>(false)
     const initFormValues: Partial<AdvancedSearchOptions> = useMemo(()=>{
@@ -48,6 +49,7 @@ const AdvancedSearchDialog = ({ setAdvancedOpen, open, fuzzy, setFuzzy, toGraph}
     const setSearch = useSearchDispatch()
     const handleSubmit = async (search: Partial<AdvancedSearchOptions>) => {
         // console.log('adv set search')
+        setAdvSubmitted(true)
         setSearch({
             type: fuzzy ? "FUZZY_ADVANCED" : "ADVANCED",
             payload: new URLSearchParams(Object.entries(search).map(e => e)).toString()

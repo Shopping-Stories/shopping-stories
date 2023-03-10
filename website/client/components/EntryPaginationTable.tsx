@@ -8,6 +8,7 @@ import {
 } from "new_types/api_types";
 import Button from "@mui/material/Button";
 import AddCircle from "@mui/icons-material/AddCircle";
+import DownloadIcon from '@mui/icons-material/Download';
 import {
     GridColDef,
     GridRowsProp,
@@ -37,6 +38,10 @@ interface EntryPaginationTable {
     isAdminOrModerator: boolean;
     handleEntryAction: (action: string, payload: Entry | undefined) => void
     entries: Entry[]
+}
+
+const ImportIcon = () => {
+    return <DownloadIcon color={'secondary'}/>
 }
 
 const EntryPaginationTable = ({
@@ -189,15 +194,18 @@ const EntryPaginationTable = ({
                         pagination
                         components={{
                             // Toolbar: GridToolbar
-                            Toolbar:  GridToolbarExport
+                            Toolbar:  GridToolbarExport,
+                            ExportIcon: ImportIcon
                         }}
                         componentsProps={{
                             cell: { onFocus: handleCellFocus },
                             toolbar: {
                                 csvOptions: {
                                 // fields: [...visibleFields.values(), ...hiddenFields.values()]
-                                allColumns: true
-                            }}
+                                    allColumns: true
+                                },
+                                
+                            },
                         }}
                     />
             </Paper>
