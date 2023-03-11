@@ -8,7 +8,6 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "../../styles/About.module.css";
 import React, { useState, useEffect } from "react";
-import { PaperStyles } from 'styles/styles';
 import Button from '@mui/material/Button';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ColorBackground from '@components/ColorBackground';
@@ -69,9 +68,6 @@ export default function VerticalTabs({
         setValue(newValue);
     };
 
-    const [errorText, setErrorText] = useState<string>("");
-    const [url, setUrl] = useState("");
-    const [editing, setEditing] = useState(false);
     const [docs, setDocs] = useState<documentObject>();
     const [singleDoc, setDocument] = useState<Blob>();
     const [uploadCount, setUploadCount] = useState(0);
@@ -81,26 +77,8 @@ export default function VerticalTabs({
         name: string
     }
     
-    interface fileError {
-        name: string,
-        reason: string
-    }
-    
-    interface fileErrorList {
-        files: Array<fileError>
-    }
-    
     interface fileUploads {
         files: Array<sfile>
-    }
-    
-    interface message {
-        message: string
-        error: boolean
-    }
-    
-    interface fileName {
-        name: string
     }
 
     interface document {
@@ -129,7 +107,6 @@ export default function VerticalTabs({
         });
 
         const text = await res.text();
-        const errors: fileErrorList = JSON.parse(text);
         console.log(text);
     }
 
@@ -192,12 +169,12 @@ export default function VerticalTabs({
                 "Content-Type": "application/json"
             }
         });
-        const text = await res.text();
+        
 
-        if (res.status == 200) {
-            let result: message = JSON.parse(text);
+        if (res.status == 200) {    
             // console.log(result);
         }
+
         setUploadCount((count) => count + 1);
 
         // handleBack()
@@ -719,6 +696,7 @@ export default function VerticalTabs({
                                     width={500}
                                     // height="67%"
                                     height={335}
+                                    alt={"A researcher transcribing documents"}
                                 />
                             <Typography align="left">
                                 
@@ -866,6 +844,7 @@ export default function VerticalTabs({
                                         width={330}
                                         // height="100%"
                                         height={500}
+                                        alt={"Thick, old, and dusty ledger books"}
                                     />
                             <Typography align="left">
                                 <p className={styles.about}>
@@ -921,6 +900,7 @@ export default function VerticalTabs({
                                     src={'/shutterstock_19824082.jpg'}
                                     width={340}
                                     height={500}
+                                    alt={"Tobacco leaves"}
                                 />
                                 <Box
                                     alignItems="center"
@@ -1023,6 +1003,7 @@ export default function VerticalTabs({
                                     src={'/FXCO_Research_02.JPG'}
                                     width={500}
                                     height={335}
+                                    alt={"A researcher transcribes documents"}
                                 />
                                 <Box
                                     alignItems="center"
@@ -1136,8 +1117,8 @@ export default function VerticalTabs({
                                 </p>
                                 <p className={styles.about}>
                                     <i className={styles.about}>
-                                        "Tobacco Production, Virginia, 18th
-                                        cent.", Slavery Images: A Visual Record
+                                        &#34;Tobacco Production, Virginia, 18th
+                                        cent.&#34;, Slavery Images: A Visual Record
                                         of the African Slave Trade and Slave
                                         Life in the Early African Diaspora
                                     </i>
@@ -1165,7 +1146,7 @@ export default function VerticalTabs({
                         >
                             <Typography>
                                 <h1 className={styles.about}>
-                                    User's Guide
+                                    User&#39;s Guide
                                 </h1>
                                 <QueryClientProvider client={queryClient}>
                                     <ColorBackground>
