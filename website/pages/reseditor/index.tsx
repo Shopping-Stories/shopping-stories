@@ -408,10 +408,14 @@ const ResView: NextPage = () => {
                             <Paper sx={{ ...PaperStyles, marginBottom: "0px", marginTop: "2vh", width: "fit-content", padding: "1.25vh"}}>
                                 <Typography variant='h4' sx={{marginBottom: "1.5vh"}} align="center">{url.split("/")[4].replace(".json", "")}</Typography>
                                 <Typography variant='h5' align="center">{text}</Typography>
-                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => { handleBack() }}><Typography variant='h5'>Back</Typography></Button></Box>
-                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button></Box>
-                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button></Box>
-                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleRemoveChecks()}}><Typography variant='h5'>Remove Check Item</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}>
+                                    <Button variant='contained' sx={{ "width": "49.75%" }} onClick={() => { handleBack() }}><Typography variant='h5'>Back</Typography></Button>
+                                    <Button variant='contained' sx={{ "width": "49.75%", marginLeft: "0.5%" }} onClick={() => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button>
+                                </Box>
+                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}>
+                                    <Button variant='contained' sx={{ "width": "49.75%" }} onClick={() => {handleRemoveChecks()}}><Typography variant='h5'>Remove Check Item</Typography></Button>
+                                    <Button variant='contained' sx={{ "width": "49.75%", marginLeft: "0.5%" }} onClick={() => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button>
+                                </Box>
                             </Paper>
                         </Box>
                         {
