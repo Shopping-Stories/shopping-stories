@@ -21,6 +21,7 @@ import ParserOutputEditor from '@components/ParserOutputEditor';
 import Typography from '@mui/material/Typography';
 import ParserEditorDialog, { rowType } from '@components/ParserEditorDialog';
 import URLTable from '@components/URLTable';
+import { moneyToString } from 'client/entryUtils';
 
 interface sfile {
     file: string
@@ -333,6 +334,40 @@ const ResView: NextPage = () => {
 
     }
 
+    const handleRemoveChecks = () => {
+        let newrows: GridValidRowModel[] = []
+        if (rows != null && rows != undefined && (rows.length > 0)) {
+            rows.forEach((value, index) => {
+                let thing: GridValidRowModel = {
+                    Errors: ((value.original!.errors ?? []).includes("Check Item") && (value.original!.errors ?? []).length == 1) ? [] : value.original!.errors,
+                    AccountName: value.original!.account_name,
+                    "Dr/Cr": value.original!.debit_or_credit,
+                    Amount: value.original!.amount,
+                    Item: (value.original!.item ?? ""),
+                    // AccountHolderID: value.original!.accountHolderID,
+                    Date: value.original!.folio_year,
+                    Owner: value.original!.store_owner,
+                    // Store: value.original!.meta?.store,
+                    // Comments: value.original!.meta?.comments,
+                    // Colony: value.original!.money?.colony,
+                    Quantity: value.original!.Quantity,
+                    Commodity: value.original!.Commodity,
+                    Money: moneyToString(value.original!.pounds, value.original!.shillings, value.original!.pennies, value.original!.farthings),
+                    CurrencyType: value.original!.currency_type,
+                    EntryID: value.original!.entry_id,
+                    // Ledger: value.original!.ledger?.folio_year,
+                    Reel: value.original!.reel,
+                    FolioPage: value.original!.folio_page,
+                    original: value.original,
+                    id: value.id
+                }
+                newrows.push(thing)
+            })
+        }
+
+        editRows(newrows)
+    }
+
     CheckParsing();
 
     if (loading) {
@@ -376,6 +411,7 @@ const ResView: NextPage = () => {
                                 <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => { handleBack() }}><Typography variant='h5'>Back</Typography></Button></Box>
                                 <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button></Box>
                                 <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button></Box>
+                                <Box sx={{ width: "100%", paddingTop: "0.5vh" }}><Button variant='contained' sx={{ "width": "100%" }} onClick={() => {handleRemoveChecks()}}><Typography variant='h5'>Remove Check Item</Typography></Button></Box>
                             </Paper>
                         </Box>
                         {
