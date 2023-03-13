@@ -337,7 +337,7 @@ const ResView: NextPage = () => {
     const handleRemoveChecks = () => {
         let newrows: GridValidRowModel[] = []
         if (rows != null && rows != undefined && (rows.length > 0)) {
-            rows.forEach((value, index) => {
+            rows.forEach((value, _index) => {
                 let thing: GridValidRowModel = {
                     Errors: ((value.original!.errors ?? []).includes("Check Item") && (value.original!.errors ?? []).length == 1) ? [] : value.original!.errors,
                     AccountName: value.original!.account_name,
