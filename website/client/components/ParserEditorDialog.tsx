@@ -13,7 +13,7 @@ import Delete from '@mui/icons-material/Delete';
 import { Dispatch } from 'react';
 import { TransitionProps } from '@mui/material/transitions';
 import Slide from '@mui/material/Slide';
-import { ParserOutput, ParserOutputKey, ParserOutputKeys, ParserStringKeys, ParserStringArrayKeys, ParserNumberKeys, tmStrToTMs, TobaccoMark, tmToStr, parseStringArray, TobaccoEntry } from 'new_types/api_types';
+import { ParserOutput, ParserOutputKey, ParserStringKeys, ParserStringArrayKeys, ParserNumberKeys, tmStrToTMs, TobaccoMark, tmToStr, parseStringArray, TobaccoEntry } from 'new_types/api_types';
 import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import TobaccoFields from './TobaccoFields';
 
@@ -52,8 +52,9 @@ export interface rowType {
 }
 
 type origKey = ParserOutputKey
-const origKeys = ParserOutputKeys
 type rowTypeKey = keyof rowType
+
+const origKeys = ["errors", "error_context", "context", "text_as_parsed", "original_entry", "store", "debit_or_credit", "account_name", "amount", "amount_is_combo", "item", "price", "type", "liber_book",  "price_is_combo", "phrases", "date", "pounds_ster", "shillings_ster", "pennies_ster", "farthings_ster", "pounds", "shillings", "pennies", "farthings", "currency_type", "currency_colony", "currency_totaling_contextless", "commodity_totaling_contextless", "tobacco_location", "tobacco_entries", "tobacco_marks", "tobacco_amount_off",  "Marginalia", "store_owner", "reel", "folio_reference", "folio_year", "folio_page", "entry_id", "Date Year", "_Month", "Day", "Quantity", "Commodity", "people", "mentions"] as Array<ParserOutputKey>;
 
 // const rowTypeKeys = ["Errors", "Account Name", "Dr/Cr", "Amount", "Item", "Date", "Owner", "Quantity", "Commodity", "Pounds", "Shilling", "Pence", "Farthings", "Currency Type", "EntryID", "Reel", "FolioPage", "original", "id"] as Array<rowTypeKey>
 const oldKeyNewKeyMap: Record<string, string> = {"errors": "Errors", "account_name": "Account Name", "debit_or_credit": "Dr/Cr", "amount": "Amount", "item": "Item", "folio_year": "Date", "store_owner": "Owner", "Quantity": "Quantity", "Commodity": "Commodity", "currency_type": "Currency Type", "entry_id": "EntryID", "reel": "Reel", "folio_page": "FolioPage" }
@@ -231,6 +232,9 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     
             }
             else if (origKeys[a] == "tobacco_marks") {
+                if (row.original!.tobacco_marks == undefined) {
+                    row.original!.tobacco_marks = [];
+                }
                 out.push(
                     <TextField
                         label={origKeys[a]}
