@@ -93,25 +93,29 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
             >
                 <Grid
                     item
-                    xs={2}
+                    xs={3}
                 >
                     <Typography gutterBottom mt={1}>Node Filters</Typography>
-                    <Stack direction={"row"}>
-                        <Checkbox
-                            // checked={!!filter && !filter.nodeTypes?.person}
-                            icon={<PersonOutlinedIcon />}
-                            checkedIcon={
-                                <PersonOutlinedIcon color={'error'} />
-                            }
-                            name={'person'}
-                            onChange={(e) =>
-                                makePredicates(
-                                    'node',
-                                    'personAccount',
-                                    !e.target.checked,
-                                )
-                            }
-                        />
+                    {/*<Stack direction={"row"}>*/}
+                    <Grid container spacing={1}>
+                        <Grid item xs={2}>
+                            <Checkbox
+                                // checked={!!filter && !filter.nodeTypes?.person}
+                                icon={<PersonOutlinedIcon />}
+                                checkedIcon={
+                                    <PersonOutlinedIcon color={'error'} />
+                                }
+                                name={'person'}
+                                onChange={(e) =>
+                                    makePredicates(
+                                        'node',
+                                        'personAccount',
+                                        !e.target.checked,
+                                    )
+                                }
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
                         <Checkbox
                             // checked={!!filter && !filter.nodeTypes?.item}
                             icon={<ShoppingBasketOutlinedIcon />}
@@ -129,6 +133,8 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
                                 )
                             }
                         />
+                        </Grid>
+                        <Grid item xs={2}>
                         <Checkbox
                             // checked={!!filter && !filter.nodeTypes?.item}
                             icon={<RecordVoiceOverOutlinedIcon />}
@@ -146,6 +152,8 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
                                 )
                             }
                         />
+                        </Grid>
+                        <Grid item xs={2}>
                         <Checkbox
                             // checked={!!filter && !filter.nodeTypes?.store}
                             icon={<StorefrontOutlinedIcon />}
@@ -161,45 +169,60 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
                                 )
                             }
                         />
-                    </Stack>
+                        </Grid>
+                    </Grid>
+                    {/*</Stack>*/}
                 </Grid>
                 <Grid
                     item
-                    xs={8}
+                    xs={6}
                     sx={{
                         borderLeft : (theme) => `1px solid ${theme.palette.divider}`,
                         alignItems: 'center'
                     }}
                 >
-                    <Box sx={{ml: 1}}>
-                        <Typography gutterBottom mt={1}>Date Range</Typography>
-                        <Stack direction={"row"} alignItems={'center'}>
-                            {
-                                dates.length !== 0
-                                    ? <>
-                                        <Slider
-                                            sx={{ ml: 1, mr: 2 }}
-                                            size={dates.length < 25 ? "medium" : "small"}
-                                            // marks={dates.map((d,i)=>({value:i,label:d.toLocaleString().split(' ')[0]}))}
-                                            marks={true}
-                                            value={range}
-                                            min={1}
-                                            max={dates.length}
-                                            onChange={(e, v)=>handleChange(e, v as number[])}
-                                            valueLabelDisplay="auto"
-                                            valueLabelFormat={x=> dates ? dates[x-1].toLocaleString().split(', ')[0] : x}
-                                        />
-                                        <Switch
-                                            checked={checked}
-                                            onChange={handleCheck}
-                                        />
-                                    </>
-                                    : <Typography sx={{ ml: 1 }}>N/A</Typography>
-                            }
-                        </Stack>
-                    </Box>
+                    {/*<Box sx={{ml: 1}}>*/}
+                        <Grid container item xs={12} justifyContent={'space-evenly'} spacing={1}>
+                            <Grid item xs={12}>
+                                <Typography mt={1} ml={1}>Date Range</Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Stack direction={"row"} alignItems={'center'}>
+                                {
+                                    dates.length !== 0
+                                        ? <>
+                                            <Slider
+                                                sx={{ ml: 2, mr: 2 }}
+                                                size={dates.length < 25 ? "medium" : "small"}
+                                                // marks={dates.map((d,i)=>({value:i,label:d.toLocaleString().split(' ')[0]}))}
+                                                marks={true}
+                                                value={range}
+                                                min={1}
+                                                max={dates.length}
+                                                onChange={(e, v)=>handleChange(e, v as number[])}
+                                                valueLabelDisplay="auto"
+                                                valueLabelFormat={x=> dates ? dates[x-1].toLocaleString().split(', ')[0] : x}
+                                            />
+                                            <Switch
+                                                checked={checked}
+                                                onChange={handleCheck}
+                                            />
+                                        </>
+                                        : <Typography sx={{ ml: 1 }}>N/A</Typography>
+                                }
+                                </Stack>
+                            </Grid>
+                            {/*<Grid item xs={4}>*/}
+                            {/*    <Switch*/}
+                            {/*        checked={checked}*/}
+                            {/*        onChange={handleCheck}*/}
+                            {/*    />*/}
+                            {/*</Grid>*/}
+                        </Grid>
+                    {/*</Box>*/}
+                    {/*</Grid>*/}
                 </Grid>
-                <Grid item xs={2}
+                <Grid item xs={3}
                       sx={{
                           borderLeft : (theme) => `1px solid ${theme.palette.divider}`,
                           alignItems: 'center'
@@ -284,7 +307,7 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
                               deleteIcon={<RecordVoiceOverIcon/>}
                         />
                     </Breadcrumbs>
-                    <Divider sx={{mt:1,}}/>
+                    <Divider sx={{mt:1}}/>
                 </Box>
             </Box>
         </Box>

@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic';
 import { GetServerSideProps } from 'next';
-// import { useRouter } from "next/router";
-// import { useEntriesQuery } from "../../../graphql/generated/graphql";
+import { useMemo } from "react";
 import {
     // useQuery, UseQueryResult, QueryClient,
     useQueries,
@@ -10,6 +9,7 @@ import {
 import LoadingPage from '@components/LoadingPage';
 import { Entry } from "new_types/api_types";
 import { useCallback, useState } from "react";
+import GraphItemProvider from "@components/context/GraphItemContext";
 // import { useSearch } from "@components/context/SearchContext";
 // import GraphGui from "@components/GraphView/GraphGui";
 const ForceGraph = dynamic(() => import('../../../client/components/GraphView/GraphGui'), {
@@ -80,23 +80,16 @@ const EntryGraphView = ({
     // const router = useRouter();
     // const { search } = router.query;
     
-    const [params, setParams] = useState<EntriesQueryOptions>(
-        [{
-            queryKey: ["entries", search, fuzzy, advanced],
-            queryFn: () => doSearch(search, fuzzy, advanced),
-            // queryKey: ["entries", search],
-            // queryFn: ({ queryKey }) => doSearch(queryKey[1]),
-            refetchInterval: false,
-            // retry: false,
-            // retryOnMount: false,
-            refetchOnWindowFocus: false
-        }])
-    
-    const queries = useQueries<EntriesQueryOptions>(
-        {
-            queries: params
-        }
-    );
+    const [params, setParams] = useState<EntriesQueryOptions>([{
+        queryKey: ["entries", search, fuzzy, advanced],
+        queryFn: () => doSearch(search, fuzzy, advanced),
+        // queryKey: ["entries", search],
+        // queryFn: ({ queryKey }) => doSearch(queryKey[1]),
+        refetchInterval: false,
+        // retry: false,
+        // retryOnMount: false,
+        refetchOnWindowFocus: false
+    }])
     const fetchMore = async (newSearch:string) => {
         let newParams: EntriesQueryOptions = [
             ...params,
@@ -108,13 +101,21 @@ const EntryGraphView = ({
                 // retryOnMount: false,
                 refetchOnWindowFocus: false
             }
-            
+        
         ]
         setParams(newParams)
     }
+    
+    const queries = useQueries<EntriesQueryOptions>(
+        {
+            queries: params
+        }
+    );
     // const test: Entry[] = require('@components/GraphView/Hat.json')
-    let entries = queries //.filter(q =>  q.data !== undefined && q.data.entries !== undefined)
-        .map(q=>q.data !== undefined ? q.data.entries : []).flat()
+    const entries = useMemo(() => {
+        return queries //.filter(q =>  q.data !== undefined && q.data.entries !== undefined)
+            .map(q => q.data !== undefined ? q.data.entries : []).flat()
+    }, [queries])
     // console.log(entries)
     // console.log("Query Result:", error ? error : data?.entries);
     // TODO: "fetching" component

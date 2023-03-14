@@ -12,8 +12,10 @@ import TableRow from '@mui/material/TableRow';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import {EntryInfoProps, displayNames } from "@components/GraphView/util";
-
+import {EntryInfo, displayNames } from "@components/GraphView/util";
+import SearchIcon from '@mui/icons-material/Search';
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Tooltip from "@mui/material/Tooltip";
 // import Toolbar from '@mui/material/Toolbar';
 // import List from '@mui/material/List';
 // import Drawer from '@mui/material/Drawer';
@@ -22,32 +24,41 @@ import {EntryInfoProps, displayNames } from "@components/GraphView/util";
 // import { Currency, Ledger, Entry } from "../../../new_types/api_types";
 // import { ListSubheader } from "@mui/material";
 
+interface EntryInfoProps {
+    entryInfo: EntryInfo,
+    handleEntryAction: (id:string | undefined, action:string) => void
+}
 
-
-const EntryInfoItem = (
-    {
+const EntryInfoItem = ({
+    entryInfo,
+    handleEntryAction
+}:EntryInfoProps) => {
+    const {
         currency,
         ledger,
         sterling,
         context,
         scalars,
-        // _id
-                           // phrases, people
-    }:EntryInfoProps,
-    
-) => {
-    
+        _id
+    } = entryInfo
     const [open, setOpen] = useState(false)
     const [ledgerOpen, setLedgerOpen] = useState(false)
     const [currencyOpen, setCurrencyOpen] = useState(false)
     const [sterlingOpen, setSterlingOpen] = useState(false)
     const [infoOpen, setInfoOpen] = useState(false)
     const [ctxOpen, setCtxOpen] = useState(false)
+    
+    const handleEntryActionClick = (action:string) => handleEntryAction(_id, action)
     // console.log(context)
     return (
         <>
             <Divider />
             <ListItemButton>
+                <Tooltip title={"Open in Entry Viewer Page"}>
+                    <ListItemIcon>
+                        <SearchIcon onClick={()=>handleEntryActionClick('View')}/>
+                    </ListItemIcon>
+                </Tooltip>
                 <ListItemText
                     primary={`${displayNames.reel}: ${
                         ledger ? ledger.reel : ''

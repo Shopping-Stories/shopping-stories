@@ -3,6 +3,7 @@ import * as d3 from "d3-force"
 import React, { useCallback, useState, useRef, useMemo, useLayoutEffect, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useEntryDispatch } from "@components/context/EntryContext";
+import {useGraphItemDispatch, useGraphItem} from "@components/context/GraphItemContext";
 import { Entry } from "new_types/api_types";
 import NodeList from '@components/GraphView/NodeList';
 import {
@@ -16,7 +17,7 @@ import {
     GraphTypeKey,
     NodeTypeKey,
     LinkTypeKey,
-    EntryInfoProps
+    EntryInfo
 } from "@components/GraphView/util";
 import GraphInfoPanel from "@components/GraphView/GraphInfoPanel";
 import GraphFilterPanel from "@components/GraphView/GraphFilterPanel";
@@ -76,8 +77,10 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
     const [filter, setFilter] = useState<GraphPredicates | undefined>(initFilter)
     const [nodeLabelsVisible, setNodeLabelsVisible] =  useState<boolean>(false)
+    const [edgeLabelsVisible, setEdgeLabelsVIsible] = useState<boolean>(false)
     const [focusedItems, setFocusedItems] = useState<Set<string | number>>(new Set())
-    const [graphPanelInfo, setGraphPanelInfo] = useState<GraphInfoPanelProps>();
+    const [scrolledItem, setScrolledItem] = useState<string | number>('')
+    const [graphPanelInfo, setGraphPanelInfo] = useState<InfoItems>();
     const [contextMenu, setContextMenu] = useState<{
         mouseX: number;
         mouseY: number;
@@ -107,6 +110,9 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     
     const entryDispatch = useEntryDispatch()
     const router = useRouter()
+    
+    const graphItem = useGraphItem()
+    const graphItemDispatch = useGraphItemDispatch()
     
     // Graph Construction Values
     const graphDict: GraphProps = useMemo(() => {
@@ -452,8 +458,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                     value: 5
                 }
                 node.lightIcon = nodeProps[node.id].lightIcon
-                node.darkIcon = nodeProps[node.id].darkIcon
-                nodes.push(node)
+                node.darkIcon = nodeProps[node.id].darkIcon;
+                nodes.push(node);
                 nodeDict[k] = node
             }
         }
@@ -466,6 +472,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             if (filteredKeys.links.has(k)) {
                 let link: LinkObject = {
                     id: k,
+                    label: `${nodeDict[source].label} - ${nodeDict[target].label}`,
                     source: nodeDict[source],
                     target: nodeDict[target],
                     linkType: linkType,
@@ -504,28 +511,52 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     }, [ graphDict, filteredKeys])
     
     const toggleInfo = useCallback((node:NodeObject, link?:LinkObject)=>{
-        let info:EntryInfoProps[] = []
+        let info:EntryInfo[] = []
         // let entryProps = getNodeKeys(node.nodeType)
+        let eType: string = ''
+        let name: string = ''
+        let id: string | number = ''
         if (node && !link) {
+            name = node.label
+            eType = `${node.nodeType} node`
+            id = node.id
             for (let e of node.entries){
                 if (filteredKeys.newEntries.has(e))
                     info.push(makeEntryInfo(entries[e], node.nodeType as GraphTypeKey))
             }
         }
         if (node && link) {
+            name = link.label ?? name
+            eType = 'Link'
+            id = link.id
             for (let e of link.entries){
                 if (filteredKeys.newEntries.has(e))
                     info.push(makeEntryInfo(entries[e], link.linkType as GraphTypeKey))
             }
         }
         if (node || link){
-            setGraphPanelInfo({name:node.label, info:info, entityType:node.nodeType})
+            setScrolledItem(id)
+            setGraphPanelInfo({name:name, info:info, entityType:eType})
         }
         // console.log(info)
     }, [entries, filteredKeys])
+    // console.log(scrolledItem)
+    const handleEntryAction = useCallback((id:string | undefined, action:string) => {
+        // const path = `/entries/${action}`;
+        if (id) {
+            entryDispatch({
+                type: 'CREATE',
+                payload: entries.filter(e => e._id === id)[0]
+            })
+            router.push(`/entries/${action}`)
+        }
+    }, [entries, entryDispatch, router])
     
     const toggleNodeLabels = useCallback((visible: boolean) => {
         setNodeLabelsVisible(visible)
+    }, [])
+    const toggleEdgeLabels = useCallback((visible: boolean) => {
+        setEdgeLabelsVIsible(visible)
     }, [])
     
     const handleNodeZoom:nodeHandler = useCallback((node )=> {
@@ -592,6 +623,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         setRightClicked(id)
         if (id) {
             console.log("id", id)
+            graphItemDispatch({type:'CREATE', payload: id})
             fetchMore(graphDict.nodeProps[id].label);
             // graphRef.current?.resumeAnimation()
             // setFocusedItems(new Set([id]))
@@ -620,11 +652,11 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     };
     
     const engineStopCB = useCallback(() =>{
-        console.log("engine stop", rightClicked)
-        if (rightClicked && graph.nodeDict)
-            handleNodeZoom(graph.nodeDict[rightClicked])
-        setRightClicked(undefined)
-    }, [rightClicked, handleNodeZoom, graph.nodeDict])
+        console.log("engine stop", graphItem)
+        if (graphItem !== '' && graph.nodeDict)
+            handleNodeZoom(graph.nodeDict[graphItem])
+        graphItemDispatch({type:'CREATE', payload: ''})
+    }, [graphItem,graphItemDispatch, handleNodeZoom, graph.nodeDict])
     
     // Post-mount effects
     useEffect(()=>{
@@ -728,6 +760,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             focusOn={focusOn}
                             focusOff={focusOff}
                             toggleInfo={toggleInfo}
+                            scrolledItem={scrolledItem}
                         />
                     )}
                 </Grid>
@@ -764,7 +797,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             }}
                             // nodeVal={v => Math.max(Object.keys(v.neighbors).length, 5)}
                             nodeVal={n=>n.value}
-                            cooldownTime={rightClicked ? 2000 : 15000}
+                            cooldownTime={graphItem !== '' ? 2000 : 15000}
                             // cooldownTicks={100}
                             onEngineStop={engineStopCB}
                             // enablePointerInteraction={true}
@@ -784,6 +817,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                         name={graphPanelInfo?.name}
                         info={graphPanelInfo?.info}
                         entityType={graphPanelInfo?.entityType}
+                        handleEntryAction={handleEntryAction}
                     />
                 </Grid>
             </Grid>
@@ -876,20 +910,13 @@ interface GraphProps {
 //Graph types that must be declared in this file
 type GraphKey = keyof NodeObject | LinkObject | string | number
 
-export interface GraphInfoPanelProps {
-    // width: number;
-    name: string | undefined;
-    info?: EntryInfoProps[]
-    entityType: string | undefined
-    // startDate: Date,
-    // endDate: Date,
-}
 export interface NodeListProps {
     gData: GraphData
     handleClickZoom: nodeHandler
     toggleInfo: itemHandler
     focusOn: focusHandler
     focusOff: focusHandler
+    scrolledItem: string | number
 }
 export interface NodeListItemProps {
     node: NodeObject
@@ -897,6 +924,8 @@ export interface NodeListItemProps {
     toggleInfo: itemHandler
     focusOn: focusHandler
     focusOff: focusHandler
+    scrolledItem: string | number
+    // focused: boolean
 }
 export interface LinkListItemProps {
     link:LinkObject;
@@ -906,6 +935,7 @@ export interface LinkListItemProps {
     toggleInfo: itemHandler
     focusOn: focusHandler
     focusOff: focusHandler
+    focused: boolean
 }
 
 interface GraphKeys {
@@ -941,6 +971,12 @@ export interface GraphFilterPanelProps {
     nodeLabels: boolean
     filter?: GraphPredicates
     dates: Array<Date>
+}
+
+interface InfoItems {
+    name: string | undefined;
+    info?: EntryInfo[]
+    entityType: string | undefined
 }
 
 type focusHandler = (elements:Set<GraphKey>) => void ;

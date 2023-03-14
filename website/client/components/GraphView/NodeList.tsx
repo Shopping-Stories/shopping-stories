@@ -25,7 +25,7 @@ import Box from "@mui/material/Box";
 // import Avatar from '@mui/material/Avatar';
 
 
-const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleInfo, parent }: LinkListItemProps) => {
+const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleInfo, parent, focused }: LinkListItemProps) => {
     const {
         id,
         // color,
@@ -38,6 +38,7 @@ const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleIn
             <ListItemButton
                 onMouseEnter={()=>focusOn(new Set<string|number>([link.id, parent.id, node.id]))}
                 onMouseLeave={()=>focusOff(new Set<string|number>())}
+                autoFocus={focused}
             >
             <Tooltip title={"Toggle Info Panel"}>
             <ListItemIcon sx={{ pl: 2 }} onClick={()=>toggleInfo(node, link)}>
@@ -71,9 +72,9 @@ const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleIn
     );
 };
 
-const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: NodeListItemProps) => {
+const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo, scrolledItem }: NodeListItemProps) => {
     const {id, neighbors, nodeType, label} = node
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(!!scrolledItem && (scrolledItem === id || node?.linkDict[scrolledItem]?.id === scrolledItem));
     const handleClickOpen = () => setOpen(!open);
     const nodeRef = useRef<HTMLDivElement | undefined>()
     return (
@@ -82,6 +83,7 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
                 // component={'div'}
                 onMouseEnter={()=>focusOn(new Set<string|number>([node.id]))}
                 onMouseLeave={()=>focusOff(new Set<string|number>())}
+                autoFocus={!!scrolledItem && (scrolledItem === id || node?.linkDict[scrolledItem]?.id === scrolledItem)}
             >
             <Tooltip title={"Toggle Info Panel"}>
             <ListItemIcon onClick={()=>toggleInfo(node)}>
@@ -131,6 +133,7 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
                                 focusOn={focusOn}
                                 focusOff={focusOff}
                                 toggleInfo={toggleInfo}
+                                focused={scrolledItem === key}
                             />
                         ))}
                 </List>
@@ -140,7 +143,7 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo }: 
     );
 };
 
-const NodeList = ({ gData, handleClickZoom, focusOn, focusOff, toggleInfo}: NodeListProps): JSX.Element => {
+const NodeList = ({ gData, handleClickZoom, focusOn, focusOff, toggleInfo, scrolledItem}: NodeListProps): JSX.Element => {
     // console.log("nodelist render");
     return (
         <Drawer
@@ -178,6 +181,7 @@ const NodeList = ({ gData, handleClickZoom, focusOn, focusOff, toggleInfo}: Node
                             focusOn={focusOn}
                             focusOff={focusOff}
                             toggleInfo={toggleInfo}
+                            scrolledItem={scrolledItem}
                         />
                     )}
             </List>
