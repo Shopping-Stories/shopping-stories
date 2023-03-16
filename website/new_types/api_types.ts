@@ -153,7 +153,9 @@ export const EntryStringKeys = new Set<EntryKey>([
     "liber_book",
     "store",
     "text_as_parsed",
-    "original_entry"
+    "original_entry",
+    "currency_colony",
+    "currency_type"
 ] as Array<EntryKey>)
 
 export type EntryStringArrayKey = Extract<EntryKey,
@@ -302,7 +304,9 @@ export const ParserStringKeys = new Set<ParserOutputKey>([
     "liber_book",
     "store",
     "text_as_parsed",
-    "original_entry"
+    "original_entry",
+    "currency_colony",
+    "currency_type"
 ] as Array<ParserOutputKey>)
 
 export const ParserStringArrayKeys = new Set<ParserOutputKey>([
