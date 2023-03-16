@@ -300,7 +300,9 @@ export const ParserStringKeys = new Set<ParserOutputKey>([
     "Commodity",
     "type",
     "liber_book",
-    "store"
+    "store",
+    "text_as_parsed",
+    "original_entry"
 ] as Array<ParserOutputKey>)
 
 export const ParserStringArrayKeys = new Set<ParserOutputKey>([
