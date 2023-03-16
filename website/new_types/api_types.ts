@@ -151,7 +151,9 @@ export const EntryStringKeys = new Set<EntryKey>([
     "Commodity",
     "type",
     "liber_book",
-    "store"
+    "store",
+    "text_as_parsed",
+    "original_entry"
 ] as Array<EntryKey>)
 
 export type EntryStringArrayKey = Extract<EntryKey,
