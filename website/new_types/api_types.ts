@@ -372,7 +372,8 @@ export const tmStrToTMs = (tmstr: string) => {
 
 // Parses a string into an array of strings with delimiter "; "
 export const parseStringArray = (str: string) => {
-    let strsplit = str.split(",; ")
+    // console.log(str)
+    let strsplit = str.split("; ")
     let len = strsplit.length
     if (strsplit[strsplit.length - 1] == "") {
         len -= 1
@@ -382,6 +383,8 @@ export const parseStringArray = (str: string) => {
     for (let i = 0; i < len; i++) {
         strArr[i] = strsplit[i]
     }
+
+    // console.log(strArr)
     
     return strArr
 }
