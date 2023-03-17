@@ -9,7 +9,7 @@ import {
 import LoadingPage from '@components/LoadingPage';
 import { Entry } from "new_types/api_types";
 import { useCallback, useState } from "react";
-import GraphItemProvider from "@components/context/GraphItemContext";
+// import GraphItemProvider from "@components/context/GraphItemContext";
 // import { useSearch } from "@components/context/SearchContext";
 // import GraphGui from "@components/GraphView/GraphGui";
 const ForceGraph = dynamic(() => import('../../../client/components/GraphView/GraphGui'), {

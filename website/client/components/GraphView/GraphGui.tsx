@@ -77,7 +77,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
     const [filter, setFilter] = useState<GraphPredicates | undefined>(initFilter)
     const [nodeLabelsVisible, setNodeLabelsVisible] =  useState<boolean>(false)
-    const [edgeLabelsVisible, setEdgeLabelsVIsible] = useState<boolean>(false)
+    // const [edgeLabelsVisible, setEdgeLabelsVIsible] = useState<boolean>(false)
     const [focusedItems, setFocusedItems] = useState<Set<string | number>>(new Set())
     const [scrolledItem, setScrolledItem] = useState<string | number>('')
     const [graphPanelInfo, setGraphPanelInfo] = useState<InfoItems>();
@@ -86,7 +86,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         mouseY: number;
         id: string | number | undefined
     } | null>(null);
-    const [rightClicked, setRightClicked] = useState<string | number | undefined>()
+    // const [rightClicked, setRightClicked] = useState<string | number | undefined>()
     
     const graphGridRef = useRef<HTMLDivElement>(null)
     const [graphWidth, setGraphWidth] = useState<number | undefined>(undefined)
@@ -555,9 +555,9 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const toggleNodeLabels = useCallback((visible: boolean) => {
         setNodeLabelsVisible(visible)
     }, [])
-    const toggleEdgeLabels = useCallback((visible: boolean) => {
-        setEdgeLabelsVIsible(visible)
-    }, [])
+    // const toggleEdgeLabels = useCallback((visible: boolean) => {
+    //     setEdgeLabelsVIsible(visible)
+    // }, [])
     
     const handleNodeZoom:nodeHandler = useCallback((node )=> {
         if (graphRef.current) {
@@ -620,7 +620,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const fetchEntries = useCallback(() => {
         // let id = Array.from(focusedItems)[0]
         let id = contextMenu?.id
-        setRightClicked(id)
+        // setRightClicked(id)
         if (id) {
             console.log("id", id)
             graphItemDispatch({type:'CREATE', payload: id})
@@ -631,7 +631,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             // setTimeout(() => handleNodeZoom(graph.nodes.filter((v) => v.id === rightClicked)[0],), 2000,);
         }
         handleClose()
-    }, [contextMenu, fetchMore, graphDict.nodeProps])
+    }, [contextMenu?.id, fetchMore, graphDict.nodeProps, graphItemDispatch])
     
     // const toEntryView = useCallback((action: string = 'view', id: string) => {
     //     const path = `/entries/${action}`;
@@ -797,7 +797,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             }}
                             // nodeVal={v => Math.max(Object.keys(v.neighbors).length, 5)}
                             nodeVal={n=>n.value}
-                            cooldownTime={graphItem !== '' ? 2000 : 15000}
+                            cooldownTime={graphItem !== '' ? 1000 : 15000}
                             // cooldownTicks={100}
                             onEngineStop={engineStopCB}
                             // enablePointerInteraction={true}
