@@ -88,6 +88,12 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     const nrow = React.useMemo(() => JSON.parse(JSON.stringify(row)), [row])
     
     let [tobEntries, setTobEntries] = React.useState([{}] as Array<TobaccoEntry>)
+    const [selectorVal, setSelectorVal] = React.useState((row ?? {original: {"type": ""}}).original!["type"] ?? "")
+    React.useEffect(() => {
+        setSelectorVal((row ?? {original: {"type": ""}}).original!["type"] ?? "");
+        console.log(row)
+    }, [row])
+    
 
     const deleteRow = () => {
         setRow(null)
@@ -96,6 +102,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     const [justSet, setJustSet] = React.useState(false);
 
     const intHandleClose = () => {
+        setSelectorVal("")
         setRow(nrow!)
         setMiniOpen(false)
     }
@@ -286,9 +293,12 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
-                                value={row?.original![origKeys[a]] ?? ""}
+                                value={selectorVal}
                                 label="Type"
-                                onChange={(event) => {onRowValueChange(origKeys[a], event)}}
+                                onChange={(event) => {
+                                    setSelectorVal(event.target.value)
+                                    onRowValueChange(origKeys[a], event)}
+                                }
                                 sx={{ padding: "0vh", marginTop: "1.3vh", width: "10vw" }}
                                 key={origKeys[a]}
                             >
@@ -369,6 +379,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
             fullScreen
             open={nrow != null}
             onClose={() => {
+                setSelectorVal("")
                 setClose()
                 setTobEntries([{}])
             }}
