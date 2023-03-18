@@ -15,6 +15,10 @@ export const toTitleCase = (str: string) => {
 }
 
 export const toDisplayCase = (k:string) => {
+    // console.log(k)
+    // console.log(k.replace(/(_|^)([^_]?)/g, function(_, prep, letter) {
+    //     return (prep && ' ') + letter.toUpperCase();
+    // }))
     return k.replace(/(_|^)([^_]?)/g, function(_, prep, letter) {
         return (prep && ' ') + letter.toUpperCase();
     });
@@ -45,6 +49,25 @@ export function moneyToString(pounds: number|undefined, shillings: number|undefi
     }
 }
 
+export function dateToString(year: string|undefined, month: string|undefined, day: string|undefined) {
+    if (year == undefined) {
+        return ""
+    }
+    else {
+        if (month == undefined) {
+            return year
+        }
+        else {
+            if (day == undefined) {
+                return months[parseInt(month) - 1] + " " + year
+            }
+            else {
+                return months[parseInt(month) - 1] + " " + day + " " + year
+            }
+        }
+    }
+}
+
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 type Entries<T> = {
     [K in keyof T]: [K, T[K]];
@@ -58,6 +81,7 @@ export const entryToRow = (entry: Entry) => {
     // console.log(nonComplex)
     let currency = entry.currency ? getEntries(entry.currency) : []
     let sterling = []
+    let ledger = entry.ledger ? getEntries(entry.ledger) : []
     if (entry.sterling){
         for (let denom of currency){
             sterling.push([`Sterling_${denom[0]}`, entry.sterling[denom[0]]])
@@ -72,10 +96,14 @@ export const entryToRow = (entry: Entry) => {
         ['Page', entry?.ledger?.folio_page],
         ['id', entry._id]
     ]
+
+    // console.log(currency);
+    // console.log(sterling);
     return {
         ...Object.fromEntries(complex),
         ...Object.fromEntries(currency),
         ...Object.fromEntries(sterling),
+        ...Object.fromEntries(ledger),
         ...nonComplex }// Object.fromEntries(complex)
 }
 
@@ -114,8 +142,9 @@ export const fieldNames: FieldNames = Object.fromEntries(EntryKeys
 
 export const complexFields = new Set<string>(['Date', 'Page', 'Currency', 'Sterling', ])
 export const splitFields = new Set<string>([
-    'pounds', 'shilling', 'pennies', 'farthings',
-    'Sterling_pounds', 'Sterling_shilling', 'Sterling_pennies', 'Sterling_farthings',
+    'pounds', 'shillings', 'pennies', 'farthings',
+    'Sterling_pounds', 'Sterling_shillings', 'Sterling_pennies', 'Sterling_farthings',
+    'reel', 'folio_year', 'folio_page', 'entry_id'
 ])
 export const colNames: string[] = [...complexFields.values(), ...hiddenFields.values(), ...visibleFields.values(), ...splitFields.values()]
 

@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Popover from '@mui/material/Popover';
 import Typography  from '@mui/material/Typography';
 import {rowType} from './ParserEditorDialog';
-import { moneyToString } from "../entryUtils";
+import { dateToString, moneyToString } from "../entryUtils";
 
 interface ParserOutputEditor {
     url: string;
@@ -112,8 +112,9 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
                 "Dr/Cr": row?.debit_or_credit,
                 Amount: row?.amount,
                 Item: (row?.item ?? ""),
+                People: ((row?.people ?? []).join("; ")),
                 // AccountHolderID: row?.accountHolderID,
-                Date: row?.folio_year,
+                Date: dateToString(row["Date Year"], row["_Month"], row?.Day),
                 Owner: row?.store_owner,
                 // Store: row?.meta?.store,
                 // Comments: row?.meta?.comments,
@@ -139,9 +140,10 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
         'Account Name',
         'Amount',
         'Item',
+        'People',
         // 'Account Holder ID',
         'Date',
-        'Owner',
+        // 'Owner',
         // 'Store',
         // 'Comments',
         // 'Colony',
@@ -152,7 +154,7 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
         "Currency Type",
         'EntryID',
         // 'Ledger Year',
-        'Reel',
+        // 'Reel',
         'FolioPage',
         "id"
     ];

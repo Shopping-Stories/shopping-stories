@@ -21,7 +21,7 @@ import ParserOutputEditor from '@components/ParserOutputEditor';
 import Typography from '@mui/material/Typography';
 import ParserEditorDialog, { rowType } from '@components/ParserEditorDialog';
 import URLTable from '@components/URLTable';
-import { moneyToString } from 'client/entryUtils';
+import { dateToString, moneyToString } from 'client/entryUtils';
 
 interface sfile {
     file: string
@@ -344,9 +344,10 @@ const ResView: NextPage = () => {
                     "Dr/Cr": value.original!.debit_or_credit,
                     Amount: value.original!.amount,
                     Item: (value.original!.item ?? ""),
+                    People: ((value.original!.people ?? []).join("; ")),
                     // AccountHolderID: value.original!.accountHolderID,
-                    Date: value.original!.folio_year,
-                    Owner: value.original!.store_owner,
+                    Date: dateToString(value.original!["Date Year"], value.original!["_Month"], value.original!.Day),
+                    // Owner: value.original!.store_owner,
                     // Store: value.original!.meta?.store,
                     // Comments: value.original!.meta?.comments,
                     // Colony: value.original!.money?.colony,
@@ -356,7 +357,7 @@ const ResView: NextPage = () => {
                     CurrencyType: value.original!.currency_type,
                     EntryID: value.original!.entry_id,
                     // Ledger: value.original!.ledger?.folio_year,
-                    Reel: value.original!.reel,
+                    // Reel: value.original!.reel,
                     FolioPage: value.original!.folio_page,
                     original: value.original,
                     id: value.id

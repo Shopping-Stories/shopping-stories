@@ -16,6 +16,7 @@ import Slide from '@mui/material/Slide';
 import { ParserOutput, ParserOutputKey, ParserStringKeys, ParserStringArrayKeys, ParserNumberKeys, tmStrToTMs, TobaccoMark, tmToStr, parseStringArray, TobaccoEntry } from 'new_types/api_types';
 import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import TobaccoFields from './TobaccoFields';
+import { dateToString, moneyToString } from 'client/entryUtils';
 
 interface ParserEditorDialog {
     row: rowType | null,
@@ -30,6 +31,7 @@ export interface rowType {
     'Dr/Cr'?: string,
     'Amount'?: string,
     'Item'?: string,
+    'People'?: string,
     // 'Account Holder ID',
     'Date'?: string,
     'Owner'?: string,
@@ -54,10 +56,10 @@ export interface rowType {
 type origKey = ParserOutputKey
 type rowTypeKey = keyof rowType
 
-const origKeys = ["errors", "error_context", "context", "text_as_parsed", "original_entry", "store", "debit_or_credit", "account_name", "amount", "amount_is_combo", "item", "price", "type", "liber_book",  "price_is_combo", "phrases", "date", "pounds_ster", "shillings_ster", "pennies_ster", "farthings_ster", "pounds", "shillings", "pennies", "farthings", "currency_type", "currency_colony", "currency_totaling_contextless", "commodity_totaling_contextless", "tobacco_location", "tobacco_entries", "tobacco_marks", "tobacco_amount_off",  "Marginalia", "store_owner", "reel", "folio_reference", "folio_year", "folio_page", "entry_id", "Date Year", "_Month", "Day", "Quantity", "Commodity", "people", "mentions"] as Array<ParserOutputKey>;
+const origKeys = ["errors", "error_context", "context", "text_as_parsed", "original_entry", "store", "debit_or_credit", "account_name", "amount", "amount_is_combo", "item", "price", "type", "liber_book",  "price_is_combo", "phrases", "date", "pounds_ster", "shillings_ster", "pennies_ster", "farthings_ster", "pounds", "shillings", "pennies", "farthings", "currency_type", "currency_colony", "currency_totaling_contextless", "commodity_totaling_contextless", "tobacco_location", "tobacco_entries", "tobacco_marks", "tobacco_amount_off",  "Marginalia", "store_owner", "reel", "folio_reference", "folio_year", "folio_page", "entry_id", "Date Year", "_Month", "Day", "Quantity", "Commodity", "people", "mentions", "Final"] as Array<ParserOutputKey>;
 
 // const rowTypeKeys = ["Errors", "Account Name", "Dr/Cr", "Amount", "Item", "Date", "Owner", "Quantity", "Commodity", "Pounds", "Shilling", "Pence", "Farthings", "Currency Type", "EntryID", "Reel", "FolioPage", "original", "id"] as Array<rowTypeKey>
-const oldKeyNewKeyMap: Record<string, string> = {"errors": "Errors", "account_name": "Account Name", "debit_or_credit": "Dr/Cr", "amount": "Amount", "item": "Item", "folio_year": "Date", "store_owner": "Owner", "Quantity": "Quantity", "Commodity": "Commodity", "currency_type": "Currency Type", "entry_id": "EntryID", "reel": "Reel", "folio_page": "FolioPage"}
+const oldKeyNewKeyMap: Record<string, string> = {"errors": "Errors", "account_name": "Account Name", "debit_or_credit": "Dr/Cr", "amount": "Amount", "item": "Item", "Quantity": "Quantity", "Commodity": "Commodity", "currency_type": "Currency Type", "entry_id": "EntryID", "folio_page": "FolioPage"}
 const splitPlaces = new Set<origKey>(["original_entry", "price", "date", "farthings_ster", "currency_colony", "tobacco_amount_off", "entry_id", "Day", "Commodity", "error_context"] as Array<origKey>)
 const oldCurrNewCurrMap: Record<string, string> = {"pounds": "Pounds", "pounds_ster": "Pounds", "shillings": "Shilling", "shillings_ster": "Shilling", "pennies": "Pence", "pennies_ster": "Pence", "farthings": "Farthings", "farthings_ster": "Farthings"}
 const currency_keys = new Set<origKey>(["pounds_ster", "pounds", "shillings_ster", "shillings", "pennies", "pennies_ster", "farthings", "farthings_ster"])
@@ -102,6 +104,9 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     const [justSet, setJustSet] = React.useState(false);
 
     const intHandleClose = () => {
+        nrow.Money = moneyToString(nrow.original!.pounds, nrow.original!.shillings, nrow.original!.pennies, nrow.original!.farthings)
+        nrow.Date = dateToString(nrow.original!["Date Year"], nrow.original!["_Month"], nrow.original!.Day)
+        nrow.People = ((nrow.original.people ?? []).join("; ")) 
         setSelectorVal("")
         setRow(nrow!)
         setMiniOpen(false)
