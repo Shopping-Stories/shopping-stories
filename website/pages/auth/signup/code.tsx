@@ -41,7 +41,7 @@ const ConfirmAccountPage: NextPage = () => {
     const confirmEmailForm = useFormik({
         initialValues: {
             code: '',
-            username: (username as string) || '',
+            username: router.query.username ? router.query.username as string : '',
         },
         validationSchema: confirmationCodeSchema,
         onSubmit: async (values) => {
@@ -86,11 +86,13 @@ const ConfirmAccountPage: NextPage = () => {
         }
     };
 
-    useEffect(() => {
-        if (username) {
-            confirmEmailForm.setFieldValue('username', username);
-        }
-    }, [username, confirmEmailForm]);
+    // console.log(username);
+    // useEffect(() => {
+    //     if (username) {
+    //         confirmEmailForm.setFieldValue('username', username);
+    //     }
+    // }, [username, confirmEmailForm]);
+    // console.log();
 
     return (
         <AuthSkeleton formikForm={confirmEmailForm}>
