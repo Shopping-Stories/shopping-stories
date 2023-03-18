@@ -119,6 +119,7 @@ const EntryPaginationTable = ({
         // console.log(id)
         setSelectedRow({ id, field });
     }, [setSelectedRow]);
+
     const handleACtionClick = useCallback((action: string) => {
         if (entryMap && selectedRow?.id){
             handleEntryAction(action, entryMap[selectedRow.id])

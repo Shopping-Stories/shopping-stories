@@ -73,6 +73,7 @@ export interface Entry {
     itemID?: string;
     peopleID?: string;
     accountHolderID?: string;
+    Final?: string;
     "_id"?: string;
 }
 
@@ -127,7 +128,8 @@ export const EntryKeys: EntryKey[] = [
     "Quantity",
     "Commodity",
     "people",
-    "mentions"
+    "mentions",
+    "Final"
 ]
 
 export const EntryStringKeys = new Set<EntryKey>([
@@ -155,7 +157,8 @@ export const EntryStringKeys = new Set<EntryKey>([
     "text_as_parsed",
     "original_entry",
     "currency_colony",
-    "currency_type"
+    "currency_type",
+    "Final"
 ] as Array<EntryKey>)
 
 export type EntryStringArrayKey = Extract<EntryKey,
@@ -229,6 +232,7 @@ export interface ParserOutput {
     tobacco_amount_off?: string
     tobacco_marks?: Array<TobaccoMark>
     tobacco_entries?: Array<TobaccoEntry>
+    final?: string
 }
 export type ParserOutputKey = keyof ParserOutput
 
@@ -278,7 +282,8 @@ export const ParserOutputKeys = [
     "Quantity",
     "Commodity",
     "people",
-    "mentions"
+    "mentions",
+    "final",
 ] as Array<ParserOutputKey>
 
 export const ParserStringKeys = new Set<ParserOutputKey>([
@@ -306,7 +311,8 @@ export const ParserStringKeys = new Set<ParserOutputKey>([
     "text_as_parsed",
     "original_entry",
     "currency_colony",
-    "currency_type"
+    "currency_type",
+    "final"
 ] as Array<ParserOutputKey>)
 
 export const ParserStringArrayKeys = new Set<ParserOutputKey>([
