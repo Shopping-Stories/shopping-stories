@@ -144,7 +144,9 @@ const entryComplex = new Set<EntryKey>(["currency" , "ledger" , "sterling" , "me
 type EntryNonInfo = Omit<Entry,
     "itemID" | "amount_is_combo" | "price_is_combo" |
     "commodity_totaling_contextless" | "currency_totaling_contextless" |
-    "peopleID" | "accountHolderID" | "_id">
+    "peopleID" | "accountHolderID"
+    | "_id"
+    >
 // itemID: "Item ID",
 // amount_is_combo: boolean,
 // price_is_combo: boolean,
@@ -154,7 +156,9 @@ type EntryNonInfo = Omit<Entry,
 // peopleID: "",
 // accountHolderID: string,
 // _id: string,
-export type EntryScalarInfo = Omit<Entry, "currency" | "ledger" | "sterling" | "mentions" | "people" |"context" |"phrases" |"_id" | keyof EntryNonInfo>
+export type EntryScalarInfo = Omit<Entry,
+    "currency" | "ledger" | "sterling" | "mentions" | "people" |"context" |"phrases" | keyof EntryNonInfo
+    >
 // type FullEntryInfo = Currency | Ledger | EntryScalarInfo
 
 interface EntryObjects {
@@ -163,7 +167,7 @@ interface EntryObjects {
     sterling?: Currency,
 }
 
-export interface EntryInfoProps extends EntryScalarInfo{
+export interface EntryInfo extends EntryScalarInfo{
     ledger?: Partial<Ledger>
     currency?: Partial<Currency>,
     sterling?: Partial<Currency>,
@@ -174,10 +178,10 @@ export interface EntryInfoProps extends EntryScalarInfo{
     scalars?: EntryScalarInfo
 }
 
-export const makeEntryInfo = (e:Entry, t:(NodeTypeKey | LinkTypeKey)):EntryInfoProps => {
+export const makeEntryInfo = (e:Entry, t:(NodeTypeKey | LinkTypeKey)):EntryInfo => {
     let keys: EntryKey[] = getInfoKeys(t)
     let scalarInfo: EntryScalarInfo = {}
-    let entryInfo: EntryInfoProps = {}
+    let entryInfo: EntryInfo = {}
     
     // console.log(keys)
     for (let key of keys){
@@ -192,6 +196,7 @@ export const makeEntryInfo = (e:Entry, t:(NodeTypeKey | LinkTypeKey)):EntryInfoP
         }
     }
     entryInfo.scalars = scalarInfo
+    entryInfo._id = e._id
     return entryInfo
 }
 export type Display = {

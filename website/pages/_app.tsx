@@ -14,6 +14,7 @@ import { Client, dedupExchange, fetchExchange, Provider } from 'urql';
 import {useTheme} from "@mui/material";
 import EntryProvider from "@components/context/EntryContext";
 import SearchProvider from "@components/context/SearchContext";
+import GraphItemProvider from "@components/context/GraphItemContext";
 // import {
 //     addAuthToOperation,
 //     didAuthError,
@@ -141,13 +142,15 @@ function App({
                     <ColorModeContext.Provider value={colorMode}>
                         <ThemeProvider theme={customTheme}>
                             <CssBaseline />
-                            <Layout>
-                                <EntryProvider>
-                                    <SearchProvider>
-                                        <Component {...pageProps} />
-                                    </SearchProvider>
-                                </EntryProvider>
-                            </Layout>
+                            <EntryProvider>
+                                <SearchProvider>
+                                    <GraphItemProvider>
+                                        <Layout>
+                                            <Component {...pageProps} />
+                                        </Layout>
+                                    </GraphItemProvider>
+                                </SearchProvider>
+                            </EntryProvider>
                         </ThemeProvider>
                     </ColorModeContext.Provider>
                 </QueryClientProvider>
