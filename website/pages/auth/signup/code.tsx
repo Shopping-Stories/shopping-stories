@@ -10,7 +10,7 @@ import { Auth } from 'aws-amplify';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import * as yup from 'yup';
 
 const confirmationCodeSchema = yup.object({
@@ -36,7 +36,6 @@ const ConfirmAccountPage: NextPage = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
-    const { username } = router.query;
 
     const confirmEmailForm = useFormik({
         initialValues: {
