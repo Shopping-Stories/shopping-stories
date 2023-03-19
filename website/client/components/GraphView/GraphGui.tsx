@@ -209,25 +209,25 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             }
             if (e.people){
                 for (let p of e.people){
-                    if (!nodeProps[p]){
-                        // console.log(p)
+                    // if (nodeProps[p]){
+                    //     console.log(p)
                         makeNode("person", p)
                         nodeProps[p].label = p
                         toAccount.add(p)
                         toItem.add(p)
-                    }
+                    // }
                 }
             }
             // if (e.peopleID && e.people){}
             if (e.mentions) {
                 for (let mention of e.mentions) {
-                    if (!nodeProps[mention]){
+                    // if (!nodeProps[mention]){
                         // console.log(mention)
                         makeNode("mention", mention)
                         nodeProps[mention].label = mention
                         toAccount.add(mention)
                         toItem.add(mention)
-                    }
+                    // }
                 }
             }
             // if (personID){
@@ -264,6 +264,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             //     entrySet.add(entry._id);
             // }
         }
+        // console.log(graphProps)
         return graphProps
     }, [entries, linkColors])
     
@@ -473,8 +474,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 let link: LinkObject = {
                     id: k,
                     label: `${nodeDict[source].label} - ${nodeDict[target].label}`,
-                    source: nodeDict[source],
-                    target: nodeDict[target],
+                    source: nodeDict[source].id,
+                    target: nodeDict[target].id,
                     linkType: linkType,
                     entries: new Set<number>(
                         Array
@@ -879,8 +880,8 @@ declare module "react-force-graph-2d" {
     }
     interface LinkObject {
         id: string | number;
-        source: NodeObject;
-        target: NodeObject;
+        source: string | number | NodeObject;
+        target: string | number | NodeObject;
         entries: Set<number>;
         entryKeys: (keyof Entry)[]
         linkType: LinkTypeKey;
