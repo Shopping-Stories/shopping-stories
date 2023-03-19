@@ -41,6 +41,7 @@ const ConfirmAccountPage: NextPage = () => {
     const confirmEmailForm = useFormik({
         initialValues: {
             code: '',
+            // username: (username as string) || '',
             username: router.query.username ? router.query.username as string : '',
         },
         validationSchema: confirmationCodeSchema,
