@@ -81,6 +81,9 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
                             // console.log(value.entries[entry])
                             value.entries[entry].currency_type = "Currency"
                         }
+                        if (value.entries[entry].amount?.match(/\s*\d+w\s+pounds\s*/)) {
+                            value.entries[entry].amount = value.entries[entry].amount?.replace(/(?<=\d)w/, "")
+                        }
                     }
                     setErrorRows(error_rows);
                     return value;
@@ -121,7 +124,7 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
                 // Colony: row?.money?.colony,
                 Quantity: row?.Quantity,
                 Commodity: row?.Commodity,
-                Money: moneyToString(row?.pounds, row?.shillings, row?.pennies, row?.farthings),
+                Money: row?.currency_type == "Sterling" ? moneyToString(row?.pounds_ster, row?.shillings_ster, row?.pennies_ster, row?.farthings_ster) : moneyToString(row?.pounds, row?.shillings, row?.pennies, row?.farthings),
                 CurrencyType: row?.currency_type,
                 EntryID: row?.entry_id,
                 // Ledger: row?.ledger?.folio_year,

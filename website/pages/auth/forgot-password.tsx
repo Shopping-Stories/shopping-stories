@@ -70,7 +70,7 @@ const SignInPage: NextPage = () => {
             try {
                 const { username } = values;
                 await Auth.forgotPassword(username);
-                setUser(username);
+                // setUser(username);
                 setCodeSent(true);
             } catch (error: any) {
                 if (error.message !== undefined) {

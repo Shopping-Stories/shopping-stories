@@ -16,6 +16,8 @@ export const CognitoConfig = {
 	IdentityPoolId: process.env.NEXT_PUBLIC_COGNITO_IDENTITY_POOL_ID as string,
 	Domain: process.env.NEXT_PUBLIC_COGNITO_DOMAIN as string,
 	Bucket: process.env.NEXT_PUBLIC_COGNITO_BUCKET as string,
+	accessKeyId: process.env["AWS_ACCESS_KEY_ID "],
+	secretAccessKey: process.env["AWS_SECRET_ACCESS_KEY "]
 };
 
 if (!__test__) {

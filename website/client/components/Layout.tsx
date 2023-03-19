@@ -14,8 +14,8 @@ export default function Layout({children}:any) {
         <Box >
         <Grid container wrap={"wrap"}>
             <Grid item xs={12}>
-                {/*{children?.props?.title && (<Header title={children.props.title}/>)}*/}
-                <Header title={children.props.title ? children.props.title : undefined}/>
+                {children?.props?.title === 'GraphView' && (<Header title={children.props.title}/>)}
+                {/*<Header title={children.props.title ? children.props.title : undefined}/>*/}
             </Grid>
             <Grid item xs={12}>
                 {children}

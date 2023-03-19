@@ -26,7 +26,7 @@ const defaultNavLinks: NavLink[] = [
 ];
 
 const adminNavLinks: NavLink[] = [
-    { title: `documents`, path: `/documents` },
+    // { title: `documents`, path: `/documents` },
     { title: `dashboard`, path: `/dashboard/settings` },
 ];
 // TODO: figure out why this is here
@@ -66,7 +66,7 @@ const Header = ({ title }: HeaderConfig) => {
     return (
         <>
             <AppBar
-                //  position="relative"
+                 // position="relative"
                 position="fixed"
                 // position={title === 'GraphView' ? 'fixed' : 'relative'}
                 sx={{

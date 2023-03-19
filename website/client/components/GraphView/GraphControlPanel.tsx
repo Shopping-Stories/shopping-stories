@@ -6,7 +6,7 @@ import ShoppingBasketOutlinedIcon from "@mui/icons-material/ShoppingBasketOutlin
 import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import Slider from "@mui/material/Slider";
-import { GraphFilterPanelProps } from "@components/GraphView/GraphGui";
+import { GraphControlPanelProps } from "@components/GraphView/GraphGui";
 import  Chip from "@mui/material/Chip";
 import  Breadcrumbs  from "@mui/material/Breadcrumbs";
 import Stack from "@mui/material/Stack";
@@ -37,7 +37,7 @@ import { ToggleButton } from "@mui/material";
 // import LegendToggleIcon from "@mui/icons-material/LegendToggle";
 // import Fab from "@mui/material/Fab";
 
-const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}: GraphFilterPanelProps) => {
+const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}: GraphControlPanelProps) => {
     // const [open, setOpen] = useState(false);
     // const handleClick = () => {
     //     setOpen(!open);
@@ -225,11 +225,11 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
                 <Grid item xs={3}
                       sx={{
                           borderLeft : (theme) => `1px solid ${theme.palette.divider}`,
-                          alignItems: 'center'
+                          alignItems: 'center',
                       }}
                 >
-                    <Typography gutterBottom mt={1} ml={1}>Toggle Labels</Typography>
-                    <Stack direction={'row'} ml={1}>
+                    <Stack direction={'row'} ml={1} mt={2} alignItems={'center'}>
+                        <Typography gutterBottom mt={1} ml={1}></Typography>
                         {/*<ToggleButtonGroup*/}
                         {/*    value={labels}*/}
                         {/*    onChange={handleLabels}*/}
@@ -241,15 +241,15 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
                             value={"nodes"}
                             onChange={() => toggleNodeLabels(!nodeLabels)}
                         >
-                            Nodes
+                            Node Labels
                         </ToggleButton>
-                        <ToggleButton
-                            selected={nodeLabels}
-                            value={"edges"}
-                            onChange={() => toggleNodeLabels(!nodeLabels)}
-                        >
-                            Edges
-                        </ToggleButton>
+                        {/*<ToggleButton*/}
+                        {/*    selected={nodeLabels}*/}
+                        {/*    value={"edges"}*/}
+                        {/*    onChange={() => toggleNodeLabels(!nodeLabels)}*/}
+                        {/*>*/}
+                        {/*    Edges*/}
+                        {/*</ToggleButton>*/}
                     </Stack>
                 </Grid>
             </Grid>
@@ -314,4 +314,4 @@ const GraphFilterPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}:
     )
 }
 
-export default GraphFilterPanel
+export default GraphControlPanel
