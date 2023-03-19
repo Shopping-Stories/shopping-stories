@@ -66,7 +66,7 @@ const Header = ({ title }: HeaderConfig) => {
     return (
         <>
             <AppBar
-                //  position="relative"
+                 // position="relative"
                 position="fixed"
                 // position={title === 'GraphView' ? 'fixed' : 'relative'}
                 sx={{
