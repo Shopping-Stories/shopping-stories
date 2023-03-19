@@ -4,8 +4,15 @@ import Header from '@components/Header';
 import Paper from '@mui/material/Paper';
 import { NextPage } from 'next';
 import styles from 'styles/About.module.css';
+import { Roles } from 'config/constants.config';
+import useAuth, { isInGroup } from '@hooks/useAuth.hook';
 
 const AboutPage: NextPage = () => {
+    const { groups } = useAuth();
+    const isAdmin = isInGroup(Roles.Admin, groups);
+    const isModerator = isInGroup(Roles.Moderator, groups);
+    const isAdminOrModerator = isAdmin || isModerator;
+
     return (
         <ColorBackground>
             <Header />
@@ -27,7 +34,9 @@ const AboutPage: NextPage = () => {
                 }}
             >
                 <h5 className={styles.about}>About Page</h5>
-                <AboutNav />
+                <AboutNav 
+                isAdminOrModerator={isAdminOrModerator}
+                />
             </Paper>
         </ColorBackground>
     );

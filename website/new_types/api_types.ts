@@ -73,6 +73,7 @@ export interface Entry {
     itemID?: string;
     peopleID?: string;
     accountHolderID?: string;
+    Final?: string;
     "_id"?: string;
 }
 
@@ -127,7 +128,8 @@ export const EntryKeys: EntryKey[] = [
     "Quantity",
     "Commodity",
     "people",
-    "mentions"
+    "mentions",
+    "Final"
 ]
 
 export const EntryStringKeys = new Set<EntryKey>([
@@ -151,7 +153,12 @@ export const EntryStringKeys = new Set<EntryKey>([
     "Commodity",
     "type",
     "liber_book",
-    "store"
+    "store",
+    "text_as_parsed",
+    "original_entry",
+    "currency_colony",
+    "currency_type",
+    "Final"
 ] as Array<EntryKey>)
 
 export type EntryStringArrayKey = Extract<EntryKey,
@@ -225,6 +232,7 @@ export interface ParserOutput {
     tobacco_amount_off?: string
     tobacco_marks?: Array<TobaccoMark>
     tobacco_entries?: Array<TobaccoEntry>
+    final?: string
 }
 export type ParserOutputKey = keyof ParserOutput
 
@@ -274,7 +282,8 @@ export const ParserOutputKeys = [
     "Quantity",
     "Commodity",
     "people",
-    "mentions"
+    "mentions",
+    "final",
 ] as Array<ParserOutputKey>
 
 export const ParserStringKeys = new Set<ParserOutputKey>([
@@ -298,7 +307,12 @@ export const ParserStringKeys = new Set<ParserOutputKey>([
     "Commodity",
     "type",
     "liber_book",
-    "store"
+    "store",
+    "text_as_parsed",
+    "original_entry",
+    "currency_colony",
+    "currency_type",
+    "final"
 ] as Array<ParserOutputKey>)
 
 export const ParserStringArrayKeys = new Set<ParserOutputKey>([
@@ -364,7 +378,8 @@ export const tmStrToTMs = (tmstr: string) => {
 
 // Parses a string into an array of strings with delimiter "; "
 export const parseStringArray = (str: string) => {
-    let strsplit = str.split(",; ")
+    // console.log(str)
+    let strsplit = str.split("; ")
     let len = strsplit.length
     if (strsplit[strsplit.length - 1] == "") {
         len -= 1
@@ -374,6 +389,8 @@ export const parseStringArray = (str: string) => {
     for (let i = 0; i < len; i++) {
         strArr[i] = strsplit[i]
     }
+
+    // console.log(strArr)
     
     return strArr
 }

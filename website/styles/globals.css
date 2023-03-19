@@ -9,6 +9,7 @@
   --secondary-bg-translucent: #ffe6a785;
   --button: #335C67;
   --button-hover: #4d8b9c;
+  --box-quote: #FEFAE0;
 }
 
 :root[data-theme="dark"] {
@@ -21,6 +22,7 @@
   --secondary-bg-translucent: #4141417a;
   --button: #294952;
   --button-hover: #335C67;
+  --box-quote: #383737;
 }
 
 html,
