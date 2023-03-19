@@ -20,7 +20,7 @@ import {
     EntryInfo
 } from "@components/GraphView/util";
 import GraphInfoPanel from "@components/GraphView/GraphInfoPanel";
-import GraphFilterPanel from "@components/GraphView/GraphFilterPanel";
+import GraphControlPanel from "@components/GraphView/GraphControlPanel";
 import { GraphGuiProps } from "../../../pages/entries/graphview/[search]";
 import { useColorMode } from "../../ThemeMode";
 import {useTheme} from "@mui/material";
@@ -504,7 +504,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         for (let n of nodes) {
             n.linkDict = Object.fromEntries(Object.entries(n.linkDict).filter(e => filteredKeys.links.has(e[0])))
             n.neighbors = Object.fromEntries(Object.entries(n.neighbors).filter(e => filteredKeys.nodes.has(e[0])))
-            n.value = Math.max(n.value, Math.min(Object.keys(n.neighbors).length / 2, 15))
+            n.value = Math.max(n.value, Math.min(Object.keys(n.neighbors).length / 2, 10))
         }
         // console.log(nodeDict)
         return {nodes: nodes, links:links, nodeDict:nodeDict, linkDict:linkDict}
@@ -717,21 +717,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         }
         // const size = 24;
         const size = relSize * node.value
-        if (nodeLabelsVisible){
-            const label = node.label;
-            const fontSize = 12/globalScale
-            const textWidth = ctx.measureText(label).width;
-            const txtBox = [textWidth, fontSize].map(n => n + fontSize * 0.2); // some padding
-            ctx.font = `${fontSize}px Sans-Serif`;
-            ctx.fillStyle = mode === "light" ? 'white' : 'black';
-            ctx.fillRect(node.x - txtBox[0] / 2, node.y - (txtBox[1] / 2) + size/2, txtBox[0], txtBox[1]);
-        
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = mode !== "light" ? 'white' : 'black';
-            // ctx.fillStyle = node.color;
-            ctx.fillText(label, node.x, node.y + size/2);
-        }
+        // console.log(size)
+
         if (focusedItems.has(node.id)){
             ctx.beginPath();
             ctx.arc(node.x, node.y, size / 2, 0, 2 * Math.PI, false);
@@ -745,7 +732,22 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 ctx.drawImage(node.lightIcon, node.x - size / 2, node.y - size / 2, size, size,);
             
         }
+        if (nodeLabelsVisible){
+            const label = node.label;
+            const fontSize = 12/globalScale
+            const textWidth = ctx.measureText(label).width;
+            const txtBox = [textWidth, fontSize]//.map(n => n + fontSize * 0.2); // some padding
+            ctx.font = `${fontSize}px Sans-Serif`;
+            ctx.fillStyle = mode === "light" ? 'white' : 'black';
+            ctx.fillRect(node.x - txtBox[0] / 2, node.y + (node.value + txtBox[1]/2), txtBox[0], txtBox[1]);
         
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = mode !== "light" ? 'white' : 'black';
+            // ctx.fillStyle = node.color;
+            ctx.fillText(label, node.x, node.y + (node.value + txtBox[1]), textWidth);
+            // node.txtBox = txtBox
+        }
     },[focusedItems, palette, mode, nodeLabelsVisible])
     
     return (<>
@@ -784,6 +786,15 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             nodeRelSize={relSize}
                             // nodeCanvasObjectMode={()=>'after'}
                             nodeCanvasObject={(node, ctx, globalScale) => paintNodes(node, ctx, globalScale)}
+                            nodePointerAreaPaint={(node, color, ctx) => {
+                                if (!node || !node.x || !node.y ) {
+                                    return;
+                                }
+                                ctx.fillStyle = color;
+                                const size = relSize * node.value
+                                // size && ctx.fillRect(node.x - node.txtBox[0] / 2, node.y - node.txtBox[1] / 2, ...node.txtBox);
+                                size && ctx.fillRect(node.x - size / 2, node.y - size / 2, size, size)
+                            }}
                             onNodeClick={handleNodeZoom}
                             onNodeRightClick={(node,e)=> {
                                 // graphRef.current?.pauseAnimation()
@@ -802,7 +813,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             onEngineStop={engineStopCB}
                             // enablePointerInteraction={true}
                         />
-                        <GraphFilterPanel
+                        <GraphControlPanel
                             makePredicates={makePredicates}
                             dates={dates.map(d=>new Date(d))}
                             toggleNodeLabels={toggleNodeLabels}
@@ -965,7 +976,7 @@ export interface GraphPredicates {
     search: string | undefined
 }
 
-export interface GraphFilterPanelProps {
+export interface GraphControlPanelProps {
     makePredicates: filterHandler
     toggleNodeLabels: (visible: boolean) => void
     nodeLabels: boolean
