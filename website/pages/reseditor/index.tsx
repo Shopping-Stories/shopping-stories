@@ -338,6 +338,8 @@ const ResView: NextPage = () => {
         let newrows: GridValidRowModel[] = []
         if (rows != null && rows != undefined && (rows.length > 0)) {
             rows.forEach((value, _index) => {
+                let newOriginal = {...value.original}
+                newOriginal.errors = ((value.original!.errors ?? []).includes("Check Item") && (value.original!.errors ?? []).length == 1) ? undefined : value.original!.errors
                 let thing: GridValidRowModel = {
                     Errors: ((value.original!.errors ?? []).includes("Check Item") && (value.original!.errors ?? []).length == 1) ? [] : value.original!.errors,
                     AccountName: value.original!.account_name,
@@ -353,13 +355,13 @@ const ResView: NextPage = () => {
                     // Colony: value.original!.money?.colony,
                     Quantity: value.original!.Quantity,
                     Commodity: value.original!.Commodity,
-                    Money: moneyToString(value.original!.pounds, value.original!.shillings, value.original!.pennies, value.original!.farthings),
+                    Money: value.original!.currency_type == "Sterling" ? moneyToString(value.original!.pounds_ster, value.original!.shillings_ster, value.original!.pennies_ster, value.original!.farthings_ster) : moneyToString(value.original!.pounds, value.original!.shillings, value.original!.pennies, value.original!.farthings),
                     CurrencyType: value.original!.currency_type,
                     EntryID: value.original!.entry_id,
                     // Ledger: value.original!.ledger?.folio_year,
                     // Reel: value.original!.reel,
                     FolioPage: value.original!.folio_page,
-                    original: value.original,
+                    original: newOriginal,
                     id: value.id
                 }
                 newrows.push(thing)

@@ -88,7 +88,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     } = props
 
     const nrow = React.useMemo(() => JSON.parse(JSON.stringify(row)), [row])
-    
+    console.log(nrow)
     let [tobEntries, setTobEntries] = React.useState([{}] as Array<TobaccoEntry>)
     const [selectorVal, setSelectorVal] = React.useState((row ?? {original: {"type": ""}}).original!["type"] ?? "")
     React.useEffect(() => {
@@ -104,7 +104,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     const [justSet, setJustSet] = React.useState(false);
 
     const intHandleClose = () => {
-        nrow.Money = moneyToString(nrow.original!.pounds, nrow.original!.shillings, nrow.original!.pennies, nrow.original!.farthings)
+        nrow.Money = nrow.original!.currency_type == "Sterling" ? moneyToString(nrow.original!.pounds_ster, nrow.original!.shillings_ster, nrow.original!.pennies_ster, nrow.original!.farthings_ster) : moneyToString(nrow.original!.pounds, nrow.original!.shillings, nrow.original!.pennies, nrow.original!.farthings)
         nrow.Date = dateToString(nrow.original!["Date Year"], nrow.original!["_Month"], nrow.original!.Day)
         nrow.People = ((nrow.original.people ?? []).join("; ")) 
         setSelectorVal("")
