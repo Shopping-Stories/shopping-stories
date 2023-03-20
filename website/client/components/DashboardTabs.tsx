@@ -52,6 +52,7 @@ const DashBoardTabs = ({
                 value={value}
                 onChange={handleChange}
                 variant="scrollable"
+                // sx={{color: "secondary.contrastText"}}
             >
                 {links.map(({ title, path }, i) => (
                     <LinkTab

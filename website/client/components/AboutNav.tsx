@@ -1171,8 +1171,10 @@ export default function VerticalTabs({
                                                     </Typography>
                                                     {isAdminOrModerator && 
                                                     (<>
-                                                    <Button variant="contained" sx={{ width: "8vw", fontSize: "1.5vh"}} component="label" hidden={!isAdminOrModerator}>
-                                                        Upload File
+                                                    <Button variant="contained" sx={{ width: "8vw", marginBottom: "1vh"}} component="label" hidden={!isAdminOrModerator}>
+                                                        <Typography fontSize={"1.5vh"} color="secondary.contrastText">
+                                                            Upload File
+                                                        </Typography>
                                                         <input hidden multiple type="file" onChange={handleUpload}/>
                                                     </Button>
                                                     </>)
