@@ -13,9 +13,10 @@ import Delete from '@mui/icons-material/Delete';
 import { Dispatch } from 'react';
 import { TransitionProps } from '@mui/material/transitions';
 import Slide from '@mui/material/Slide';
-import { ParserOutput, ParserOutputKey, ParserOutputKeys, ParserStringKeys, ParserStringArrayKeys, ParserNumberKeys, tmStrToTMs, TobaccoMark, tmToStr, parseStringArray, TobaccoEntry } from 'new_types/api_types';
+import { ParserOutput, ParserOutputKey, ParserStringKeys, ParserStringArrayKeys, ParserNumberKeys, tmStrToTMs, TobaccoMark, tmToStr, parseStringArray, TobaccoEntry } from 'new_types/api_types';
 import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import TobaccoFields from './TobaccoFields';
+import { dateToString, moneyToString } from 'client/entryUtils';
 
 interface ParserEditorDialog {
     row: rowType | null,
@@ -30,6 +31,7 @@ export interface rowType {
     'Dr/Cr'?: string,
     'Amount'?: string,
     'Item'?: string,
+    'People'?: string,
     // 'Account Holder ID',
     'Date'?: string,
     'Owner'?: string,
@@ -52,11 +54,12 @@ export interface rowType {
 }
 
 type origKey = ParserOutputKey
-const origKeys = ParserOutputKeys
 type rowTypeKey = keyof rowType
 
+const origKeys = ["errors", "error_context", "context", "text_as_parsed", "original_entry", "store", "debit_or_credit", "account_name", "amount", "amount_is_combo", "item", "price", "type", "liber_book",  "price_is_combo", "phrases", "date", "pounds_ster", "shillings_ster", "pennies_ster", "farthings_ster", "pounds", "shillings", "pennies", "farthings", "currency_type", "currency_colony", "currency_totaling_contextless", "commodity_totaling_contextless", "tobacco_location", "tobacco_entries", "tobacco_marks", "tobacco_amount_off",  "Marginalia", "store_owner", "reel", "folio_reference", "folio_year", "folio_page", "entry_id", "Date Year", "_Month", "Day", "Quantity", "Commodity", "people", "mentions", "Final"] as Array<ParserOutputKey>;
+
 // const rowTypeKeys = ["Errors", "Account Name", "Dr/Cr", "Amount", "Item", "Date", "Owner", "Quantity", "Commodity", "Pounds", "Shilling", "Pence", "Farthings", "Currency Type", "EntryID", "Reel", "FolioPage", "original", "id"] as Array<rowTypeKey>
-const oldKeyNewKeyMap: Record<string, string> = {"errors": "Errors", "account_name": "Account Name", "debit_or_credit": "Dr/Cr", "amount": "Amount", "item": "Item", "folio_year": "Date", "store_owner": "Owner", "Quantity": "Quantity", "Commodity": "Commodity", "currency_type": "Currency Type", "entry_id": "EntryID", "reel": "Reel", "folio_page": "FolioPage" }
+const oldKeyNewKeyMap: Record<string, string> = {"errors": "Errors", "account_name": "Account Name", "debit_or_credit": "Dr/Cr", "amount": "Amount", "item": "Item", "Quantity": "Quantity", "Commodity": "Commodity", "currency_type": "Currency Type", "entry_id": "EntryID", "folio_page": "FolioPage"}
 const splitPlaces = new Set<origKey>(["original_entry", "price", "date", "farthings_ster", "currency_colony", "tobacco_amount_off", "entry_id", "Day", "Commodity", "error_context"] as Array<origKey>)
 const oldCurrNewCurrMap: Record<string, string> = {"pounds": "Pounds", "pounds_ster": "Pounds", "shillings": "Shilling", "shillings_ster": "Shilling", "pennies": "Pence", "pennies_ster": "Pence", "farthings": "Farthings", "farthings_ster": "Farthings"}
 const currency_keys = new Set<origKey>(["pounds_ster", "pounds", "shillings_ster", "shillings", "pennies", "pennies_ster", "farthings", "farthings_ster"])
@@ -85,8 +88,14 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     } = props
 
     const nrow = React.useMemo(() => JSON.parse(JSON.stringify(row)), [row])
-    
+    console.log(nrow)
     let [tobEntries, setTobEntries] = React.useState([{}] as Array<TobaccoEntry>)
+    const [selectorVal, setSelectorVal] = React.useState((row ?? {original: {"type": ""}}).original!["type"] ?? "")
+    React.useEffect(() => {
+        setSelectorVal((row ?? {original: {"type": ""}}).original!["type"] ?? "");
+        console.log(row)
+    }, [row])
+    
 
     const deleteRow = () => {
         setRow(null)
@@ -95,6 +104,10 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     const [justSet, setJustSet] = React.useState(false);
 
     const intHandleClose = () => {
+        nrow.Money = nrow.original!.currency_type == "Sterling" ? moneyToString(nrow.original!.pounds_ster, nrow.original!.shillings_ster, nrow.original!.pennies_ster, nrow.original!.farthings_ster) : moneyToString(nrow.original!.pounds, nrow.original!.shillings, nrow.original!.pennies, nrow.original!.farthings)
+        nrow.Date = dateToString(nrow.original!["Date Year"], nrow.original!["_Month"], nrow.original!.Day)
+        nrow.People = ((nrow.original.people ?? []).join("; ")) 
+        setSelectorVal("")
         setRow(nrow!)
         setMiniOpen(false)
     }
@@ -200,7 +213,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                 // console.log("String array")
                 try {
                     let strArr = parseStringArray(event.target.value);
-                    (row[oldKeyNewKeyMap[key] as rowTypeKey] as unknown as Array<String>) = strArr
+                    (row.original![key] as Array<string>) = strArr
                 }
                 catch {
                     console.log("Bad format!")
@@ -231,6 +244,9 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     
             }
             else if (origKeys[a] == "tobacco_marks") {
+                if (row.original!.tobacco_marks == undefined) {
+                    row.original!.tobacco_marks = [];
+                }
                 out.push(
                     <TextField
                         label={origKeys[a]}
@@ -258,7 +274,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     sx={{ padding: "0.3vh", marginTop: mtop2, height: "57px", width: "10vw", border: "2px solid", color: "#8f8f8f"}}
                     variant="outlined"
                     >
-                        <Typography fontFamily={["Arial"]} sx={{color: "white"}}>Edit tobacco entries</Typography>
+                        <Typography fontFamily={["Arial"]} sx={{color: "primary.contrastText", fontWeight: "bold"}} >Edit tobacco entries</Typography>
                         
                     </Button>
                 )
@@ -282,9 +298,12 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
-                                value={row?.original![origKeys[a]] ?? ""}
+                                value={selectorVal}
                                 label="Type"
-                                onChange={(event) => {onRowValueChange(origKeys[a], event)}}
+                                onChange={(event) => {
+                                    setSelectorVal(event.target.value)
+                                    onRowValueChange(origKeys[a], event)}
+                                }
                                 sx={{ padding: "0vh", marginTop: "1.3vh", width: "10vw" }}
                                 key={origKeys[a]}
                             >
@@ -365,6 +384,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
             fullScreen
             open={nrow != null}
             onClose={() => {
+                setSelectorVal("")
                 setClose()
                 setTobEntries([{}])
             }}
@@ -374,20 +394,20 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                 <Toolbar>
                     <IconButton
                         edge="start"
-                        color="inherit"
+                        sx={{color: "secondary.contrastText"}}
                         onClick={setClose}
                         aria-label="close"
                     >
                         <CloseIcon />
                     </IconButton>
-                    <IconButton color="inherit" aria-label="delete" onClick={(_event) => {deleteRow()}}>
+                    <IconButton sx={{color: "secondary.contrastText"}} aria-label="delete" onClick={(_event) => {deleteRow()}}>
                         <Delete/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div" color={"secondary.contrastText"}>
                         Editing Row
                     </Typography>
-                    <Button color="inherit" onClick={() => onDuplicate(nrow!)}>Duplicate</Button>
-                    <Button autoFocus color="inherit" onClick={intHandleClose}>
+                    <Button sx={{color: "secondary.contrastText"}} onClick={() => onDuplicate(nrow!)}>Duplicate</Button>
+                    <Button autoFocus sx={{color: "secondary.contrastText"}} onClick={intHandleClose}>
                         save
                     </Button>
                 </Toolbar>

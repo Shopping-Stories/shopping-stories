@@ -82,6 +82,8 @@ export const AmplifyOptions: any = {
     // OPTIONAL - Amazon Cognito User Pool ID
     userPoolId: CognitoConfig.UserPoolId,
     userPoolWebClientId: CognitoConfig.ClientId,
+    accessKeyId: CognitoConfig.accessKeyId,
+    secretAccessKey: CognitoConfig.secretAccessKey
 
     // cookieStorage: {
     // 	// REQUIRED - Cookie domain (only required if cookieStorage is provided)

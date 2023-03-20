@@ -16,9 +16,10 @@ import {
     // useTheme
 } from '@mui/material/styles';
 
-import { GraphInfoPanelProps } from "@components/GraphView/GraphGui";
+// import { GraphInfoPanelProps } from "@components/GraphView/GraphGui";
 import EntryInfoItem from "@components/GraphView/EntryInfoItem";
 import { ListSubheader } from "@mui/material";
+import { EntryInfo } from "@components/GraphView/util";
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -29,7 +30,18 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     justifyContent: 'flex-start',
 }));
 
-const GraphInfoPanel = ({ name, info, entityType }: GraphInfoPanelProps) => {
+
+
+interface GraphInfoPanelProps {
+    // width: number;
+    name: string | undefined;
+    info?: EntryInfo[]
+    entityType: string | undefined
+    handleEntryAction: (id:string | undefined, action:string) => void
+}
+
+const GraphInfoPanel = ({ name, info, entityType, handleEntryAction }: GraphInfoPanelProps) => {
+    // console.log(info)
     return (
         <>
             <Toolbar/>
@@ -75,7 +87,11 @@ const GraphInfoPanel = ({ name, info, entityType }: GraphInfoPanelProps) => {
                         {info &&
                             name &&
                             info.map((e,i) => (
-                                <EntryInfoItem key={i} {...e}/>
+                                <EntryInfoItem
+                                    key={i}
+                                    entryInfo={e}
+                                    handleEntryAction={handleEntryAction}
+                                />
                             ))}
                     </List>
                     <Divider />

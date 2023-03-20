@@ -1,6 +1,9 @@
 import ForceGraph2D, { ForceGraphMethods, GraphData, LinkObject, NodeObject } from "react-force-graph-2d";
 import * as d3 from "d3-force"
 import React, { useCallback, useState, useRef, useMemo, useLayoutEffect, useEffect } from "react";
+import { useRouter } from "next/router";
+import { useEntryDispatch } from "@components/context/EntryContext";
+import {useGraphItemDispatch, useGraphItem} from "@components/context/GraphItemContext";
 import { Entry } from "new_types/api_types";
 import NodeList from '@components/GraphView/NodeList';
 import {
@@ -14,10 +17,10 @@ import {
     GraphTypeKey,
     NodeTypeKey,
     LinkTypeKey,
-    EntryInfoProps
+    EntryInfo
 } from "@components/GraphView/util";
 import GraphInfoPanel from "@components/GraphView/GraphInfoPanel";
-import GraphFilterPanel from "@components/GraphView/GraphFilterPanel";
+import GraphControlPanel from "@components/GraphView/GraphControlPanel";
 import { GraphGuiProps } from "../../../pages/entries/graphview/[search]";
 import { useColorMode } from "../../ThemeMode";
 import {useTheme} from "@mui/material";
@@ -73,14 +76,18 @@ const mdy = (m?:string,d?:string,y?:string) => `${m}/${d}/${y}`
 const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
     const [filter, setFilter] = useState<GraphPredicates | undefined>(initFilter)
+    const [nodeLabelsVisible, setNodeLabelsVisible] =  useState<boolean>(false)
+    // const [edgeLabelsVisible, setEdgeLabelsVIsible] = useState<boolean>(false)
     const [focusedItems, setFocusedItems] = useState<Set<string | number>>(new Set())
-    const [graphPanelInfo, setGraphPanelInfo] = useState<GraphInfoPanelProps>();
+    const [scrolledItem, setScrolledItem] = useState<string | number>('')
+    const [graphPanelInfo, setGraphPanelInfo] = useState<InfoItems>();
     const [contextMenu, setContextMenu] = useState<{
         mouseX: number;
         mouseY: number;
         id: string | number | undefined
     } | null>(null);
-    const [rightClicked, setRightClicked] = useState<string | number | undefined>()
+    // const [rightClicked, setRightClicked] = useState<string | number | undefined>()
+    
     const graphGridRef = useRef<HTMLDivElement>(null)
     const [graphWidth, setGraphWidth] = useState<number | undefined>(undefined)
     const [graphHeight, setGraphHeight] = useState<number | undefined>(undefined)
@@ -100,6 +107,12 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             item_mention: palette.secondary.main
         }
     }, [palette])
+    
+    const entryDispatch = useEntryDispatch()
+    const router = useRouter()
+    
+    const graphItem = useGraphItem()
+    const graphItemDispatch = useGraphItemDispatch()
     
     // Graph Construction Values
     const graphDict: GraphProps = useMemo(() => {
@@ -196,25 +209,25 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             }
             if (e.people){
                 for (let p of e.people){
-                    if (!nodeProps[p]){
-                        // console.log(p)
+                    // if (nodeProps[p]){
+                    //     console.log(p)
                         makeNode("person", p)
                         nodeProps[p].label = p
                         toAccount.add(p)
                         toItem.add(p)
-                    }
+                    // }
                 }
             }
             // if (e.peopleID && e.people){}
             if (e.mentions) {
                 for (let mention of e.mentions) {
-                    if (!nodeProps[mention]){
+                    // if (!nodeProps[mention]){
                         // console.log(mention)
                         makeNode("mention", mention)
                         nodeProps[mention].label = mention
                         toAccount.add(mention)
                         toItem.add(mention)
-                    }
+                    // }
                 }
             }
             // if (personID){
@@ -234,34 +247,41 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         // const entrySet = new Set<string>()
         for (const [i, entry] of entries.entries()) {
             index = i
-            const {date_year, Day, month} = entry
-            if (!date_year || !Day || !month)
-                continue
-            if (date_year){
-                let dateCheck = new Date(`1/1/${date_year}`)
-                if (dateCheck.toString() === "Invalid Date")
+            if (!!entry) {
+                const { date_year, Day, month } = entry
+                if (!date_year || !Day || !month)
                     continue
+                if (date_year) {
+                    let dateCheck = new Date(`1/1/${date_year}`)
+                    if (dateCheck.toString() === "Invalid Date")
+                        continue
+                }
+                processEntry(entry);
             }
-            processEntry(entry);
             
             // console.log(index, entry._id)
             // if (entry && entry._id && !entrySet.has(entry._id)) {
             //     entrySet.add(entry._id);
             // }
         }
+        // console.log(graphProps)
         return graphProps
     }, [entries, linkColors])
     
     const dates = useMemo<string[]>(()=> {
         let dates = new Set<string>()
-        for (let {month, Day, date_year} of entries){
-            if (month && Day && date_year){
-                let dy = date_year.replace(/[\[\]']+/g,'')
-                let ds = mdy(month, Day, dy)
-                // console.log(ds)
-                let date = new Date(ds)
-                if (date.toString() !== "Invalid Date")
-                    dates.add(ds)
+        for (let entry of entries){
+            
+            if (!!entry){
+                let {month, Day, date_year} = entry
+                if (month && Day && date_year) {
+                    let dy = date_year.replace(/[\[\]']+/g, '')
+                    let ds = mdy(month, Day, dy)
+                    // console.log(ds)
+                    let date = new Date(ds)
+                    if (date.toString() !== "Invalid Date")
+                        dates.add(ds)
+                }
             }
         }
         let dArr: string[] = Array.from(dates) //.filter(d=>d.toString() !== "Invalid Date")
@@ -275,12 +295,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         return dArr
     }, [entries])
     
-    const makePredicates:filterHandler = useCallback((
-        field,
-        t,
-        check,
-        dateRange
-    )=>{
+    const makePredicates:filterHandler = useCallback((field, t, check, dateRange)=>{
         // console.log(field, t, check, dateRange)
         if (!filter) {
             setFilter(initFilter);
@@ -321,7 +336,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 newEntries: new Set<number>(entries.map((_,i)=>i))
             }
         }
-    
+        
         const {dateRange, nodeTypes} = filter
         // console.log(dateRange)
         // subtractive filter so if nothing is false everything stays, return early
@@ -340,14 +355,14 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 newEntries: ne
             }
         }
-    
+        
         const nodePredicates = (node: NodeProps) => {
             return !nodeTypes ||
                 (!!nodeTypes[node.nodeType] &&
                     nodeTypes[node.nodeType] === true
                 )
         }
-    
+        
         const linkPredicates = (link: LinkProps) => {
             // if (!linkTypes) return true
             // if the node isn't in the map then it was filtered out
@@ -410,7 +425,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             newEntries = new Set<number>(entries.map((_,i)=>i))
         }
         
-
+        
         // console.log(newEntries)
         Object.keys(nodeProps).forEach(k => {
             if (nodePredicates(nodeProps[k])) nodes.add(k)
@@ -444,8 +459,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                     value: 5
                 }
                 node.lightIcon = nodeProps[node.id].lightIcon
-                node.darkIcon = nodeProps[node.id].darkIcon
-                nodes.push(node)
+                node.darkIcon = nodeProps[node.id].darkIcon;
+                nodes.push(node);
                 nodeDict[k] = node
             }
         }
@@ -458,8 +473,9 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             if (filteredKeys.links.has(k)) {
                 let link: LinkObject = {
                     id: k,
-                    source: nodeDict[source],
-                    target: nodeDict[target],
+                    label: `${nodeDict[source].label} - ${nodeDict[target].label}`,
+                    source: nodeDict[source].id,
+                    target: nodeDict[target].id,
                     linkType: linkType,
                     entries: new Set<number>(
                         Array
@@ -481,40 +497,68 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             
             // console.log(nodeProps[node.id].linkKeys)
             for (let l of nodeProps[node.id].linkKeys){
-            // if (filteredKeys.links.has(l))
+                // if (filteredKeys.links.has(l))
                 node.linkDict[l] = linkDict[l]
             }
         }
- 
+        
         for (let n of nodes) {
             n.linkDict = Object.fromEntries(Object.entries(n.linkDict).filter(e => filteredKeys.links.has(e[0])))
             n.neighbors = Object.fromEntries(Object.entries(n.neighbors).filter(e => filteredKeys.nodes.has(e[0])))
-            n.value = Math.max(n.value, Math.min(Object.keys(n.neighbors).length / 2, 15))
+            n.value = Math.max(n.value, Math.min(Object.keys(n.neighbors).length / 2, 10))
         }
         // console.log(nodeDict)
         return {nodes: nodes, links:links, nodeDict:nodeDict, linkDict:linkDict}
     }, [ graphDict, filteredKeys])
     
     const toggleInfo = useCallback((node:NodeObject, link?:LinkObject)=>{
-        let info:EntryInfoProps[] = []
+        let info:EntryInfo[] = []
         // let entryProps = getNodeKeys(node.nodeType)
+        let eType: string = ''
+        let name: string = ''
+        let id: string | number = ''
         if (node && !link) {
+            name = node.label
+            eType = `${node.nodeType} node`
+            id = node.id
             for (let e of node.entries){
                 if (filteredKeys.newEntries.has(e))
-                   info.push(makeEntryInfo(entries[e], node.nodeType as GraphTypeKey))
+                    info.push(makeEntryInfo(entries[e], node.nodeType as GraphTypeKey))
             }
         }
         if (node && link) {
+            name = link.label ?? name
+            eType = 'Link'
+            id = link.id
             for (let e of link.entries){
                 if (filteredKeys.newEntries.has(e))
                     info.push(makeEntryInfo(entries[e], link.linkType as GraphTypeKey))
             }
         }
         if (node || link){
-            setGraphPanelInfo({name:node.label, info:info, entityType:node.nodeType})
+            setScrolledItem(id)
+            setGraphPanelInfo({name:name, info:info, entityType:eType})
         }
         // console.log(info)
     }, [entries, filteredKeys])
+    // console.log(scrolledItem)
+    const handleEntryAction = useCallback((id:string | undefined, action:string) => {
+        // const path = `/entries/${action}`;
+        if (id) {
+            entryDispatch({
+                type: 'CREATE',
+                payload: entries.filter(e => e._id === id)[0]
+            })
+            router.push(`/entries/${action}`)
+        }
+    }, [entries, entryDispatch, router])
+    
+    const toggleNodeLabels = useCallback((visible: boolean) => {
+        setNodeLabelsVisible(visible)
+    }, [])
+    // const toggleEdgeLabels = useCallback((visible: boolean) => {
+    //     setEdgeLabelsVIsible(visible)
+    // }, [])
     
     const handleNodeZoom:nodeHandler = useCallback((node )=> {
         if (graphRef.current) {
@@ -577,9 +621,10 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const fetchEntries = useCallback(() => {
         // let id = Array.from(focusedItems)[0]
         let id = contextMenu?.id
-        setRightClicked(id)
+        // setRightClicked(id)
         if (id) {
             console.log("id", id)
+            graphItemDispatch({type:'CREATE', payload: id})
             fetchMore(graphDict.nodeProps[id].label);
             // graphRef.current?.resumeAnimation()
             // setFocusedItems(new Set([id]))
@@ -587,7 +632,18 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             // setTimeout(() => handleNodeZoom(graph.nodes.filter((v) => v.id === rightClicked)[0],), 2000,);
         }
         handleClose()
-    }, [contextMenu, fetchMore, graphDict.nodeProps])
+    }, [contextMenu?.id, fetchMore, graphDict.nodeProps, graphItemDispatch])
+    
+    // const toEntryView = useCallback((action: string = 'view', id: string) => {
+    //     const path = `/entries/${action}`;
+    //     if (payload && action && action !== "Create" ){
+    //         entryDispatch({
+    //             type: "CREATE",
+    //             payload: payload
+    //         })
+    //     }
+    //     router.push(path);
+    // }, [entryDispatch, router])
     
     const handleClose = () => {
         setContextMenu(null);
@@ -597,11 +653,11 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     };
     
     const engineStopCB = useCallback(() =>{
-        console.log("engine stop", rightClicked)
-        if (rightClicked && graph.nodeDict)
-            handleNodeZoom(graph.nodeDict[rightClicked])
-            setRightClicked(undefined)
-    }, [rightClicked, handleNodeZoom, graph.nodeDict])
+        console.log("engine stop", graphItem)
+        if (graphItem !== '' && graph.nodeDict)
+            handleNodeZoom(graph.nodeDict[graphItem])
+        graphItemDispatch({type:'CREATE', payload: ''})
+    }, [graphItem,graphItemDispatch, handleNodeZoom, graph.nodeDict])
     
     // Post-mount effects
     useEffect(()=>{
@@ -655,13 +711,15 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     }, [graph])
     
     // Main render callback
-    const paintNodes = useCallback((node:NodeObject, ctx:CanvasRenderingContext2D)=> {
+    const paintNodes = useCallback((node:NodeObject, ctx:CanvasRenderingContext2D, globalScale)=> {
         // let node = node//nodeMap[node.id]
         if (!node || node.x === undefined || node.y === undefined) {
             return;
         }
         // const size = 24;
         const size = relSize * node.value
+        // console.log(size)
+
         if (focusedItems.has(node.id)){
             ctx.beginPath();
             ctx.arc(node.x, node.y, size / 2, 0, 2 * Math.PI, false);
@@ -673,9 +731,25 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 ctx.drawImage(node.darkIcon, node.x - size / 2, node.y - size / 2, size, size,);
             else
                 ctx.drawImage(node.lightIcon, node.x - size / 2, node.y - size / 2, size, size,);
+            
         }
+        if (nodeLabelsVisible){
+            const label = node.label;
+            const fontSize = 12/globalScale
+            const textWidth = ctx.measureText(label).width;
+            const txtBox = [textWidth, fontSize]//.map(n => n + fontSize * 0.2); // some padding
+            ctx.font = `${fontSize}px Sans-Serif`;
+            ctx.fillStyle = mode === "light" ? 'white' : 'black';
+            ctx.fillRect(node.x - txtBox[0] / 2, node.y + (node.value + txtBox[1]/2), txtBox[0], txtBox[1]);
         
-    },[focusedItems, palette, mode])
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = mode !== "light" ? 'white' : 'black';
+            // ctx.fillStyle = node.color;
+            ctx.fillText(label, node.x, node.y + (node.value + txtBox[1]), textWidth);
+            // node.txtBox = txtBox
+        }
+    },[focusedItems, palette, mode, nodeLabelsVisible])
     
     return (<>
         <Box component={"main"} sx={{flexGrow: 1, overflow: 'hidden'}} alignItems={"stretch"}>
@@ -689,6 +763,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             focusOn={focusOn}
                             focusOff={focusOff}
                             toggleInfo={toggleInfo}
+                            scrolledItem={scrolledItem}
                         />
                     )}
                 </Grid>
@@ -707,16 +782,25 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             linkDirectionalParticleWidth={link => focusedItems.has(link.id) ? 8 : 0}
                             // TODO: Figure out canvas interaction with next.js
                             nodeLabel={(node) =>
-                                node?.label ? node.label.toString() : node.id.toString()
+                                (node?.label && !nodeLabelsVisible) ? node.label.toString() : ""
                             }
                             nodeRelSize={relSize}
                             // nodeCanvasObjectMode={()=>'after'}
-                            nodeCanvasObject={(node, ctx) => paintNodes(node, ctx)}
+                            nodeCanvasObject={(node, ctx, globalScale) => paintNodes(node, ctx, globalScale)}
+                            nodePointerAreaPaint={(node, color, ctx) => {
+                                if (!node || !node.x || !node.y ) {
+                                    return;
+                                }
+                                ctx.fillStyle = color;
+                                const size = relSize * node.value
+                                // size && ctx.fillRect(node.x - node.txtBox[0] / 2, node.y - node.txtBox[1] / 2, ...node.txtBox);
+                                size && ctx.fillRect(node.x - size / 2, node.y - size / 2, size, size)
+                            }}
                             onNodeClick={handleNodeZoom}
                             onNodeRightClick={(node,e)=> {
                                 // graphRef.current?.pauseAnimation()
                                 handleNodeRightClick(node, e)
-                                }
+                            }
                             }
                             onLinkClick={handleLinkZoom}
                             onNodeDragEnd={node => {
@@ -725,12 +809,17 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             }}
                             // nodeVal={v => Math.max(Object.keys(v.neighbors).length, 5)}
                             nodeVal={n=>n.value}
-                            cooldownTime={rightClicked ? 2000 : 15000}
+                            cooldownTime={graphItem !== '' ? 1000 : 15000}
                             // cooldownTicks={100}
                             onEngineStop={engineStopCB}
                             // enablePointerInteraction={true}
                         />
-                        <GraphFilterPanel makePredicates={makePredicates} dates={dates.map(d=>new Date(d))}/>
+                        <GraphControlPanel
+                            makePredicates={makePredicates}
+                            dates={dates.map(d=>new Date(d))}
+                            toggleNodeLabels={toggleNodeLabels}
+                            nodeLabels={nodeLabelsVisible}
+                        />
                     </Box>
                 </Grid>
                 <Grid item xs={3}>
@@ -740,6 +829,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                         name={graphPanelInfo?.name}
                         info={graphPanelInfo?.info}
                         entityType={graphPanelInfo?.entityType}
+                        handleEntryAction={handleEntryAction}
                     />
                 </Grid>
             </Grid>
@@ -790,8 +880,8 @@ declare module "react-force-graph-2d" {
     }
     interface LinkObject {
         id: string | number;
-        source: NodeObject;
-        target: NodeObject;
+        source: string | number | NodeObject;
+        target: string | number | NodeObject;
         entries: Set<number>;
         entryKeys: (keyof Entry)[]
         linkType: LinkTypeKey;
@@ -832,20 +922,13 @@ interface GraphProps {
 //Graph types that must be declared in this file
 type GraphKey = keyof NodeObject | LinkObject | string | number
 
-export interface GraphInfoPanelProps {
-    // width: number;
-    name: string | undefined;
-    info?: EntryInfoProps[]
-    entityType: string | undefined
-    // startDate: Date,
-    // endDate: Date,
-}
 export interface NodeListProps {
     gData: GraphData
     handleClickZoom: nodeHandler
     toggleInfo: itemHandler
     focusOn: focusHandler
     focusOff: focusHandler
+    scrolledItem: string | number
 }
 export interface NodeListItemProps {
     node: NodeObject
@@ -853,6 +936,8 @@ export interface NodeListItemProps {
     toggleInfo: itemHandler
     focusOn: focusHandler
     focusOff: focusHandler
+    scrolledItem: string | number
+    // focused: boolean
 }
 export interface LinkListItemProps {
     link:LinkObject;
@@ -862,6 +947,7 @@ export interface LinkListItemProps {
     toggleInfo: itemHandler
     focusOn: focusHandler
     focusOff: focusHandler
+    focused: boolean
 }
 
 interface GraphKeys {
@@ -891,10 +977,18 @@ export interface GraphPredicates {
     search: string | undefined
 }
 
-export interface GraphFilterPanelProps {
+export interface GraphControlPanelProps {
     makePredicates: filterHandler
+    toggleNodeLabels: (visible: boolean) => void
+    nodeLabels: boolean
     filter?: GraphPredicates
     dates: Array<Date>
+}
+
+interface InfoItems {
+    name: string | undefined;
+    info?: EntryInfo[]
+    entityType: string | undefined
 }
 
 type focusHandler = (elements:Set<GraphKey>) => void ;

@@ -15,6 +15,10 @@ export const toTitleCase = (str: string) => {
 }
 
 export const toDisplayCase = (k:string) => {
+    // console.log(k)
+    // console.log(k.replace(/(_|^)([^_]?)/g, function(_, prep, letter) {
+    //     return (prep && ' ') + letter.toUpperCase();
+    // }))
     return k.replace(/(_|^)([^_]?)/g, function(_, prep, letter) {
         return (prep && ' ') + letter.toUpperCase();
     });
@@ -45,7 +49,43 @@ export function moneyToString(pounds: number|undefined, shillings: number|undefi
     }
 }
 
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+export function moneyToLongString(pounds: number|undefined, shillings: number|undefined, pence: number|undefined, farthings: number|undefined) {
+    if (pence == undefined) {
+        pence = 0;
+    }
+    if (pounds == undefined || pounds == 0) {
+        if (shillings == undefined || shillings == 0) {
+            return pence + getFarthInsert(farthings) + " d";
+        }
+        else {
+            return shillings + " shillings, " + pence + getFarthInsert(farthings) + " d";
+        }
+    }
+    else {
+        return pounds + " pounds, " + shillings + " shillings, " + pence + getFarthInsert(farthings) + " d";
+    }
+}
+
+export function dateToString(year: string|undefined, month: string|undefined, day: string|undefined) {
+    if (year == undefined) {
+        return ""
+    }
+    else {
+        if (month == undefined) {
+            return year
+        }
+        else {
+            if (day == undefined) {
+                return months[parseInt(month) - 1] + " " + year
+            }
+            else {
+                return months[parseInt(month) - 1] + " " + day + " " + year
+            }
+        }
+    }
+}
+
+export const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 type Entries<T> = {
     [K in keyof T]: [K, T[K]];
 }[keyof T][];
@@ -58,6 +98,7 @@ export const entryToRow = (entry: Entry) => {
     // console.log(nonComplex)
     let currency = entry.currency ? getEntries(entry.currency) : []
     let sterling = []
+    let ledger = entry.ledger ? getEntries(entry.ledger) : []
     if (entry.sterling){
         for (let denom of currency){
             sterling.push([`Sterling_${denom[0]}`, entry.sterling[denom[0]]])
@@ -72,10 +113,14 @@ export const entryToRow = (entry: Entry) => {
         ['Page', entry?.ledger?.folio_page],
         ['id', entry._id]
     ]
+
+    // console.log(currency);
+    // console.log(sterling);
     return {
         ...Object.fromEntries(complex),
         ...Object.fromEntries(currency),
         ...Object.fromEntries(sterling),
+        ...Object.fromEntries(ledger),
         ...nonComplex }// Object.fromEntries(complex)
 }
 
@@ -114,8 +159,9 @@ export const fieldNames: FieldNames = Object.fromEntries(EntryKeys
 
 export const complexFields = new Set<string>(['Date', 'Page', 'Currency', 'Sterling', ])
 export const splitFields = new Set<string>([
-    'pounds', 'shilling', 'pennies', 'farthings',
-    'Sterling_pounds', 'Sterling_shilling', 'Sterling_pennies', 'Sterling_farthings',
+    'pounds', 'shillings', 'pennies', 'farthings',
+    'Sterling_pounds', 'Sterling_shillings', 'Sterling_pennies', 'Sterling_farthings',
+    'reel', 'folio_year', 'folio_page', 'entry_id'
 ])
 export const colNames: string[] = [...complexFields.values(), ...hiddenFields.values(), ...visibleFields.values(), ...splitFields.values()]
 
@@ -173,25 +219,31 @@ export const ledgerFields = [
     "folio_page",
 ]
 
-export const entryInfoFields = [
+export const storeInfoFields = [
     "store",
     "store_owner",
+    "Marginalia"
+]
+
+export const entryInfoFields = [
     "debit_or_credit",
     "account_name",
+    "Date Year",
+    "_Month",
+    "Day",
     // "amount_is_combo",
+    // "text_as_parsed",
+    // "original_entry",
+    // "date",
+    // "people",
+]
+
+export const itemInfoFields = [
     "item",
     "amount",
     "price",
     "Quantity",
     "Commodity",
-    // "text_as_parsed",
-    // "original_entry",
-    "Marginalia",
-    "Day",
-    "_Month",
-    "Date Year",
-    "date",
-    // "people",
 ]
 
 export const parsedFieldNames = Object.fromEntries(

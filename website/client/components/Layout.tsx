@@ -9,12 +9,12 @@ import Grid from '@mui/material/Grid'
 // import Toolbar from "@mui/material/Toolbar";
 
 export default function Layout({children}:any) {
-    // console.log(children?.props?.title)
+    console.log(children?.props?.title)
     return (
         <Box >
         <Grid container wrap={"wrap"}>
             <Grid item xs={12}>
-                {children?.props?.title && (<Header title={children.props.title}/>)}
+                {children?.props?.title === 'GraphView' && (<Header title={children.props.title}/>)}
                 {/*<Header title={children.props.title ? children.props.title : undefined}/>*/}
             </Grid>
             <Grid item xs={12}>

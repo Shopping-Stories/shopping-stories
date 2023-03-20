@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Popover from '@mui/material/Popover';
 import Typography  from '@mui/material/Typography';
 import {rowType} from './ParserEditorDialog';
-import { moneyToString } from "../entryUtils";
+import { dateToString, moneyToString } from "../entryUtils";
 
 interface ParserOutputEditor {
     url: string;
@@ -81,6 +81,9 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
                             // console.log(value.entries[entry])
                             value.entries[entry].currency_type = "Currency"
                         }
+                        if (value.entries[entry].amount?.match(/\s*\d+w\s+pounds\s*/)) {
+                            value.entries[entry].amount = value.entries[entry].amount?.replace(/(?<=\d)w/, "")
+                        }
                     }
                     setErrorRows(error_rows);
                     return value;
@@ -112,15 +115,16 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
                 "Dr/Cr": row?.debit_or_credit,
                 Amount: row?.amount,
                 Item: (row?.item ?? ""),
+                People: ((row?.people ?? []).join("; ")),
                 // AccountHolderID: row?.accountHolderID,
-                Date: row?.folio_year,
+                Date: dateToString(row["Date Year"], row["_Month"], row?.Day),
                 Owner: row?.store_owner,
                 // Store: row?.meta?.store,
                 // Comments: row?.meta?.comments,
                 // Colony: row?.money?.colony,
                 Quantity: row?.Quantity,
                 Commodity: row?.Commodity,
-                Money: moneyToString(row?.pounds, row?.shillings, row?.pennies, row?.farthings),
+                Money: row?.currency_type == "Sterling" ? moneyToString(row?.pounds_ster, row?.shillings_ster, row?.pennies_ster, row?.farthings_ster) : moneyToString(row?.pounds, row?.shillings, row?.pennies, row?.farthings),
                 CurrencyType: row?.currency_type,
                 EntryID: row?.entry_id,
                 // Ledger: row?.ledger?.folio_year,
@@ -139,9 +143,10 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
         'Account Name',
         'Amount',
         'Item',
+        'People',
         // 'Account Holder ID',
         'Date',
-        'Owner',
+        // 'Owner',
         // 'Store',
         // 'Comments',
         // 'Colony',
@@ -152,7 +157,7 @@ const ParserOutputEditor = (props: ParserOutputEditor) => {
         "Currency Type",
         'EntryID',
         // 'Ledger Year',
-        'Reel',
+        // 'Reel',
         'FolioPage',
         "id"
     ];

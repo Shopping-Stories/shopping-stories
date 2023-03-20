@@ -122,7 +122,7 @@ export const getInfoKeys = (graphType: GraphTypeKey):EntryKey[] =>  {
 }
 
 const ledgerKeys: EntryKey[]  = ["ledger", "date", "date_year", "month", "Day", "liber_book"]
-const base: EntryKey[] = [...ledgerKeys, "context", "phrases", "mentions"]
+const base: EntryKey[] = [...ledgerKeys, "context", "phrases", "mentions", 'text_as_parsed', 'original_entry']
 const item: (keyof ItemEdgeKeys)[] = [
     "store_owner", "type",
     "item", "itemID", "amount", "amount_is_combo",
@@ -141,10 +141,12 @@ const item_store = [...base, ...item, ...personAcct]
 const person_personAccount = [...base, ...person, ...personAcct]
 
 const entryComplex = new Set<EntryKey>(["currency" , "ledger" , "sterling" , "mentions" , "people" ,"context" ,"phrases"])
-type EntryNonInfo = Omit<Entry,
+type EntryNonInfo = Pick<Entry,
     "itemID" | "amount_is_combo" | "price_is_combo" |
     "commodity_totaling_contextless" | "currency_totaling_contextless" |
-    "peopleID" | "accountHolderID" | "_id">
+    "peopleID" | "accountHolderID"
+    // | "_id"
+    >
 // itemID: "Item ID",
 // amount_is_combo: boolean,
 // price_is_combo: boolean,
@@ -154,7 +156,9 @@ type EntryNonInfo = Omit<Entry,
 // peopleID: "",
 // accountHolderID: string,
 // _id: string,
-export type EntryScalarInfo = Omit<Entry, "currency" | "ledger" | "sterling" | "mentions" | "people" |"context" |"phrases" |"_id" | keyof EntryNonInfo>
+export type EntryScalarInfo = Omit<Entry,
+    "currency" | "ledger" | "sterling" | "mentions" | "people" |"context" |"phrases" | keyof EntryNonInfo
+    >
 // type FullEntryInfo = Currency | Ledger | EntryScalarInfo
 
 interface EntryObjects {
@@ -163,7 +167,7 @@ interface EntryObjects {
     sterling?: Currency,
 }
 
-export interface EntryInfoProps extends EntryScalarInfo{
+export interface EntryInfo extends EntryScalarInfo{
     ledger?: Partial<Ledger>
     currency?: Partial<Currency>,
     sterling?: Partial<Currency>,
@@ -171,13 +175,15 @@ export interface EntryInfoProps extends EntryScalarInfo{
     mentions?: Entry["mentions"],
     context?: Entry["context"],
     phrases?: Entry["phrases"],
-    scalars?: EntryScalarInfo
+    scalars?: EntryScalarInfo,
+    text_as_parsed?: Entry['text_as_parsed'],
+    original_entry?:Entry['original_entry'],
 }
 
-export const makeEntryInfo = (e:Entry, t:(NodeTypeKey | LinkTypeKey)):EntryInfoProps => {
+export const makeEntryInfo = (e:Entry, t:(NodeTypeKey | LinkTypeKey)):EntryInfo => {
     let keys: EntryKey[] = getInfoKeys(t)
     let scalarInfo: EntryScalarInfo = {}
-    let entryInfo: EntryInfoProps = {}
+    let entryInfo: EntryInfo = {}
     
     // console.log(keys)
     for (let key of keys){
@@ -192,6 +198,9 @@ export const makeEntryInfo = (e:Entry, t:(NodeTypeKey | LinkTypeKey)):EntryInfoP
         }
     }
     entryInfo.scalars = scalarInfo
+    entryInfo._id = e._id
+    // console.log(entryInfo.text_as_parsed, entryInfo.original_entry)
+    // entryInfo.
     return entryInfo
 }
 export type Display = {
@@ -209,7 +218,7 @@ export const displayNames = {
     currency_type: "Currency Type",
     account_name: "Account Name",
     store_owner: "Store Owner",
-    date_year: "date_year",
+    date_year: "Year",
     month: "Month",
     Day: "Day",
     debit_or_credit: "Payment",
@@ -228,6 +237,8 @@ export const displayNames = {
     ledger: "Ledger Information",
     currency: "Currency Information",
     sterling: "Sterling Information",
+    text_as_parsed: 'Parsed Text',
+    original_entry: 'Original Entry'
     // itemID: "Item ID",
     // amount_is_combo: boolean,
     // price_is_combo: boolean,

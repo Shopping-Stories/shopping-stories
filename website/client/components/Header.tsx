@@ -21,12 +21,12 @@ const defaultNavLinks: NavLink[] = [
     { title: `home`, path: `/` },
     { title: `about`, path: `/about` },
     { title: `search`, path: `/entries` },
-    { title: `glossary`, path: `/glossary/items` },
+    // { title: `glossary`, path: `/glossary/items` },
     { title: `parser`, path: `/reseditor`}
 ];
 
 const adminNavLinks: NavLink[] = [
-    { title: `documents`, path: `/documents` },
+    // { title: `documents`, path: `/documents` },
     { title: `dashboard`, path: `/dashboard/settings` },
 ];
 // TODO: figure out why this is here
@@ -45,8 +45,10 @@ const Header = ({ title }: HeaderConfig) => {
     const uniqueNavLinks = uniqWith([...navLinks, ...authLinks], isEqual);
     const [width, setWidth] = useState("100%");
     useEffect(() => {
+        // console.log(title)
         if (title && title === 'GraphView') {
             setWidth("83.34%");
+            
         }
     },[title]);
 
@@ -64,14 +66,14 @@ const Header = ({ title }: HeaderConfig) => {
     return (
         <>
             <AppBar
-                //  position="relative"
+                 // position="relative"
                 position="fixed"
                 // position={title === 'GraphView' ? 'fixed' : 'relative'}
                 sx={{
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                     // width: `calc(100% - ${width}px)`,
                     width: `${width}`,
-                    ml: `calc(100% - ${width}px)`,
+                    ml: `calc(100% - ${width})`,
                     // ml: `${width}px`,
                 }}
             >

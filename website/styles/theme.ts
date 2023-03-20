@@ -9,23 +9,39 @@ const lightTheme: any = {
 	// palette values for light mode
 	primary: {
 		main: '#283618',
-		light: '#ab47bc'
+		light: '#ab47bc',
+		contrastText: "#000",
 	},
 	secondary: {
 		main: '#606C38',
-		light: '#ab47bc'
+		light: '#ddd',
+		contrastText: "#fff"
 	},
+	action: {
+		disabled: "#555",
+	},
+	text: {
+		disabled: "#333"
+	}
 };
 
 const darkTheme: any = {
 	primary: {
 		main: '#606c38',
-		light: '#ab47bc'
+		light: '#ab47bc',
+		contrastText: "#fff",
 	},
 	secondary: {
 		main: '#879d3f',
-		light: '#ab47bc',
+		light: '#333',
+		contrastText: "#fff"
 	},
+	action: {
+		disabled: "#999999",
+	},
+	text: {
+		disabled: "#ddd"
+	}
 };
 
 export const getDesignTokens = (mode: PaletteMode):ThemeTypes => ({
