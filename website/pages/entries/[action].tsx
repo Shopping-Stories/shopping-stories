@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from 'next/router';
 import { Formik, FieldArray, Form, getIn } from 'formik';
 import {useEntry} from "@components/context/EntryContext";
@@ -31,18 +31,19 @@ import { PaperStyles } from "../../styles/styles";
 import FormGroup from "@mui/material/FormGroup";
 import Divider from "@mui/material/Divider";
 import { Roles } from "../../config/constants.config";
-import { entryInfoFields, ledgerFields, moneyFields, parsedFieldNames } from "../../client/entryUtils";
+import { entryInfoFields, itemInfoFields, ledgerFields, moneyFields, parsedFieldNames, storeInfoFields, months, moneyToLongString } from "../../client/entryUtils";
 
 const EntryPage = () => {
     const router = useRouter()
     const action = router.query.action as string
     const entry = useEntry()
+    const [advancedView, setAdvancedView] = useState(action != "View");
     const { groups } = useAuth();
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isModerator = isInGroup(Roles.Moderator, groups);
     const isAdminOrModerator = isAdmin || isModerator;
     const disabled = action === "View" || !isAdminOrModerator
-    console.log(action, entry)
+    // console.log(action, entry)
     // const [open, setOpen] = useState<boolean>(!!action)
     const initFormValues: Partial<ParserOutput> = useMemo(()=>{
         return {
@@ -96,11 +97,11 @@ const EntryPage = () => {
     
     const handleSubmit = async (newEntry: Partial<ParserOutput>, dType: string | undefined, id?: string) => {
         let saveUrl = `https://api.preprod.shoppingstories.org/${dType?.toLowerCase()}_entry`;
-        console.log(saveUrl, newEntry)
+        // console.log(saveUrl, newEntry)
         if (!dType) return
         let req = {}
         let reqBody = JSON.stringify(newEntry)
-        console.log(reqBody)
+        // console.log(reqBody)
         if (dType === "Edit"){
             if (!id) return
             req = {
@@ -124,7 +125,7 @@ const EntryPage = () => {
                 body: reqBody
             }
         }
-        console.log(saveUrl)
+        // console.log(saveUrl)
         // if (!newEntry.entry_id) {
         //     return
         // }
@@ -132,11 +133,13 @@ const EntryPage = () => {
         
         const text = await res.text();
         if (res.status == 200) {
-            let message = JSON.parse(text);
-            console.log(message);
+            handleActionChange("View");
+            // let message = JSON.parse(text);
+            // console.log(message);
         }
         else {
             console.log("ERROR: " + text);
+            alert("Error occured when submitting: " + text);
         }
     }
     
@@ -159,13 +162,28 @@ const EntryPage = () => {
     
     const handleActionChange = (newAction: string) => {
         const path = `/entries/${newAction}`;
+        setAdvancedView(true);
         router.push(path);
+    }
+
+    const handleEditToggle = () => {
+        if (action == "Edit") {
+            handleActionChange("View")
+        }
+        else if (action == "View") {
+            handleActionChange("Edit")
+        }
     }
     
     // const handleClose = () => {
     //     setDialog(undefined);
     // };
     
+    const boxWidth = "12vw"
+    const box2xWidth = "24vw"
+    const boxMargin = "2vw"
+    const tabSize = "1vw"
+
     return (
         <ColorBackground>
             <Header />
@@ -176,12 +194,196 @@ const EntryPage = () => {
                     // margin: '1rem',
                 }}
             >
+
+
+                {!advancedView ? 
+                <Box display={"flex"} flexDirection="column">
+                    <Box sx={{...PaperStyles, margin: "1vh", marginBottom: 0}}>
+                        <Typography variant={'h6'}>View Entry</Typography>
+                        <Button variant="contained" onClick={() => {setAdvancedView(true)}} sx={{marginTop: "1vh", marginBottom: "1vh"}}><Typography variant="h6" fontSize={"1.2vh"}>Advanced View</Typography></Button>
+                    </Box>
+                    <Box sx={{...PaperStyles, marginTop: 0}}>
+                        <Typography variant="h6">Store Info</Typography>
+                        <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
+                            {initFormValues.store != undefined ? 
+                                <Box width={boxWidth}>
+                                    <Typography>Store: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.store} ({initFormValues.Marginalia ?? ""})</Typography>
+                                </Box> : []
+                            }
+                            {initFormValues.store_owner != undefined ? 
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Owner: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.store_owner}</Typography>
+                                </Box> : []
+                            }
+                        </Paper>
+                        
+                        <Typography variant="h6" sx={{marginTop: "4vh"}}>Entry Info</Typography>
+                        <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
+                            {initFormValues.account_name != undefined ? 
+                                <Box width={boxWidth}>
+                                    <Typography>Account Name: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.account_name}</Typography>
+                                </Box> : []
+                            }
+                            {initFormValues["Date Year"] != undefined ? 
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Date: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues._Month != undefined ? months[parseInt(initFormValues._Month!) - 1] + " " : ""}{initFormValues.Day != undefined ? initFormValues.Day + " " : ""}{initFormValues["Date Year"]}</Typography>
+                                </Box> : []
+                            }
+                            {((initFormValues.pounds != undefined) || (initFormValues.pounds_ster != undefined)) ? 
+                                <Box width={box2xWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Currency Transacted: </Typography>
+                                    {
+                                        (initFormValues.currency_type ?? "Currency") == "Both" ?
+                                        <div>
+                                            <Typography sx={{marginLeft: tabSize}}>{moneyToLongString(initFormValues.pounds, initFormValues.shillings, initFormValues.pennies, initFormValues.farthings)}, {(initFormValues.currency_colony ?? "Unknown") != "Unknown" ? initFormValues.currency_colony + " " : ""}Currency</Typography>
+                                            <Typography sx={{marginLeft: tabSize}}>{moneyToLongString(initFormValues.pounds_ster, initFormValues.shillings_ster, initFormValues.pennies_ster, initFormValues.farthings_ster)}, Sterling</Typography>
+                                        </div>
+                                        :
+                                        <Typography sx={{marginLeft: tabSize}}>{(initFormValues.currency_type ?? "Currency") == "Sterling" ? moneyToLongString(initFormValues.pounds_ster, initFormValues.shillings_ster, initFormValues.pennies_ster, initFormValues.farthings_ster) : moneyToLongString(initFormValues.pounds, initFormValues.shillings, initFormValues.pennies, initFormValues.farthings)}, {(initFormValues.currency_colony ?? "Unknown") != "Unknown" ? initFormValues.currency_colony + " " : ""}{initFormValues.currency_type ?? "Currency"}</Typography>
+                                    }
+                                    
+                                </Box> : []
+                            }
+                            {initFormValues.debit_or_credit != undefined ? 
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Debit or Credit Record: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.debit_or_credit}</Typography>
+                                </Box> : []
+                            }
+                            {initFormValues.folio_page != undefined ? 
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Ledger Info: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Reel {initFormValues.reel}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Year {initFormValues.folio_year}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Page {initFormValues.folio_page}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Entry {initFormValues.entry_id}</Typography>
+                                </Box> : []
+                            }
+                        </Paper>
+
+                        <Typography variant="h6" sx={{marginTop: "4vh"}}>Item Info</Typography>
+                        <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
+                            {initFormValues.text_as_parsed != undefined ? 
+                                <Box width={boxWidth}>
+                                    <Typography>Partial Entry: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.text_as_parsed}</Typography>
+                                </Box> : []
+                            }
+                            {initFormValues.item != undefined ? 
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Item: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.amount != undefined ? initFormValues.amount + " " : ""}{initFormValues.item}</Typography>
+                                </Box> : []
+                            }
+                            {initFormValues.price != undefined ? 
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Price: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.price}</Typography>
+                                </Box> : []
+                            }
+                            {initFormValues.Commodity != undefined ? 
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Commodity: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.Quantity != undefined ? initFormValues.Quantity + " (pounds) " : ""}{initFormValues.Commodity}</Typography>
+                                </Box> : []
+                            }
+                            {initFormValues.original_entry != undefined ? 
+                                <Box width={box2xWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Complete Entry: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.original_entry}</Typography>
+                                </Box> : []
+                            }
+                            {initFormValues.final != undefined ? 
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Comments: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.final}</Typography>
+                                </Box> : []
+                            }
+                        </Paper>
+                        
+                        {((initFormValues.tobacco_entries != undefined) && (initFormValues.tobacco_entries.length > 0)) || ((initFormValues.tobacco_marks != undefined) && (initFormValues.tobacco_marks.length > 0)) || (initFormValues.tobacco_location != undefined) || (initFormValues.tobacco_amount_off != undefined) ? 
+                        <div>
+                            <Typography variant="h6" sx={{marginTop: "4vh"}}>Tobacco Information</Typography>
+                            <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
+                                {initFormValues.tobacco_amount_off != undefined ? 
+                                    <Box width={boxWidth}>
+                                        <Typography>Tobacco Off: </Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>{initFormValues.tobacco_amount_off}</Typography>
+                                    </Box> : []
+                                }
+                                {initFormValues.tobacco_location != undefined ? 
+                                    <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                        <Typography>Tobacco Location: </Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>{initFormValues.tobacco_location}</Typography>
+                                    </Box> : []
+                                }
+                                {(initFormValues.tobacco_entries != undefined) && (initFormValues.tobacco_entries.length > 0) ? 
+                                    <Box width={box2xWidth} sx={{marginLeft: boxMargin}}>
+                                        <Typography>Tobacco Entries: </Typography>
+                                        <div>
+                                            {initFormValues.tobacco_entries.map((value, index) => {
+                                                return <Typography sx={{marginLeft: tabSize}} key={((value.number ?? "asdikjsaiofjd") + "tenum" + index + (value.weight ?? "gjfsdo"))}>N {value.number ?? "No Note Number"}: {((value.gross_weight == undefined) && (value.tare_weight == undefined)) ? (value.weight ?? "No Final") + " Weight Tobacco" : (value.gross_weight + " - " + value.tare_weight + " = " + (value.weight ?? "No Final") + " Weight Tobacco")}</Typography>
+                                            })}
+                                        </div>
+                                    </Box> : []
+                                }
+                                {(initFormValues.tobacco_marks != undefined) && (initFormValues.tobacco_marks.length > 0) ? 
+                                    <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                        <Typography>Tobacco Marks: </Typography>
+                                        <div>
+                                            {initFormValues.tobacco_marks.map((value, index) => {
+                                                return <Typography key={(value.mark_text ?? "asdas") + (value.mark_number ?? "sdasdafsd") + index} sx={{marginLeft: tabSize}}>{value.mark_text ?? "No Mark Text"}: {value.mark_number ?? "No Mark Number"}</Typography>
+                                            })}
+                                        </div>
+                                    </Box> : []
+                                }
+                            </Paper>
+                        </div>
+                        : []
+                        }
+
+                        {((initFormValues.people != undefined) && (initFormValues.people.length > 0)) || ((initFormValues.mentions != undefined) && (initFormValues.mentions.length > 0)) || (initFormValues.folio_reference != undefined) ? 
+                        <div>
+                            <Typography variant="h6" sx={{marginTop: "4vh"}}>Relationship Information</Typography>
+                            <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
+                                {initFormValues.folio_reference != undefined ? 
+                                    <Box width={boxWidth}>
+                                        <Typography>Folio Referenced: </Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>Page {initFormValues.folio_reference}</Typography>
+                                    </Box> : []
+                                }
+                                {(initFormValues.people != undefined) && (initFormValues.people.length > 0) ? 
+                                    <Box width={box2xWidth} sx={{marginLeft: boxMargin}}>
+                                        <Typography>People: </Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>{initFormValues.people.join("; ")}</Typography>
+                                    </Box> : []
+                                }
+                                {(initFormValues.mentions != undefined) && (initFormValues.mentions.length > 0) ? 
+                                    <Box width={box2xWidth} sx={{marginLeft: boxMargin}}>
+                                        <Typography>Mentioned: </Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>{initFormValues.mentions.join("; ")}</Typography>
+                                    </Box> : []
+                                }
+                            </Paper>
+                        </div>
+                        : []
+                        }
+
+                    </Box>
+                </Box>
+
+                : 
+
                 <Formik
                     validateOnBlur
                     initialValues={action !== 'Create' ? initFormValues : {}}
                     // validationSchema={entrySchema}
                     onSubmit={(values) => {
-                        console.log(values)
+                        // console.log(values)
                         handleSubmit(values, action, entry?._id)
                             // .then(p => console.log(p))
                     }}
@@ -196,64 +398,133 @@ const EntryPage = () => {
                         <FormGroup>
                         <Typography variant={'h6'} gutterBottom>{action} Entry</Typography>
                             <FormLabel>
+                                <Divider flexItem sx={{mt:1, mb:1}}>Store Info</Divider>
+                            </FormLabel>
+                                
+                            <Grid container spacing={1}>
+                                {storeInfoFields.map(k=>(
+                                    <Grid item xs={3} key={k}>
+                                        <TextField
+                                            autoFocus
+                                            margin="dense"
+                                            label={parsedFieldNames[k]}
+                                            fullWidth
+                                            name={k}
+                                            disabled={disabled}
+                                            // sx={{m:1, width: '25ch'}}
+                                            variant="outlined"
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                                touched[k as keyof typeof values] &&
+                                                !!errors[k as keyof typeof values]
+                                            }
+                                            // value={values[k as keyof typeof values]}
+                                            defaultValue={values[k as keyof typeof values]}
+                                            
+                                            // defaultValue={entry ? entry[k as EntryKey] : ""}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </FormGroup>
+                        <br/>
+                        <FormGroup>
+                            <FormLabel>
                                 <Divider flexItem sx={{mt:1, mb:1}}>Entry Info</Divider>
                             </FormLabel>
-                            
-                        <Grid container spacing={1}>
-                            {entryInfoFields.map(k=>(
-                                <Grid item xs={3} key={k}>
-                                    <TextField
-                                        autoFocus
-                                        margin="dense"
-                                        label={parsedFieldNames[k]}
-                                        fullWidth
-                                        name={k}
-                                        disabled={disabled}
-                                        // sx={{m:1, width: '25ch'}}
-                                        variant="outlined"
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        error={
-                                            touched[k as keyof typeof values] &&
-                                            !!errors[k as keyof typeof values]
-                                        }
-                                        // value={values[k as keyof typeof values]}
-                                        defaultValue={values[k as keyof typeof values]}
-                                        // defaultValue={entry ? entry[k as EntryKey] : ""}
-                                    />
-                                </Grid>
-                            ))}
-                        </Grid>
+                                
+                            <Grid container spacing={1}>
+                                {entryInfoFields.map(k=>(
+                                    <Grid item xs={3} key={k}>
+                                        <TextField
+                                            autoFocus
+                                            margin="dense"
+                                            label={parsedFieldNames[k]}
+                                            fullWidth
+                                            name={k}
+                                            disabled={disabled}
+                                            // sx={{m:1, width: '25ch'}}
+                                            variant="outlined"
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                                touched[k as keyof typeof values] &&
+                                                !!errors[k as keyof typeof values]
+                                            }
+                                            // value={values[k as keyof typeof values]}
+                                            defaultValue={values[k as keyof typeof values]}
+                                            
+                                            // defaultValue={entry ? entry[k as EntryKey] : ""}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
                         </FormGroup>
+                        <br/>
                         <FormGroup>
-                        <FormLabel sx={{mt:3}}>
-                            <Divider flexItem sx={{mt:1, mb:1}}>Ledger Info</Divider>
-                        </FormLabel>
-                        <Grid container spacing={1}>
-                            {ledgerFields.map(k=>(
-                                <Grid item xs={3} key={k}>
-                                    <TextField
-                                        autoFocus
-                                        name={k}
-                                        margin="dense"
-                                        disabled={disabled}
-                                        label={parsedFieldNames[k]}
-                                        fullWidth
-                                        onBlur={handleBlur}
-                                        error={
-                                            touched[k as keyof typeof values] &&
-                                            !!errors[k as keyof typeof values]
-                                        }
-                                        onChange={handleChange}
-                                        variant="outlined"
-                                        // value={values[k as keyof typeof values]}
-                                        defaultValue={values[k as keyof typeof values]}
-                                        // defaultValue={entry ? entry[k as EntryKey] : ""}
-                                    />
-                                </Grid>
-                            ))}
-                        </Grid>
+                            <FormLabel>
+                                <Divider flexItem sx={{mt:1, mb:1}}>Item Info</Divider>
+                            </FormLabel>
+                                
+                            <Grid container spacing={1}>
+                                {itemInfoFields.map(k=>(
+                                    <Grid item xs={3} key={k}>
+                                        <TextField
+                                            autoFocus
+                                            margin="dense"
+                                            label={parsedFieldNames[k]}
+                                            fullWidth
+                                            name={k}
+                                            disabled={disabled}
+                                            // sx={{m:1, width: '25ch'}}
+                                            variant="outlined"
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                                touched[k as keyof typeof values] &&
+                                                !!errors[k as keyof typeof values]
+                                            }
+                                            // value={values[k as keyof typeof values]}
+                                            defaultValue={values[k as keyof typeof values]}
+                                            
+                                            // defaultValue={entry ? entry[k as EntryKey] : ""}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
                         </FormGroup>
+                        <br/>
+                        <FormGroup>
+                            <FormLabel sx={{mt:3}}>
+                                <Divider flexItem sx={{mt:1, mb:1}}>Ledger Info</Divider>
+                            </FormLabel>
+                            <Grid container spacing={1}>
+                                {ledgerFields.map(k=>(
+                                    <Grid item xs={3} key={k}>
+                                        <TextField
+                                            autoFocus
+                                            name={k}
+                                            margin="dense"
+                                            disabled={disabled}
+                                            label={parsedFieldNames[k]}
+                                            fullWidth
+                                            onBlur={handleBlur}
+                                            error={
+                                                touched[k as keyof typeof values] &&
+                                                !!errors[k as keyof typeof values]
+                                            }
+                                            onChange={handleChange}
+                                            variant="outlined"
+                                            // value={values[k as keyof typeof values]}
+                                            defaultValue={values[k as keyof typeof values]}
+                                            // defaultValue={entry ? entry[k as EntryKey] : ""}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </FormGroup>
+                        <br/>
                         <FormGroup>
                         <FormLabel sx={{mt:3}}>
                             <Divider flexItem sx={{mt:1, mb:1}}>Currency Info</Divider>
@@ -283,6 +554,7 @@ const EntryPage = () => {
                             ))}
                         </Grid>
                         </FormGroup>
+                        <br/>
                         <FormGroup>
                         {(!!values?.people?.length || action !== "View")  &&
                           <FormLabel sx={{mt:3}}>
@@ -344,6 +616,69 @@ const EntryPage = () => {
                             </Grid>
                         </>)}/>
                         </FormGroup>
+                        <br/>
+                        <FormGroup>
+                        {(!!values?.mentions?.length || action !== "View")  &&
+                          <FormLabel sx={{mt:3}}>
+                            <Divider flexItem sx={{mt:1, mb:1}}>Mentioned</Divider>
+                          </FormLabel>
+                        }
+                        <FieldArray
+                            name="mentions"
+                            render={ (arrayHelpers)=> (
+                            <>
+                            <Box>
+                            {!disabled &&
+                              <Button
+                                startIcon={<AddCircle />}
+                                onClick={()=> arrayHelpers.push("")}
+                              >
+                                Add Mentioned
+                              </Button>
+                            }
+                            </Box>
+                            <Grid container spacing={1}>
+                                {values?.mentions?.map((person, k)=>(
+                                <Grid item xs={3} key={k}>
+                                    <FormControl>
+                                    <FormGroup row>
+                                    <InputLabel>Mentioned</InputLabel>
+                                    <OutlinedInput
+                                        name={`mentions.${k}`}
+                                        // autoFocus
+                                        margin="dense"
+                                        disabled={disabled}
+                                        label={"Mentioned"}
+                                        // fullWidth
+                                        // variant="outlined"
+                                        // value={person}
+                                        onBlur={handleBlur}
+                                        error={
+                                            getIn(touched, person) &&
+                                            !!getIn(errors, person)
+                                        }
+                                        onChange={handleChange}
+                                        defaultValue={person}
+                                        endAdornment={
+                                            <InputAdornment position="end">
+                                                { !disabled &&
+                                                  <IconButton
+                                                    onClick={()=>arrayHelpers.remove(k)}
+                                                    edge="end"
+                                                  >
+                                                    <DeleteIcon/>
+                                                  </IconButton>
+                                                }
+                                            </InputAdornment>
+                                        }
+                                    />
+                                    </FormGroup>
+                                    </FormControl>
+                                </Grid>))}
+                            </Grid>
+                        </>)}/>
+                        </FormGroup>
+                        <br/>
                         <FormGroup>
                         {(!!values?.tobacco_entries?.length || action !== "View") &&
                           <FormLabel sx={{mt:3}}>
@@ -437,6 +772,7 @@ const EntryPage = () => {
                                 </Grid>
                         ))}</>)}/>
                         </FormGroup>
+                        <br/>
                         <FormGroup>
                         {(!!values?.tobacco_marks?.length || action !== "View") &&
                           <FormLabel sx={{mt:3}}>
@@ -502,13 +838,14 @@ const EntryPage = () => {
                             </Grid>
                     ))}</>)}/>
                     </FormGroup>
+                    <br/>
                         <Divider sx={{mt:2, mb:2}}/>
                         <Grid container>
                             <Stack direction={'row'}>
                                 {isAdminOrModerator &&
                                   <>
                                     <Button
-                                      onClick={()=>handleActionChange('Edit')}
+                                      onClick={()=>handleEditToggle()}
                                       variant={"contained"}
                                       color={"warning"}
                                     >
@@ -546,7 +883,9 @@ const EntryPage = () => {
                             </Stack>
                         </Grid>
                     </Form>
-                )}</Formik>
+                )}
+                </Formik>
+                }
             </Paper>
         </ColorBackground>
 

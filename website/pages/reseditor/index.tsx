@@ -412,12 +412,12 @@ const ResView: NextPage = () => {
                                 <Typography variant='h4' sx={{marginBottom: "1.5vh"}} align="center">{url.split("/")[4].replace(".json", "")}</Typography>
                                 <Typography variant='h5' align="center">{text}</Typography>
                                 <Box sx={{ width: "100%", paddingTop: "0.5vh" }}>
-                                    <Button variant='contained' sx={{ "width": "49.75%" }} onClick={() => { handleBack() }}><Typography variant='h5'>Back</Typography></Button>
-                                    <Button variant='contained' sx={{ "width": "49.75%", marginLeft: "0.5%" }} onClick={() => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button>
+                                    <Button variant='contained' sx={{ "width": "49.75%" }} onClick={() => { handleBack() }}><Typography variant='h5' color={"secondary.contrastText"}>Back</Typography></Button>
+                                    <Button variant='contained' sx={{ "width": "49.75%", marginLeft: "0.5%" }} onClick={() => {handleDBSave()}}><Typography variant='h5' color={"secondary.contrastText"}>Save to Database</Typography></Button>
                                 </Box>
                                 <Box sx={{ width: "100%", paddingTop: "0.5vh" }}>
-                                    <Button variant='contained' sx={{ "width": "49.75%" }} onClick={() => {handleRemoveChecks()}}><Typography variant='h5'>Remove Check Item</Typography></Button>
-                                    <Button variant='contained' sx={{ "width": "49.75%", marginLeft: "0.5%" }} onClick={() => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button>
+                                    <Button variant='contained' sx={{ "width": "49.75%" }} onClick={() => {handleRemoveChecks()}}><Typography variant='h5' color={"secondary.contrastText"}>Remove Check Item</Typography></Button>
+                                    <Button variant='contained' sx={{ "width": "49.75%", marginLeft: "0.5%" }} onClick={() => {handleDelete()}}><Typography variant='h5' color={"secondary.contrastText"}>Delete</Typography></Button>
                                 </Box>
                             </Paper>
                         </Box>
@@ -464,8 +464,10 @@ const ResView: NextPage = () => {
                         <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Box>
                                 <Paper sx={{ ...PaperStyles, width: "fit-content", margin: "0", marginTop: "2vh" }}>
-                                    <Button variant="contained" sx={{ width: "8vw", fontSize: "1.5vh"}} component="label">
-                                        Upload File
+                                    <Button variant="contained" sx={{ width: "8vw"}} component="label">
+                                        <Typography sx ={{fontSize: "1.5vh", color: "secondary.contrastText"}}>
+                                            Upload File
+                                        </Typography>
                                         <input hidden multiple type="file" onChange={handleUpload} />
                                     </Button>
                                 </Paper>
