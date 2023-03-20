@@ -7,11 +7,12 @@ import {useGraphItemDispatch, useGraphItem} from "@components/context/GraphItemC
 import { Entry } from "new_types/api_types";
 import NodeList from '@components/GraphView/NodeList';
 import {
+    initFilter,
     setNodeSVGIcon,
     getInfoKeys,
     getNodeType,
     getNodeKeys,
-    makeLinkSnake,
+    makeLinkType,
     makeEntryInfo,
     makeLinkID,
     GraphTypeKey,
@@ -43,26 +44,6 @@ import Toolbar from '@mui/material/Toolbar';
 // import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
 // import ListItemText from '@mui/material/ListItemText';
 // import Container from "@mui/material/Container";
-
-
-const initFilter = {
-    nodeTypes: {
-        person: true,
-        personAccount: true,
-        item: true,
-        store: true,
-        mention: true,
-    },
-    linkTypes: {
-        item_personAccount: true,
-        item_person: true,
-        item_store: true,
-        person_personAccount: true,
-        mention_personAccount: true,
-    },
-    dateRange: undefined,
-    search: undefined
-}
 
 const comparator = (a:NodeObject, b:NodeObject) => {
     if (a.nodeType === "store") return -1
@@ -114,21 +95,23 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const graphItem = useGraphItem()
     const graphItemDispatch = useGraphItemDispatch()
     
-    // Graph Construction Values
+    // Sets the overall structure and properties for actual graph later on
+    // Used for resetting the graph from filters
     const graphDict: GraphProps = useMemo(() => {
         // if (!entries) return {nodes:[], links:[]}
         // console.log(entries)
         let graphProps: GraphProps = {nodeProps:{}, linkProps:{}}
         let nodeProps = graphProps.nodeProps
         let linkProps = graphProps.linkProps
-        let index = 0
+        let entryIndex = 0 // The index of the current entry in the entries prop
         
+        // Makes a node if it does not already exist then associates the current entryIndex to it
         const makeNode = (t:NodeTypeKey | "type", nodeID:string) => {
             if (!nodeProps[nodeID]) {
                 nodeProps[nodeID] = {
                     id: nodeID,
                     nodeType: t === "type" ? "item" : t,
-                    label: t !== "type" ? entries[index][getNodeType(t)] : entries[index].type,
+                    label: t !== "type" ? entries[entryIndex][getNodeType(t)] : entries[entryIndex].type,
                     entries: new Set<number>(),
                     entryKeys: getNodeKeys(t),
                     linkKeys: new Set<string>(),
@@ -138,13 +121,15 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                     lightIcon: setNodeSVGIcon(t, "light")
                 };
             }
-            nodeProps[nodeID].entries.add(index)
+            nodeProps[nodeID].entries.add(entryIndex)
         }
-        
+    
+        // Makes a link if it does not already exist then associates the current entryIndex to it
+        // The size 'entries' prop is essentially the weight of the link
         const makeLink = (v1:string, v2:string) => {
             let [source, target, linkID] = makeLinkID(v1, v2)
             if (!linkProps || !linkProps[linkID]) {
-                let t = makeLinkSnake(nodeProps[v1].nodeType, nodeProps[v2].nodeType)[2]
+                let t = makeLinkType(nodeProps[v1].nodeType, nodeProps[v2].nodeType)[2]
                 linkProps[linkID] = {
                     id: linkID,
                     source: source,
@@ -158,7 +143,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 nodeProps[v1].linkKeys.add(linkID)
                 nodeProps[v2].linkKeys.add(linkID)
             }
-            linkProps[linkID].entries.add(index)
+            linkProps[linkID].entries.add(entryIndex)
         }
         
         const addNeighbors = (node:string, neighbors:Set<string>) => {
@@ -246,7 +231,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         };
         // const entrySet = new Set<string>()
         for (const [i, entry] of entries.entries()) {
-            index = i
+            entryIndex = i
             if (!!entry) {
                 const { date_year, Day, month } = entry
                 if (!date_year || !Day || !month)
@@ -477,10 +462,9 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                     source: nodeDict[source].id,
                     target: nodeDict[target].id,
                     linkType: linkType,
-                    entries: new Set<number>(
-                        Array
-                            .from(l.entries)
-                            .filter(i=>filteredKeys.newEntries.has(i))
+                    entries: new Set<number>(Array
+                        .from(l.entries)
+                        .filter(i=>filteredKeys.newEntries.has(i))
                     ),
                     entryKeys: [...l.entryKeys]
                 }
