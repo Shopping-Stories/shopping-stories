@@ -49,6 +49,23 @@ export function moneyToString(pounds: number|undefined, shillings: number|undefi
     }
 }
 
+export function moneyToLongString(pounds: number|undefined, shillings: number|undefined, pence: number|undefined, farthings: number|undefined) {
+    if (pence == undefined) {
+        pence = 0;
+    }
+    if (pounds == undefined || pounds == 0) {
+        if (shillings == undefined || shillings == 0) {
+            return pence + getFarthInsert(farthings) + " d";
+        }
+        else {
+            return shillings + " shillings, " + pence + getFarthInsert(farthings) + " d";
+        }
+    }
+    else {
+        return pounds + " pounds, " + shillings + " shillings, " + pence + getFarthInsert(farthings) + " d";
+    }
+}
+
 export function dateToString(year: string|undefined, month: string|undefined, day: string|undefined) {
     if (year == undefined) {
         return ""
@@ -68,7 +85,7 @@ export function dateToString(year: string|undefined, month: string|undefined, da
     }
 }
 
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+export const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 type Entries<T> = {
     [K in keyof T]: [K, T[K]];
 }[keyof T][];
@@ -202,25 +219,31 @@ export const ledgerFields = [
     "folio_page",
 ]
 
-export const entryInfoFields = [
+export const storeInfoFields = [
     "store",
     "store_owner",
+    "Marginalia"
+]
+
+export const entryInfoFields = [
     "debit_or_credit",
     "account_name",
+    "Date Year",
+    "_Month",
+    "Day",
     // "amount_is_combo",
+    // "text_as_parsed",
+    // "original_entry",
+    // "date",
+    // "people",
+]
+
+export const itemInfoFields = [
     "item",
     "amount",
     "price",
     "Quantity",
     "Commodity",
-    // "text_as_parsed",
-    // "original_entry",
-    "Marginalia",
-    "Day",
-    "_Month",
-    "Date Year",
-    "date",
-    // "people",
 ]
 
 export const parsedFieldNames = Object.fromEntries(

@@ -274,7 +274,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     sx={{ padding: "0.3vh", marginTop: mtop2, height: "57px", width: "10vw", border: "2px solid", color: "#8f8f8f"}}
                     variant="outlined"
                     >
-                        <Typography fontFamily={["Arial"]} sx={{color: "white"}}>Edit tobacco entries</Typography>
+                        <Typography fontFamily={["Arial"]} sx={{color: "primary.contrastText", fontWeight: "bold"}} >Edit tobacco entries</Typography>
                         
                     </Button>
                 )
@@ -394,20 +394,20 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                 <Toolbar>
                     <IconButton
                         edge="start"
-                        color="inherit"
+                        sx={{color: "secondary.contrastText"}}
                         onClick={setClose}
                         aria-label="close"
                     >
                         <CloseIcon />
                     </IconButton>
-                    <IconButton color="inherit" aria-label="delete" onClick={(_event) => {deleteRow()}}>
+                    <IconButton sx={{color: "secondary.contrastText"}} aria-label="delete" onClick={(_event) => {deleteRow()}}>
                         <Delete/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div" color={"secondary.contrastText"}>
                         Editing Row
                     </Typography>
-                    <Button color="inherit" onClick={() => onDuplicate(nrow!)}>Duplicate</Button>
-                    <Button autoFocus color="inherit" onClick={intHandleClose}>
+                    <Button sx={{color: "secondary.contrastText"}} onClick={() => onDuplicate(nrow!)}>Duplicate</Button>
+                    <Button autoFocus sx={{color: "secondary.contrastText"}} onClick={intHandleClose}>
                         save
                     </Button>
                 </Toolbar>
