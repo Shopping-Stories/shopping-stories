@@ -158,7 +158,7 @@ const EntryPage = () => {
                     "Content-Type": "application/json"
                 }
             }
-            return fetch(saveUrl, req)//.then(p => {console.log(p)})
+            return fetch(saveUrl, req).then(() => router.push('/entries'))
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
     })
@@ -166,7 +166,6 @@ const EntryPage = () => {
         const id = entry?._id
         if (!id) return
         mutationDelete.mutate(id)
-        router.push('/entries')
     }
     
     const handleActionChange = (newAction: string) => {

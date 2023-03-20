@@ -146,7 +146,7 @@ const EntriesPage: NextPage = () => {
             })
         }
         router.push(path);
-    },[mutation, dispatch, router])
+    },[dispatch, mutation, router])
     
     const handleFuzzyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFuzzToggle(e.target.checked)
