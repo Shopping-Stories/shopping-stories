@@ -200,7 +200,7 @@ const EntryPage = () => {
                 <Box display={"flex"} flexDirection="column">
                     <Box sx={{...PaperStyles, margin: "1vh", marginBottom: 0}}>
                         <Typography variant={'h6'}>View Entry</Typography>
-                        <Button variant="contained" onClick={() => {setAdvancedView(true)}} sx={{marginTop: "1vh", marginBottom: "1vh"}}><Typography variant="h6" fontSize={"1.2vh"}>Advanced View</Typography></Button>
+                        <Button variant="contained" onClick={() => {setAdvancedView(true)}} sx={{marginTop: "1vh", marginBottom: "1vh"}}><Typography variant="h6" sx={{color: "secondary.contrastText"}} fontSize={"1.2vh"}>Advanced View</Typography></Button>
                     </Box>
                     <Box sx={{...PaperStyles, marginTop: 0}}>
                         <Typography variant="h6">Store Info</Typography>
