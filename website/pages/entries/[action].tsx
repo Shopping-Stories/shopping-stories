@@ -203,8 +203,10 @@ const EntryPage = () => {
                 }}
             >
 
-
+                
                 {!advancedView ? 
+                // The following page is used when someone just clicks the view button from the entry table
+                // There is no way to return to this page because it is not set up to update correctly when an entry is updated, this could be done but would be somewhat nontrivial
                 <Box display={"flex"} flexDirection="column">
                     <Box sx={{...PaperStyles, margin: "1vh", marginBottom: 0}}>
                         <Typography variant={'h6'}>View Entry</Typography>
@@ -385,7 +387,7 @@ const EntryPage = () => {
                 </Box>
 
                 : 
-
+                // The following page is used when the advanced view button is clicked or edit/create is clicked from the entry view page
                 <Formik
                     validateOnBlur
                     initialValues={action !== 'Create' ? initFormValues : {}}

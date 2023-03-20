@@ -27,6 +27,7 @@ import {
     hiddenFields,
     IncludedField, splitFields
 } from "../entryUtils";
+import { Typography } from '@mui/material';
 
 interface SelectedRowParams {
     id: GridRowId;
@@ -144,17 +145,21 @@ const EntryPaginationTable = ({
                             disabled={!selectedRow}
                             color={"secondary"}
                         >
-                            View
+                            <Typography fontWeight={"500"}>
+                                View
+                            </Typography>
                         </Button>
                         {isAdminOrModerator &&
                             (<>
                                 <Button
                                     onClick={() => handleACtionClick("Create")}
                                     variant="contained"
-                                    startIcon={<AddCircle />}
+                                    startIcon={<AddCircle sx={{color: "secondary.contrastText"}} />}
                                     hidden={!isAdminOrModerator}
                                 >
-                                    Create
+                                    <Typography fontWeight={"500"} color="secondary.contrastText">
+                                        Create
+                                    </Typography>
                                 </Button>
                     
                                 <Button
@@ -164,7 +169,9 @@ const EntryPaginationTable = ({
                                     variant="contained"
                                     color={"warning"}
                                 >
-                                    edit
+                                    <Typography fontWeight={"500"}>
+                                        edit
+                                    </Typography>
                                 </Button>
                     
                                 <Button
@@ -174,7 +181,9 @@ const EntryPaginationTable = ({
                                     variant="contained"
                                     color={"error"}
                                 >
-                                    Delete
+                                    <Typography fontWeight={"500"}>
+                                        Delete
+                                    </Typography>
                                 </Button>
                             </>)
                         }
