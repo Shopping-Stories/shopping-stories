@@ -52,6 +52,12 @@ const comparator = (a:NodeObject, b:NodeObject) => {
     return a.nodeType + a.label < b.nodeType + b.label ? -1 : 1
 }
 
+const format = (str:string):string => {
+    str = str.replace(/\b[a-z]/g, function(letter:string) { return letter.toUpperCase(); });
+    str = str.replace(/'(S) /g, function(letter):string { return letter.toLowerCase(); });
+    return str;
+}
+
 const mdy = (m?:string,d?:string,y?:string) => `${m}/${d}/${y}`
 
 const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
@@ -127,6 +133,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         // Makes a link if it does not already exist then associates the current entryIndex to it
         // The size 'entries' prop is essentially the weight of the link
         const makeLink = (v1:string, v2:string) => {
+            // v1 = format(v1)
+            // v2 = format(v2)
             let [source, target, linkID] = makeLinkID(v1, v2)
             if (!linkProps || !linkProps[linkID]) {
                 let t = makeLinkType(nodeProps[v1].nodeType, nodeProps[v2].nodeType)[2]
@@ -172,8 +180,9 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             // console.log(personID)
             if (!e._id) return
             if (e.store) {
-                makeNode("store", e.store)
-                toItem.add(e.store)
+                let store = format(e.store)
+                makeNode("store", store)
+                toItem.add(store)
             }
             // if (e.store_owner || e.Marginalia) {
             //     if (e.Marginalia){
@@ -185,33 +194,47 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             //     }
             // }
             if (e.itemID){
-                if (e.item) makeNode("item", e.itemID)
-                else makeNode("type", e.itemID)
+                let itemID = format(e.itemID)
+                if (e.item) makeNode("item", itemID)
+                else makeNode("type", itemID)
             }
-            if (e.accountHolderID) {
-                makeNode("personAccount", e.accountHolderID)
-                toItem.add(e.accountHolderID)
+            // if (e.accountHolderID) {
+            if (e.account_name) {
+                let account_name = format(e.account_name)
+                // if (nodeProps[account_name] && nodeProps[account_name].nodeType === 'person'){
+                //     nodeProps[account_name].nodeType = 'personAccount'
+                //     for (let link in nodeProps[account_name].)
+                // }
+                makeNode("personAccount", account_name)
+                toItem.add(account_name)
             }
             if (e.people){
                 for (let p of e.people){
-                    // if (nodeProps[p]){
-                    //     console.log(p)
+                    p = format(p)
+                    if (nodeProps[p] && nodeProps[p].nodeType === 'personAccount'){
+                        // console.log(p, nodeProps[p].id)
+                        makeNode("personAccount", p)
+                        toItem.add(p)
+                        toAccount.add(p)
+                    }
+                    else{
                         makeNode("person", p)
                         nodeProps[p].label = p
                         toAccount.add(p)
                         toItem.add(p)
-                    // }
+                    }
                 }
             }
             // if (e.peopleID && e.people){}
             if (e.mentions) {
                 for (let mention of e.mentions) {
+                    mention = format(mention)
                     // if (!nodeProps[mention]){
                         // console.log(mention)
-                        makeNode("mention", mention)
-                        nodeProps[mention].label = mention
-                        toAccount.add(mention)
-                        toItem.add(mention)
+                    makeNode("mention", mention)
+                    nodeProps[mention].label = mention
+                    toAccount.add(mention)
+                    toItem.add(mention)
                     // }
                 }
             }
@@ -220,10 +243,11 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             //     toAccount.add(personID)
             // }
             if (e.itemID){
-                addNeighbors(e.itemID, toItem)
+                addNeighbors(format(e.itemID), toItem)
             }
-            if (e.accountHolderID){
-                addNeighbors(e.accountHolderID, toAccount)
+            // if (e.accountHolderID){
+            if (e.account_name) {
+                addNeighbors(format(e.account_name), toAccount)
             }
             // if (personID) {
             //     addNeighbors(personID, toAccount)
@@ -249,7 +273,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             //     entrySet.add(entry._id);
             // }
         }
-        // console.log(graphProps)
+        console.log(graphProps)
         return graphProps
     }, [entries, linkColors])
     

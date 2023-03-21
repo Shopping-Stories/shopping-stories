@@ -18,6 +18,8 @@ export interface LinkTypes {
     item_store: EntryKey
     item_mention: EntryKey
     person_personAccount: EntryKey,
+    // personAccount_personAccount: EntryKey,
+    // person_person: EntryKey,
     mention_personAccount: EntryKey
 }
 
@@ -39,6 +41,7 @@ export const linkColors: LinkTypeDict = {
     item_store: "warning",
     item_mention: "info",
     person_personAccount: "error",
+    // personAccount_personAccount: "error",
     mention_personAccount: "secondary"
 }
 
