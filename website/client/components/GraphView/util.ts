@@ -18,6 +18,8 @@ export interface LinkTypes {
     item_store: EntryKey
     item_mention: EntryKey
     person_personAccount: EntryKey,
+    // personAccount_personAccount: EntryKey,
+    // person_person: EntryKey,
     mention_personAccount: EntryKey
 }
 
@@ -39,6 +41,7 @@ export const linkColors: LinkTypeDict = {
     item_store: "warning",
     item_mention: "info",
     person_personAccount: "error",
+    // personAccount_personAccount: "error",
     mention_personAccount: "secondary"
 }
 
@@ -90,7 +93,7 @@ export const getNodeType = (nodeType:string):EntryKey => {
     if (!nodeTypeMap[nodeType as keyof NodeTypes]){
         return "_id"
     }
-    else return nodeTypeMap[nodeType as keyof NodeTypes]
+    return nodeTypeMap[nodeType as keyof NodeTypes]
 }
 
 // export const getNodeInfo = (entry:Entry, t:EKey) => {
@@ -257,7 +260,15 @@ const personPersonAccount = new Set<NodeTypeKey>(["person", "personAccount"])
 const mentionPersonAccount = new Set<NodeTypeKey>(["mention", "personAccount"])
 // const itemMention = new Set<NodeTypeKey>(["mention", "personAccount"])
 
-export const makeLinkSnake = (x: NodeTypeKey, y: NodeTypeKey):[NodeTypeKey, NodeTypeKey, LinkTypeKey] =>  {
+/**
+ * Constructs appropriate link type based on supplied node types
+ *
+ * @param x type of node a
+ * @param y type of node b
+ * @returns a triple where the third element is the link type constructed from the node types
+ */
+// returns a triple where the third element is the link type constructed from the node types
+export const makeLinkType = (x: NodeTypeKey, y: NodeTypeKey):[NodeTypeKey, NodeTypeKey, LinkTypeKey] =>  {
     if (itemPersonAccount.has(x) && itemPersonAccount.has(y)) return [x, y, "item_personAccount"]
     if (itemPerson.has(x) && itemPerson.has(y)) return [x, y, "item_person"]
     if (itemStore.has(x) && itemStore.has(y)) return [x, y, "item_store"]
@@ -267,6 +278,13 @@ export const makeLinkSnake = (x: NodeTypeKey, y: NodeTypeKey):[NodeTypeKey, Node
     return [x, y, "item_mention"]
 }
 
+/**
+ * Makes a deterministic link id based on node ids
+ *
+ * @param x id of node a
+ * @param y id of node b
+ * @returns snake case name from two sorted node ids
+ */
 export const makeLinkID = (x:string, y:string):string[] => {
     let arr = [x,y].sort()
     return [arr[0], arr[1], `${arr[0]}_${arr[1]}`]
@@ -304,6 +322,25 @@ type ItemEdgeKeys = Pick<Entry, keyof Omit<Entry, keyof (StoreEdgeKeys | PersonE
 type LinkInfo = Pick<Entry, keyof (StoreEdgeKeys | PersonEdgeKeys | PersonAccountEdgeKeys | MentionEdgeKeys | ItemEdgeKeys | BaseEdgeKeys)>
 type LinkInfoKeys = keyof LinkInfo
 
+
+export const initFilter = {
+    nodeTypes: {
+        person: true,
+        personAccount: true,
+        item: true,
+        store: true,
+        mention: true,
+    },
+    linkTypes: {
+        item_personAccount: true,
+        item_person: true,
+        item_store: true,
+        person_personAccount: true,
+        mention_personAccount: true,
+    },
+    dateRange: undefined,
+    search: undefined
+}
 
 // export const setLinkSVGIcon = (t: string) => {
 //     // const nodeIcons = {

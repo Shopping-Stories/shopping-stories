@@ -32,6 +32,7 @@ import FormGroup from "@mui/material/FormGroup";
 import Divider from "@mui/material/Divider";
 import { Roles } from "../../config/constants.config";
 import { entryInfoFields, itemInfoFields, ledgerFields, moneyFields, parsedFieldNames, storeInfoFields, months, moneyToLongString } from "../../client/entryUtils";
+import { useMutation, useQueryClient} from "@tanstack/react-query";
 
 const EntryPage = () => {
     const router = useRouter()
@@ -43,6 +44,8 @@ const EntryPage = () => {
     const isModerator = isInGroup(Roles.Moderator, groups);
     const isAdminOrModerator = isAdmin || isModerator;
     const disabled = action === "View" || !isAdminOrModerator
+    const queryClient = useQueryClient()
+    
     // console.log(action, entry)
     // const [open, setOpen] = useState<boolean>(!!action)
     const initFormValues: Partial<ParserOutput> = useMemo(()=>{
@@ -133,9 +136,9 @@ const EntryPage = () => {
         
         const text = await res.text();
         if (res.status == 200) {
+            let message = JSON.parse(text);
+            console.log(message);
             handleActionChange("View");
-            // let message = JSON.parse(text);
-            // console.log(message);
         }
         else {
             console.log("ERROR: " + text);
@@ -143,21 +146,26 @@ const EntryPage = () => {
         }
     }
     
+    const mutationDelete = useMutation({
+        mutationFn: (id: string) => {
+            // const id = payload._id
+            // if (!id) return
+            let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
+            let req = {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
+            }
+            return fetch(saveUrl, req).then(() => router.push('/entries'))
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
+    })
     const handleDelete = () => {
-        // const id = entry?._id
-        // if (!id) return
-        // let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
-        // let req = {
-        //     method: "POST",
-        //     headers: {
-        //         "Accept": "application/json",
-        //         "Content-Type": "application/json"
-        //     }
-        // }
-        // fetch(saveUrl, req).then(p => {
-        //     console.log(p)
-        // })
-        router.push('/entries/');
+        const id = entry?._id
+        if (!id) return
+        mutationDelete.mutate(id)
     }
     
     const handleActionChange = (newAction: string) => {
@@ -195,8 +203,10 @@ const EntryPage = () => {
                 }}
             >
 
-
+                
                 {!advancedView ? 
+                // The following page is used when someone just clicks the view button from the entry table
+                // There is no way to return to this page because it is not set up to update correctly when an entry is updated, this could be done but would be somewhat nontrivial
                 <Box display={"flex"} flexDirection="column">
                     <Box sx={{...PaperStyles, margin: "1vh", marginBottom: 0}}>
                         <Typography variant={'h6'}>View Entry</Typography>
@@ -377,7 +387,7 @@ const EntryPage = () => {
                 </Box>
 
                 : 
-
+                // The following page is used when the advanced view button is clicked or edit/create is clicked from the entry view page
                 <Formik
                     validateOnBlur
                     initialValues={action !== 'Create' ? initFormValues : {}}
@@ -844,13 +854,15 @@ const EntryPage = () => {
                             <Stack direction={'row'}>
                                 {isAdminOrModerator &&
                                   <>
-                                    <Button
-                                      onClick={()=>handleEditToggle()}
-                                      variant={"contained"}
-                                      color={"warning"}
-                                    >
-                                      Edit
-                                    </Button>
+                                      {action === 'View' &&
+                                        <Button
+                                          onClick={()=>handleEditToggle()}
+                                          variant={"contained"}
+                                          color={"warning"}
+                                        >
+                                          Edit
+                                        </Button>
+                                      }
                                     {/*<Button*/}
                                     {/*  sx={{ml:1}}*/}
                                     {/*  onClick={()=>handleActionChange('Create')}*/}
@@ -859,17 +871,19 @@ const EntryPage = () => {
                                     {/*>*/}
                                     {/*  Create*/}
                                     {/*</Button>*/}
-                                    <Button
-                                      sx={{ml:1}}
-                                      onClick={handleDelete}
-                                      variant={"contained"}
-                                      color={'error'}
-                                    >
-                                      Delete
-                                    </Button>
+                                      {action !== 'Create' &&
+                                        <Button
+                                          sx={{ml:1}}
+                                          onClick={handleDelete}
+                                          variant={"contained"}
+                                          color={'error'}
+                                        >
+                                          Delete
+                                        </Button>
+                                      }
                                   </>
                                 }
-                                {!disabled &&
+                                {!disabled && action !== 'View' &&
                                   <Button
                                     sx={{ml:1}}
                                     type={"submit"}
