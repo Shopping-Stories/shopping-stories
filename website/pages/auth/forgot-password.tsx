@@ -47,7 +47,7 @@ const SignInPage: NextPage = () => {
     const [openError, setErrorOpen] = useState(false);
     const [codeSent, setCodeSent] = useState(false);
     const [error, setError] = useState<string>('');
-    const [user, setUser] = useState<any>(null);
+    const [user, _setUser] = useState<any>(null);
 
     const handleErrorClose = (
         _event: React.SyntheticEvent | Event,
@@ -70,7 +70,7 @@ const SignInPage: NextPage = () => {
             try {
                 const { username } = values;
                 await Auth.forgotPassword(username);
-                setUser(username);
+                // setUser(username);
                 setCodeSent(true);
             } catch (error: any) {
                 if (error.message !== undefined) {

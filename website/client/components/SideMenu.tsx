@@ -18,9 +18,12 @@ const SideMenu = ({ links }: { links: NavLink[] }) => {
             >
                 <MenuList>
                     {links.map(({ title, path }, i) => (
+                        // TODO: Make this not as jank, so that clicking the menu item will cause the href from muinextlink.
+                        <a href={path} key={`${title}-${i}aref`}>
                         <MenuItem key={`${title}-${i}`}>
                             <Typography
                                 variant="button"
+                                color={"secondary.contrastText"}
                                 key={`${title}${i}`}
                                 sx={{
                                     padding: '1%',
@@ -28,13 +31,14 @@ const SideMenu = ({ links }: { links: NavLink[] }) => {
                                 }}
                             >
                                 <MuiNextLink
-                                    sx={{ color: 'var(--secondary-text)' }}
+                                    sx={{ color: 'secondary.contrastText' }}
                                     href={path}
                                 >
                                     {title}
                                 </MuiNextLink>
                             </Typography>
                         </MenuItem>
+                        </a>
                     ))}
                 </MenuList>
             </Paper>

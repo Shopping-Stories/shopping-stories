@@ -6,7 +6,7 @@ export const PaperStyles = {
 export const PaperStylesSecondary = {
     backgroundColor: `var(--secondary-bg)`,
     margin: '3rem',
-    padding: '1rem',
+    padding: '2rem',
 };
 
 export const ButtonStyles = {

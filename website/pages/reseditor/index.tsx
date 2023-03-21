@@ -338,6 +338,8 @@ const ResView: NextPage = () => {
         let newrows: GridValidRowModel[] = []
         if (rows != null && rows != undefined && (rows.length > 0)) {
             rows.forEach((value, _index) => {
+                let newOriginal = {...value.original}
+                newOriginal.errors = ((value.original!.errors ?? []).includes("Check Item") && (value.original!.errors ?? []).length == 1) ? undefined : value.original!.errors
                 let thing: GridValidRowModel = {
                     Errors: ((value.original!.errors ?? []).includes("Check Item") && (value.original!.errors ?? []).length == 1) ? [] : value.original!.errors,
                     AccountName: value.original!.account_name,
@@ -353,13 +355,13 @@ const ResView: NextPage = () => {
                     // Colony: value.original!.money?.colony,
                     Quantity: value.original!.Quantity,
                     Commodity: value.original!.Commodity,
-                    Money: moneyToString(value.original!.pounds, value.original!.shillings, value.original!.pennies, value.original!.farthings),
+                    Money: value.original!.currency_type == "Sterling" ? moneyToString(value.original!.pounds_ster, value.original!.shillings_ster, value.original!.pennies_ster, value.original!.farthings_ster) : moneyToString(value.original!.pounds, value.original!.shillings, value.original!.pennies, value.original!.farthings),
                     CurrencyType: value.original!.currency_type,
                     EntryID: value.original!.entry_id,
                     // Ledger: value.original!.ledger?.folio_year,
                     // Reel: value.original!.reel,
                     FolioPage: value.original!.folio_page,
-                    original: value.original,
+                    original: newOriginal,
                     id: value.id
                 }
                 newrows.push(thing)
@@ -410,12 +412,12 @@ const ResView: NextPage = () => {
                                 <Typography variant='h4' sx={{marginBottom: "1.5vh"}} align="center">{url.split("/")[4].replace(".json", "")}</Typography>
                                 <Typography variant='h5' align="center">{text}</Typography>
                                 <Box sx={{ width: "100%", paddingTop: "0.5vh" }}>
-                                    <Button variant='contained' sx={{ "width": "49.75%" }} onClick={() => { handleBack() }}><Typography variant='h5'>Back</Typography></Button>
-                                    <Button variant='contained' sx={{ "width": "49.75%", marginLeft: "0.5%" }} onClick={() => {handleDBSave()}}><Typography variant='h5'>Save to Database</Typography></Button>
+                                    <Button variant='contained' sx={{ "width": "49.75%" }} onClick={() => { handleBack() }}><Typography variant='h5' color={"secondary.contrastText"}>Back</Typography></Button>
+                                    <Button variant='contained' sx={{ "width": "49.75%", marginLeft: "0.5%" }} onClick={() => {handleDBSave()}}><Typography variant='h5' color={"secondary.contrastText"}>Save to Database</Typography></Button>
                                 </Box>
                                 <Box sx={{ width: "100%", paddingTop: "0.5vh" }}>
-                                    <Button variant='contained' sx={{ "width": "49.75%" }} onClick={() => {handleRemoveChecks()}}><Typography variant='h5'>Remove Check Item</Typography></Button>
-                                    <Button variant='contained' sx={{ "width": "49.75%", marginLeft: "0.5%" }} onClick={() => {handleDelete()}}><Typography variant='h5'>Delete</Typography></Button>
+                                    <Button variant='contained' sx={{ "width": "49.75%" }} onClick={() => {handleRemoveChecks()}}><Typography variant='h5' color={"secondary.contrastText"}>Remove Check Item</Typography></Button>
+                                    <Button variant='contained' sx={{ "width": "49.75%", marginLeft: "0.5%" }} onClick={() => {handleDelete()}}><Typography variant='h5' color={"secondary.contrastText"}>Delete</Typography></Button>
                                 </Box>
                             </Paper>
                         </Box>
@@ -462,8 +464,10 @@ const ResView: NextPage = () => {
                         <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <Box>
                                 <Paper sx={{ ...PaperStyles, width: "fit-content", margin: "0", marginTop: "2vh" }}>
-                                    <Button variant="contained" sx={{ width: "8vw", fontSize: "1.5vh"}} component="label">
-                                        Upload File
+                                    <Button variant="contained" sx={{ width: "8vw"}} component="label">
+                                        <Typography sx ={{fontSize: "1.5vh", color: "secondary.contrastText"}}>
+                                            Upload File
+                                        </Typography>
                                         <input hidden multiple type="file" onChange={handleUpload} />
                                     </Button>
                                 </Paper>

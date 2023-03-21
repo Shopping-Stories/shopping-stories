@@ -88,7 +88,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     } = props
 
     const nrow = React.useMemo(() => JSON.parse(JSON.stringify(row)), [row])
-    
+    console.log(nrow)
     let [tobEntries, setTobEntries] = React.useState([{}] as Array<TobaccoEntry>)
     const [selectorVal, setSelectorVal] = React.useState((row ?? {original: {"type": ""}}).original!["type"] ?? "")
     React.useEffect(() => {
@@ -104,7 +104,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
     const [justSet, setJustSet] = React.useState(false);
 
     const intHandleClose = () => {
-        nrow.Money = moneyToString(nrow.original!.pounds, nrow.original!.shillings, nrow.original!.pennies, nrow.original!.farthings)
+        nrow.Money = nrow.original!.currency_type == "Sterling" ? moneyToString(nrow.original!.pounds_ster, nrow.original!.shillings_ster, nrow.original!.pennies_ster, nrow.original!.farthings_ster) : moneyToString(nrow.original!.pounds, nrow.original!.shillings, nrow.original!.pennies, nrow.original!.farthings)
         nrow.Date = dateToString(nrow.original!["Date Year"], nrow.original!["_Month"], nrow.original!.Day)
         nrow.People = ((nrow.original.people ?? []).join("; ")) 
         setSelectorVal("")
@@ -274,7 +274,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     sx={{ padding: "0.3vh", marginTop: mtop2, height: "57px", width: "10vw", border: "2px solid", color: "#8f8f8f"}}
                     variant="outlined"
                     >
-                        <Typography fontFamily={["Arial"]} sx={{color: "white"}}>Edit tobacco entries</Typography>
+                        <Typography fontFamily={["Arial"]} sx={{color: "primary.contrastText", fontWeight: "bold"}} >Edit tobacco entries</Typography>
                         
                     </Button>
                 )
@@ -394,20 +394,20 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                 <Toolbar>
                     <IconButton
                         edge="start"
-                        color="inherit"
+                        sx={{color: "secondary.contrastText"}}
                         onClick={setClose}
                         aria-label="close"
                     >
                         <CloseIcon />
                     </IconButton>
-                    <IconButton color="inherit" aria-label="delete" onClick={(_event) => {deleteRow()}}>
+                    <IconButton sx={{color: "secondary.contrastText"}} aria-label="delete" onClick={(_event) => {deleteRow()}}>
                         <Delete/>
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div" color={"secondary.contrastText"}>
                         Editing Row
                     </Typography>
-                    <Button color="inherit" onClick={() => onDuplicate(nrow!)}>Duplicate</Button>
-                    <Button autoFocus color="inherit" onClick={intHandleClose}>
+                    <Button sx={{color: "secondary.contrastText"}} onClick={() => onDuplicate(nrow!)}>Duplicate</Button>
+                    <Button autoFocus sx={{color: "secondary.contrastText"}} onClick={intHandleClose}>
                         save
                     </Button>
                 </Toolbar>

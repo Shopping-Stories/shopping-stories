@@ -10,7 +10,7 @@ import { Auth } from 'aws-amplify';
 import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import * as yup from 'yup';
 
 const confirmationCodeSchema = yup.object({
@@ -36,12 +36,12 @@ const ConfirmAccountPage: NextPage = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter();
-    const { username } = router.query;
 
     const confirmEmailForm = useFormik({
         initialValues: {
             code: '',
-            username: (username as string) || '',
+            // username: (username as string) || '',
+            username: router.query.username ? router.query.username as string : '',
         },
         validationSchema: confirmationCodeSchema,
         onSubmit: async (values) => {
@@ -86,11 +86,13 @@ const ConfirmAccountPage: NextPage = () => {
         }
     };
 
-    useEffect(() => {
-        if (username) {
-            confirmEmailForm.setFieldValue('username', username);
-        }
-    }, [username, confirmEmailForm]);
+    // console.log(username);
+    // useEffect(() => {
+    //     if (username) {
+    //         confirmEmailForm.setFieldValue('username', username);
+    //     }
+    // }, [username, confirmEmailForm]);
+    // console.log();
 
     return (
         <AuthSkeleton formikForm={confirmEmailForm}>
