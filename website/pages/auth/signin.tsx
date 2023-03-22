@@ -111,7 +111,7 @@ const SignInPage: NextPage = () => {
                     variant="contained"
                     type="submit"
                 >
-                    <Typography color="secondary.contrastText">
+                    <Typography fontWeight={500} color="secondary.contrastText">
                         Sign In
                     </Typography>
                 </LoadingButton>
