@@ -22,11 +22,12 @@ const defaultNavLinks: NavLink[] = [
     { title: `about`, path: `/about` },
     { title: `search`, path: `/entries` },
     // { title: `glossary`, path: `/glossary/items` },
-    { title: `parser`, path: `/reseditor`}
+    
 ];
 
 const adminNavLinks: NavLink[] = [
     // { title: `documents`, path: `/documents` },
+    { title: `parser`, path: `/reseditor`},
     { title: `dashboard`, path: `/dashboard/settings` },
 ];
 // TODO: figure out why this is here
