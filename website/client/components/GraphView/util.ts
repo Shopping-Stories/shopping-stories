@@ -1,39 +1,14 @@
 // import { GKey, NodeInfo } from "@components/GraphView/GraphTypes";
 import { PaletteMode } from "@mui/material";
-
+import {
+    LinkTypeDict,
+    SvgIcons, NodeIcons,
+    NodeTypes, GraphTypeKey, NodeTypeKey, LinkTypeKey,
+    EntryInfo, EntryKey, EntryScalarInfo, LedgerKeys, EntryObjects
+} from "@components/GraphView/GraphTypes";
 import { Currency, Entry, Ledger } from "../../../new_types/api_types";
+import { NodeObject } from "react-force-graph-2d";
 // import { NodeInfo } from "@components/GraphView/GraphTypes";
-export interface NodeTypes {
-    person: EntryKey
-    item: EntryKey
-    personAccount: EntryKey
-    store:  EntryKey
-    help:  EntryKey
-    mention: EntryKey
-}
-
-export interface LinkTypes {
-    item_personAccount: EntryKey
-    item_person: EntryKey
-    item_store: EntryKey
-    item_mention: EntryKey
-    person_personAccount: EntryKey,
-    // personAccount_personAccount: EntryKey,
-    // person_person: EntryKey,
-    mention_personAccount: EntryKey
-}
-
-export type NodeTypeKey = keyof NodeTypes
-export type LinkTypeKey = keyof LinkTypes
-export type GraphTypeKey = NodeTypeKey | LinkTypeKey
-
-type NodeIcons = { [key in NodeTypeKey] : string }
-type LinkTypeDict = { [key in LinkTypeKey] : "inherit" | "disabled" | "action" | "primary" | "secondary" | "error" | "info" | "success" | "warning" }
-
-interface SvgIcons {
-    light: NodeIcons
-    dark: NodeIcons
-}
 
 export const linkColors: LinkTypeDict = {
     item_personAccount: "success",
@@ -78,8 +53,6 @@ export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {
     return img
 };
 
-type EntryKey = keyof Entry;
-
 const nodeTypeMap: NodeTypes = {
     item: "item",
     person: "peopleID",
@@ -100,7 +73,7 @@ export const getNodeType = (nodeType:string):EntryKey => {
 //
 // }
 
-type LedgerKeys = Pick<Entry, "ledger"| "date"| "date_year"| "month"| "Day"| "liber_book">
+
 
 export const getNodeKeys = (nodeType:string): EntryKey[] => {
     if (nodeType === "adfas") console.log(nodeType)
@@ -144,12 +117,6 @@ const item_store = [...base, ...item, ...personAcct]
 const person_personAccount = [...base, ...person, ...personAcct]
 
 const entryComplex = new Set<EntryKey>(["currency" , "ledger" , "sterling" , "mentions" , "people" ,"context" ,"phrases"])
-type EntryNonInfo = Pick<Entry,
-    "itemID" | "amount_is_combo" | "price_is_combo" |
-    "commodity_totaling_contextless" | "currency_totaling_contextless" |
-    "peopleID" | "accountHolderID"
-    // | "_id"
-    >
 // itemID: "Item ID",
 // amount_is_combo: boolean,
 // price_is_combo: boolean,
@@ -159,29 +126,6 @@ type EntryNonInfo = Pick<Entry,
 // peopleID: "",
 // accountHolderID: string,
 // _id: string,
-export type EntryScalarInfo = Omit<Entry,
-    "currency" | "ledger" | "sterling" | "mentions" | "people" |"context" |"phrases" | keyof EntryNonInfo
-    >
-// type FullEntryInfo = Currency | Ledger | EntryScalarInfo
-
-interface EntryObjects {
-    ledger?: Ledger,
-    currency?: Currency,
-    sterling?: Currency,
-}
-
-export interface EntryInfo extends EntryScalarInfo{
-    ledger?: Partial<Ledger>
-    currency?: Partial<Currency>,
-    sterling?: Partial<Currency>,
-    people?: Entry["peopleID"],
-    mentions?: Entry["mentions"],
-    context?: Entry["context"],
-    phrases?: Entry["phrases"],
-    scalars?: EntryScalarInfo,
-    text_as_parsed?: Entry['text_as_parsed'],
-    original_entry?:Entry['original_entry'],
-}
 
 export const makeEntryInfo = (e:Entry, t:(NodeTypeKey | LinkTypeKey)):EntryInfo => {
     let keys: EntryKey[] = getInfoKeys(t)
@@ -341,6 +285,21 @@ export const initFilter = {
     dateRange: undefined,
     search: undefined
 }
+
+export const comparator = (a:NodeObject, b:NodeObject) => {
+    if (a.nodeType === "store") return -1
+    if (!a.nodeType) return -1
+    if (!b.nodeType) return 1
+    return a.nodeType + a.label < b.nodeType + b.label ? -1 : 1
+}
+
+export const formatLabel = (str:string):string => {
+    str = str.replace(/\b[a-z]/g, function(letter:string) { return letter.toUpperCase(); });
+    str = str.replace(/'(S) /g, function(letter):string { return letter.toLowerCase(); });
+    return str;
+}
+
+export const mdy = (m?:string,d?:string,y?:string) => `${m}/${d}/${y}`
 
 // export const setLinkSVGIcon = (t: string) => {
 //     // const nodeIcons = {

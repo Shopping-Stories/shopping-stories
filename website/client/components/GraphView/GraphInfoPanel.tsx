@@ -19,7 +19,7 @@ import {
 // import { GraphInfoPanelProps } from "@components/GraphView/GraphGui";
 import EntryInfoItem from "@components/GraphView/EntryInfoItem";
 import { ListSubheader } from "@mui/material";
-import { EntryInfo } from "@components/GraphView/util";
+import { EntryInfo } from "@components/GraphView/GraphTypes";
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',

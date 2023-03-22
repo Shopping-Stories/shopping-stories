@@ -6,7 +6,6 @@ import ShoppingBasketOutlinedIcon from "@mui/icons-material/ShoppingBasketOutlin
 import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import Slider from "@mui/material/Slider";
-import { GraphControlPanelProps } from "@components/GraphView/GraphGui";
 import  Chip from "@mui/material/Chip";
 import  Breadcrumbs  from "@mui/material/Breadcrumbs";
 import Stack from "@mui/material/Stack";
@@ -22,6 +21,7 @@ import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOver";
 import Grid from "@mui/material/Grid";
 import Switch from "@mui/material/Switch";
 import { ToggleButton } from "@mui/material";
+import { filterHandler, GraphPredicates } from "@components/GraphView/GraphTypes";
 
 // import FormGroup from "@mui/material/FormGroup";
 // import Button from "@mui/material/Button";
@@ -36,6 +36,14 @@ import { ToggleButton } from "@mui/material";
 // import IconButton from "@mui/material/IconButton";
 // import LegendToggleIcon from "@mui/icons-material/LegendToggle";
 // import Fab from "@mui/material/Fab";
+
+export interface GraphControlPanelProps {
+    makePredicates: filterHandler
+    toggleNodeLabels: (visible: boolean) => void
+    nodeLabels: boolean
+    filter?: GraphPredicates
+    dates: Array<Date>
+}
 
 const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}: GraphControlPanelProps) => {
     // const [open, setOpen] = useState(false);
