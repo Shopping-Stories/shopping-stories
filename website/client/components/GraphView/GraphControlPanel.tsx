@@ -54,13 +54,19 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
     const [checked, setChecked] = useState<boolean>(false)
     // const [labels, setLabels] = useState(()=> ['nodes', 'edges'])
     const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.checked) {
-            makePredicates("date", undefined, e.target.checked,
-                { start: dates[range[0]-1], end: dates[range[1]-1] }
-            )
+        let dateRange = undefined
+        if (dates[0] !== dates[range[0]-1] || dates[dates.length-1] !== dates[range[1]-1]) {
+            dateRange = { start: dates[range[0] - 1], end: dates[range[1] - 1] }
+        }
+        console.log(dateRange)
+        if (e.target.checked && dateRange) {
+            makePredicates("date", undefined, e.target.checked, dateRange)
         }
         else {
-            makePredicates("date", undefined, e.target.checked, undefined)
+            if (dateRange){
+                // dateRange = { start: dates[range[0]-1], end: dates[range[1]-1] }
+                makePredicates("date", undefined, e.target.checked, undefined)
+            }
         }
         setChecked(e.target.checked)
     }
@@ -74,7 +80,7 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
     //     //     toggleNodeLabels(!nodeLabels)
     // }
     
-    const handleChange = (e:Event, newValue: number[]) => {
+    const handleRangeChange = (e:Event, newValue: number[]) => {
         if (!newValue.length)
             console.log(e?.target)
         if (checked)
@@ -207,7 +213,7 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
                                                 value={range}
                                                 min={1}
                                                 max={dates.length}
-                                                onChange={(e, v)=>handleChange(e, v as number[])}
+                                                onChange={(e, v)=>handleRangeChange(e, v as number[])}
                                                 valueLabelDisplay="auto"
                                                 valueLabelFormat={x=> dates ? dates[x-1].toLocaleString().split(', ')[0] : x}
                                             />

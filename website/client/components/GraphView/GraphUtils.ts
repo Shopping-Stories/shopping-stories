@@ -1,7 +1,7 @@
 // import { GKey, NodeInfo } from "@components/GraphView/GraphTypes";
 import { PaletteMode } from "@mui/material";
 import {
-    LinkTypeDict,
+    LinkColors,
     SvgIcons, NodeIcons,
     NodeTypes, GraphTypeKey, NodeTypeKey, LinkTypeKey,
     EntryInfo, EntryKey, EntryScalarInfo, LedgerKeys, EntryObjects
@@ -10,7 +10,7 @@ import { Currency, Entry, Ledger } from "../../../new_types/api_types";
 import { NodeObject } from "react-force-graph-2d";
 // import { NodeInfo } from "@components/GraphView/GraphTypes";
 
-export const linkColors: LinkTypeDict = {
+export const linkColors: LinkColors = {
     item_personAccount: "success",
     item_person: "success",
     item_store: "warning",
@@ -40,7 +40,7 @@ const svgIconMap: SvgIcons = {
 }
 
 
-const getNodeSrc = (t:string, mode: PaletteMode) => {
+const getNodeIconSrc = (t:string, mode: PaletteMode) => {
     if (!mode || !svgIconMap[mode as keyof SvgIcons][t as keyof NodeIcons]){
         return svgIconMap.light.help
     }
@@ -49,7 +49,7 @@ const getNodeSrc = (t:string, mode: PaletteMode) => {
 
 export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {
     const img = new Image()
-    img.src = getNodeSrc(t, mode)
+    img.src = getNodeIconSrc(t, mode)
     return img
 };
 
@@ -72,8 +72,6 @@ export const getNodeType = (nodeType:string):EntryKey => {
 // export const getNodeInfo = (entry:Entry, t:EKey) => {
 //
 // }
-
-
 
 export const getNodeKeys = (nodeType:string): EntryKey[] => {
     if (nodeType === "adfas") console.log(nodeType)
@@ -211,7 +209,6 @@ const mentionPersonAccount = new Set<NodeTypeKey>(["mention", "personAccount"])
  * @param y type of node b
  * @returns a triple where the third element is the link type constructed from the node types
  */
-// returns a triple where the third element is the link type constructed from the node types
 export const makeLinkType = (x: NodeTypeKey, y: NodeTypeKey):[NodeTypeKey, NodeTypeKey, LinkTypeKey] =>  {
     if (itemPersonAccount.has(x) && itemPersonAccount.has(y)) return [x, y, "item_personAccount"]
     if (itemPerson.has(x) && itemPerson.has(y)) return [x, y, "item_person"]
@@ -227,7 +224,7 @@ export const makeLinkType = (x: NodeTypeKey, y: NodeTypeKey):[NodeTypeKey, NodeT
  *
  * @param x id of node a
  * @param y id of node b
- * @returns snake case name from two sorted node ids
+ * @returns snake_case name from sorting two node ids
  */
 export const makeLinkID = (x:string, y:string):string[] => {
     let arr = [x,y].sort()

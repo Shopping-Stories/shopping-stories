@@ -17,7 +17,7 @@ import {
     makeLinkID,
     formatLabel,
     mdy, comparator
-} from "@components/GraphView/util";
+} from "@components/GraphView/GraphUtils";
 import {
     NodeDict, LinkDict,
     GraphKey, GraphKeys, GraphTypeKey, NodeTypeKey,
@@ -97,9 +97,9 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     const graphDict: GraphProperties = useMemo(() => {
         // if (!entries) return {nodes:[], links:[]}
         // console.log(entries)
-        let graphProps: GraphProperties = {nodeProps:{}, linkProps:{}}
-        let nodeProps = graphProps.nodeProps
-        let linkProps = graphProps.linkProps
+        let graphProps: GraphProperties = {nodeProperties:{}, linkProperties:{}}
+        let nodeProps = graphProps.nodeProperties
+        let linkProps = graphProps.linkProperties
         let entryIndex = 0 // The index of the current entry in the entries prop
         
         // Makes a node if it does not already exist then associates the current entryIndex to it
@@ -264,7 +264,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             //     entrySet.add(entry._id);
             // }
         }
-        console.log(graphProps)
+        // console.log(graphProps)
         return graphProps
     }, [entries, linkColors])
     
@@ -297,7 +297,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     
     const makePredicates:filterHandler = useCallback((field, t, check, dateRange)=>{
         // console.log(field, t, check, dateRange)
-        if (!filter) {
+        if (!filter || !(check || t || dateRange)) {
+            // console.log("filter, check, t, dateRange", filter, check, t, dateRange)
             setFilter(initFilter);
             return
         }
@@ -327,12 +328,12 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     },[filter])
     
     const filteredKeys = useMemo<GraphKeys>(()=>{
-        const {nodeProps, linkProps} = graphDict
+        const {nodeProperties, linkProperties} = graphDict
         
         if (!filter) {
             return {
-                nodes: new Set<GraphKey>(Object.keys(nodeProps)),
-                links: new Set<GraphKey>(Object.keys(linkProps)),
+                nodes: new Set<GraphKey>(Object.keys(nodeProperties)),
+                links: new Set<GraphKey>(Object.keys(linkProperties)),
                 newEntries: new Set<number>(entries.map((_,i)=>i))
             }
         }
@@ -350,8 +351,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             let ne = new Set<number>(entries.map((_,i)=>i))
             // console.log("ne", ne)
             return {
-                nodes: new Set<GraphKey>(Object.keys(nodeProps)),
-                links: new Set<GraphKey>(Object.keys(linkProps)),
+                nodes: new Set<GraphKey>(Object.keys(nodeProperties)),
+                links: new Set<GraphKey>(Object.keys(linkProperties)),
                 newEntries: ne
             }
         }
@@ -427,12 +428,12 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         
         
         // console.log(newEntries)
-        Object.keys(nodeProps).forEach(k => {
-            if (nodePredicates(nodeProps[k])) nodes.add(k)
+        Object.keys(nodeProperties).forEach(k => {
+            if (nodePredicates(nodeProperties[k])) nodes.add(k)
         })
         // console.log(nodes)
-        Object.keys(linkProps).forEach(k => {
-            let lp = linkPredicates(linkProps[k])
+        Object.keys(linkProperties).forEach(k => {
+            let lp = linkPredicates(linkProperties[k])
             // console.log(lp)
             if (lp) links.add(k)
         })
@@ -441,12 +442,12 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     }, [filter, graphDict, entries])
     
     const graph: GraphData = useMemo(() =>{
-        const {nodeProps, linkProps} = graphDict
+        const {nodeProperties, linkProperties} = graphDict
         
         let nodeDict: NodeDict = {}
         let nodes: NodeObject[] = []
         
-        for (let [k, v] of Object.entries(nodeProps)) {
+        for (let [k, v] of Object.entries(nodeProperties)) {
             if (filteredKeys.nodes.has(k)) {
                 let node: NodeObject = {
                     id: k,
@@ -458,8 +459,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                     linkDict: {},
                     value: 5
                 }
-                node.lightIcon = nodeProps[node.id].lightIcon
-                node.darkIcon = nodeProps[node.id].darkIcon;
+                node.lightIcon = nodeProperties[node.id].lightIcon
+                node.darkIcon = nodeProperties[node.id].darkIcon;
                 nodes.push(node);
                 nodeDict[k] = node
             }
@@ -468,7 +469,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         let linkDict: LinkDict = {}
         let links: LinkObject[] = []
         
-        for (let [k, l] of Object.entries(linkProps)) {
+        for (let [k, l] of Object.entries(linkProperties)) {
             const {source, target, linkType} = l
             if (filteredKeys.links.has(k)) {
                 let link: LinkObject = {
@@ -489,13 +490,13 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         }
         
         for (let node of nodes){
-            for (let nei of nodeProps[node.id].neiKeys){
+            for (let nei of nodeProperties[node.id].neiKeys){
                 // if (filteredKeys.nodes.has(nei))
                 node.neighbors[nei] = nodeDict[nei]
             }
             
             // console.log(nodeProps[node.id].linkKeys)
-            for (let l of nodeProps[node.id].linkKeys){
+            for (let l of nodeProperties[node.id].linkKeys){
                 // if (filteredKeys.links.has(l))
                 node.linkDict[l] = linkDict[l]
             }
@@ -624,14 +625,14 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         if (id) {
             console.log("id", id)
             graphItemDispatch({type:'CREATE', payload: id})
-            fetchMore(graphDict.nodeProps[id].label);
+            fetchMore(graphDict.nodeProperties[id].label);
             // graphRef.current?.resumeAnimation()
             // setFocusedItems(new Set([id]))
             // setTimeout(()=>focusOn([...graphDict.nodeProps[rightClicked].neiKeys.values(), rightClicked]), 2000)
             // setTimeout(() => handleNodeZoom(graph.nodes.filter((v) => v.id === rightClicked)[0],), 2000,);
         }
         handleClose()
-    }, [contextMenu?.id, fetchMore, graphDict.nodeProps, graphItemDispatch])
+    }, [contextMenu?.id, fetchMore, graphDict.nodeProperties, graphItemDispatch])
     
     // const toEntryView = useCallback((action: string = 'view', id: string) => {
     //     const path = `/entries/${action}`;
@@ -663,6 +664,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         if (graph)
             toggleInfo(graph.nodes[0])
     }, [graph, toggleInfo])
+    
     useLayoutEffect(() => {
         // let offset = offsetRef?.current?.clientHeight ? offsetRef.current.clientHeight : 0
         // let offset = mixins.toolbar.minHeight ? offsetRef?.current?.clientHeight : 0
@@ -733,9 +735,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             
         }
         if (nodeLabelsVisible){
-            const label = node.label;
             const fontSize = 12/globalScale
-            const textWidth = ctx.measureText(label).width;
+            const textWidth = ctx.measureText(node.label).width;
             const txtBox = [textWidth, fontSize]//.map(n => n + fontSize * 0.2); // some padding
             ctx.font = `${fontSize}px Sans-Serif`;
             ctx.fillStyle = mode === "light" ? 'white' : 'black';
@@ -745,7 +746,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             ctx.textBaseline = 'middle';
             ctx.fillStyle = mode !== "light" ? 'white' : 'black';
             // ctx.fillStyle = node.color;
-            ctx.fillText(label, node.x, node.y + (node.value + txtBox[1]), textWidth);
+            ctx.fillText(node.label, node.x, node.y + (node.value + txtBox[1]), textWidth);
             // node.txtBox = txtBox
         }
     },[focusedItems, palette, mode, nodeLabelsVisible])

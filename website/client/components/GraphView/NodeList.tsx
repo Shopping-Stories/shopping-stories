@@ -1,6 +1,6 @@
 import React, { useState, memo, useRef } from "react";
 // import { NodeListItemProps, LinkListItemProps, NodeListProps } from "@components/GraphView/GraphGui";
-import { makeLinkID } from "@components/GraphView/util";
+import { makeLinkID } from "@components/GraphView/GraphUtils";
 
 import NodeIcon from '@components/GraphView/NodeIcon';
 import List from '@mui/material/List';

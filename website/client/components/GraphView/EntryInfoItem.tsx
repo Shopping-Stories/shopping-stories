@@ -12,7 +12,7 @@ import TableRow from '@mui/material/TableRow';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { displayNames } from "@components/GraphView/util";
+import { displayNames } from "@components/GraphView/GraphUtils";
 import {EntryInfo } from "@components/GraphView/GraphTypes";
 import SearchIcon from '@mui/icons-material/Search';
 import ListItemIcon from "@mui/material/ListItemIcon";

@@ -27,7 +27,9 @@ export type LinkTypeKey = keyof LinkTypes
 export type GraphTypeKey = NodeTypeKey | LinkTypeKey
 
 export type NodeIcons = { [key in NodeTypeKey] : string }
-export type LinkTypeDict = { [key in LinkTypeKey] : "inherit" | "disabled" | "action" | "primary" | "secondary" | "error" | "info" | "success" | "warning" }
+export type LinkColors = {
+    [key in LinkTypeKey] : "inherit" | "disabled" | "action" | "primary" | "secondary" | "error" | "info" | "success" | "warning"
+}
 
 export interface SvgIcons {
     light: NodeIcons
@@ -81,10 +83,10 @@ export interface LinkProperties extends LinkPicks {
 }
 
 export interface GraphProperties {
-    nodeProps: {
+    nodeProperties: {
         [key:string] : NodeProperties
     };
-    linkProps: {
+    linkProperties: {
         [key:string] : LinkProperties
     };
 }
