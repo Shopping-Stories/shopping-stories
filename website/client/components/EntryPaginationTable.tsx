@@ -97,12 +97,12 @@ const EntryPaginationTable = ({
     }, [entries])
     
     const cols: GridColDef[] = useMemo(()=> (
-        colNames.map(str => (complexFields.has(str) || splitFields.has(str)? {
+        colNames.map(str => (complexFields.has(str) || splitFields.has(str) ? {
             field: str,
             headerName: str,
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
             disableExport: !splitFields.has(str)
-        } :  {
+        } : {
             field: str,
             headerName: fieldNames[str as IncludedField],
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
@@ -225,21 +225,24 @@ const EntryPaginationTable = ({
 
 export default EntryPaginationTable;
 
+// These control the column spacing
 const flexOneFields = new Set<string>([
-    "Account Name",
+    // "account_name",
     "Relevant Item",
-    "Item",
-    "Store Owner",
-    "Store"
+    // "item",
+    "store_owner",
+    "Store",
+    'Qty/Cmdty',
     // "Purchaser",
     // "Comments",
 ])
-
 const flexHalfFields = new Set<string>([
+    "Amount",
     "Reel",
     "EntryID",
     "Quantity",
     "Commodity",
+    // 'Currency', 'Sterling',
     "Page",
     "Colony",
     "$ Pounds",
@@ -250,7 +253,7 @@ const flexHalfFields = new Set<string>([
     '£ Shilling',
     '£ Pence',
     '£ Farthings',
-    "Dr/Cr"
+    "Dr/Cr",
 ])
 
 // const columnNames: string[] = [
