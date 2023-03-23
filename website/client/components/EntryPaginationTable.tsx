@@ -15,6 +15,13 @@ import {
     DataGrid,
     GridRowId,
     GridToolbar,
+    // GridColumnMenu,
+    // GridToolbarContainer,
+    // GridToolbarColumnsButton,
+    // GridToolbarFilterButton,
+    // GridToolbarExport,
+    // GridToolbarDensitySelector,
+    
     // GridToolbarExport,
     GridColumnVisibilityModel,
 } from "@mui/x-data-grid";
@@ -24,7 +31,7 @@ import {
     complexFields,
     entryToRow,
     fieldNames,
-    hiddenFields,
+    hiddenFields, simpleFields, visibleFields,
     IncludedField, splitFields
 } from "../entryUtils";
 import { Typography } from '@mui/material';
@@ -35,6 +42,7 @@ interface SelectedRowParams {
 }
 
 interface EntryPaginationTable {
+    isLoggedIn: boolean
     isAdmin: boolean;
     isAdminOrModerator: boolean;
     handleEntryAction: (action: string, payload: Entry | undefined) => void
@@ -45,13 +53,25 @@ const ImportIcon = () => {
     return <DownloadIcon color={'secondary'}/>
 }
 
+// function CustomToolbar() {
+//     return (
+//         <GridToolbarContainer>
+//             <GridToolbarColumnsButton />
+//             <GridToolbarFilterButton />
+//             <GridToolbarDensitySelector />
+//             <GridToolbarExport />
+//         </GridToolbarContainer>
+//     );
+// }
+
 const EntryPaginationTable = ({
     isAdminOrModerator,
+    isLoggedIn,
     handleEntryAction,
     entries
 }: EntryPaginationTable) => {
-
     // const router = useRouter();
+    const [confirm, setConfirm] = useState<boolean>(false)
     const [selectedRow, setSelectedRow] =
         useState<SelectedRowParams| null>(null);
     
@@ -95,23 +115,27 @@ const EntryPaginationTable = ({
             // }
         }) || [];
     }, [entries])
+
+    const hiddenCols: GridColumnVisibilityModel = Object.fromEntries(
+        // [...hiddenFields.values(), ...splitFields.values()].map(n => [n, false])
+        colNames.map(n => [n, visibleFields.has(n)])
+    )
     
     const cols: GridColDef[] = useMemo(()=> (
         colNames.map(str => (complexFields.has(str) || splitFields.has(str) ? {
+            // hideable: !hiddenCols[str],
             field: str,
             headerName: str,
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
-            disableExport: !splitFields.has(str)
+            disableExport: !splitFields.has(str),
         } : {
+            // hideable: !hiddenCols[str],
             field: str,
             headerName: fieldNames[str as IncludedField],
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
         }
     ))), [])
     
-    const hiddenCols: GridColumnVisibilityModel = Object.fromEntries(
-        [...hiddenFields.values(), ...splitFields.values()].map(n => [n, false])
-    )
     
     const handleCellFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
         const row = event.currentTarget.parentElement;
@@ -128,6 +152,7 @@ const EntryPaginationTable = ({
         else{
             handleEntryAction(action, undefined)
         }
+        if (action === 'Delete') setConfirm(false)
     },[entryMap, selectedRow, handleEntryAction])
     
     // console.log('rows',rows)
@@ -170,21 +195,38 @@ const EntryPaginationTable = ({
                                     color={"warning"}
                                 >
                                     <Typography fontWeight={"500"}>
-                                        edit
+                                        Edit
                                     </Typography>
                                 </Button>
-                    
-                                <Button
+                                {
+                                    !confirm &&
+                                    <Button
+                                    // onClick={()=> handleACtionClick("Delete")}
+                                      onClick={()=>setConfirm(true)}
+                                    disabled={!selectedRow}
+                                    hidden={!isAdminOrModerator}
+                                    variant="contained"
+                                    color={"error"}
+                                    >
+                                    <Typography fontWeight={"500"}>
+                                      Delete
+                                    </Typography>
+                                    </Button>
+                                }
+                                {
+                                    confirm &&
+                                    <Button
                                     onClick={()=> handleACtionClick("Delete")}
                                     disabled={!selectedRow}
                                     hidden={!isAdminOrModerator}
                                     variant="contained"
                                     color={"error"}
-                                >
+                                    >
                                     <Typography fontWeight={"500"}>
-                                        Delete
+                                      Confirm Delete?
                                     </Typography>
-                                </Button>
+                                    </Button>
+                                }
                             </>)
                         }
                     </Stack>
@@ -194,28 +236,34 @@ const EntryPaginationTable = ({
                         rows={rows}
                         columns={cols}
                         // columns={columns}
-                        initialState={{columns: {columnVisibilityModel: hiddenCols}}}
-                        // columnVisibilityModel={hiddenCols}
+                        // initialState={{columns: {columnVisibilityModel: hiddenCols}}}
+                        columnVisibilityModel={hiddenCols}
                         autoPageSize
                         getRowId={(row) => row.id}
                         // isRowSelectable={(params) => params && isAdminOrModerator && editable}
                         // disableRowSelectionOnClick
                         // rowsPerPageOptions={[5, 10, 20]}
                         pagination
-                        components={{
+                        disableColumnSelector={true}
+                        initialState={{columns: {columnVisibilityModel: hiddenCols}}}
+                        components={isLoggedIn ? {
+                            // ColumnMenu: GridColumnMenu,
                             Toolbar: GridToolbar,
-                            // Toolbar:  GridToolbarExport,
                             ExportIcon: ImportIcon
-                        }}
+                        } : {}}
                         componentsProps={{
                             cell: { onFocus: handleCellFocus },
-                            toolbar: {
+                            toolbar: isLoggedIn ? {
                                 csvOptions: {
-                                // fields: [...visibleFields.values(), ...hiddenFields.values()]
-                                    allColumns: true
+                                    fields: [
+                                        ...simpleFields.values(),
+                                        ...hiddenFields.values(),
+                                        ...splitFields.values()
+                                    ]
+                                //     allColumns: true
                                 },
                                 
-                            },
+                            } : {},
                         }}
                     />
             </Paper>

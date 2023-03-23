@@ -149,7 +149,6 @@ export type HiddenField = Exclude<EntryKey, SimpleField | ExcludedField>
 
 // All fields included in csv export
 export type IncludedField = Extract<EntryKey, SimpleField | HiddenField >
-
 export const excludedFields = new Set<ExcludedField>([
     ...EntryBooleanKeys.values(),
     ...EntryStringArrayKeys.values(),
@@ -157,7 +156,7 @@ export const excludedFields = new Set<ExcludedField>([
     // ...['ledger', 'tobacco_entries'],
 ] as ExcludedField[])
 
-export const simpleFields = new Set<SimpleField>(['account_name', 'amount', 'item', 'store', 'store_owner',]);
+export const simpleFields = new Set<SimpleField>(['account_name', 'amount', 'item', 'store', 'store_owner']);
 
 export const hiddenFields = new Set<HiddenField>(EntryKeys
     .filter(k => !excludedFields.has(k as ExcludedField) && !simpleFields.has(k as SimpleField)
@@ -177,7 +176,6 @@ export const complexFields = new Set<string>(['Date', 'Page', 'Quantity','Curren
 // These are fields required for processing for datagrid header/value formatting that should still be exported to csv.
 // Note: not necessarily one-to-one with 'complexFields'
 export const splitFields = new Set<string>([
-    'Quantity', 'Commodity',
     'pounds', 'shillings', 'pennies', 'farthings',
     'Sterling_pounds', 'Sterling_shillings', 'Sterling_pennies', 'Sterling_farthings',
     'reel', 'folio_year', 'folio_page', 'entry_id'
@@ -194,9 +192,9 @@ export const visibleFields = new Set<SimpleField | string>([
 
 // All the fields tied to the datagrid for visibility, export, or both
 export const colNames: string[] = [
+    ...visibleFields.values(),
     ...hiddenFields.values(),
     ...splitFields.values(),
-    ...visibleFields.values()
     // ...simpleFields.values(),...complexFields.values(),
 ]
 
@@ -235,23 +233,25 @@ export const noDisplay = [
 export const excludedParsedFields = new Set<ParserOutputKey>(noDisplay)
 
 export const moneyFields = [
+    "Quantity",
+    "Commodity",
     "currency_type",
-    "pounds_ster",
-    "shillings_ster",
-    "pennies_ster",
     "pounds",
     "shillings",
     "pennies",
+    "pounds_ster",
+    "shillings_ster",
+    "pennies_ster",
     // "farthings_ster",
     // "farthings",
 ]
 
 export const ledgerFields = [
-    "entry_id",
-    "reel",
-    "folio_reference",
-    "folio_year",
     "folio_page",
+    "entry_id",
+    "folio_year",
+    "folio_reference",
+    "reel",
 ]
 
 export const storeInfoFields = [
@@ -277,14 +277,23 @@ export const itemInfoFields = [
     "item",
     "amount",
     "price",
-    "Quantity",
-    "Commodity",
 ]
+
+const parseFieldName = (k:string):string => {
+    switch (k) {
+        case 'folio_year':
+            return 'Ledger Year'
+        case 'reel':
+            return 'Citation'
+        default:
+            return toDisplayCase(k)
+    }
+}
 
 export const parsedFieldNames = Object.fromEntries(
     ParserOutputKeys
         .filter(k=>!excludedParsedFields.has(k))
-        .map(k => [k as IncludedParsedField, toDisplayCase(k as string)])
+        .map(k => [k as IncludedParsedField, parseFieldName(k)])
 )
 
 // const tobacco = [

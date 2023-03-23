@@ -1,14 +1,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from 'next/router';
-import { Formik, FieldArray, Form, getIn } from 'formik';
-import {useEntry} from "@components/context/EntryContext";
-import {
-    ParserOutput,
-    // ParserStringKeys, ParserBooleanKeys, ParserStringArrayKeys, ParserNumberKeys,
-} from "new_types/api_types";
-import ColorBackground from '@components/ColorBackground';
-import Header from '@components/Header';
-
+import { Formik, FieldArray, Field, Form, getIn } from 'formik';
+import { useMutation, useQueryClient} from "@tanstack/react-query";
 import TextField from '@mui/material/TextField';
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -24,15 +17,22 @@ import FormLabel from '@mui/material/FormLabel';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import useAuth, { isInGroup } from '@hooks/useAuth.hook';
-
-
 import Stack from "@mui/material/Stack";
 import { PaperStyles } from "../../styles/styles";
 import FormGroup from "@mui/material/FormGroup";
 import Divider from "@mui/material/Divider";
+import Tooltip from "@mui/material/Tooltip";
+
 import { Roles } from "../../config/constants.config";
 import { entryInfoFields, itemInfoFields, ledgerFields, moneyFields, parsedFieldNames, storeInfoFields, months, moneyToLongString } from "../../client/entryUtils";
-import { useMutation, useQueryClient} from "@tanstack/react-query";
+import {useEntry} from "@components/context/EntryContext";
+import {
+    ParserOutput,
+    // ParserStringKeys, ParserBooleanKeys, ParserStringArrayKeys, ParserNumberKeys,
+} from "new_types/api_types";
+import ColorBackground from '@components/ColorBackground';
+import Header from '@components/Header';
+// import { entrySchema } from "../../client/formikSchemas";
 
 const EntryPage = () => {
     const router = useRouter()
@@ -45,58 +45,77 @@ const EntryPage = () => {
     const isAdminOrModerator = isAdmin || isModerator;
     const disabled = action === "View" || !isAdminOrModerator
     const queryClient = useQueryClient()
-    
+    const [confirm, setConfirm] = useState<boolean>(false)
     // console.log(action, entry)
     // const [open, setOpen] = useState<boolean>(!!action)
+    const notCreate = action !== 'Create'
     const initFormValues: Partial<ParserOutput> = useMemo(()=>{
         return {
-            amount: entry?.amount,
-            amount_is_combo: entry?.amount_is_combo,
-            item: entry?.item,
-            price: entry?.price,
-            price_is_combo: entry?.price_is_combo,
-            phrases: entry?.phrases,
-            date: entry?.date,
-            pounds: entry?.currency?.pounds ?? 0,
-            shillings: entry?.currency?.shillings ?? 0,
-            pennies: entry?.currency?.pennies ?? 0,
-            pounds_ster: entry?.sterling?.pounds ?? 0,
-            shillings_ster: entry?.sterling?.shillings ?? 0,
-            pennies_ster: entry?.sterling?.pennies ?? 0,
-            // farthings_ster:
-            // farthings:
-            Marginalia: entry?.Marginalia,
-            currency_type: entry?.currency_type,
-            currency_colony: entry?.currency_colony,
-            currency_totaling_contextless: entry?.currency_totaling_contextless,
-            commodity_totaling_contextless: entry?.commodity_totaling_contextless ,
-            account_name: entry?.account_name,
-            entry_id: entry?.ledger?.entry_id,
-            reel: entry?.ledger?.reel ? Number(entry.ledger.reel) : 0,
-            folio_page: entry?.ledger?.folio_page ? Number(entry.ledger.folio_page) : 0,
-            folio_year: entry?.ledger?.folio_year,
-            store: entry?.store,
-            store_owner: entry?.store_owner,
-            "Date Year": entry?.date_year,
-            "_Month": entry?.month,
-            Day: entry?.Day,
-            debit_or_credit: entry?.debit_or_credit,
-            context: entry?.context,
-            Quantity: entry?.Quantity,
-            Commodity: entry?.Commodity,
-            people: entry?.people,
-            type: entry?.type,
-            liber_book: entry?.liber_book,
-            mentions: entry?.mentions,
-            folio_reference: entry?.folio_reference,
-            text_as_parsed: entry?.text_as_parsed,
-            original_entry: entry?.original_entry,
-            tobacco_location: entry?.tobacco_location,
-            tobacco_amount_off: entry?.tobacco_amount_off,
-            tobacco_marks: entry?.tobacco_marks,
-            tobacco_entries: entry?.tobacco_entries,
+            // Unique to Simple View
+            text_as_parsed: notCreate ? entry?.text_as_parsed ?? '' : '',
+            original_entry: notCreate ? entry?.original_entry ?? '' : '',
+            currency_colony: notCreate ? entry?.currency_colony ?? '' : '',
+            
+            // Account Info
+            debit_or_credit: notCreate ? entry?.debit_or_credit ?? '' : '',
+            account_name: notCreate ? entry?.account_name ?? '' : '',
+            "_Month": notCreate ? entry?.month ?? '' : '',
+            Day: notCreate ? entry?.Day ?? '' : '',
+            "Date Year": notCreate ? entry?.date_year ?? '' : '',
+            
+            // Item Info
+            item: notCreate ? entry?.item ?? '' : '',
+            amount: notCreate ? entry?.amount ?? '' : '',
+            price: notCreate ? entry?.price ?? '' : '',
+            
+            // Store Info
+            store: notCreate ? entry?.store ?? '' : '',
+            store_owner: notCreate ? entry?.store_owner ?? '' : '',
+            Marginalia: notCreate ? entry?.Marginalia ?? '' : '',
+            
+            // Currency Info
+            Quantity: notCreate ? entry?.Quantity ?? '' : '',
+            Commodity: notCreate ? entry?.Commodity ?? '' : '',
+            currency_type: notCreate ? entry?.currency_type ?? '' : '',
+            pounds: notCreate ? entry?.currency?.pounds ?? 0 : 0,
+            shillings: notCreate ? entry?.currency?.shillings ?? 0 : 0,
+            pennies: notCreate ? entry?.currency?.pennies ?? 0 : 0,
+            pounds_ster: notCreate ? entry?.sterling?.pounds ?? 0 : 0,
+            shillings_ster: notCreate ? entry?.sterling?.shillings ?? 0 : 0,
+            pennies_ster: notCreate ? entry?.sterling?.pennies ?? 0 : 0,
+            
+            // ledger Info
+            folio_page: notCreate ? entry?.ledger?.folio_page ? Number(entry.ledger.folio_page) : 0 : 0,
+            entry_id: notCreate ? entry?.ledger?.entry_id ?? '' : '',
+            folio_year: notCreate ? entry?.ledger?.folio_year ?? '' : '',
+            folio_reference: notCreate ? entry?.folio_reference ?? '' : '',
+            reel: notCreate ? entry?.ledger?.reel ? Number(entry.ledger.reel) : 0 : 0,
+            
+            // People Field
+            people: notCreate ? entry?.people ?? [] : [],
+            
+            // Mention Field
+            mentions: notCreate ? entry?.mentions ?? [] : [],
+            
+            // Tobacco Fields
+            tobacco_marks: notCreate ? entry?.tobacco_marks ?? [] : [],
+            tobacco_entries: notCreate ? entry?.tobacco_entries ?? [] : [],
+            tobacco_location: notCreate ? entry?.tobacco_location ?? '' : '',
+            tobacco_amount_off: notCreate ? entry?.tobacco_amount_off ?? '' : '',
+
+            // Unused/Parser Format Fields
+            //
+            // liber_book: entry?.liber_book,
+            // type: entry?.type,
+            // date: entry?.date,
+            // context: entry?.context,
+            // amount_is_combo: entry?.amount_is_combo,
+            // price_is_combo: entry?.price_is_combo,
+            // phrases: entry?.phrases,
+            // currency_totaling_contextless: entry?.currency_totaling_contextless,
+            // commodity_totaling_contextless: entry?.commodity_totaling_contextless,
         }
-    }, [entry])
+    }, [notCreate, entry])
     
     const handleSubmit = async (newEntry: Partial<ParserOutput>, dType: string | undefined, id?: string) => {
         let saveUrl = `https://api.preprod.shoppingstories.org/${dType?.toLowerCase()}_entry`;
@@ -138,7 +157,8 @@ const EntryPage = () => {
         if (res.status == 200) {
             let message = JSON.parse(text);
             console.log(message);
-            handleActionChange("View");
+            router.push('/entries')
+            // handleActionChange("View");
         }
         else {
             console.log("ERROR: " + text);
@@ -166,6 +186,7 @@ const EntryPage = () => {
         const id = entry?._id
         if (!id) return
         mutationDelete.mutate(id)
+        setConfirm(false)
     }
     
     const handleActionChange = (newAction: string) => {
@@ -202,8 +223,6 @@ const EntryPage = () => {
                     // margin: '1rem',
                 }}
             >
-
-                
                 {!advancedView ? 
                 // The following page is used when someone just clicks the view button from the entry table
                 // There is no way to return to this page because it is not set up to update correctly when an entry is updated, this could be done but would be somewhat nontrivial
@@ -229,7 +248,7 @@ const EntryPage = () => {
                             }
                         </Paper>
                         
-                        <Typography variant="h6" sx={{marginTop: "4vh"}}>Entry Info</Typography>
+                        <Typography variant="h6" sx={{marginTop: "4vh"}}>Account Info</Typography>
                         <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
                             {initFormValues.account_name != undefined ? 
                                 <Box width={boxWidth}>
@@ -389,13 +408,13 @@ const EntryPage = () => {
                 : 
                 // The following page is used when the advanced view button is clicked or edit/create is clicked from the entry view page
                 <Formik
+                    enableReinitialize
                     validateOnBlur
-                    initialValues={action !== 'Create' ? initFormValues : {}}
+                    initialValues={initFormValues}
                     // validationSchema={entrySchema}
                     onSubmit={(values) => {
                         // console.log(values)
-                        handleSubmit(values, action, entry?._id)
-                            // .then(p => console.log(p))
+                        handleSubmit(values, action, entry?._id)//.then(p => console.log(p))
                     }}
                 >{({
                        values,
@@ -403,51 +422,31 @@ const EntryPage = () => {
                        errors,
                        handleChange,
                        handleBlur,
+                        // initialValues,
+                        // setValues
+                        resetForm
                    }) => (
                     <Form noValidate>
-                        <FormGroup>
-                        <Typography variant={'h6'} gutterBottom>{action} Entry</Typography>
-                            <FormLabel>
-                                <Divider flexItem sx={{mt:1, mb:1}}>Store Info</Divider>
-                            </FormLabel>
-                                
-                            <Grid container spacing={1}>
-                                {storeInfoFields.map(k=>(
-                                    <Grid item xs={3} key={k}>
-                                        <TextField
-                                            autoFocus
-                                            margin="dense"
-                                            label={parsedFieldNames[k]}
-                                            fullWidth
-                                            name={k}
-                                            disabled={disabled}
-                                            // sx={{m:1, width: '25ch'}}
-                                            variant="outlined"
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            error={
-                                                touched[k as keyof typeof values] &&
-                                                !!errors[k as keyof typeof values]
-                                            }
-                                            // value={values[k as keyof typeof values]}
-                                            defaultValue={values[k as keyof typeof values]}
-                                            
-                                            // defaultValue={entry ? entry[k as EntryKey] : ""}
-                                        />
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </FormGroup>
-                        <br/>
+                        {/*{<></> && console.log(Object.entries(values).filter(e=>e[1] === null))}*/}
+                        <Stack>
+                        <Typography variant={'h5'} gutterBottom sx={{alignSelf: 'center'}}>{action} Entry</Typography>
+                        <Button
+                            sx={{color: "secondary.contrastText", alignSelf: 'start'}}
+                            variant={'contained'}
+                            onClick={()=>setAdvancedView(false)}
+                        >
+                            Simple View
+                        </Button>
+                        </Stack>
                         <FormGroup>
                             <FormLabel>
-                                <Divider flexItem sx={{mt:1, mb:1}}>Entry Info</Divider>
+                                <Divider flexItem sx={{mt:1, mb:1}}>Account Info</Divider>
                             </FormLabel>
-                                
+                            
                             <Grid container spacing={1}>
                                 {entryInfoFields.map(k=>(
                                     <Grid item xs={3} key={k}>
-                                        <TextField
+                                        <Field as={TextField}
                                             autoFocus
                                             margin="dense"
                                             label={parsedFieldNames[k]}
@@ -462,10 +461,8 @@ const EntryPage = () => {
                                                 touched[k as keyof typeof values] &&
                                                 !!errors[k as keyof typeof values]
                                             }
-                                            // value={values[k as keyof typeof values]}
-                                            defaultValue={values[k as keyof typeof values]}
-                                            
-                                            // defaultValue={entry ? entry[k as EntryKey] : ""}
+                                            value={values[k as keyof typeof values]}
+                                            // defaultValue={values[k as keyof typeof values]}
                                         />
                                     </Grid>
                                 ))}
@@ -476,11 +473,11 @@ const EntryPage = () => {
                             <FormLabel>
                                 <Divider flexItem sx={{mt:1, mb:1}}>Item Info</Divider>
                             </FormLabel>
-                                
+                            
                             <Grid container spacing={1}>
                                 {itemInfoFields.map(k=>(
                                     <Grid item xs={3} key={k}>
-                                        <TextField
+                                        <Field as={TextField}
                                             autoFocus
                                             margin="dense"
                                             label={parsedFieldNames[k]}
@@ -495,40 +492,8 @@ const EntryPage = () => {
                                                 touched[k as keyof typeof values] &&
                                                 !!errors[k as keyof typeof values]
                                             }
-                                            // value={values[k as keyof typeof values]}
-                                            defaultValue={values[k as keyof typeof values]}
-                                            
-                                            // defaultValue={entry ? entry[k as EntryKey] : ""}
-                                        />
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </FormGroup>
-                        <br/>
-                        <FormGroup>
-                            <FormLabel sx={{mt:3}}>
-                                <Divider flexItem sx={{mt:1, mb:1}}>Ledger Info</Divider>
-                            </FormLabel>
-                            <Grid container spacing={1}>
-                                {ledgerFields.map(k=>(
-                                    <Grid item xs={3} key={k}>
-                                        <TextField
-                                            autoFocus
-                                            name={k}
-                                            margin="dense"
-                                            disabled={disabled}
-                                            label={parsedFieldNames[k]}
-                                            fullWidth
-                                            onBlur={handleBlur}
-                                            error={
-                                                touched[k as keyof typeof values] &&
-                                                !!errors[k as keyof typeof values]
-                                            }
-                                            onChange={handleChange}
-                                            variant="outlined"
-                                            // value={values[k as keyof typeof values]}
-                                            defaultValue={values[k as keyof typeof values]}
-                                            // defaultValue={entry ? entry[k as EntryKey] : ""}
+                                            value={values[k as keyof typeof values]}
+                                            // defaultValue={values[k as keyof typeof values]}
                                         />
                                     </Grid>
                                 ))}
@@ -541,8 +506,9 @@ const EntryPage = () => {
                         </FormLabel>
                         <Grid container spacing={1}>
                             {moneyFields.map(k=>(
-                                <Grid item xs={3} key={k}>
-                                    <TextField
+                                <Grid item xs={4} key={k}>
+                                    <Field
+                                        as={TextField}
                                         name={k}
                                         autoFocus
                                         margin="dense"
@@ -556,13 +522,74 @@ const EntryPage = () => {
                                         }
                                         onChange={handleChange}
                                         variant="outlined"
-                                        // value={values[k as keyof typeof values]}
-                                        defaultValue={values[k as keyof typeof values]}
-                                        // defaultValue={entry ? entry[k as EntryKey] : ""}
+                                        value={values[k as keyof typeof values]}
+                                        // defaultValue={values[k as keyof typeof values]}
                                     />
                                 </Grid>
                             ))}
                         </Grid>
+                        </FormGroup>
+                        <br/>
+                        <FormGroup>
+                            <FormLabel>
+                                <Divider flexItem sx={{mt:1, mb:1}}>Store Info</Divider>
+                            </FormLabel>
+        
+                            <Grid container spacing={1}>
+                                {storeInfoFields.map(k=>(
+                                    <Grid item xs={3} key={k}>
+                                        <Field
+                                            as={TextField}
+                                           autoFocus
+                                           margin="dense"
+                                           label={parsedFieldNames[k]}
+                                           fullWidth
+                                           name={k}
+                                           disabled={disabled}
+                                        // sx={{m:1, width: '25ch'}}
+                                           variant="outlined"
+                                           onChange={handleChange}
+                                           onBlur={handleBlur}
+                                           error={
+                                               touched[k as keyof typeof values] &&
+                                               !!errors[k as keyof typeof values]
+                                           }
+                                           value={values[k as keyof typeof values]}
+                                           // defaultValue={values[k as keyof typeof values]}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        </FormGroup>
+                        <br/>
+                        <FormGroup>
+                            <FormLabel sx={{mt:3}}>
+                                <Divider flexItem sx={{mt:1, mb:1}}>Ledger Info</Divider>
+                            </FormLabel>
+                            <Grid container spacing={1}>
+                                {ledgerFields.map(k=>(
+                                    <Grid item xs={3} key={k}>
+                                        <Field
+                                            as={TextField}
+                                           autoFocus
+                                           name={k}
+                                           margin="dense"
+                                           disabled={disabled}
+                                           label={parsedFieldNames[k]}
+                                           fullWidth
+                                           onBlur={handleBlur}
+                                           error={
+                                               touched[k as keyof typeof values] &&
+                                               !!errors[k as keyof typeof values]
+                                           }
+                                           onChange={handleChange}
+                                           variant="outlined"
+                                           value={values[k as keyof typeof values]}
+                                           // defaultValue={values[k as keyof typeof values]}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
                         </FormGroup>
                         <br/>
                         <FormGroup>
@@ -591,7 +618,7 @@ const EntryPage = () => {
                                     <FormControl>
                                     <FormGroup row>
                                     <InputLabel>Person</InputLabel>
-                                    <OutlinedInput
+                                    <Field as={OutlinedInput}
                                         name={`people.${k}`}
                                         // autoFocus
                                         margin="dense"
@@ -599,14 +626,14 @@ const EntryPage = () => {
                                         label={"Person"}
                                         // fullWidth
                                         // variant="outlined"
-                                        // value={person}
+                                        value={person}
                                         onBlur={handleBlur}
                                         error={
                                             getIn(touched, person) &&
                                             !!getIn(errors, person)
                                         }
                                         onChange={handleChange}
-                                        defaultValue={person}
+                                        //defaultValue={person}
                                         endAdornment={
                                             <InputAdornment position="end">
                                                 { !disabled &&
@@ -653,7 +680,7 @@ const EntryPage = () => {
                                     <FormControl>
                                     <FormGroup row>
                                     <InputLabel>Mentioned</InputLabel>
-                                    <OutlinedInput
+                                    <Field as={OutlinedInput}
                                         name={`mentions.${k}`}
                                         // autoFocus
                                         margin="dense"
@@ -661,14 +688,14 @@ const EntryPage = () => {
                                         label={"Mentioned"}
                                         // fullWidth
                                         // variant="outlined"
-                                        // value={person}
+                                        value={person}
                                         onBlur={handleBlur}
                                         error={
                                             getIn(touched, person) &&
                                             !!getIn(errors, person)
                                         }
                                         onChange={handleChange}
-                                        defaultValue={person}
+                                        //defaultValue={person}
                                         endAdornment={
                                             <InputAdornment position="end">
                                                 { !disabled &&
@@ -713,7 +740,7 @@ const EntryPage = () => {
                                     <Grid item xs={12}>
                                         <Stack direction={'row'}>
                                         {/*<FormGroup row>*/}
-                                        <TextField
+                                        <Field as={TextField}
                                             name={`tobacco_entries.${k}.number`}
                                             autoFocus
                                             margin="dense"
@@ -721,11 +748,11 @@ const EntryPage = () => {
                                             label={"number"}
                                             // fullWidth
                                             // variant="outlined"
-                                            // value={t.number}
+                                            value={t.number}
                                             onChange={handleChange}
-                                            defaultValue={t.number}
+                                            //defaultValue={t.number}
                                         />
-                                        <TextField
+                                        <Field as={TextField}
                                             name={`tobacco_entries.${k}.gross_weight`}
                                             autoFocus
                                             margin="dense"
@@ -733,11 +760,11 @@ const EntryPage = () => {
                                             label={"Gross Weight"}
                                             // fullWidth
                                             // variant="outlined"
-                                            // value={t.gross_weight}
+                                            value={t.gross_weight}
                                             onChange={handleChange}
-                                            defaultValue={t.gross_weight}
+                                            //defaultValue={t.gross_weight}
                                         />
-                                        <TextField
+                                        <Field as={TextField}
                                             name={`tobacco_entries.${k}.tare_weight`}
                                             autoFocus
                                             margin="dense"
@@ -745,11 +772,11 @@ const EntryPage = () => {
                                             label={"Tare Weight"}
                                             // fullWidth
                                             // variant="outlined"
-                                            // value={t.tare_weight}
+                                            value={t.tare_weight}
                                             onChange={handleChange}
-                                            defaultValue={t.tare_weight}
+                                            //defaultValue={t.tare_weight}
                                         />
-                                        <TextField
+                                        <Field as={TextField}
                                             name={`tobacco_entries.${k}.weight`}
                                             autoFocus
                                             margin="dense"
@@ -757,9 +784,9 @@ const EntryPage = () => {
                                             label={"Weight"}
                                             // fullWidth
                                             // variant="outlined"
-                                            // value={t.weight}
+                                            value={t.weight}
                                             onChange={handleChange}
-                                            defaultValue={t.weight}
+                                            //defaultValue={t.weight}
                                         />
                                         { !disabled &&
                                             <IconButton
@@ -806,7 +833,7 @@ const EntryPage = () => {
                             <Grid container spacing={1} key={k} alignItems={"center"}>
                                 <Grid item xs={12}>
                                     <FormGroup row>
-                                        <TextField
+                                        <Field as={TextField}
                                             name={`tobacco_marks.${k}.mark_number`}
                                             autoFocus
                                             margin="dense"
@@ -814,11 +841,11 @@ const EntryPage = () => {
                                             label={"Mark Number"}
                                             // fullWidth
                                             // variant="outlined"
-                                            // value={t.number}
+                                            value={t.mark_number}
                                             onChange={handleChange}
-                                            defaultValue={t.mark_number}
+                                            // defaultValue={t.mark_number}
                                         />
-                                        <TextField
+                                        <Field as={TextField}
                                             name={`tobacco_marks.${k}.mark_text`}
                                             autoFocus
                                             margin="dense"
@@ -826,9 +853,9 @@ const EntryPage = () => {
                                             label={"Mark Text"}
                                             // fullWidth
                                             // variant="outlined"
-                                            // value={t.gross_weight}
+                                            value={t.mark_text}
                                             onChange={handleChange}
-                                            defaultValue={t.mark_text}
+                                            // defaultValue={t.mark_text}
                                         />
                                         { !disabled &&
                                           <IconButton
@@ -848,7 +875,7 @@ const EntryPage = () => {
                             </Grid>
                     ))}</>)}/>
                     </FormGroup>
-                    <br/>
+                        <br/>
                         <Divider sx={{mt:2, mb:2}}/>
                         <Grid container>
                             <Stack direction={'row'}>
@@ -863,35 +890,53 @@ const EntryPage = () => {
                                           Edit
                                         </Button>
                                       }
-                                    {/*<Button*/}
-                                    {/*  sx={{ml:1}}*/}
-                                    {/*  onClick={()=>handleActionChange('Create')}*/}
-                                    {/*  startIcon={<AddCircle />}*/}
-                                    {/*  variant={"contained"}*/}
-                                    {/*>*/}
-                                    {/*  Create*/}
-                                    {/*</Button>*/}
-                                      {action !== 'Create' &&
+                                      {!disabled && action !== 'View' &&
                                         <Button
                                           sx={{ml:1}}
-                                          onClick={handleDelete}
+                                          type={"submit"}
+                                          variant={"contained"}
+                                          color={'success'}
+                                        >
+                                          Save
+                                        </Button>
+                                      }
+                                      {!disabled && action === 'Edit' &&
+                                        <Tooltip title={"Click to reset changes"}>
+                                        <Button
+                                          sx={{ml:1}}
+                                          onClick={()=>{resetForm()
+                                              // console.log(initialValues)
+                                              // setValues(initialValues)
+                                          }}
+                                          variant={"contained"}
+                                          color={'warning'}
+                                          // type={'reset'}
+                                        >
+                                          Cancel
+                                        </Button>
+                                        </Tooltip>
+                                      }
+                                      {action !== 'Create' && !confirm &&
+                                        <Button
+                                          sx={{ml:1}}
+                                          onClick={()=>setConfirm(true)}
                                           variant={"contained"}
                                           color={'error'}
                                         >
                                           Delete
                                         </Button>
                                       }
+                                      {action !== 'Create' && confirm &&
+                                        <Button
+                                          sx={{ml:1}}
+                                          onClick={handleDelete}
+                                          variant={"contained"}
+                                          color={'error'}
+                                        >
+                                          Confirm ?
+                                        </Button>
+                                      }
                                   </>
-                                }
-                                {!disabled && action !== 'View' &&
-                                  <Button
-                                    sx={{ml:1}}
-                                    type={"submit"}
-                                    variant={"contained"}
-                                    color={'success'}
-                                  >
-                                    Submit
-                                  </Button>
                                 }
                                 
                             </Stack>

@@ -39,7 +39,7 @@ const getType = (fz:boolean, adv:boolean): SearchAction["type"] => {
 }
 
 const EntriesPage: NextPage = () => {
-    const { groups } = useAuth();
+    const { groups, isLoggedIn } = useAuth();
     const router = useRouter();
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isModerator = isInGroup(Roles.Moderator, groups);
@@ -260,6 +260,7 @@ const EntriesPage: NextPage = () => {
                         </Grid>
                             <Grid item xs={12}>
                                 <EntryPaginationTable
+                                    isLoggedIn={isLoggedIn}
                                     entries={data?.entries ?? []}
                                     isAdmin={isAdmin}
                                     isAdminOrModerator={isAdminOrModerator}
