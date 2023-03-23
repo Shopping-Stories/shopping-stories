@@ -10,6 +10,7 @@ import Box from "@mui/material/Box";
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+// import CloseIcon from '@mui/icons-material/Close';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -157,8 +158,8 @@ const EntryPage = () => {
         if (res.status == 200) {
             let message = JSON.parse(text);
             console.log(message);
-            router.push('/entries')
-            // handleActionChange("View");
+            // router.push('/entries')
+            handleActionChange("View");
         }
         else {
             console.log("ERROR: " + text);
@@ -192,7 +193,7 @@ const EntryPage = () => {
     const handleActionChange = (newAction: string) => {
         const path = `/entries/${newAction}`;
         setAdvancedView(true);
-        router.push(path);
+        router.replace(path)//, undefined,  { shallow: true });
     }
 
     const handleEditToggle = () => {
@@ -430,13 +431,15 @@ const EntryPage = () => {
                         {/*{<></> && console.log(Object.entries(values).filter(e=>e[1] === null))}*/}
                         <Stack>
                         <Typography variant={'h5'} gutterBottom sx={{alignSelf: 'center'}}>{action} Entry</Typography>
-                        <Button
-                            sx={{color: "secondary.contrastText", alignSelf: 'start'}}
+                        {notCreate &&
+                          <Button
+                            sx={{ color: "secondary.contrastText", alignSelf: 'start' }}
                             variant={'contained'}
-                            onClick={()=>setAdvancedView(false)}
-                        >
+                            onClick={() => setAdvancedView(false)}
+                          >
                             Simple View
-                        </Button>
+                          </Button>
+                        }
                         </Stack>
                         <FormGroup>
                             <FormLabel>
@@ -877,10 +880,11 @@ const EntryPage = () => {
                     </FormGroup>
                         <br/>
                         <Divider sx={{mt:2, mb:2}}/>
+                        {isAdminOrModerator &&
                         <Grid container>
-                            <Stack direction={'row'}>
-                                {isAdminOrModerator &&
-                                  <>
+                            {/*<Stack direction={'row'}>*/}
+                            <Grid item xs={11}>
+                                  <Stack direction={'row'} justifyContent={'start'}>
                                       {action === 'View' &&
                                         <Button
                                           onClick={()=>handleEditToggle()}
@@ -889,6 +893,21 @@ const EntryPage = () => {
                                         >
                                           Edit
                                         </Button>
+                                      }
+                                      {!disabled && action === 'Edit' &&
+                                          <Button
+                                            sx={{color: "secondary.contrastText", alignSelf: 'start'}}
+                                            // sx={{ml:1}}
+                                            onClick={()=>{handleActionChange('View')
+                                                // console.log(initialValues)
+                                                // setValues(initialValues)
+                                            }}
+                                            variant={"contained"}
+                                            // color={'warning'}
+                                              // type={'reset'}
+                                          >
+                                            View
+                                          </Button>
                                       }
                                       {!disabled && action !== 'View' &&
                                         <Button
@@ -912,7 +931,7 @@ const EntryPage = () => {
                                           color={'warning'}
                                           // type={'reset'}
                                         >
-                                          Cancel
+                                          Reset
                                         </Button>
                                         </Tooltip>
                                       }
@@ -936,11 +955,24 @@ const EntryPage = () => {
                                           Confirm ?
                                         </Button>
                                       }
-                                  </>
+                                      {/*<Box alignSelf={'end'} flex={'inherit'}>*/}
+                                      {/*</Box>*/}
+                                  </Stack>
+                            </Grid>
+                            <Grid item xs={1}>
+                                {action !== 'View' &&
+                                  <Button
+                                    variant={'outlined'}
+                                    // sx={{mr:2}}
+                                      // startIcon={<CloseIcon/>}
+                                    onClick={()=>router.back()}
+                                  >
+                                    Cancel
+                                  </Button>
                                 }
-                                
-                            </Stack>
+                            </Grid>
                         </Grid>
+                        }
                     </Form>
                 )}
                 </Formik>

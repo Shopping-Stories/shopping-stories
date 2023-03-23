@@ -72,9 +72,9 @@ const EntriesPage: NextPage = () => {
             : `https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
         const res = await fetch(req);
         let toret: EntryQueryResult = JSON.parse(await res.text());
-        console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
-        console.log(req)
-        console.log(toret);
+        // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
+        // console.log(req)
+        // console.log(toret);
         return toret;
     },[search, fuzzy, advanced])
     

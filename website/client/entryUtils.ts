@@ -86,10 +86,6 @@ export function dateToString(year: string|undefined, month: string|undefined, da
 }
 
 export const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-type Entries<T> = {
-    [K in keyof T]: [K, T[K]];
-}[keyof T][];
-const getEntries = <T extends object>(obj: T) => Object.entries(obj) as Entries<T>;
 
 const currencyModel: Currency = {
     pounds: 0,
@@ -98,7 +94,14 @@ const currencyModel: Currency = {
     farthings: 0
 }
 
+type Entries<T> = {
+    [K in keyof T]: [K, T[K]];
+}[keyof T][];
+
+const getEntries = <T extends object>(obj: T) => Object.entries(obj) as Entries<T>;
+
 // Utils and types for processing non-parser format Entries
+
 export const entryToRow = (entry: Entry) => {
     const nonComplex: Partial<Entry> = Object.fromEntries(Object.entries(entry)
         .filter(([k, v]) => !!v && (hiddenFields.has(k as HiddenField) || simpleFields.has(k as SimpleField))))
@@ -183,7 +186,6 @@ export const splitFields = new Set<string>([
 
 // Final ordering of the visible columns
 export const visibleFields = new Set<SimpleField | string>([
-    'Date', 'Page',
     'Date', 'Page',
     'account_name', 'amount', 'item', 'Qty/Cmdty',
     'Currency', 'Sterling',

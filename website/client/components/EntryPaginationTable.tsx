@@ -6,6 +6,7 @@ import {
     // EntryKey, EntryStringArrayKey, EntryObjKey, EntryBooleanKey,
     // EntryKeys, EntryStringArrayKeys, EntryObjKeys, EntryBooleanKeys
 } from "new_types/api_types";
+// import useAuth from "@hooks/useAuth.hook";
 import Button from "@mui/material/Button";
 import AddCircle from "@mui/icons-material/AddCircle";
 import DownloadIcon from '@mui/icons-material/Download';
@@ -14,16 +15,16 @@ import {
     GridRowsProp,
     DataGrid,
     GridRowId,
-    GridToolbar,
-    // GridColumnMenu,
-    // GridToolbarContainer,
-    // GridToolbarColumnsButton,
-    // GridToolbarFilterButton,
-    // GridToolbarExport,
-    // GridToolbarDensitySelector,
-    
-    // GridToolbarExport,
+    GridToolbarProps,
+    GridToolbarContainer,
+    GridToolbarColumnsButton,
+    GridToolbarFilterButton,
+    GridToolbarExport,
+    GridToolbarDensitySelector,
     GridColumnVisibilityModel,
+    // GridToolbar,
+    // GridColumnMenu,
+    // GridToolbarExport,
 } from "@mui/x-data-grid";
 import Stack from "@mui/material/Stack";
 import {
@@ -32,7 +33,7 @@ import {
     entryToRow,
     fieldNames,
     hiddenFields, simpleFields, visibleFields,
-    IncludedField, splitFields
+    IncludedField, splitFields, //HiddenField
 } from "../entryUtils";
 import { Typography } from '@mui/material';
 
@@ -53,16 +54,31 @@ const ImportIcon = () => {
     return <DownloadIcon color={'secondary'}/>
 }
 
-// function CustomToolbar() {
-//     return (
-//         <GridToolbarContainer>
-//             <GridToolbarColumnsButton />
-//             <GridToolbarFilterButton />
-//             <GridToolbarDensitySelector />
-//             <GridToolbarExport />
-//         </GridToolbarContainer>
-//     );
-// }
+// This is neceesary to make CustomToolBar work
+// https://github.com/mui/material-ui/issues/35287#issuecomment-1337250566
+declare global {
+    namespace React {
+        interface DOMAttributes<T> {
+            onResize?: ReactEventHandler<T> | undefined;
+            onResizeCapture?: ReactEventHandler<T> | undefined;
+            nonce?: string | undefined;
+        }
+    }
+}
+type LoggedInState = { isLoggedIn: boolean }
+// const CustomToolbar = ()=> {
+const CustomToolbar = (props: GridToolbarProps & LoggedInState) => {
+    // const {isLoggedIn} = useAuth()
+    const {isLoggedIn, csvOptions} = props
+    return (
+        <GridToolbarContainer>
+            <GridToolbarColumnsButton />
+            <GridToolbarFilterButton />
+            <GridToolbarDensitySelector />
+            {isLoggedIn && <GridToolbarExport csvOptions={csvOptions}/>}
+        </GridToolbarContainer>
+    );
+}
 
 const EntryPaginationTable = ({
     isAdminOrModerator,
@@ -122,17 +138,20 @@ const EntryPaginationTable = ({
     )
     
     const cols: GridColDef[] = useMemo(()=> (
-        colNames.map(str => (complexFields.has(str) || splitFields.has(str) ? {
+        colNames.map(str => (complexFields.has(str) || splitFields.has(str) ?
+        {
             // hideable: !hiddenCols[str],
             field: str,
             headerName: str,
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
             disableExport: !splitFields.has(str),
+            filterable: visibleFields.has(str)
         } : {
             // hideable: !hiddenCols[str],
             field: str,
             headerName: fieldNames[str as IncludedField],
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
+            filterable: visibleFields.has(str)
         }
     ))), [])
     
@@ -246,24 +265,26 @@ const EntryPaginationTable = ({
                         pagination
                         disableColumnSelector={true}
                         initialState={{columns: {columnVisibilityModel: hiddenCols}}}
-                        components={isLoggedIn ? {
+                        components={{
                             // ColumnMenu: GridColumnMenu,
-                            Toolbar: GridToolbar,
+                            // Toolbar: GridToolbar,
+                            Toolbar: CustomToolbar,
                             ExportIcon: ImportIcon
-                        } : {}}
+                        }}
                         componentsProps={{
                             cell: { onFocus: handleCellFocus },
-                            toolbar: isLoggedIn ? {
+                            toolbar: {
+                                isLoggedIn: isLoggedIn,
                                 csvOptions: {
                                     fields: [
                                         ...simpleFields.values(),
                                         ...hiddenFields.values(),
                                         ...splitFields.values()
-                                    ]
-                                //     allColumns: true
+                                    ],
+                                    // allColumns: true
                                 },
                                 
-                            } : {},
+                            }
                         }}
                     />
             </Paper>
