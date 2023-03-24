@@ -853,7 +853,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             }
             marginThreshold={0}
         >
-            <MenuItem onClick={fetchEntries}>Search Related Nodes</MenuItem>
+            <MenuItem onClick={fetchEntries}>Add Related Nodes</MenuItem>
             {/*<MenuItem onClick={handleClose}>Copy</MenuItem>*/}
             {/*<MenuItem onClick={handleClose}>Print</MenuItem>*/}
             {/*<MenuItem onClick={handleClose}>Highlight</MenuItem>*/}

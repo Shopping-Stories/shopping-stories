@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { NextPage } from 'next';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
@@ -51,6 +51,7 @@ const EntriesPage: NextPage = () => {
     const [advancedOpen, setAdvancedOpen] = useState<boolean>(false)
     const [advSubmitted, setAdvSubmitted] = useState<boolean>(false)
     const dispatch = useEntryDispatch()
+    const queryClient = useQueryClient()
     const searchForm = useFormik<SearchType>({
         initialValues: {
             search: !advanced ? search : '',
@@ -84,8 +85,8 @@ const EntriesPage: NextPage = () => {
         queryFn: doSearch,
         // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
         enabled: search !== '' && !advancedOpen,
-        keepPreviousData: true,
-        staleTime: 1000
+        // keepPreviousData: true,
+        // staleTime: 1000
     });
     
     const toGraph = useCallback((query:string) => {
@@ -97,11 +98,11 @@ const EntriesPage: NextPage = () => {
         });
     }, [advSubmitted, fuzzToggle, router, searchDispatch]);
     
-    const handleEntryAction = useCallback((action: string, payload: Entry | undefined) => {
-        console.log(action)
-        if (action === "Delete"){
-            const id = payload?._id
-            if (!id) return
+    // const deleteEntry = () => {
+    const mutation = useMutation({
+        mutationFn: (id: string) => {
+            // const id = payload._id
+            // if (!id) return
             let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
             let req = {
                 method: "POST",
@@ -110,11 +111,32 @@ const EntriesPage: NextPage = () => {
                     "Content-Type": "application/json"
                 }
             }
-            fetch(saveUrl, req).then(p => {
-                console.log(p)
-                // refetch().then(q => console.log(q.status))
-            })
+            return fetch(saveUrl, req)//.then(p => {console.log(p)})
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries", search, fuzzy, advanced] })
+    })
+    // }
+    
+    const handleEntryAction = useCallback((action: string, payload: Entry | undefined) => {
+        console.log(action)
+        if (action === "Delete"){
+            const id = payload?._id
+            if (!id) return
+            mutation.mutate(id)
             return
+            // let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
+            // let req = {
+            //     method: "POST",
+            //     headers: {
+            //         "Accept": "application/json",
+            //         "Content-Type": "application/json"
+            //     }
+            // }
+            // fetch(saveUrl, req).then(p => {
+            //     console.log(p)
+            //     // refetch().then(q => console.log(q.status))
+            // })
+            // return
         }
         const path = `/entries/${action}`;
         if (payload && action && action !== "Create" ){
@@ -124,7 +146,7 @@ const EntriesPage: NextPage = () => {
             })
         }
         router.push(path);
-    },[dispatch, router])
+    },[dispatch, mutation, router])
     
     const handleFuzzyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFuzzToggle(e.target.checked)
