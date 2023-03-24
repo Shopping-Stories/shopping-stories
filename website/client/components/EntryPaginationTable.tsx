@@ -296,9 +296,10 @@ export default EntryPaginationTable;
 
 // These control the column spacing
 const flexOneFields = new Set<string>([
-    // "account_name",
+    "account_name",
     "Relevant Item",
-    // "item",
+    "Date",
+    "item",
     "store_owner",
     "Store",
     'Qty/Cmdty',
