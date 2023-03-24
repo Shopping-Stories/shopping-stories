@@ -20,6 +20,7 @@ import IconButton from '@mui/material/IconButton';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Divider from "@mui/material/Divider";
+import Modal from 'react-modal';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -71,6 +72,15 @@ export default function VerticalTabs({
     const [docs, setDocs] = useState<documentObject>();
     const [singleDoc, setDocument] = useState<Blob>();
     const [uploadCount, setUploadCount] = useState(0);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
+    const customStyles = {
+        content: {
+          width: '50%',
+          height: '50%',
+          margin: 'auto',
+        },
+      };
 
     interface sfile {
         file: string
@@ -355,11 +365,19 @@ export default function VerticalTabs({
                                     width={500}
                                     height={335}
                                     alt="Fairfax County Historic Records Center"
+                                    onClick={() => setModalIsOpen(true)}
                                 />
+                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={customStyles}>
+                                <Image
+                                    src={'/FXCO_Research_01.jpg'}
+                                    layout="fill"
+                                    alt="Fairfax County Historic Records Center"
+                                />
+                                </Modal>
                                 <Box
                                     sx={{
                                     padding: '1rem',
-                                    bgcolor: '#DDA15E',
+                                    bgcolor: `var(--background-color-caption)`,
                                     flexGrow: 0.5,
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -434,16 +452,36 @@ export default function VerticalTabs({
                                 </h1>
                             </Typography>
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                {/* <Image
+                                    src={'/C_1760_001D_John Glassford.jpg'}
+                                    width={450}
+                                    height={350}
+                                    alt="John Glassford account (folio 1), Colchester store 1760/1761"
+                                /> */}
                                 <Image
                                     src={'/C_1760_001D_John Glassford.jpg'}
                                     width={450}
                                     height={350}
                                     alt="John Glassford account (folio 1), Colchester store 1760/1761"
+                                    onClick={() => setModalIsOpen(true)}
                                 />
+                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                    content: {
+                                    width: '50%',
+                                    height: '75%',
+                                    margin: 'auto',
+                                    },
+                                }}>
+                                <Image
+                                    src={'/C_1760_001D_John Glassford.jpg'}
+                                    layout="fill"
+                                    alt="John Glassford account (folio 1), Colchester store 1760/1761"
+                                />
+                                </Modal>
                                 <Box
                                     sx={{
                                     padding: '1rem',
-                                    bgcolor: '#DDA15E',
+                                    bgcolor: `var(--background-color-caption)`,
                                     flexGrow: 0.5,
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -564,16 +602,36 @@ export default function VerticalTabs({
                                 </h2>
                             </Typography>
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                {/* <Image
+                                    src={'/ColchesterToday.JPG'}
+                                    width={500}
+                                    height={335}
+                                    alt="Colchester, Virginia, looks much changed today."
+                                /> */}
                                 <Image
                                     src={'/ColchesterToday.JPG'}
                                     width={500}
                                     height={335}
                                     alt="Colchester, Virginia, looks much changed today."
+                                    onClick={() => setModalIsOpen(true)}
                                 />
+                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                    content: {
+                                    width: '50%',
+                                    height: '75%',
+                                    margin: 'auto',
+                                    },
+                                }}>
+                                <Image
+                                    src={'/ColchesterToday.JPG'}
+                                    layout="fill"
+                                    alt="Colchester, Virginia, looks much changed today."
+                                />
+                                </Modal>
                                 <Box
                                     sx={{
                                     padding: '1rem',
-                                    bgcolor: '#DDA15E',
+                                    bgcolor: `var(--background-color-caption)`,
                                     flexGrow: 0.5,
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -689,7 +747,7 @@ export default function VerticalTabs({
                                     The Transcription and Database Process
                                 </h1>
                             </Typography>
-                            <Image
+                            {/* <Image
                                     src={'/shutterstock_445572439.jpg'}
                                     // layout="responsive"
                                     // width="100%"
@@ -697,7 +755,27 @@ export default function VerticalTabs({
                                     // height="67%"
                                     height={335}
                                     alt={"A researcher transcribing documents"}
+                                /> */}
+                            <Image
+                                    src={'/shutterstock_445572439.jpg'}
+                                    width={500}
+                                    height={335}
+                                    alt={"A researcher transcribing documents"}
+                                    onClick={() => setModalIsOpen(true)}
                                 />
+                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                    content: {
+                                    width: '60%',
+                                    height: '75%',
+                                    margin: 'auto',
+                                    },
+                                }}>
+                                <Image
+                                    src={'/shutterstock_445572439.jpg'}
+                                    layout="fill"
+                                    alt="A researcher transcribing documents"
+                                />
+                                </Modal>
                             <Typography align="left">
                                 
                                 <p className={styles.about}>
@@ -784,16 +862,36 @@ export default function VerticalTabs({
                                 </h1>
                             </Typography>
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                {/* <Image
+                                    src={'/C_1760_023_ElizabethConnell.jpg'}
+                                    width={500}
+                                    height={500}
+                                    alt="Elizabeth Connell’s purchases and payments (folio 23), Colchester store 1760/1761"
+                                /> */}
                                 <Image
                                     src={'/C_1760_023_ElizabethConnell.jpg'}
                                     width={500}
                                     height={500}
                                     alt="Elizabeth Connell’s purchases and payments (folio 23), Colchester store 1760/1761"
+                                    onClick={() => setModalIsOpen(true)}
                                 />
+                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                    content: {
+                                    width: '35%',
+                                    height: '75%',
+                                    margin: 'auto',
+                                    },
+                                }}>
+                                <Image
+                                    src={'/C_1760_023_ElizabethConnell.jpg'}
+                                    layout="fill"
+                                    alt="Elizabeth Connell’s purchases and payments (folio 23), Colchester store 1760/1761"
+                                />
+                                </Modal>
                                 <Box
                                     sx={{
                                     padding: '1rem',
-                                    bgcolor: '#DDA15E',
+                                    bgcolor: `var(--background-color-caption)`,
                                     flexGrow: 0.5,
                                     display: 'flex',
                                     justifyContent: 'center',
@@ -837,7 +935,7 @@ export default function VerticalTabs({
                                     Ledgers: The Basics
                                 </h1>
                             </Typography>
-                            <Image
+                            {/* <Image
                                         src={'/shutterstock_48906238.jpg'}
                                         // layout="responsive"
                                         // width="66%"
@@ -845,7 +943,27 @@ export default function VerticalTabs({
                                         // height="100%"
                                         height={500}
                                         alt={"Thick, old, and dusty ledger books"}
-                                    />
+                                    /> */}
+                                <Image
+                                    src={'/shutterstock_48906238.jpg'}
+                                        width={330}
+                                        height={500}
+                                        alt={"Thick, old, and dusty ledger books"}
+                                    onClick={() => setModalIsOpen(true)}
+                                />
+                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                    content: {
+                                    width: '25%',
+                                    height: '75%',
+                                    margin: 'auto',
+                                    },
+                                }}>
+                                <Image
+                                    src={'/shutterstock_48906238.jpg'}
+                                    layout="fill"
+                                    alt="Thick, old, and dusty ledger books"
+                                />
+                                </Modal>
                             <Typography align="left">
                                 <p className={styles.about}>
                                     Creation of ledgers started with waste books
@@ -896,17 +1014,37 @@ export default function VerticalTabs({
                                 </h1>
                             </Typography>
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                {/* <Image
+                                    src={'/shutterstock_19824082.jpg'}
+                                    width={340}
+                                    height={500}
+                                    alt={"Tobacco leaves"}
+                                /> */}
                                 <Image
                                     src={'/shutterstock_19824082.jpg'}
                                     width={340}
                                     height={500}
                                     alt={"Tobacco leaves"}
+                                    onClick={() => setModalIsOpen(true)}
                                 />
+                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                    content: {
+                                    width: '28%',
+                                    height: '75%',
+                                    margin: 'auto',
+                                    },
+                                }}>
+                                <Image
+                                    src={'/shutterstock_19824082.jpg'}
+                                    layout="fill"
+                                    alt="Tobacco leaves"
+                                />
+                                </Modal>
                                 <Box
                                     alignItems="center"
                                     sx={{
                                         padding: '1rem',
-                                        bgcolor: '#DDA15E',
+                                        bgcolor: `var(--background-color-caption)`,
                                         flexGrow: 0.5,
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -999,17 +1137,37 @@ export default function VerticalTabs({
                                 </h1>
                             </Typography>
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                {/* <Image
+                                    src={'/FXCO_Research_02.JPG'}
+                                    width={500}
+                                    height={335}
+                                    alt={"A researcher transcribes documents"}
+                                /> */}
                                 <Image
                                     src={'/FXCO_Research_02.JPG'}
                                     width={500}
                                     height={335}
                                     alt={"A researcher transcribes documents"}
+                                    onClick={() => setModalIsOpen(true)}
                                 />
+                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                    content: {
+                                    width: '65%',
+                                    height: '75%',
+                                    margin: 'auto',
+                                    },
+                                }}>
+                                <Image
+                                    src={'/FXCO_Research_02.JPG'}
+                                    layout="fill"
+                                    alt="A researcher transcribes documents"
+                                />
+                                </Modal>
                                 <Box
                                     alignItems="center"
                                     sx={{
                                         padding: '1rem',
-                                        bgcolor: '#DDA15E',
+                                        bgcolor: `var(--background-color-caption)`,
                                         flexGrow: 0.5,
                                         display: 'flex',
                                         flexDirection: 'column',
