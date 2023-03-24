@@ -133,7 +133,7 @@ const EntryPage = () => {
                     "Accept": "application/json",
                     "Content-Type": "application/json"
                 },
-                // entry_id: newEntry.entry_id,
+                // entry_id: newentry.ledger.entry_id,
                 body: reqBody
             }
             saveUrl = saveUrl + "?" + new URLSearchParams({entry_id: id}).toString()
@@ -149,7 +149,7 @@ const EntryPage = () => {
             }
         }
         // console.log(saveUrl)
-        // if (!newEntry.entry_id) {
+        // if (!newentry.ledger.entry_id) {
         //     return
         // }
         const res = await fetch(saveUrl, req);
@@ -224,7 +224,7 @@ const EntryPage = () => {
                     // margin: '1rem',
                 }}
             >
-                {!advancedView ? 
+                {!advancedView && entry !== undefined ?
                 // The following page is used when someone just clicks the view button from the entry table
                 // There is no way to return to this page because it is not set up to update correctly when an entry is updated, this could be done but would be somewhat nontrivial
                 <Box display={"flex"} flexDirection="column">
@@ -235,137 +235,142 @@ const EntryPage = () => {
                     <Box sx={{...PaperStyles, marginTop: 0}}>
                         <Typography variant="h6">Store Info</Typography>
                         <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
-                            {initFormValues.store != undefined ? 
+                            {entry.store != undefined ?
                                 <Box width={boxWidth}>
                                     <Typography>Store: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.store} ({initFormValues.Marginalia ?? ""})</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.store} ({entry.Marginalia ?? ""})</Typography>
                                 </Box> : []
                             }
-                            {initFormValues.store_owner != undefined ? 
+                            {entry.store_owner != undefined ?
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Owner: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.store_owner}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.store_owner}</Typography>
                                 </Box> : []
                             }
                         </Paper>
                         
                         <Typography variant="h6" sx={{marginTop: "4vh"}}>Account Info</Typography>
                         <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
-                            {initFormValues.account_name != undefined ? 
+                            {entry.account_name != undefined ?
                                 <Box width={boxWidth}>
                                     <Typography>Account Name: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.account_name}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.account_name}</Typography>
                                 </Box> : []
                             }
-                            {initFormValues["Date Year"] != undefined ? 
+                            {entry["date_year"] != undefined ?
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Date: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues._Month != undefined ? months[parseInt(initFormValues._Month!) - 1] + " " : ""}{initFormValues.Day != undefined ? initFormValues.Day + " " : ""}{initFormValues["Date Year"]}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.month != undefined ? months[parseInt(entry.month!) - 1] + " " : ""}{entry.Day != undefined ? entry.Day + " " : ""}{entry["date_year"]}</Typography>
                                 </Box> : []
                             }
-                            {((initFormValues.pounds != undefined) || (initFormValues.pounds_ster != undefined)) ? 
+                            {(( entry?.currency?.pounds !== undefined) || (entry?.sterling?.pounds !== undefined)) ?
                                 <Box width={box2xWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Currency Transacted: </Typography>
-                                    {
-                                        (initFormValues.currency_type ?? "Currency") == "Both" ?
+                                    {(entry.currency_type ?? "Currency") === "Both" && entry.currency && entry.sterling
+                                        ?
                                         <div>
-                                            <Typography sx={{marginLeft: tabSize}}>{moneyToLongString(initFormValues.pounds, initFormValues.shillings, initFormValues.pennies, initFormValues.farthings)}, {(initFormValues.currency_colony ?? "Unknown") != "Unknown" ? initFormValues.currency_colony + " " : ""}Currency</Typography>
-                                            <Typography sx={{marginLeft: tabSize}}>{moneyToLongString(initFormValues.pounds_ster, initFormValues.shillings_ster, initFormValues.pennies_ster, initFormValues.farthings_ster)}, Sterling</Typography>
+                                            <Typography sx={{marginLeft: tabSize}}>{moneyToLongString(entry.currency.pounds, entry.currency.shillings, entry.currency.pennies, entry.currency.farthings)}, {(entry.currency_colony ?? "Unknown") != "Unknown" ? entry.currency_colony + " " : ""}Currency</Typography>
+                                            <Typography sx={{marginLeft: tabSize}}>{moneyToLongString(entry.sterling.pounds, entry.sterling.shillings, entry.sterling.pennies, entry.sterling.farthings)}, Sterling</Typography>
                                         </div>
                                         :
-                                        <Typography sx={{marginLeft: tabSize}}>{(initFormValues.currency_type ?? "Currency") == "Sterling" ? moneyToLongString(initFormValues.pounds_ster, initFormValues.shillings_ster, initFormValues.pennies_ster, initFormValues.farthings_ster) : moneyToLongString(initFormValues.pounds, initFormValues.shillings, initFormValues.pennies, initFormValues.farthings)}, {(initFormValues.currency_colony ?? "Unknown") != "Unknown" ? initFormValues.currency_colony + " " : ""}{initFormValues.currency_type ?? "Currency"}</Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>
+                                            {(entry.sterling && (entry.currency_type ?? "Currency") === "Sterling") ? moneyToLongString(entry.sterling.pounds, entry.sterling.shillings, entry.sterling.pennies, entry.sterling.farthings) + ', ' : ''}
+                                            {entry.currency ? moneyToLongString(entry.currency.pounds, entry.currency.shillings, entry.currency.pennies, entry.currency.farthings) + ', ' : ''}
+                                            {(entry.currency_colony ?? "Unknown") !== "Unknown" ? " " + entry.currency_colony + " " : " "}{entry.currency_type ?? "Currency"}
+                                        </Typography>
                                     }
                                     
                                 </Box> : []
                             }
-                            {initFormValues.debit_or_credit != undefined ? 
+                            {entry.debit_or_credit != undefined ?
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Debit or Credit Record: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.debit_or_credit}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.debit_or_credit}</Typography>
                                 </Box> : []
                             }
-                            {initFormValues.folio_page != undefined ? 
+                            {entry?.ledger?.folio_page != undefined ?
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Ledger Info: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>Reel {initFormValues.reel}</Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>Year {initFormValues.folio_year}</Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>Page {initFormValues.folio_page}</Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>Entry {initFormValues.entry_id}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Page {entry.ledger.folio_page}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Entry {entry.ledger.entry_id}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Year {entry.ledger.folio_year}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Citation {entry.ledger.reel}</Typography>
+                                    {/*<Typography sx={{marginLeft: tabSize}}>Folio Reference {entry.folio_reference}</Typography>*/}
                                 </Box> : []
                             }
                         </Paper>
 
                         <Typography variant="h6" sx={{marginTop: "4vh"}}>Item Info</Typography>
                         <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
-                            {initFormValues.text_as_parsed != undefined ? 
+                            {entry.text_as_parsed != undefined ?
                                 <Box width={boxWidth}>
                                     <Typography>Partial Entry: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.text_as_parsed}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.text_as_parsed}</Typography>
                                 </Box> : []
                             }
-                            {initFormValues.item != undefined ? 
+                            {entry.item != undefined ?
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Item: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.amount != undefined ? initFormValues.amount + " " : ""}{initFormValues.item}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.amount != undefined ? entry.amount + " " : ""}{entry.item}</Typography>
                                 </Box> : []
                             }
-                            {initFormValues.price != undefined ? 
+                            {entry.price != undefined ?
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Price: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.price}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.price}</Typography>
                                 </Box> : []
                             }
-                            {initFormValues.Commodity != undefined ? 
+                            {entry.Commodity != undefined ?
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Commodity: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.Quantity != undefined ? initFormValues.Quantity + " (pounds) " : ""}{initFormValues.Commodity}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.Quantity != undefined ? entry.Quantity + " (pounds) " : ""}{entry.Commodity}</Typography>
                                 </Box> : []
                             }
-                            {initFormValues.original_entry != undefined ? 
+                            {entry.original_entry != undefined ?
                                 <Box width={box2xWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Complete Entry: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.original_entry}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.original_entry}</Typography>
                                 </Box> : []
                             }
-                            {initFormValues.final != undefined ? 
+                            {entry.Final != undefined ?
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Comments: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{initFormValues.final}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.Final}</Typography>
                                 </Box> : []
                             }
                         </Paper>
                         
-                        {((initFormValues.tobacco_entries != undefined) && (initFormValues.tobacco_entries.length > 0)) || ((initFormValues.tobacco_marks != undefined) && (initFormValues.tobacco_marks.length > 0)) || (initFormValues.tobacco_location != undefined) || (initFormValues.tobacco_amount_off != undefined) ? 
+                        {((entry.tobacco_entries != undefined) && (entry.tobacco_entries.length > 0)) || ((entry.tobacco_marks != undefined) && (entry.tobacco_marks.length > 0)) || (entry.tobacco_location != undefined) || (entry.tobacco_amount_off != undefined) ?
                         <div>
                             <Typography variant="h6" sx={{marginTop: "4vh"}}>Tobacco Information</Typography>
                             <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
-                                {initFormValues.tobacco_amount_off != undefined ? 
+                                {entry.tobacco_amount_off != undefined ?
                                     <Box width={boxWidth}>
                                         <Typography>Tobacco Off: </Typography>
-                                        <Typography sx={{marginLeft: tabSize}}>{initFormValues.tobacco_amount_off}</Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>{entry.tobacco_amount_off}</Typography>
                                     </Box> : []
                                 }
-                                {initFormValues.tobacco_location != undefined ? 
+                                {entry.tobacco_location != undefined ?
                                     <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                         <Typography>Tobacco Location: </Typography>
-                                        <Typography sx={{marginLeft: tabSize}}>{initFormValues.tobacco_location}</Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>{entry.tobacco_location}</Typography>
                                     </Box> : []
                                 }
-                                {(initFormValues.tobacco_entries != undefined) && (initFormValues.tobacco_entries.length > 0) ? 
+                                {(entry.tobacco_entries != undefined) && (entry.tobacco_entries.length > 0) ?
                                     <Box width={box2xWidth} sx={{marginLeft: boxMargin}}>
                                         <Typography>Tobacco Entries: </Typography>
                                         <div>
-                                            {initFormValues.tobacco_entries.map((value, index) => {
+                                            {entry.tobacco_entries.map((value, index) => {
                                                 return <Typography sx={{marginLeft: tabSize}} key={((value.number ?? "asdikjsaiofjd") + "tenum" + index + (value.weight ?? "gjfsdo"))}>N {value.number ?? "No Note Number"}: {((value.gross_weight == undefined) && (value.tare_weight == undefined)) ? (value.weight ?? "No Final") + " Weight Tobacco" : (value.gross_weight + " - " + value.tare_weight + " = " + (value.weight ?? "No Final") + " Weight Tobacco")}</Typography>
                                             })}
                                         </div>
                                     </Box> : []
                                 }
-                                {(initFormValues.tobacco_marks != undefined) && (initFormValues.tobacco_marks.length > 0) ? 
+                                {(entry.tobacco_marks != undefined) && (entry.tobacco_marks.length > 0) ?
                                     <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                         <Typography>Tobacco Marks: </Typography>
                                         <div>
-                                            {initFormValues.tobacco_marks.map((value, index) => {
+                                            {entry.tobacco_marks.map((value, index) => {
                                                 return <Typography key={(value.mark_text ?? "asdas") + (value.mark_number ?? "sdasdafsd") + index} sx={{marginLeft: tabSize}}>{value.mark_text ?? "No Mark Text"}: {value.mark_number ?? "No Mark Number"}</Typography>
                                             })}
                                         </div>
@@ -376,26 +381,26 @@ const EntryPage = () => {
                         : []
                         }
 
-                        {((initFormValues.people != undefined) && (initFormValues.people.length > 0)) || ((initFormValues.mentions != undefined) && (initFormValues.mentions.length > 0)) || (initFormValues.folio_reference != undefined) ? 
+                        {((entry.people != undefined) && (entry.people.length > 0)) || ((entry.mentions != undefined) && (entry.mentions.length > 0)) || (entry.folio_reference != undefined) ?
                         <div>
                             <Typography variant="h6" sx={{marginTop: "4vh"}}>Relationship Information</Typography>
                             <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
-                                {initFormValues.folio_reference != undefined ? 
+                                {entry.folio_reference != undefined ?
                                     <Box width={boxWidth}>
                                         <Typography>Folio Referenced: </Typography>
-                                        <Typography sx={{marginLeft: tabSize}}>Page {initFormValues.folio_reference}</Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>Page {entry.folio_reference}</Typography>
                                     </Box> : []
                                 }
-                                {(initFormValues.people != undefined) && (initFormValues.people.length > 0) ? 
+                                {(entry.people != undefined) && (entry.people.length > 0) ?
                                     <Box width={box2xWidth} sx={{marginLeft: boxMargin}}>
                                         <Typography>People: </Typography>
-                                        <Typography sx={{marginLeft: tabSize}}>{initFormValues.people.join("; ")}</Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>{entry.people.join("; ")}</Typography>
                                     </Box> : []
                                 }
-                                {(initFormValues.mentions != undefined) && (initFormValues.mentions.length > 0) ? 
+                                {(entry.mentions != undefined) && (entry.mentions.length > 0) ?
                                     <Box width={box2xWidth} sx={{marginLeft: boxMargin}}>
                                         <Typography>Mentioned: </Typography>
-                                        <Typography sx={{marginLeft: tabSize}}>{initFormValues.mentions.join("; ")}</Typography>
+                                        <Typography sx={{marginLeft: tabSize}}>{entry.mentions.join("; ")}</Typography>
                                     </Box> : []
                                 }
                             </Paper>
@@ -406,7 +411,7 @@ const EntryPage = () => {
                     </Box>
                 </Box>
 
-                : 
+                :
                 // The following page is used when the advanced view button is clicked or edit/create is clicked from the entry view page
                 <Formik
                     enableReinitialize
