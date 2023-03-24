@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid'
 // import Toolbar from "@mui/material/Toolbar";
 
 export default function Layout({children}:any) {
-    console.log(children?.props?.title)
+    // console.log(children?.props?.title)
     return (
         <Box >
         <Grid container wrap={"wrap"}>
