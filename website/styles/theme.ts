@@ -10,7 +10,7 @@ const lightTheme: any = {
 	primary: {
 		main: '#283618',
 		light: '#ab47bc',
-		contrastText: "#000",
+		contrastText: "#fff"//"#000",
 	},
 	secondary: {
 		main: '#606C38',
