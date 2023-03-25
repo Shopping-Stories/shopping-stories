@@ -159,7 +159,8 @@ const EntryPage = () => {
             let message = JSON.parse(text);
             console.log(message);
             // router.push('/entries')
-            handleActionChange("View");
+            router.back()
+            // handleActionChange("View");
         }
         else {
             console.log("ERROR: " + text);
@@ -204,7 +205,7 @@ const EntryPage = () => {
             handleActionChange("Edit")
         }
     }
-    
+    if (action !== 'Create' && !entry._id) router.back()
     // const handleClose = () => {
     //     setDialog(undefined);
     // };
