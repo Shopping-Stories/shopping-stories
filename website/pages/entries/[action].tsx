@@ -229,27 +229,21 @@ const EntryPage = () => {
                 // There is no way to return to this page because it is not set up to update correctly when an entry is updated, this could be done but would be somewhat nontrivial
                 <Box display={"flex"} flexDirection="column">
                     <Box sx={{...PaperStyles, margin: "1vh", marginBottom: 0}}>
-                        <Typography variant={'h6'}>View Entry</Typography>
+                        <Stack display={'flex'}>
+                            <Typography variant={'h5'} sx={{alignSelf: 'center'}}>View Entry</Typography>
+                        </Stack>
+                        <Button
+                            variant={'contained'}
+                            onClick={()=>router.back()}
+                            sx={{marginTop: "1vh", marginBottom: "1vh"}}
+                            color={'secondary'}
+                        >
+                            <Typography variant="h6" sx={{color: "secondary.contrastText"}} fontSize={"1.2vh"}>Back to Search</Typography>
+                        </Button>
                         <Button variant="contained" onClick={() => {setAdvancedView(true)}} sx={{marginTop: "1vh", marginBottom: "1vh"}}><Typography variant="h6" sx={{color: "secondary.contrastText"}} fontSize={"1.2vh"}>Advanced View</Typography></Button>
                     </Box>
                     <Box sx={{...PaperStyles, marginTop: 0}}>
-                        <Typography variant="h6">Store Info</Typography>
-                        <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
-                            {entry.store != undefined ?
-                                <Box width={boxWidth}>
-                                    <Typography>Store: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{entry.store} ({entry.Marginalia ?? ""})</Typography>
-                                </Box> : []
-                            }
-                            {entry.store_owner != undefined ?
-                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
-                                    <Typography>Owner: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{entry.store_owner}</Typography>
-                                </Box> : []
-                            }
-                        </Paper>
-                        
-                        <Typography variant="h6" sx={{marginTop: "4vh"}}>Account Info</Typography>
+                        <Typography variant="h6">Account Info</Typography>
                         <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
                             {entry.account_name != undefined ?
                                 <Box width={boxWidth}>
@@ -286,16 +280,6 @@ const EntryPage = () => {
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Debit or Credit Record: </Typography>
                                     <Typography sx={{marginLeft: tabSize}}>{entry.debit_or_credit}</Typography>
-                                </Box> : []
-                            }
-                            {entry?.ledger?.folio_page != undefined ?
-                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
-                                    <Typography>Ledger Info: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>Page {entry.ledger.folio_page}</Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>Entry {entry.ledger.entry_id}</Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>Year {entry.ledger.folio_year}</Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>Citation {entry.ledger.reel}</Typography>
-                                    {/*<Typography sx={{marginLeft: tabSize}}>Folio Reference {entry.folio_reference}</Typography>*/}
                                 </Box> : []
                             }
                         </Paper>
@@ -407,6 +391,32 @@ const EntryPage = () => {
                         </div>
                         : []
                         }
+                        
+                        <Typography variant="h6" sx={{marginTop: "4vh"}}>Store Info</Typography>
+                        <Paper sx={{backgroundColor: "secondary.light", padding: "1vh", display: "flex", flexDirection: "row"}}>
+                            {entry.store != undefined ?
+                                <Box width={boxWidth}>
+                                    <Typography>Store: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.store} ({entry.Marginalia ?? ""})</Typography>
+                                </Box> : []
+                            }
+                            {entry.store_owner != undefined ?
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Owner: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.store_owner}</Typography>
+                                </Box> : []
+                            }
+                            {entry?.ledger?.folio_page != undefined ?
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Ledger Info: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Page {entry.ledger.folio_page}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Entry {entry.ledger.entry_id}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Year {entry.ledger.folio_year}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>Citation {entry.ledger.reel}</Typography>
+                                    {/*<Typography sx={{marginLeft: tabSize}}>Folio Reference {entry.folio_reference}</Typography>*/}
+                                </Box> : []
+                            }
+                        </Paper>
 
                     </Box>
                 </Box>
@@ -435,17 +445,25 @@ const EntryPage = () => {
                     <Form noValidate>
                         {/*{<></> && console.log(Object.entries(values).filter(e=>e[1] === null))}*/}
                         <Stack>
-                        <Typography variant={'h5'} gutterBottom sx={{alignSelf: 'center'}}>{action} Entry</Typography>
+                        <Typography variant={'h5'} gutterBottom sx={{alignSelf: 'center'}}>Advanced {action} Entry</Typography>
+                        </Stack>
+                        <Button
+                            variant={'contained'}
+                            onClick={()=>router.back()}
+                            sx={{marginTop: "1vh", marginBottom: "1vh"}}
+                            color={'secondary'}
+                        >
+                            <Typography variant="h6" sx={{color: "secondary.contrastText"}} fontSize={"1.2vh"}>Back to Search</Typography>
+                        </Button>
                         {notCreate &&
                           <Button
                             sx={{ color: "secondary.contrastText", alignSelf: 'start' }}
                             variant={'contained'}
                             onClick={() => setAdvancedView(false)}
                           >
-                            Simple View
+                            <Typography variant="h6" sx={{color: "secondary.contrastText"}} fontSize={"1.2vh"}>SImple View</Typography>
                           </Button>
                         }
-                        </Stack>
                         <FormGroup>
                             <FormLabel>
                                 <Divider flexItem sx={{mt:1, mb:1}}>Account Info</Divider>
