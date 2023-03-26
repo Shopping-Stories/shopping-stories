@@ -73,14 +73,23 @@ export default function VerticalTabs({
     const [singleDoc, setDocument] = useState<Blob>();
     const [uploadCount, setUploadCount] = useState(0);
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [modalIsOpen2, setModalIsOpen2] = useState(false);
+    const [modalIsOpen3, setModalIsOpen3] = useState(false);
+    const [modalIsOpen4, setModalIsOpen4] = useState(false);
+    const [modalIsOpen5, setModalIsOpen5] = useState(false);
+    const [modalIsOpen6, setModalIsOpen6] = useState(false);
+    const [modalIsOpen7, setModalIsOpen7] = useState(false);
+    const [modalIsOpen8, setModalIsOpen8] = useState(false);
 
-    const customStyles = {
-        content: {
-          width: '50%',
-          height: '50%',
-          margin: 'auto',
-        },
-      };
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const handleImageClick = (imageUrl: any) => {
+        setSelectedImage(imageUrl);
+    };
+
+    const handleModalClose = () => {
+        setSelectedImage(null);
+    };
 
     interface sfile {
         file: string
@@ -358,7 +367,9 @@ export default function VerticalTabs({
                                     About History Revealed
                                 </h1>
                             </Typography>
-                            
+                            {/* <Modal isOpen={selectedImage !== null} onRequestClose={handleModalClose}>
+                                <Image src={selectedImage} layout="fill"/>
+                            </Modal> */}
                             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                 <Image
                                     src={'/FXCO_Research_01.jpg'}
@@ -366,8 +377,15 @@ export default function VerticalTabs({
                                     height={335}
                                     alt="Fairfax County Historic Records Center"
                                     onClick={() => setModalIsOpen(true)}
+                                    // onClick={() => handleImageClick('/FXCO_Research_01.jpg')}
                                 />
-                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={customStyles}>
+                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                    content: {
+                                    width: '60%',
+                                    height: '75%',
+                                    margin: 'auto',
+                                    },
+                                }}>
                                 <Image
                                     src={'/FXCO_Research_01.jpg'}
                                     layout="fill"
@@ -463,9 +481,9 @@ export default function VerticalTabs({
                                     width={450}
                                     height={350}
                                     alt="John Glassford account (folio 1), Colchester store 1760/1761"
-                                    onClick={() => setModalIsOpen(true)}
+                                    onClick={() => setModalIsOpen2(true)}
                                 />
-                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                <Modal isOpen={modalIsOpen2} onRequestClose={() => setModalIsOpen2(false)} style={{
                                     content: {
                                     width: '50%',
                                     height: '75%',
@@ -613,9 +631,9 @@ export default function VerticalTabs({
                                     width={500}
                                     height={335}
                                     alt="Colchester, Virginia, looks much changed today."
-                                    onClick={() => setModalIsOpen(true)}
+                                    onClick={() => setModalIsOpen3(true)}
                                 />
-                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                <Modal isOpen={modalIsOpen3} onRequestClose={() => setModalIsOpen3(false)} style={{
                                     content: {
                                     width: '50%',
                                     height: '75%',
@@ -761,9 +779,9 @@ export default function VerticalTabs({
                                     width={500}
                                     height={335}
                                     alt={"A researcher transcribing documents"}
-                                    onClick={() => setModalIsOpen(true)}
+                                    onClick={() => setModalIsOpen4(true)}
                                 />
-                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                <Modal isOpen={modalIsOpen4} onRequestClose={() => setModalIsOpen4(false)} style={{
                                     content: {
                                     width: '60%',
                                     height: '75%',
@@ -873,9 +891,9 @@ export default function VerticalTabs({
                                     width={500}
                                     height={500}
                                     alt="Elizabeth Connell’s purchases and payments (folio 23), Colchester store 1760/1761"
-                                    onClick={() => setModalIsOpen(true)}
+                                    onClick={() => setModalIsOpen5(true)}
                                 />
-                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                <Modal isOpen={modalIsOpen5} onRequestClose={() => setModalIsOpen5(false)} style={{
                                     content: {
                                     width: '35%',
                                     height: '75%',
@@ -949,9 +967,9 @@ export default function VerticalTabs({
                                         width={330}
                                         height={500}
                                         alt={"Thick, old, and dusty ledger books"}
-                                    onClick={() => setModalIsOpen(true)}
+                                    onClick={() => setModalIsOpen6(true)}
                                 />
-                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                <Modal isOpen={modalIsOpen6} onRequestClose={() => setModalIsOpen6(false)} style={{
                                     content: {
                                     width: '25%',
                                     height: '75%',
@@ -1025,9 +1043,9 @@ export default function VerticalTabs({
                                     width={340}
                                     height={500}
                                     alt={"Tobacco leaves"}
-                                    onClick={() => setModalIsOpen(true)}
+                                    onClick={() => setModalIsOpen7(true)}
                                 />
-                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                <Modal isOpen={modalIsOpen7} onRequestClose={() => setModalIsOpen7(false)} style={{
                                     content: {
                                     width: '28%',
                                     height: '75%',
@@ -1148,9 +1166,9 @@ export default function VerticalTabs({
                                     width={500}
                                     height={335}
                                     alt={"A researcher transcribes documents"}
-                                    onClick={() => setModalIsOpen(true)}
+                                    onClick={() => setModalIsOpen8(true)}
                                 />
-                                <Modal isOpen={modalIsOpen} onRequestClose={() => setModalIsOpen(false)} style={{
+                                <Modal isOpen={modalIsOpen8} onRequestClose={() => setModalIsOpen8(false)} style={{
                                     content: {
                                     width: '65%',
                                     height: '75%',
@@ -1229,6 +1247,9 @@ export default function VerticalTabs({
                                     Science Senior Design class with a terrific
                                     team of students: Andrew John (Project
                                     Manager), John Kennedy, and Laurell Cuza.
+                                    The project has been continued by an additional team: 
+                                    Mahlon Scott (Project Manager), Jovan Molny, Amelia Fontenot,
+                                    Lindsey Mazurowski, and Georgia Newbery.
                                 </b>
                             </Typography>
                         </Paper>
