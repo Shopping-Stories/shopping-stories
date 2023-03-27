@@ -245,6 +245,7 @@ const EntriesPage: NextPage = () => {
                                         fullWidth
                                         loading={search !== '' && isLoading}
                                         variant="contained"
+                                        disabled={searchForm.values.search.trim() === ''}
                                         // type={'submit'}
                                         color={"secondary"}
                                         onClick={()=>toGraph(searchForm.values.search)}
