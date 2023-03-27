@@ -16,8 +16,8 @@ export interface LinkTypes {
     item_store: EntryKey
     item_mention: EntryKey
     person_personAccount: EntryKey,
-    // personAccount_personAccount: EntryKey,
-    // person_person: EntryKey,
+    personAccount_personAccount: EntryKey,
+    person_person: EntryKey,
     mention_personAccount: EntryKey
 }
 export type NodeDict = { [key: string]: NodeObject }
@@ -25,8 +25,10 @@ export type LinkDict = { [key: string]: LinkObject }
 export type NodeTypeKey = keyof NodeTypes
 export type LinkTypeKey = keyof LinkTypes
 export type GraphTypeKey = NodeTypeKey | LinkTypeKey
-
+export type Pool = {[key in NodeTypeKey] : Set<string>}
+export type EntryIndexPool = {[k: number] : Pool}
 export type NodeIcons = { [key in NodeTypeKey] : string }
+
 export type LinkColors = {
     [key in LinkTypeKey] : "inherit" | "disabled" | "action" | "primary" | "secondary" | "error" | "info" | "success" | "warning"
 }

@@ -28,7 +28,6 @@ import {
 } from "@components/GraphView/GraphTypes";
 import GraphInfoPanel from "@components/GraphView/GraphInfoPanel";
 import GraphControlPanel from "@components/GraphView/GraphControlPanel";
-import { GraphGuiProps } from "../../../pages/entries/graphview/[search]";
 import { useColorMode } from "../../ThemeMode";
 import {useTheme} from "@mui/material";
 
@@ -51,7 +50,13 @@ import Toolbar from '@mui/material/Toolbar';
 // import ListItemText from '@mui/material/ListItemText';
 // import Container from "@mui/material/Container";
 
-const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
+export interface GraphGuiProps {
+    entries: Array<Entry>,
+    extendFetch:  (newSearch: string) => void
+    newFetch: (newSearch: string) => void
+}
+
+const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
     const [filter, setFilter] = useState<GraphPredicates | undefined>(initFilter)
     const [nodeLabelsVisible, setNodeLabelsVisible] =  useState<boolean>(false)
@@ -81,6 +86,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             item_person: palette.success.main,
             item_store: palette.warning.main,
             person_personAccount: palette.info.main,
+            person_person: palette.info.main,
+            personAccount_personAccount: palette.info.main,
             mention_personAccount: palette.error.main,
             item_mention: palette.secondary.main
         }
@@ -95,20 +102,24 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     // Sets the overall structure and properties for actual graph later on
     // Used for resetting the graph from filters
     const graphDict: GraphProperties = useMemo(() => {
-        // if (!entries) return {nodes:[], links:[]}
-        // console.log(entries)
+
         let graphProps: GraphProperties = {nodeProperties:{}, linkProperties:{}}
         let nodeProps = graphProps.nodeProperties
         let linkProps = graphProps.linkProperties
-        let entryIndex = 0 // The index of the current entry in the entries prop
+        
+        // Maps entries to nodes during processing
+        let entriesToNodes: {[index: number] : Set<string>} = {}
+        
+        // The index of the current entry in the entries prop
+        let entryIndex = 0
         
         // Makes a node if it does not already exist then associates the current entryIndex to it
         const makeNode = (t:NodeTypeKey | "type", nodeID:string) => {
             if (!nodeProps[nodeID]) {
-                nodeProps[nodeID] = {
+                let node = {
                     id: nodeID,
                     nodeType: t === "type" ? "item" : t,
-                    label: t !== "type" ? entries[entryIndex][getNodeType(t)] : entries[entryIndex].type,
+                    label: entries[entryIndex][t !== "type" ? getNodeType(t) : t], //: entries[entryIndex].type,
                     entries: new Set<number>(),
                     entryKeys: getNodeKeys(t),
                     linkKeys: new Set<string>(),
@@ -117,18 +128,50 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                     darkIcon: setNodeSVGIcon(t, "dark"),
                     lightIcon: setNodeSVGIcon(t, "light")
                 };
+                nodeProps[nodeID] = node
+            }
+            let nt = nodeProps[nodeID].nodeType
+            if ((nt === 'item') && (t === 'person' || t === 'personAccount')){
+                // console.log(t, nt)
+                nodeProps[nodeID].nodeType = t
+                nodeProps[nodeID].label = entries[entryIndex][getNodeType(t)]
+            }
+            if (!entriesToNodes[entryIndex]){
+                entriesToNodes[entryIndex] = new Set<string>()
             }
             nodeProps[nodeID].entries.add(entryIndex)
+            entriesToNodes[entryIndex].add(nodeID)
+            // if (!indexPool[entryIndex]){
+            //     indexPool[entryIndex] = {...initPool}
+            // }
+            // indexPool[entryIndex][nodeProps[nodeID].nodeType].add(nodeID)
+
+        }
+    
+        const addNeighbors = (node:string, neighbors:Set<string>) => {
+            if (!nodeProps || !nodeProps[node]) return
+            if (!nodeProps[node].neiKeys) {
+                nodeProps[node].neiKeys = new Set<string>();
+            }
+        
+            for (let neighbor of neighbors) {
+            
+                if (!nodeProps[node].neiKeys.has(neighbor)) {
+                    nodeProps[node].neiKeys.add(neighbor);
+                }
+                if (!nodeProps[neighbor].neiKeys.has(node)) {
+                    nodeProps[neighbor].neiKeys.add(node);
+                }
+                // makeLink(node, nodeProps[neighbor].id)
+            }
         }
     
         // Makes a link if it does not already exist then associates the current entryIndex to it
         // The size 'entries' prop is essentially the weight of the link
-        const makeLink = (v1:string, v2:string) => {
-            // v1 = format(v1)
-            // v2 = format(v2)
+        const makeLink = (v1:string, v2:string, index:number) => {
             let [source, target, linkID] = makeLinkID(v1, v2)
+            let t = makeLinkType(nodeProps[v1].nodeType, nodeProps[v2].nodeType)[2]
             if (!linkProps || !linkProps[linkID]) {
-                let t = makeLinkType(nodeProps[v1].nodeType, nodeProps[v2].nodeType)[2]
                 linkProps[linkID] = {
                     id: linkID,
                     source: source,
@@ -142,33 +185,40 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 nodeProps[v1].linkKeys.add(linkID)
                 nodeProps[v2].linkKeys.add(linkID)
             }
-            linkProps[linkID].entries.add(entryIndex)
-        }
-        
-        const addNeighbors = (node:string, neighbors:Set<string>) => {
-            if (!nodeProps || !nodeProps[node]) return
-            if (!nodeProps[node].neiKeys) {
-                nodeProps[node].neiKeys = new Set<string>();
+            let lt = linkProps[linkID].linkType
+            if (t.slice(0,6) === 'person' && lt !== t){
+                linkProps[linkID].linkType = t
+                linkProps[linkID].color = linkColors[t]
+                // console.log(t.slice(0,6))
             }
-            
-            for (let n of neighbors) {
-                
-                if (!nodeProps[node].neiKeys.has(n)) {
-                    nodeProps[node].neiKeys.add(n);
+            linkProps[linkID].entries.add(index)
+        }
+    
+        const makeLinks = () => {
+            for (let [i, nodes] of Object.entries(entriesToNodes)){
+                let index = Number(i)
+                for (let node of nodes.values()){
+                    for (let neighbor of nodeProps[node].neiKeys.values()){
+                        if (nodeProps[neighbor].entries.has(index)){
+                            makeLink(node, neighbor, index)
+                        }
+                    }
                 }
-                if (!nodeProps[n].neiKeys.has(node)) {
-                    nodeProps[n].neiKeys.add(node);
-                }
-                makeLink(node, nodeProps[n].id)
             }
         }
         
         const processEntry = (e: Entry) => {
             let toItem = new Set<string>()
             let toAccount = new Set<string>()
-            // let matcher = e.peopleID?.match(/'([^']+)'/)
-            // let personID = matcher ? matcher[1] : null
-            // console.log(personID)
+            // if (e.peopleID){
+            //     let matches = e.peopleID.matchAll(/'(.*?)'/g)
+            //     let ppl: string[] = []
+            //     for (let m of matches){
+            //         ppl.push(m[1])
+            //     }
+            //
+            //     console.log(ppl)
+            // }
             if (!e._id) return
             if (e.store) {
                 let store = formatLabel(e.store)
@@ -185,9 +235,10 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             //     }
             // }
             if (e.itemID){
+                // console.log(e.item)
                 let itemID = formatLabel(e.itemID)
                 if (e.item) makeNode("item", itemID)
-                else makeNode("type", itemID)
+                else if (e.type) makeNode("type", itemID)
             }
             // if (e.accountHolderID) {
             if (e.account_name) {
@@ -264,10 +315,11 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             //     entrySet.add(entry._id);
             // }
         }
+        makeLinks()
         // console.log(graphProps)
         return graphProps
     }, [entries, linkColors])
-    
+    // console.log(graphDict.nodeProperties['639b8553fcc5de9ec26b12c1'])
     const dates = useMemo<string[]>(()=> {
         let dates = new Set<string>()
         for (let entry of entries){
@@ -449,6 +501,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         
         for (let [k, v] of Object.entries(nodeProperties)) {
             if (filteredKeys.nodes.has(k)) {
+                // console.log(v.nodeType)
                 let node: NodeObject = {
                     id: k,
                     nodeType: v.nodeType,
@@ -471,6 +524,9 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         
         for (let [k, l] of Object.entries(linkProperties)) {
             const {source, target, linkType} = l
+            if (source === "Cash Account" || target === "Cash Account") {
+                // console.log(linkType)
+            }
             if (filteredKeys.links.has(k)) {
                 let link: LinkObject = {
                     id: k,
@@ -519,7 +575,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         let id: string | number = ''
         if (node && !link) {
             name = node.label
-            eType = `${node.nodeType} node`
+            eType = `${node.nodeType !== 'personAccount' ? node.nodeType : 'account'}-node`
             id = node.id
             for (let e of node.entries){
                 if (filteredKeys.newEntries.has(e))
@@ -574,7 +630,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     
     const handleLinkZoom = useCallback((link:LinkObject) => {
         if (typeof link.source !== "object" || typeof link.target !== "object") return
-        
+        console.log(link.linkType)
         let ux = link.source.x
         let uy = link.source.y
         
@@ -618,21 +674,36 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         );
     }, [contextMenu])
     
-    const fetchEntries = useCallback(() => {
+    const fetchMoreEntries = useCallback(() => {
         // let id = Array.from(focusedItems)[0]
         let id = contextMenu?.id
         // setRightClicked(id)
         if (id) {
             console.log("id", id)
             graphItemDispatch({type:'CREATE', payload: id})
-            fetchMore(graphDict.nodeProperties[id].label);
+            extendFetch(graphDict.nodeProperties[id].label);
             // graphRef.current?.resumeAnimation()
             // setFocusedItems(new Set([id]))
             // setTimeout(()=>focusOn([...graphDict.nodeProps[rightClicked].neiKeys.values(), rightClicked]), 2000)
             // setTimeout(() => handleNodeZoom(graph.nodes.filter((v) => v.id === rightClicked)[0],), 2000,);
         }
         handleClose()
-    }, [contextMenu?.id, fetchMore, graphDict.nodeProperties, graphItemDispatch])
+    }, [contextMenu?.id, extendFetch, graphDict.nodeProperties, graphItemDispatch])
+    
+    const fetchNewEntries = useCallback(() => {
+        let id = contextMenu?.id
+        // setRightClicked(id)
+        if (id) {
+            console.log("id", id)
+            graphItemDispatch({type:'CREATE', payload: id})
+            newFetch(graphDict.nodeProperties[id].label);
+            // graphRef.current?.resumeAnimation()
+            // setFocusedItems(new Set([id]))
+            // setTimeout(()=>focusOn([...graphDict.nodeProps[rightClicked].neiKeys.values(), rightClicked]), 2000)
+            // setTimeout(() => handleNodeZoom(graph.nodes.filter((v) => v.id === rightClicked)[0],), 2000,);
+        }
+        handleClose()
+    }, [contextMenu?.id, newFetch, graphDict.nodeProperties, graphItemDispatch])
     
     // const toEntryView = useCallback((action: string = 'view', id: string) => {
     //     const path = `/entries/${action}`;
@@ -654,7 +725,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     
     const engineStopCB = useCallback(() =>{
         console.log("engine stop", graphItem)
-        if (graphItem !== '' && graph.nodeDict)
+        if ((graphItem !== '') && graph.nodeDict && graph.nodeDict[graphItem])
             handleNodeZoom(graph.nodeDict[graphItem])
         graphItemDispatch({type:'CREATE', payload: ''})
     }, [graphItem,graphItemDispatch, handleNodeZoom, graph.nodeDict])
@@ -784,6 +855,10 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             nodeLabel={(node) =>
                                 (node?.label && !nodeLabelsVisible) ? node.label.toString() : ""
                             }
+                            linkLabel={l=>graph.nodeDict
+                                ? `${graph.nodeDict[typeof l.source === 'object' ? l.source.id : l.source].label} - ${graph?.nodeDict[typeof l.target === 'object' ? l.target.id : l.target].label}`
+                                : l.id as string
+                            }
                             nodeRelSize={relSize}
                             // nodeCanvasObjectMode={()=>'after'}
                             nodeCanvasObject={(node, ctx, globalScale) => paintNodes(node, ctx, globalScale)}
@@ -845,7 +920,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             }
             marginThreshold={0}
         >
-            <MenuItem onClick={fetchEntries}>Add Related Nodes</MenuItem>
+            <MenuItem onClick={fetchMoreEntries}>Add Related Nodes</MenuItem>
+            <MenuItem onClick={fetchNewEntries}>New search from this Node</MenuItem>
             {/*<MenuItem onClick={handleClose}>Copy</MenuItem>*/}
             {/*<MenuItem onClick={handleClose}>Print</MenuItem>*/}
             {/*<MenuItem onClick={handleClose}>Highlight</MenuItem>*/}

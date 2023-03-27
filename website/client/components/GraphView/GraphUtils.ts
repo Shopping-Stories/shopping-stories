@@ -4,7 +4,7 @@ import {
     LinkColors,
     SvgIcons, NodeIcons,
     NodeTypes, GraphTypeKey, NodeTypeKey, LinkTypeKey,
-    EntryInfo, EntryKey, EntryScalarInfo, LedgerKeys, EntryObjects
+    EntryInfo, EntryKey, EntryScalarInfo, LedgerKeys, EntryObjects, Pool
 } from "@components/GraphView/GraphTypes";
 import { Currency, Entry, Ledger } from "../../../new_types/api_types";
 import { NodeObject } from "react-force-graph-2d";
@@ -16,7 +16,8 @@ export const linkColors: LinkColors = {
     item_store: "warning",
     item_mention: "info",
     person_personAccount: "error",
-    // personAccount_personAccount: "error",
+    person_person: 'error',
+    personAccount_personAccount: "error",
     mention_personAccount: "secondary"
 }
 
@@ -39,6 +40,14 @@ const svgIconMap: SvgIcons = {
     }
 }
 
+export const initPool: Pool = {
+    person: new Set<string>(),
+    item: new Set<string>(),
+    personAccount: new Set<string>(),
+    store:  new Set<string>(),
+    help:  new Set<string>(),
+    mention: new Set<string>(),
+}
 
 const getNodeIconSrc = (t:string, mode: PaletteMode) => {
     if (!mode || !svgIconMap[mode as keyof SvgIcons][t as keyof NodeIcons]){
@@ -87,6 +96,10 @@ export const getInfoKeys = (graphType: GraphTypeKey):EntryKey[] =>  {
         case "item_store":
             return item_store
         case "person_personAccount":
+            return person_personAccount
+        case "person_person":
+            return person_personAccount
+        case "personAccount_personAccount":
             return person_personAccount
         case "mention_personAccount":
             return base
@@ -195,11 +208,11 @@ export const displayNames = {
     // _id: string,
 }
 
-const itemPersonAccount = new Set<NodeTypeKey>(["item", "personAccount"])
-const itemPerson = new Set<NodeTypeKey>(["item", "person"])
-const itemStore = new Set<NodeTypeKey>(["item", "store"])
-const personPersonAccount = new Set<NodeTypeKey>(["person", "personAccount"])
-const mentionPersonAccount = new Set<NodeTypeKey>(["mention", "personAccount"])
+// const itemPersonAccount = new Set<NodeTypeKey>(["item", "personAccount"])
+// const itemPerson = new Set<NodeTypeKey>(["item", "person"])
+// const itemStore = new Set<NodeTypeKey>(["item", "store"])
+// const personPersonAccount = new Set<NodeTypeKey>(["person", "personAccount"])
+// const mentionPersonAccount = new Set<NodeTypeKey>(["mention", "personAccount"])
 // const itemMention = new Set<NodeTypeKey>(["mention", "personAccount"])
 
 /**
@@ -210,13 +223,19 @@ const mentionPersonAccount = new Set<NodeTypeKey>(["mention", "personAccount"])
  * @returns a triple where the third element is the link type constructed from the node types
  */
 export const makeLinkType = (x: NodeTypeKey, y: NodeTypeKey):[NodeTypeKey, NodeTypeKey, LinkTypeKey] =>  {
-    if (itemPersonAccount.has(x) && itemPersonAccount.has(y)) return [x, y, "item_personAccount"]
-    if (itemPerson.has(x) && itemPerson.has(y)) return [x, y, "item_person"]
-    if (itemStore.has(x) && itemStore.has(y)) return [x, y, "item_store"]
-    if (personPersonAccount.has(x) && personPersonAccount.has(y)) return [x, y,  "person_personAccount"]
-    if (mentionPersonAccount.has(x) && mentionPersonAccount.has(y)) return [x, y,  "mention_personAccount"]
-    // else linkType = "mention_personAccount"
-    return [x, y, "item_mention"]
+    if (x === y && (x === 'store' || x === 'help' || x === 'mention' || x === 'item')){
+        return [x, y, "item_mention"]
+    }
+    let arr: [NodeTypeKey, NodeTypeKey] = [x, y]
+    arr.sort()
+    return [arr[0], arr[1], `${arr[0]}_${arr[1]}` as LinkTypeKey]
+    // if (itemPersonAccount.has(x) && itemPersonAccount.has(y)) return [x, y, "item_personAccount"]
+    // if (itemPerson.has(x) && itemPerson.has(y)) return [x, y, "item_person"]
+    // if (itemStore.has(x) && itemStore.has(y)) return [x, y, "item_store"]
+    // if (personPersonAccount.has(x) && personPersonAccount.has(y)) return [x, y,  "person_personAccount"]
+    // if (mentionPersonAccount.has(x) && mentionPersonAccount.has(y)) return [x, y,  "mention_personAccount"]
+    // // else linkType = "mention_personAccount"
+    // return [x, y, "item_mention"]
 }
 
 /**
