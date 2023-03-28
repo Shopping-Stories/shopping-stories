@@ -4,7 +4,7 @@ import {advancedSearchSchema} from "../formikSchemas";
 import {
     // SearchAction,
     useSearchDispatch
-} from "@components/context/SearchContext";
+} from "@components/./context/SearchContext";
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';

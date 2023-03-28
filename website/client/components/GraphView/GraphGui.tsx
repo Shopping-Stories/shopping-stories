@@ -60,8 +60,7 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
     const graphRef = useRef<ForceGraphMethods|undefined>();
     const [filter, setFilter] = useState<GraphPredicates | undefined>(initFilter)
     const [nodeLabelsVisible, setNodeLabelsVisible] =  useState<boolean>(false)
-    // const [edgeLabelsVisible, setEdgeLabelsVIsible] = useState<boolean>(false)
-    const [focusedItems, setFocusedItems] = useState<Set<string | number>>(new Set())
+    const [focusedItems, setFocusedItems] = useState<Set<GraphKey>>(new Set())
     const [scrolledItem, setScrolledItem] = useState<string | number>('')
     const [graphPanelInfo, setGraphPanelInfo] = useState<InfoItems>();
     const [contextMenu, setContextMenu] = useState<{
@@ -94,10 +93,10 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
     }, [palette])
     
     const entryDispatch = useEntryDispatch()
-    const router = useRouter()
-    
-    const graphItem = useGraphItem()
     const graphItemDispatch = useGraphItemDispatch()
+    const graphItem = useGraphItem()
+    
+    const router = useRouter()
     
     // Sets the overall structure and properties for actual graph later on
     // Used for resetting the graph from filters
@@ -319,11 +318,11 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         // console.log(graphProps)
         return graphProps
     }, [entries, linkColors])
-    // console.log(graphDict.nodeProperties['639b8553fcc5de9ec26b12c1'])
+    
+    // All unique dates found in entries
     const dates = useMemo<string[]>(()=> {
         let dates = new Set<string>()
         for (let entry of entries){
-            
             if (!!entry){
                 let {month, Day, date_year} = entry
                 if (month && Day && date_year) {
@@ -347,6 +346,7 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         return dArr
     }, [entries])
     
+    // Callback to build the filter and its exclusion conditions
     const makePredicates:filterHandler = useCallback((field, t, check, dateRange)=>{
         // console.log(field, t, check, dateRange)
         if (!filter || !(check || t || dateRange)) {
@@ -379,6 +379,8 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         setFilter(newFilter)
     },[filter])
     
+    // Where the filter is matched against the all initial graph elements
+    // to produce a set of valid elements to display
     const filteredKeys = useMemo<GraphKeys>(()=>{
         const {nodeProperties, linkProperties} = graphDict
         
@@ -408,23 +410,7 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
                 newEntries: ne
             }
         }
-        
-        const nodePredicates = (node: NodeProperties) => {
-            return !nodeTypes ||
-                (!!nodeTypes[node.nodeType] &&
-                    nodeTypes[node.nodeType] === true
-                )
-        }
-        
-        const linkPredicates = (link: LinkProperties) => {
-            // if (!linkTypes) return true
-            // if the node isn't in the map then it was filtered out
-            // console.log(link.source, link.target)
-            return nodes.has(link.source) && nodes.has(link.target) &&
-                Array.from(link.entries).some(e=>newEntries.has(e));
-            
-        }
-        
+    
         const datePredicates = (e: number, start: Date, end:Date) => {
             // return (!dateRange) ||
             // if (!dateRange || !dateRange.start || !dateRange.end) {
@@ -447,22 +433,28 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
                 return ret;
             }
             return false
-            // let start = new Date(dateRange.start)
-            // let end = new Date(dateRange.end)
-            // let dr = Array.from(link.entries)
-            //     .map((ek: number) => {
-            //         // console.log(ek)
-            //         return entries[ek];
-            //     })
-            //     .some((e) => {
-            //         const {month, Day, date_year} = e
-            //         // else if (e.date && !dateBool) {
-            //         //     date = new Date(e.date)
-            //         // }
-            //     });
-            // // console.log(dr)
-            // return dr
         }
+        
+        // Determines whether a node's type matches the filter condition
+        const nodePredicates = (node: NodeProperties) => {
+            return !nodeTypes ||
+                (!!nodeTypes[node.nodeType] &&
+                    nodeTypes[node.nodeType] === true
+                )
+        }
+        
+        // If the node isn't in the map then it was filtered out.
+        // Links are weighted by number of associated edges;
+        // a link is filtered iff:
+        //      all its entries are filtered out (by date)
+        //      or
+        //      both its incident nodes are filtered
+        const linkPredicates = (link: LinkProperties) => {
+            // if (!linkTypes) return true
+            return nodes.has(link.source) && nodes.has(link.target) &&
+                Array.from(link.entries).some(e=>newEntries.has(e));
+        }
+        
         let nodes = new Set<GraphKey>()
         let links = new Set<GraphKey>()
         let newEntries = new Set<number>()
@@ -478,12 +470,10 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
             newEntries = new Set<number>(entries.map((_,i)=>i))
         }
         
-        
-        // console.log(newEntries)
         Object.keys(nodeProperties).forEach(k => {
             if (nodePredicates(nodeProperties[k])) nodes.add(k)
         })
-        // console.log(nodes)
+        
         Object.keys(linkProperties).forEach(k => {
             let lp = linkPredicates(linkProperties[k])
             // console.log(lp)
@@ -493,6 +483,11 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         return {nodes: nodes, links: links, newEntries: newEntries}
     }, [filter, graphDict, entries])
     
+    // The actual graph structure passed to react-force-graph component.
+    // Separate from the graphDict structure.
+    // Purpose:
+    // - Abiility to freely mutate because it is wholly derived from the graphDict
+    // - More lightweight construction process than rebuilding the GraphDict for every interaction
     const graph: GraphData = useMemo(() =>{
         const {nodeProperties, linkProperties} = graphDict
         
@@ -518,7 +513,6 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
                 nodeDict[k] = node
             }
         }
-        nodes.sort(comparator)
         let linkDict: LinkDict = {}
         let links: LinkObject[] = []
         
@@ -557,7 +551,7 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
                 node.linkDict[l] = linkDict[l]
             }
         }
-        
+        nodes.sort(comparator)
         for (let n of nodes) {
             n.linkDict = Object.fromEntries(Object.entries(n.linkDict).filter(e => filteredKeys.links.has(e[0])))
             n.neighbors = Object.fromEntries(Object.entries(n.neighbors).filter(e => filteredKeys.nodes.has(e[0])))
@@ -567,6 +561,8 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         return {nodes: nodes, links:links, nodeDict:nodeDict, linkDict:linkDict}
     }, [ graphDict, filteredKeys])
     
+    // Builds the props for the right-hand info panel.
+    // Sets the element to autoscroll on the left-hand panel
     const toggleInfo = useCallback((node:NodeObject, link?:LinkObject)=>{
         let info:EntryInfo[] = []
         // let entryProps = getNodeKeys(node.nodeType)
@@ -597,25 +593,15 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         }
         // console.log(info)
     }, [entries, filteredKeys])
-    // console.log(scrolledItem)
-    const handleEntryAction = useCallback((id:string | undefined, action:string) => {
-        // const path = `/entries/${action}`;
-        if (id) {
-            entryDispatch({
-                type: 'CREATE',
-                payload: entries.filter(e => e._id === id)[0]
-            })
-            router.push(`/entries/${action}`)
-        }
-    }, [entries, entryDispatch, router])
     
+    // Toggles the permanent visibility of node labels.
+    // These lables are different from the default hover-label and are made in the render callback
     const toggleNodeLabels = useCallback((visible: boolean) => {
         setNodeLabelsVisible(visible)
     }, [])
-    // const toggleEdgeLabels = useCallback((visible: boolean) => {
-    //     setEdgeLabelsVIsible(visible)
-    // }, [])
     
+    // Centers and zooms to specified node on the visualization.
+    // Calls toggleInfo to set it in the right panel
     const handleNodeZoom:nodeHandler = useCallback((node )=> {
         if (graphRef.current) {
             // graphRef.current?.pauseAnimation()
@@ -628,6 +614,8 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         toggleInfo(node)
     },[graphRef, toggleInfo]);
     
+    // Same as handleNodeZoom, but for links.
+    // Some checks and calculations are needed to find its center on the graph
     const handleLinkZoom = useCallback((link:LinkObject) => {
         if (typeof link.source !== "object" || typeof link.target !== "object") return
         console.log(link.linkType)
@@ -651,29 +639,38 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         toggleInfo(link.source as NodeObject, link)
     }, [graphRef, toggleInfo])
     
-    const focusOn = useCallback((elements) => {
+    
+    // Turns on highlight for set of elements
+    const focusOn = useCallback((elements: Set<GraphKey>) => {
         setFocusedItems(elements)
     }, [])
     
-    const focusOff = useCallback((empty) => {
+    // Turns off highlight for set of elements
+    const focusOff = useCallback((empty: Set<GraphKey>) => {
         setFocusedItems(empty)
     }, [])
     
+    // Positions visualization right click menu
     const handleNodeRightClick = useCallback( (node: NodeObject, event: MouseEvent) => {
         event.preventDefault()
         // setFocusedItems(new Set([node.id]))
-        setContextMenu(
-            contextMenu === null
-                ? {
-                    mouseX: event.clientX + 2,
-                    mouseY: event.clientY - 6,
-                    id: node.id
-                }
-                :
-                null,
+        setContextMenu(contextMenu === null
+            ? { mouseX: event.clientX + 2, mouseY: event.clientY - 6, id: node.id }
+            : null,
         );
     }, [contextMenu])
     
+    // Closes the right clickMenu
+    const handleClose = () => {
+        setContextMenu(null);
+        // setFocusedItems(new Set())
+        // setRightClicked(undefined)
+        // graphRef.current?.resumeAnimation()
+    };
+    
+    // Expands graph;
+    // Callback to add entries related to right-clicked node
+    // The node is put into context for later use.
     const fetchMoreEntries = useCallback(() => {
         // let id = Array.from(focusedItems)[0]
         let id = contextMenu?.id
@@ -690,6 +687,9 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         handleClose()
     }, [contextMenu?.id, extendFetch, graphDict.nodeProperties, graphItemDispatch])
     
+    // Replaces graph;
+    // Callback to replace current entries with just those related to right-clicked node.
+    // The node is put into context for later use.
     const fetchNewEntries = useCallback(() => {
         let id = contextMenu?.id
         // setRightClicked(id)
@@ -705,24 +705,20 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         handleClose()
     }, [contextMenu?.id, newFetch, graphDict.nodeProperties, graphItemDispatch])
     
-    // const toEntryView = useCallback((action: string = 'view', id: string) => {
-    //     const path = `/entries/${action}`;
-    //     if (payload && action && action !== "Create" ){
-    //         entryDispatch({
-    //             type: "CREATE",
-    //             payload: payload
-    //         })
-    //     }
-    //     router.push(path);
-    // }, [entryDispatch, router])
+    // Callback to navigate to Entry View page from entry clicked in right panel
+    const handleEntryAction = useCallback((id:string | undefined, action:string) => {
+        // const path = `/entries/${action}`;
+        if (id) {
+            entryDispatch({
+                type: 'CREATE',
+                payload: entries.filter(e => e._id === id)[0]
+            })
+            router.push(`/entries/${action}`)
+        }
+    }, [entries, entryDispatch, router])
     
-    const handleClose = () => {
-        setContextMenu(null);
-        // setFocusedItems(new Set())
-        // setRightClicked(undefined)
-        // graphRef.current?.resumeAnimation()
-    };
-    
+    // Callback to zoom and center on a node that was the subject of a righclick menu action.
+    // Unsets the context after zooming
     const engineStopCB = useCallback(() =>{
         console.log("engine stop", graphItem)
         if ((graphItem !== '') && graph.nodeDict && graph.nodeDict[graphItem])
@@ -730,12 +726,13 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         graphItemDispatch({type:'CREATE', payload: ''})
     }, [graphItem,graphItemDispatch, handleNodeZoom, graph.nodeDict])
     
-    // Post-mount effects
+    // Sets the default info to display on the right panel
     useEffect(()=>{
         if (graph)
             toggleInfo(graph.nodes[0])
     }, [graph, toggleInfo])
     
+    // See window.eventlistener
     useLayoutEffect(() => {
         // let offset = offsetRef?.current?.clientHeight ? offsetRef.current.clientHeight : 0
         // let offset = mixins.toolbar.minHeight ? offsetRef?.current?.clientHeight : 0
@@ -749,6 +746,11 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         setGraphWidth(window.innerWidth * (7/12))
         // console.log(graphWidth, graphHeight)
     },[])
+    
+    // Makes the width of the visualization responsive for reszing.
+    // The 7/12 value corresponds to the space it is given in its parent Grid.
+    // the 64 value is the smallest height of an MUI toolbar;
+    // the toolbar's height is floored at 64 px for all displays, but is otherwise 5vh.
     window.addEventListener('resize', () => {
         // let offset = mixins.toolbar.minHeight ? offsetRef?.current?.clientHeight : 0
         // let ch = graphGridRef?.current?.clientHeight ? graphGridRef?.current?.clientHeight : 0
@@ -762,6 +764,10 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         setGraphWidth(window.innerWidth * (7/12))
         // console.log(graphWidth, graphHeight)
     })
+    
+    // This adds additional forces to the visualization elements.
+    // There are several options,
+    // but the main use is to ensure that the nodes are properly spaced according to their icon size.
     useEffect(() => {
         if (graphRef.current) {
             const fg = graphRef.current;
@@ -782,7 +788,10 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
         }
     }, [graph])
     
-    // Main render callback
+    // Main render callback;
+    // Sets the node icon images, size, and color.
+    // Sets the toggled label if checked.
+    // This function is called every frame, so it is important to optimize it.
     const paintNodes = useCallback((node:NodeObject, ctx:CanvasRenderingContext2D, globalScale)=> {
         // let node = node//nodeMap[node.id]
         if (!node || node.x === undefined || node.y === undefined) {
