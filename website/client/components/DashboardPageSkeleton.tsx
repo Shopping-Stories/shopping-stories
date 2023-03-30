@@ -16,6 +16,9 @@ const adminLinks: NavLink[] = [
     // { title: `manage item glossary`, path: `/dashboard/glossary/items` },
     // { title: `manage documents`, path: `/dashboard/documents` },
     { title: `manage users`, path: `/dashboard/users` },
+    { title: `manage people`, path: `/dashboard/users` },
+    { title: `manage items`, path: `/dashboard/users` },
+    { title: `update items and people`, path: `/dashboard/updateitemspeople` },
 ];
 
 const sideLinks: NavLink[] = [
