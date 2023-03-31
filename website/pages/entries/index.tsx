@@ -258,14 +258,14 @@ const EntriesPage: NextPage = () => {
                             {/*</FormGroup>*/}
                             {/*</Paper>*/}
                         </Grid>
-                            <Grid item xs={12}>
-                                <EntryPaginationTable
-                                    entries={data?.entries ?? []}
-                                    isAdmin={isAdmin}
-                                    isAdminOrModerator={isAdminOrModerator}
-                                    handleEntryAction={handleEntryAction}
-                                />
-                            </Grid>
+                        <Grid item xs={12}>
+                            <EntryPaginationTable
+                                entries={data?.entries ?? []}
+                                isAdmin={isAdmin}
+                                isAdminOrModerator={isAdminOrModerator}
+                                handleEntryAction={handleEntryAction}
+                            />
+                        </Grid>
                     </Grid>
                 </Paper>
             </>

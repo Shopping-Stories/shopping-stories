@@ -20,8 +20,8 @@ const adminLinks: NavLink[] = [
 
 const sideLinks: NavLink[] = [
     // { title: `manage categories`, path: `/dashboard/categories` },
-    // { title: `manage items`, path: `/dashboard/items` },
-    // { title: `manage people`, path: `/dashboard/people` },
+    { title: `manage people`, path: `/dashboard/people` },
+    { title: `manage items`, path: `/dashboard/items` },
     // { title: `manage places`, path: `/dashboard/places` },
     // { title: `manage tobacco marks`, path: `/dashboard/marks` },
 ];
@@ -49,7 +49,7 @@ const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
     );
 
     return (
-        <Fragment>
+        // <Fragment>
             <Grid container>
                 {isNotAdminOrModerator ? null : isSmallerThanMd ? (
                     <Grid item xs={12}>
@@ -66,18 +66,18 @@ const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
                         </Paper>
                     </Grid>
                 ) : (
-                    <Grid item xs={4}>
+                    <Grid item xs={12}>
                         <SideMenu links={links} />
                     </Grid>
                 )}
                 <Grid
                     item
-                    xs={isSmallerThanMd || isNotAdminOrModerator ? 12 : 8}
+                    xs={isSmallerThanMd || isNotAdminOrModerator ? 12 : 12}
                 >
                     {props.children}
                 </Grid>
             </Grid>
-        </Fragment>
+        // </Fragment>
     );
 };
 

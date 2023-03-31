@@ -44,7 +44,7 @@ const DashBoardTabs = ({
     };
 
     return (
-        <Fragment>
+        // <Fragment>
             <Tabs
                 aria-label="DashBoard Navigation Tabs"
                 scrollButtons
@@ -64,7 +64,7 @@ const DashBoardTabs = ({
                     />
                 ))}
             </Tabs>
-        </Fragment>
+        // </Fragment>
     );
 };
 

@@ -10,9 +10,10 @@ import TableRow from '@mui/material/TableRow';
 import { OptionsType } from 'client/types';
 import { cloneWithoutTypename } from 'client/util';
 import * as React from 'react';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from 'urql';
 import TablePaginationActions from './TablePaginationActions';
+
 
 interface PaginationTableProps<T> {
     queryDef: string;
@@ -106,7 +107,8 @@ const PaginationTable = <T extends unknown>(props: PaginationTableProps<T>) => {
             skip: 0,
         }));
     };
-
+    
+    // console.log(bodyRows)
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: '100vh' }}>

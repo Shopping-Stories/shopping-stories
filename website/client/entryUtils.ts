@@ -1,3 +1,4 @@
+import { GridRowModel } from "@mui/x-data-grid";
 import {
     Entry,
     EntryBooleanKey,
@@ -90,8 +91,10 @@ type Entries<T> = {
     [K in keyof T]: [K, T[K]];
 }[keyof T][];
 const getEntries = <T extends object>(obj: T) => Object.entries(obj) as Entries<T>;
+
 // Utils and types for processing non-parser format Entries
-export const entryToRow = (entry: Entry) => {
+
+export const entryToRow = (entry: Entry):GridRowModel => {
     const nonComplex: Partial<Entry> = Object.fromEntries(Object.entries(entry)
         .filter(([k, v]) => !!v && (hiddenFields.has(k as HiddenField) || visibleFields.has(k as VisibleField))))
         // .map(e => e))
