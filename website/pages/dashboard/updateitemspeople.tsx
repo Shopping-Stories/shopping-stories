@@ -111,6 +111,15 @@ const UpdateItemsPeoplePage: NextPage = () => {
             <Header />
             <DashboardPageSkeleton groups={groups}>
                 <Paper sx={PaperStylesSecondary}>
+                <div>
+                    <Typography
+                        sx={{ textAlign: 'center' }}
+                        variant="h4"
+                    >
+                        Update Items and People
+                    </Typography>
+                </div>
+                <Paper sx={{ p: '1rem' }}>
                     <p>Update the list of people here:</p>
                     {isAdminOrModerator && 
                     (<>
@@ -135,6 +144,7 @@ const UpdateItemsPeoplePage: NextPage = () => {
                     </>)
                     }
                     {itemUploadMsg && <p>{itemUploadMsg}</p>}
+                </Paper>
                 </Paper>
             </DashboardPageSkeleton>
         </ColorBackground>
