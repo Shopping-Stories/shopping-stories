@@ -4,17 +4,19 @@ import MenuList from '@mui/material/MenuList';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Fragment } from 'react';
-import { PaperStyles } from 'styles/styles';
+import { PaperHeaderStyles } from 'styles/styles';
 import { NavLink } from '../types';
 import Stack from '@mui/material/Stack';
 
 const SideMenu = ({ links }: { links: NavLink[] }) => {
     return (
-        <Fragment>
+        // <Fragment>
             <Paper
                 sx={{
                     backgroundColor: `var(--secondary)`,
-                    ...PaperStyles,
+                    ...PaperHeaderStyles
+                    // ...PaperStyles,
+                    // ...PaperStylesSecondary
                 }}
             >
                 <Stack direction={'row'}>
@@ -43,7 +45,7 @@ const SideMenu = ({ links }: { links: NavLink[] }) => {
                     ))}
                 </Stack>
             </Paper>
-        </Fragment>
+        //</Fragment>
     );
 };
 

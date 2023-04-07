@@ -51,21 +51,24 @@ const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
     return (
         // <Fragment>
             <Grid container>
-                {isNotAdminOrModerator ? null : isSmallerThanMd ? (
-                    <Grid item xs={12}>
-                        <Paper
-                            sx={{
-                                backgroundColor: 'var(--secondary)',
-                                ...PaperStyles,
-                            }}
-                        >
-                            <DashBoardTabs
-                                pageIndex={currentPageIndex}
-                                links={links}
-                            />
-                        </Paper>
-                    </Grid>
-                ) : (
+                {isNotAdminOrModerator
+                    ? null
+                    // : isSmallerThanMd ? (
+                    // <Grid item xs={12}>
+                    //     <Paper
+                    //         sx={{
+                    //             backgroundColor: 'var(--secondary)',
+                    //             ...PaperStyles,
+                    //         }}
+                    //     >
+                    //         <DashBoardTabs
+                    //             pageIndex={currentPageIndex}
+                    //             links={links}
+                    //         />
+                    //     </Paper>
+                    // </Grid>
+                    // )
+                        : (
                     <Grid item xs={12}>
                         <SideMenu links={links} />
                     </Grid>

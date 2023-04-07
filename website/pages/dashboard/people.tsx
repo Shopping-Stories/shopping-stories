@@ -39,7 +39,9 @@ import {
     GridToolbar,
     // GridToolbarExport,
     GridColumnVisibilityModel,
-    GridRowModel
+    GridRowModel, GridValidRowModel,
+    GridToolbarFilterButton,
+    GRID_CHECKBOX_SELECTION_COL_DEF
 } from "@mui/x-data-grid";
 
 // import ActionDialog from '@components/ActionDialog';
@@ -57,41 +59,108 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
+import AddRelationshipDialog from "@components/AddRelationshipDialog";
+import EditPersonDialog from "@components/EditPersonDialog";
+
+interface SelectedRowParams {
+    id: GridRowId;
+    field?: string;
+}
+
 
 const ManageMarksPage: NextPage = () => {
     const { groups, loading } = useAuth('/', [Roles.Admin, Roles.Moderator]);
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
     const [search, setSearch] = useState<string>('');
+    const [selectedRows, setSelectedRows] =
+        useState<SelectedRowParams| null>(null);
+    
+    const [relationOpen, setRelationOpen] = useState<boolean>(false)
+    const [editOpen, setEditOpen] = useState<boolean>(false)
+    
+    const handleCellFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
+        const row = event.currentTarget.parentElement;
+        const id = row!.dataset.id!;
+        const field = event.currentTarget.dataset.field!;
+        console.log(id)
+        setSelectedRows({ id, field });
+    }, [selectedRows, setSelectedRows]);
+    
+    const handleACtionClick = useCallback((action: string) => {
+        if (selectedRows?.id){
+            // handleEntryAction(action, entryMap[selectedRow.id])
+        }
+        else{
+            // handleEntryAction(action, undefined)
+        }
+    },[selectedRows])
+    
+    const searchForm = useFormik<SearchType>({
+        initialValues: {
+            search: '',
+        },
+        validationSchema: searchSchema,
+        onSubmit: (values) => {
+            setSearch(values.search);
+        },
+    });
     
     const doSearch = useCallback(async () => {
-        const req = 'https://api.preprod.shoppingstories.org/fuzzysearch/john'
+        const req = `https://api.preprod.shoppingstories.org/fuzzysearch/${search}`
         const res = await fetch(req);
         let toret: {entries: Entry[]} = JSON.parse(await res.text());
         // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
         // console.log(req)
         // console.log(toret);
         return toret;
-    },[])
+    },[search])
+    
+    const addRelationship = useCallback((p1:string, p2:string) => {
+        let saveUrl = `https://api.preprod.shoppingstories.org/add_people_relationship/?` + new URLSearchParams({person1_name: p1, person2_name:p2}).toString();
+        let req = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        }
+        fetch(saveUrl, req)//.then(p => {console.log(p)})
+    }, [])
+    
+    const editPerson = useCallback((id:string, name:string) => {
+        let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
+        let reqBody = JSON.stringify({name: name})
+        let req = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: reqBody
+        }
+        fetch(saveUrl, req)//.then(p => {console.log(p)})
+    }, [])
     
     const {data} = uq({
-        queryKey: ["entries", 'john'],
+        queryKey: ["entries", search],
         queryFn: doSearch,
         // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
-        // enabled: search !== '' && !advancedOpen,
+        enabled: search !== '',
     })
     
     const cols: GridColDef[] = [
+        // {...GRID_CHECKBOX_SELECTION_COL_DEF, width:100},
         {field: 'Name', headerName: 'Name', flex:1},
         {field: 'ID', headerName: 'ID', flex:1}
     ]
     
-    const peopleRows: GridRowsProp = useMemo(()=>{
-        if (!data || !data.entries) return []
+    const people: { rows: GridRowsProp, pplMap: {[key: string]: string}} = useMemo(()=>{
+        if (!data || !data.entries) return {rows:[], pplMap: {}}
         const {entries} = data
         let pplMap: {[key:string] : string} = {}
         let r = /'(.*?)'/g ///'((?:\\.|[^'\\])*)'/g
-        for (const [i, e] of entries.entries()){
+        for (const e of entries){
             if (e.accountHolderID && e.account_name){
                 pplMap[e.accountHolderID] = e.account_name
             }
@@ -109,24 +178,14 @@ const ManageMarksPage: NextPage = () => {
                 }
             }
         }
-        let rows = Object.entries(pplMap)
+        let rows: GridRowsProp = Object.entries(pplMap)
             .map(([id, name])=>({
                 Name: name,
                 id: id,
                 ID: id,
             }))
-        return rows || []
+        return { rows: rows, pplMap: pplMap}
     }, [data])
-
-    const searchForm = useFormik<SearchType>({
-        initialValues: {
-            search: '',
-        },
-        validationSchema: searchSchema,
-        onSubmit: (values) => {
-            setSearch(values.search);
-        },
-    });
     
     if (loading) {
         return <LoadingPage />;
@@ -160,6 +219,7 @@ const ManageMarksPage: NextPage = () => {
                                     </div>
                             
                                     <TextFieldWithFormikValidation
+                                        variant={'filled'}
                                         fullWidth
                                         name="search"
                                         fieldName="search"
@@ -179,36 +239,73 @@ const ManageMarksPage: NextPage = () => {
                             </form>
                         {/*</Paper>*/}
                         </Grid>
-                    
-                    {/*</Paper>*/}
-                    {/*<Paper sx={PaperStylesSecondary}>*/}
-                    {/*    <Stack spacing={2}>*/}
-                         {/*{isAdmin ? (*/}
-                         {/*    <div>*/}
-                         {/*        <Button*/}
-                         {/*            startIcon={<AddCircle />}*/}
-                         {/*            variant="contained"*/}
-                         {/*            onClick={handleOpenCreate}*/}
-                         {/*        >*/}
-                         {/*            Create*/}
-                         {/*        </Button>*/}
-                         {/*    </div>*/}
-                         {/*) : null}*/}
                         <Grid item xs={12} sx={{height:"80vh", width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
                             <Paper sx={{height: '100%',width: '100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
+                                <Stack sx={{ borderBottom: 1, borderColor: 'divider', p: 1, }}>
+                                <Stack spacing={1} direction='row'>
+                                    {isAdminOrModerator &&
+                                        (<>
+                                            <Button
+                                                onClick={() => setRelationOpen(true)}
+                                                variant="contained"
+                                                startIcon={<AddCircle sx={{color: "secondary.contrastText"}} />}
+                                                hidden={!isAdminOrModerator}
+                                            >
+                                                <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                    Add Relationship
+                                                </Typography>
+                                            </Button>
+                                            <Button
+                                                onClick={()=> setEditOpen(true)}
+                                                disabled={!selectedRows}
+                                                hidden={!isAdminOrModerator}
+                                                variant="contained"
+                                                color={"warning"}
+                                            >
+                                                <Typography fontWeight={"500"}>
+                                                    Edit
+                                                </Typography>
+                                            </Button>
+                                        </>)
+                                    }
+                                </Stack>
+                                </Stack>
                                 <DataGrid
                                     // autoHeight
                                     autoPageSize
+                                    pagination
                                     columns={cols}
-                                    rows={peopleRows}
+                                    rows={people.rows}
+                                    // checkboxSelection
+                                    // isRowSelectable={p =>
+                                    //     !selectedRows || (Object.keys(selectedRows).length < 2 && !selectedRows[p.row.id])
+                                    // }
+                                    components={{
+                                        Toolbar: GridToolbarFilterButton
+                                    }}
+                                    componentsProps={{
+                                        cell: { onFocus: handleCellFocus },
+                                    }}
                                 />
                             </Paper>
                         </Grid>
-                        {/*</Stack>*/}
                 </Grid>
                 </Paper>
                 </Box>
             </DashboardPageSkeleton>
+            <AddRelationshipDialog
+                open={relationOpen}
+                setOpen={setRelationOpen}
+                handleSubmit={addRelationship}
+                person1={selectedRows?.id as string}
+            />
+            <EditPersonDialog
+                handleSubmit={editPerson}
+                open={editOpen}
+                setOpen={setEditOpen}
+                person={selectedRows?.field as string}
+                id={selectedRows?.id as string}
+            />
         </ColorBackground>
     );
 };
