@@ -1362,7 +1362,7 @@ export default function VerticalTabs({
                                                     <Card>
                                                         <CardContent>
                                                             <List>
-                                                            {docs?.Contents?.filter(doc => doc.Key !== "Documentation/").map((doc: document, index) => (
+                                                            {docs?.Contents?.filter(doc => doc.Key !== "Documentation/" && doc.Key !== "Documentation/peopleIndex.xlsx" && doc.Key !== "Documentation/itemIndex.xlsx").map((doc: document, index) => (
                                                                 <React.Fragment key={index}>
                                                                 <ListItem
                                                                     sx={{
