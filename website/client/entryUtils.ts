@@ -255,6 +255,76 @@ export const parsedFieldNames = Object.fromEntries(
         .map(k => [k as IncludedParsedField, toDisplayCase(k as string)])
 )
 
+// const r = /(ObjectId\(')|('\))|('),|{(')|(')}|\s(')|('):/g
+const sq = /'/g
+const singleQuote = /':/g
+const spaceQ = /\s'/g
+const obReg = /ObjectId\('|'\)/g
+// const rParen = /'\)/g
+const oBracketQ = /{'/g
+const cBracketQ = /'}/g
+const commaQ = /',/g
+
+export interface PersonObject {
+    _id: string,
+    name: string,
+    related: Array<string>
+}
+
+export interface ItemObject {
+    _id?: string
+    item?: string
+    related?: Array<string>
+    archMat?: number
+    category?: string
+    subcategory?: string
+}
+
+export const parsePeople = (ppl:string):PersonObject[] => {
+    ppl = ppl.replace(obReg, '"')
+        .replace(singleQuote, '":')
+        .replace(spaceQ, ' "')
+        .replace(oBracketQ, '{"')
+        .replace(cBracketQ, '"}')
+        .replace(commaQ, '",')
+            // .replace(rParen, '"')
+    try {
+        let pArr: PersonObject[] = JSON.parse(ppl)
+        return pArr
+    } catch (e:any) {
+        // alert(e)
+        console.log(e?.message)
+        console.log(ppl)
+        return []
+    }
+    // return pArr
+}
+
+// export const parsePeople = (ppl:string) => {
+//     ppl = ppl.replace(obReg, '"').replace(rParen, '"').replace(singleQuote, '"')
+//     let pObj: PersonObject[] = JSON.parse(ppl)
+// }
+
+export const parseItem = (item:string): ItemObject[] => {
+    item = item.replace(obReg, '"')
+        .replace(singleQuote, '":')
+        .replace(spaceQ, ' "')
+        .replace(oBracketQ, '{"')
+        .replace(cBracketQ, '"}')
+        .replace(commaQ, '",')
+    try {
+        let itemArr: ItemObject[] = JSON.parse(item)
+        return itemArr
+    } catch (e:any) {
+        // alert(e)
+        console.log(e?.message)
+        console.log(item)
+        return []
+    }
+}
+
+
+
 // const tobacco = [
 //     "tobacco_location",
 //     // "tobacco_marks",

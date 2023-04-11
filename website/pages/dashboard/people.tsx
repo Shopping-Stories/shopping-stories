@@ -24,7 +24,7 @@ import {
 import { PaperStylesSecondary, PaperStyles } from 'styles/styles';
 // import { useMutation } from 'urql';
 import { Entry } from "../../new_types/api_types";
-import { useQuery as uq } from "@tanstack/react-query";
+import { useMutation, MutationKey, useQueryClient, useQuery as uq } from "@tanstack/react-query";
 
 import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
@@ -61,20 +61,24 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import AddRelationshipDialog from "@components/AddRelationshipDialog";
 import EditPersonDialog from "@components/EditPersonDialog";
+import { parsePeople, PersonObject, toDisplayCase, toTitleCase } from "../../client/entryUtils";
 
 interface SelectedRowParams {
     id: GridRowId;
-    field?: string;
+    // field?: string;
 }
 
+interface PeopleMap {
+    [key: string]: PersonObject
+}
 
 const ManageMarksPage: NextPage = () => {
     const { groups, loading } = useAuth('/', [Roles.Admin, Roles.Moderator]);
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
-    const [search, setSearch] = useState<string>('');
+    const [search, setSearch] = useState<string>('john');
     const [selectedRows, setSelectedRows] =
-        useState<SelectedRowParams| null>(null);
+        useState<GridRowId>("");
     
     const [relationOpen, setRelationOpen] = useState<boolean>(false)
     const [editOpen, setEditOpen] = useState<boolean>(false)
@@ -82,18 +86,20 @@ const ManageMarksPage: NextPage = () => {
     const handleCellFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
         const row = event.currentTarget.parentElement;
         const id = row!.dataset.id!;
-        const field = event.currentTarget.dataset.field!;
+        // const field = event.currentTarget.dataset.field!;
         console.log(id)
-        setSelectedRows({ id, field });
+        setSelectedRows(id);
     }, [selectedRows, setSelectedRows]);
     
+    const queryClient = useQueryClient()
+    
     const handleACtionClick = useCallback((action: string) => {
-        if (selectedRows?.id){
-            // handleEntryAction(action, entryMap[selectedRow.id])
-        }
-        else{
-            // handleEntryAction(action, undefined)
-        }
+        // if (selectedRows?.id){
+        //     // handleEntryAction(action, entryMap[selectedRow.id])
+        // }
+        // else{
+        //     // handleEntryAction(action, undefined)
+        // }
     },[selectedRows])
     
     const searchForm = useFormik<SearchType>({
@@ -107,7 +113,7 @@ const ManageMarksPage: NextPage = () => {
     });
     
     const doSearch = useCallback(async () => {
-        const req = `https://api.preprod.shoppingstories.org/fuzzysearch/${search}`
+        const req = `https://api.preprod.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams({person:search}).toString()}`
         const res = await fetch(req);
         let toret: {entries: Entry[]} = JSON.parse(await res.text());
         // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
@@ -116,33 +122,65 @@ const ManageMarksPage: NextPage = () => {
         return toret;
     },[search])
     
-    const addRelationship = useCallback((p1:string, p2:string) => {
-        let saveUrl = `https://api.preprod.shoppingstories.org/add_people_relationship/?` + new URLSearchParams({person1_name: p1, person2_name:p2}).toString();
-        let req = {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
+    const addMutation = useMutation({
+        mutationFn: (people:[string, string]) => {
+            const [p1, p2] = people
+            let saveUrl = `https://api.preprod.shoppingstories.org/add_people_relationship/?` + new URLSearchParams({
+                person1_name: p1,
+                person2_name: p2
+            }).toString();
+            let req = {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
             }
-        }
-        fetch(saveUrl, req)//.then(p => {console.log(p)})
-    }, [])
+            return fetch(saveUrl, req).then(p => {console.log(p)})
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
+    })
+    
+    const addRelationship = useCallback((p1:string, p2:string) => {
+        addMutation.mutate([p1, p2])
+    }, [addMutation])
+    
+    const editMutation = useMutation({
+        mutationFn: (person:[string, string]) => {
+            const [id, name] = person
+            let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({ person_id: id }).toString();
+            let reqBody = JSON.stringify({ name: name })
+            let req = {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: reqBody
+            }
+            return fetch(saveUrl, req).then(p => {
+                console.log(p)
+            })
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
+    })
     
     const editPerson = useCallback((id:string, name:string) => {
-        let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
-        let reqBody = JSON.stringify({name: name})
-        let req = {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: reqBody
-        }
-        fetch(saveUrl, req)//.then(p => {console.log(p)})
-    }, [])
+        editMutation.mutate([id, name])
+        // let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
+        // let reqBody = JSON.stringify({name: name})
+        // let req = {
+        //     method: "POST",
+        //     headers: {
+        //         "Accept": "application/json",
+        //         "Content-Type": "application/json"
+        //     },
+        //     body: reqBody
+        // }
+        // fetch(saveUrl, req)//.then(p => {console.log(p)})
+    }, [editMutation])
     
-    const {data} = uq({
+    const {data, isLoading} = uq({
         queryKey: ["entries", search],
         queryFn: doSearch,
         // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
@@ -151,36 +189,44 @@ const ManageMarksPage: NextPage = () => {
     
     const cols: GridColDef[] = [
         // {...GRID_CHECKBOX_SELECTION_COL_DEF, width:100},
-        {field: 'Name', headerName: 'Name', flex:1},
-        {field: 'ID', headerName: 'ID', flex:1}
+        {field: 'Name', headerName: 'Name', flex:1, hideable:false},
+        {field: 'ID', headerName: 'ID', flex:1, hideable:false, sortable:false}
     ]
     
-    const people: { rows: GridRowsProp, pplMap: {[key: string]: string}} = useMemo(()=>{
+    const people: { rows: GridRowsProp, pplMap: PeopleMap} = useMemo(()=>{
         if (!data || !data.entries) return {rows:[], pplMap: {}}
         const {entries} = data
-        let pplMap: {[key:string] : string} = {}
-        let r = /'(.*?)'/g ///'((?:\\.|[^'\\])*)'/g
+        let pplMap: PeopleMap = {}
+        // let r = /'(.*?)'/g ///'((?:\\.|[^'\\])*)'/g
         for (const e of entries){
-            if (e.accountHolderID && e.account_name){
-                pplMap[e.accountHolderID] = e.account_name
+            if (e.accountHolderID && e.account_name && e.accountHolder){
+                let ppl = parsePeople(e.accountHolder)
+                if (ppl.length){
+                    pplMap[e.accountHolderID] = ppl[0]
+                }
             }
-            if (e?.people?.length && e.peopleID){
-                let pSet = new Set<string>(e.people)
-                let matches = [...e.peopleID.matchAll(r)]
-                if (matches.length === e.people.length) {
-                    for (let [j, m] of matches.entries()) {
-                        if (pplMap[m[1]]) {
-                            pSet.delete(pplMap[m[1]])
-                        } else {
-                            pplMap[m[1]] = e.people[j]
-                        }
+            if (e?.people?.length && e.peopleID && e.people_obj){
+                let ppl = parsePeople(e.people_obj)
+                for (let p of ppl){
+                    if (p._id && p.name && !pplMap[p._id]){
+                        pplMap[p._id] = p
                     }
                 }
+                // let pSet = new Set<string>(e.people)
+                // let matches = [...e.peopleID.matchAll(r)]
+                // if (matches.length === e.people.length) {
+                //     for (let [j, m] of matches.entries()) {
+                //         if (!pplMap[m[1]]) {
+                //             // pSet.delete(pplMap[m[1]])
+                //             pplMap[m[1]] = e.people[j]
+                //         }
+                //     }
+                // }
             }
         }
         let rows: GridRowsProp = Object.entries(pplMap)
-            .map(([id, name])=>({
-                Name: name,
+            .map(([id, p])=>({
+                Name: toTitleCase(p.name),
                 id: id,
                 ID: id,
             }))
@@ -228,7 +274,7 @@ const ManageMarksPage: NextPage = () => {
                                     />
                             
                                     <LoadingButton
-                                        // loading={isLoading}
+                                        loading={isLoading}
                                         variant="contained"
                                         fullWidth
                                         type="submit"
@@ -256,7 +302,7 @@ const ManageMarksPage: NextPage = () => {
                                                 </Typography>
                                             </Button>
                                             <Button
-                                                onClick={()=> setEditOpen(true)}
+                                                onClick={()=> setEditOpen(selectedRows !== '')}
                                                 disabled={!selectedRows}
                                                 hidden={!isAdminOrModerator}
                                                 variant="contained"
@@ -297,14 +343,19 @@ const ManageMarksPage: NextPage = () => {
                 open={relationOpen}
                 setOpen={setRelationOpen}
                 handleSubmit={addRelationship}
-                person1={selectedRows?.id as string}
+                person1={selectedRows as string}
             />
             <EditPersonDialog
                 handleSubmit={editPerson}
                 open={editOpen}
                 setOpen={setEditOpen}
-                person={selectedRows?.field as string}
-                id={selectedRows?.id as string}
+                person={selectedRows !== "" && !!people.pplMap[selectedRows] ? people.pplMap[selectedRows] : undefined}
+                relations={selectedRows !== "" && !!people.pplMap[selectedRows]
+                    ? Object.fromEntries(people.pplMap[selectedRows].related
+                        .filter(r=>r in people.pplMap).map(r => [r, people.pplMap[r]]))
+                    : {}
+            }
+                id={selectedRows as string}
             />
         </ColorBackground>
     );
