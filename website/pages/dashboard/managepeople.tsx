@@ -61,7 +61,7 @@ const ManagePeoplePage: NextPage = () => {
                         sx={{ textAlign: 'center' }}
                         variant="h4"
                     >
-                        Manage People
+                        Combine People
                     </Typography>
                 </div>
                 <Paper sx={{ p: '1rem' }}>

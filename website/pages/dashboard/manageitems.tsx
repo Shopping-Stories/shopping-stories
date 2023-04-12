@@ -61,7 +61,7 @@ const ManageItemsPage: NextPage = () => {
                         sx={{ textAlign: 'center' }}
                         variant="h4"
                     >
-                        Manage Items
+                        Combine Items
                     </Typography>
                 </div>
                 <Paper sx={{ p: '1rem' }}>
