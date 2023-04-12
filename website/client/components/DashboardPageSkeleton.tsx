@@ -23,8 +23,11 @@ const adminLinks: NavLink[] = [
     // { title: `manage item glossary`, path: `/dashboard/glossary/items` },
     // { title: `manage documents`, path: `/dashboard/documents` },
     { title: `manage users`, path: `/dashboard/users` },
-    { title: `manage people`, path: `/dashboard/people` },
-    { title: `manage items`, path: `/dashboard/items` },
+    { title: `combine people`, path: `/dashboard/people` },
+    { title: `combine items`, path: `/dashboard/items` },
+    { title: `manage people`, path: `/dashboard/managepeople` },
+    { title: `manage items`, path: `/dashboard/manageitems` },
+    { title: `update items and people`, path: `/dashboard/updateitemspeople` },
 ];
 
 interface DashBoardPageSkeletonProps {
