@@ -1,3 +1,5 @@
+import { Formik, Form } from 'formik';
+import { useMemo } from "react";
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -5,12 +7,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import Divider from "@mui/material/Divider";
-import { Formik, Form } from 'formik';
-import { useMemo } from "react";
+
+// import Stack from "@mui/material/Stack";
+// import FormControlLabel from "@mui/material/FormControlLabel";
+// import Switch from "@mui/material/Switch";
+// import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 
 interface RelationShipProps {
     open: boolean,
@@ -38,7 +40,7 @@ const AddRelationshipDialog = ({open, setOpen, handleSubmit, person1, person2}: 
             vals.person2 = person2
         }
         return vals
-    }, [person2, person2])
+    }, [person2, person1])
     
     const submit = async (p1:string, p2:string) => {
         if (p1 === '' || p2 === '') return
@@ -53,14 +55,44 @@ const AddRelationshipDialog = ({open, setOpen, handleSubmit, person1, person2}: 
         <Dialog
             open={open}
         >
-            <DialogTitle>New Relationship</DialogTitle>
+            <Grid container alignItems={'center'}>
+                <Grid item xs={6}>
+                    <DialogTitle>New Relationship</DialogTitle>
+                </Grid>
+                <Grid item xs={6}>
+                    <DialogActions>
+                        {/*<Stack direction={'row'} spacing={2}>*/}
+                        <Button
+                            type={"submit"}
+                            variant={'contained'}
+                            color={'success'}
+                        >
+                            Submit
+                        </Button>
+                        <Button
+                            variant={'contained'}
+                            color={'error'}
+                            onClick={()=>setOpen(false)}
+                        >
+                            Cancel
+                        </Button>
+                        {/*</Stack>*/}
+                    </DialogActions>
+                </Grid>
+            </Grid>
+            <Divider/>
             <DialogContent>
                 <Formik
                     initialValues={initValues}
                     onSubmit={(v) => submit(v.person1, v.person2).then(handleClose)}
                 >
                 <Form noValidate>
-                    <Grid container spacing={1} sx={{mt:1}}>
+                    <Grid
+                        container
+                        mt={1}
+                        spacing={1}
+                        alignItems={'center'}
+                    >
                         <Grid item xs={6}>
                             <TextField
                                 fullWidth
@@ -68,32 +100,13 @@ const AddRelationshipDialog = ({open, setOpen, handleSubmit, person1, person2}: 
                                 label={'Person 1'}
                             />
                         </Grid>
+                        {/*<Grid item xs={2}><CompareArrowsIcon/></Grid>*/}
                         <Grid item xs={6}>
                             <TextField
                                 fullWidth
                                 name={'person2'}
                                 label={'Person 2'}
                             />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <DialogActions>
-                                {/*<Stack direction={'row'} spacing={2}>*/}
-                                    <Button
-                                        type={"submit"}
-                                        variant={'contained'}
-                                        color={'success'}
-                                    >
-                                        Submit
-                                    </Button>
-                                    <Button
-                                        variant={'contained'}
-                                        color={'error'}
-                                        onClick={()=>setOpen(false)}
-                                    >
-                                        Cancel
-                                    </Button>
-                                {/*</Stack>*/}
-                            </DialogActions>
                         </Grid>
                 </Grid>
                 </Form>

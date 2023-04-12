@@ -21,10 +21,10 @@ import {
     // FormEvent,
     useCallback, useMemo, useState
 } from "react";
-import { PaperStylesSecondary, PaperStyles } from 'styles/styles';
+import { PaperStylesSecondary } from 'styles/styles';
 // import { useMutation } from 'urql';
 import { Entry } from "../../new_types/api_types";
-import { useMutation, MutationKey, useQueryClient, useQuery as uq } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery as uq } from "@tanstack/react-query";
 
 import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
@@ -36,12 +36,12 @@ import {
     GridRowsProp,
     DataGrid,
     GridRowId,
-    GridToolbar,
+    // GridToolbar,
     // GridToolbarExport,
-    GridColumnVisibilityModel,
-    GridRowModel, GridValidRowModel,
+    // GridColumnVisibilityModel,
+    // GridRowModel, GridValidRowModel,
     GridToolbarFilterButton,
-    GRID_CHECKBOX_SELECTION_COL_DEF
+    // GRID_CHECKBOX_SELECTION_COL_DEF
 } from "@mui/x-data-grid";
 
 // import ActionDialog from '@components/ActionDialog';
@@ -61,12 +61,14 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import AddRelationshipDialog from "@components/AddRelationshipDialog";
 import EditPersonDialog from "@components/EditPersonDialog";
-import { parsePeople, PersonObject, toDisplayCase, toTitleCase } from "../../client/entryUtils";
+import { parsePeople, PersonObject, toTitleCase } from "../../client/entryUtils";
+import { useSearchDispatch } from "@components/context/SearchContext";
+import { useRouter } from "next/router";
 
-interface SelectedRowParams {
-    id: GridRowId;
-    // field?: string;
-}
+// interface SelectedRowParams {
+//     id: GridRowId;
+//     // field?: string;
+// }
 
 interface PeopleMap {
     [key: string]: PersonObject
@@ -77,40 +79,14 @@ const ManageMarksPage: NextPage = () => {
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
     const [search, setSearch] = useState<string>('john');
-    const [selectedRows, setSelectedRows] =
+    const [selectedRow, setSelectedRow] =
         useState<GridRowId>("");
     
     const [relationOpen, setRelationOpen] = useState<boolean>(false)
     const [editOpen, setEditOpen] = useState<boolean>(false)
     
-    const handleCellFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
-        const row = event.currentTarget.parentElement;
-        const id = row!.dataset.id!;
-        // const field = event.currentTarget.dataset.field!;
-        console.log(id)
-        setSelectedRows(id);
-    }, [selectedRows, setSelectedRows]);
-    
-    const queryClient = useQueryClient()
-    
-    const handleACtionClick = useCallback((action: string) => {
-        // if (selectedRows?.id){
-        //     // handleEntryAction(action, entryMap[selectedRow.id])
-        // }
-        // else{
-        //     // handleEntryAction(action, undefined)
-        // }
-    },[selectedRows])
-    
-    const searchForm = useFormik<SearchType>({
-        initialValues: {
-            search: '',
-        },
-        validationSchema: searchSchema,
-        onSubmit: (values) => {
-            setSearch(values.search);
-        },
-    });
+    const searchDispacth = useSearchDispatch()
+    const router = useRouter()
     
     const doSearch = useCallback(async () => {
         const req = `https://api.preprod.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams({person:search}).toString()}`
@@ -121,6 +97,88 @@ const ManageMarksPage: NextPage = () => {
         // console.log(toret);
         return toret;
     },[search])
+    
+    const {data, isLoading} = uq({
+        queryKey: ["entries", search],
+        queryFn: doSearch,
+        // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
+        enabled: search !== '',
+    })
+    
+    const cols: GridColDef[] = [
+        // {...GRID_CHECKBOX_SELECTION_COL_DEF, width:100},
+        {field: 'Name', headerName: 'Name', flex:1, hideable:false},
+        {field: 'ID', headerName: 'ID', flex:1, hideable:false, sortable:false}
+    ]
+    
+    const people: { rows: GridRowsProp, pplMap: PeopleMap} = useMemo(()=>{
+        if (!data || !data.entries) return {rows:[], pplMap: {}}
+        const {entries} = data
+        let pplMap: PeopleMap = {}
+        // let r = /'(.*?)'/g ///'((?:\\.|[^'\\])*)'/g
+        for (const e of entries){
+            if (e.accountHolderID && e.account_name && e.accountHolder){
+                let ppl = parsePeople(e.accountHolder)
+                if (ppl.length){
+                    pplMap[e.accountHolderID] = ppl[0]
+                }
+            }
+            if (e?.people?.length && e.peopleID && e.people_obj){
+                let ppl = parsePeople(e.people_obj)
+                for (let p of ppl){
+                    if (p._id && p.name && !pplMap[p._id]){
+                        pplMap[p._id] = p
+                    }
+                }
+                // let pSet = new Set<string>(e.people)
+                // let matches = [...e.peopleID.matchAll(r)]
+                // if (matches.length === e.people.length) {
+                //     for (let [j, m] of matches.entries()) {
+                //         if (!pplMap[m[1]]) {
+                //             // pSet.delete(pplMap[m[1]])
+                //             pplMap[m[1]] = e.people[j]
+                //         }
+                //     }
+                // }
+            }
+        }
+        let rows: GridRowsProp = Object.entries(pplMap)
+            .map(([id, p])=>({
+                Name: toTitleCase(p.name).trimStart(),
+                id: id,
+                ID: id,
+            }))
+        return { rows: rows, pplMap: pplMap}
+    }, [data])
+    
+    const handleCellFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
+        const row = event.currentTarget.parentElement;
+        const id = row!.dataset.id!;
+        // const field = event.currentTarget.dataset.field!;
+        console.log(id)
+        setSelectedRow(id);
+    }, [selectedRow, setSelectedRow]);
+    
+    const queryClient = useQueryClient()
+    
+    // const handleACtionClick = useCallback((action: string) => {
+    //     // if (selectedRows?.id){
+    //     //     // handleEntryAction(action, entryMap[selectedRow.id])
+    //     // }
+    //     // else{
+    //     //     // handleEntryAction(action, undefined)
+    //     // }
+    // },[selectedRows])
+    
+    const searchForm = useFormik<SearchType>({
+        initialValues: {
+            search: '',
+        },
+        validationSchema: searchSchema,
+        onSubmit: (values) => {
+            setSearch(values.search);
+        },
+    });
     
     const addMutation = useMutation({
         mutationFn: (people:[string, string]) => {
@@ -180,58 +238,19 @@ const ManageMarksPage: NextPage = () => {
         // fetch(saveUrl, req)//.then(p => {console.log(p)})
     }, [editMutation])
     
-    const {data, isLoading} = uq({
-        queryKey: ["entries", search],
-        queryFn: doSearch,
-        // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
-        enabled: search !== '',
-    })
+    const getEntryResults = useCallback( async ()=>{
+        if (!selectedRow || selectedRow === "") return
+        let person = people.pplMap[selectedRow].name
+        if (!person) return
+        searchDispacth({
+            type: "FUZZY_ADVANCED",
+            payload: new URLSearchParams({person:person}).toString()
+        })
+    }, [searchDispacth, selectedRow, people.pplMap])
     
-    const cols: GridColDef[] = [
-        // {...GRID_CHECKBOX_SELECTION_COL_DEF, width:100},
-        {field: 'Name', headerName: 'Name', flex:1, hideable:false},
-        {field: 'ID', headerName: 'ID', flex:1, hideable:false, sortable:false}
-    ]
-    
-    const people: { rows: GridRowsProp, pplMap: PeopleMap} = useMemo(()=>{
-        if (!data || !data.entries) return {rows:[], pplMap: {}}
-        const {entries} = data
-        let pplMap: PeopleMap = {}
-        // let r = /'(.*?)'/g ///'((?:\\.|[^'\\])*)'/g
-        for (const e of entries){
-            if (e.accountHolderID && e.account_name && e.accountHolder){
-                let ppl = parsePeople(e.accountHolder)
-                if (ppl.length){
-                    pplMap[e.accountHolderID] = ppl[0]
-                }
-            }
-            if (e?.people?.length && e.peopleID && e.people_obj){
-                let ppl = parsePeople(e.people_obj)
-                for (let p of ppl){
-                    if (p._id && p.name && !pplMap[p._id]){
-                        pplMap[p._id] = p
-                    }
-                }
-                // let pSet = new Set<string>(e.people)
-                // let matches = [...e.peopleID.matchAll(r)]
-                // if (matches.length === e.people.length) {
-                //     for (let [j, m] of matches.entries()) {
-                //         if (!pplMap[m[1]]) {
-                //             // pSet.delete(pplMap[m[1]])
-                //             pplMap[m[1]] = e.people[j]
-                //         }
-                //     }
-                // }
-            }
-        }
-        let rows: GridRowsProp = Object.entries(pplMap)
-            .map(([id, p])=>({
-                Name: toTitleCase(p.name),
-                id: id,
-                ID: id,
-            }))
-        return { rows: rows, pplMap: pplMap}
-    }, [data])
+    const entriesRedirect = () => {
+        getEntryResults().then(() => router.push('/entries'))
+    }
     
     if (loading) {
         return <LoadingPage />;
@@ -292,6 +311,15 @@ const ManageMarksPage: NextPage = () => {
                                     {isAdminOrModerator &&
                                         (<>
                                             <Button
+                                                onClick={entriesRedirect}
+                                                disabled={!selectedRow}
+                                                hidden={!isAdminOrModerator}
+                                                variant="contained"
+                                                color={"secondary"}
+                                            >
+                                                View Entries
+                                            </Button>
+                                            <Button
                                                 onClick={() => setRelationOpen(true)}
                                                 variant="contained"
                                                 startIcon={<AddCircle sx={{color: "secondary.contrastText"}} />}
@@ -302,8 +330,8 @@ const ManageMarksPage: NextPage = () => {
                                                 </Typography>
                                             </Button>
                                             <Button
-                                                onClick={()=> setEditOpen(selectedRows !== '')}
-                                                disabled={!selectedRows}
+                                                onClick={()=> setEditOpen(selectedRow !== '')}
+                                                disabled={!selectedRow}
                                                 hidden={!isAdminOrModerator}
                                                 variant="contained"
                                                 color={"warning"}
@@ -343,19 +371,19 @@ const ManageMarksPage: NextPage = () => {
                 open={relationOpen}
                 setOpen={setRelationOpen}
                 handleSubmit={addRelationship}
-                person1={selectedRows as string}
+                person1={selectedRow as string}
             />
             <EditPersonDialog
                 handleSubmit={editPerson}
                 open={editOpen}
                 setOpen={setEditOpen}
-                person={selectedRows !== "" && !!people.pplMap[selectedRows] ? people.pplMap[selectedRows] : undefined}
-                relations={selectedRows !== "" && !!people.pplMap[selectedRows]
-                    ? Object.fromEntries(people.pplMap[selectedRows].related
+                person={selectedRow !== "" && !!people.pplMap[selectedRow] ? people.pplMap[selectedRow] : undefined}
+                relations={selectedRow.toString().trim() !== "" && !!people.pplMap[selectedRow] && !!people.pplMap[selectedRow].related
+                    ? Object.fromEntries(people.pplMap[selectedRow].related
                         .filter(r=>r in people.pplMap).map(r => [r, people.pplMap[r]]))
                     : {}
             }
-                id={selectedRows as string}
+                id={selectedRow as string}
             />
         </ColorBackground>
     );

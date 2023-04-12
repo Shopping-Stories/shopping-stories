@@ -10,7 +10,10 @@ import TableRow from '@mui/material/TableRow';
 import { OptionsType } from 'client/types';
 import { cloneWithoutTypename } from 'client/util';
 import * as React from 'react';
-import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
+import {
+    Dispatch, SetStateAction, useEffect, useState,
+    // useMemo, useCallback
+} from "react";
 import { useQuery } from 'urql';
 import TablePaginationActions from './TablePaginationActions';
 

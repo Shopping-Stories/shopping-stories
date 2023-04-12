@@ -256,7 +256,7 @@ export const parsedFieldNames = Object.fromEntries(
 )
 
 // const r = /(ObjectId\(')|('\))|('),|{(')|(')}|\s(')|('):/g
-const sq = /'/g
+// const sq = /'/g
 const singleQuote = /':/g
 const spaceQ = /\s'/g
 const obReg = /ObjectId\('|'\)/g
@@ -264,6 +264,7 @@ const obReg = /ObjectId\('|'\)/g
 const oBracketQ = /{'/g
 const cBracketQ = /'}/g
 const commaQ = /',/g
+const none = /None/g
 
 export interface PersonObject {
     _id: string,
@@ -272,12 +273,12 @@ export interface PersonObject {
 }
 
 export interface ItemObject {
-    _id?: string
-    item?: string
-    related?: Array<string>
-    archMat?: number
-    category?: string
-    subcategory?: string
+    _id: string
+    item: string
+    related: Array<string>
+    archMat: number
+    category: string
+    subcategory: string
 }
 
 export const parsePeople = (ppl:string):PersonObject[] => {
@@ -312,6 +313,7 @@ export const parseItem = (item:string): ItemObject[] => {
         .replace(oBracketQ, '{"')
         .replace(cBracketQ, '"}')
         .replace(commaQ, '",')
+        .replace(none, 'null')
     try {
         let itemArr: ItemObject[] = JSON.parse(item)
         return itemArr

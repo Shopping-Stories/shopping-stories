@@ -1,12 +1,13 @@
-import MuiNextLink from '@components/MuiNextLink';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import { Fragment } from 'react';
 import { PaperHeaderStyles } from 'styles/styles';
 import { NavLink } from '../types';
+
+import MuiNextLink from '@components/MuiNextLink';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
+// import MenuList from '@mui/material/MenuList';
+// import { Fragment } from 'react';
 
 const SideMenu = ({ links }: { links: NavLink[] }) => {
     return (
