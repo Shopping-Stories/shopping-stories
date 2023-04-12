@@ -39,7 +39,7 @@ const getType = (fz:boolean, adv:boolean): SearchAction["type"] => {
 }
 
 const EntriesPage: NextPage = () => {
-    const { groups } = useAuth();
+    const { groups, isLoggedIn } = useAuth();
     const router = useRouter();
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isModerator = isInGroup(Roles.Moderator, groups);
@@ -72,9 +72,9 @@ const EntriesPage: NextPage = () => {
             : `https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
         const res = await fetch(req);
         let toret: EntryQueryResult = JSON.parse(await res.text());
-        console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
-        console.log(req)
-        console.log(toret);
+        // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
+        // console.log(req)
+        // console.log(toret);
         return toret;
     },[search, fuzzy, advanced])
     
@@ -245,6 +245,7 @@ const EntriesPage: NextPage = () => {
                                         fullWidth
                                         loading={search !== '' && isLoading}
                                         variant="contained"
+                                        disabled={searchForm.values.search.trim() === ''}
                                         // type={'submit'}
                                         color={"secondary"}
                                         onClick={()=>toGraph(searchForm.values.search)}
@@ -258,14 +259,15 @@ const EntriesPage: NextPage = () => {
                             {/*</FormGroup>*/}
                             {/*</Paper>*/}
                         </Grid>
-                        <Grid item xs={12}>
-                            <EntryPaginationTable
-                                entries={data?.entries ?? []}
-                                isAdmin={isAdmin}
-                                isAdminOrModerator={isAdminOrModerator}
-                                handleEntryAction={handleEntryAction}
-                            />
-                        </Grid>
+                            <Grid item xs={12}>
+                                <EntryPaginationTable
+                                    isLoggedIn={isLoggedIn}
+                                    entries={data?.entries ?? []}
+                                    isAdmin={isAdmin}
+                                    isAdminOrModerator={isAdminOrModerator}
+                                    handleEntryAction={handleEntryAction}
+                                />
+                            </Grid>
                     </Grid>
                 </Paper>
             </>
