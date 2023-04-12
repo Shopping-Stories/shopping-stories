@@ -15,9 +15,9 @@ import { SearchType } from 'client/types';
 import { Entry} from "new_types/api_types";
 import { Roles } from 'config/constants.config';
 import { PaperStyles } from 'styles/styles';
-import { useEntryDispatch } from "@components/context/EntryContext";
+import { useEntryDispatch } from "@components/./context/EntryContext";
 import AdvancedSearchDialog from "@components/AdvancedSearchDialog";
-import { useSearch, useSearchDispatch, SearchAction } from "@components/context/SearchContext";
+import { useSearch, useSearchDispatch, SearchAction } from "@components/./context/SearchContext";
 
 import Divider from "@mui/material/Divider";
 import Switch from "@mui/material/Switch";

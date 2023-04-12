@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from 'next/router';
 import { Formik, FieldArray, Form, getIn } from 'formik';
-import {useEntry} from "@components/context/EntryContext";
+import {useEntry} from "@components/./context/EntryContext";
 import {
     ParserOutput,
     // ParserStringKeys, ParserBooleanKeys, ParserStringArrayKeys, ParserNumberKeys,
