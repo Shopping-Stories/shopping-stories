@@ -73,6 +73,9 @@ export interface Entry {
     itemID?: string;
     peopleID?: string;
     accountHolderID?: string;
+    item_obj?: string;
+    people_obj?: string;
+    accountHolder?: string;
     Final?: string;
     "_id"?: string;
 }

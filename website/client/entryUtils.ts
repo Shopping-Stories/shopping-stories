@@ -1,3 +1,4 @@
+import { GridRowModel } from "@mui/x-data-grid";
 import {
     Entry,
     EntryBooleanKey,
@@ -90,8 +91,10 @@ type Entries<T> = {
     [K in keyof T]: [K, T[K]];
 }[keyof T][];
 const getEntries = <T extends object>(obj: T) => Object.entries(obj) as Entries<T>;
+
 // Utils and types for processing non-parser format Entries
-export const entryToRow = (entry: Entry) => {
+
+export const entryToRow = (entry: Entry):GridRowModel => {
     const nonComplex: Partial<Entry> = Object.fromEntries(Object.entries(entry)
         .filter(([k, v]) => !!v && (hiddenFields.has(k as HiddenField) || visibleFields.has(k as VisibleField))))
         // .map(e => e))
@@ -251,6 +254,78 @@ export const parsedFieldNames = Object.fromEntries(
         .filter(k=>!excludedParsedFields.has(k))
         .map(k => [k as IncludedParsedField, toDisplayCase(k as string)])
 )
+
+// const r = /(ObjectId\(')|('\))|('),|{(')|(')}|\s(')|('):/g
+// const sq = /'/g
+const singleQuote = /':/g
+const spaceQ = /\s'/g
+const obReg = /ObjectId\('|'\)/g
+// const rParen = /'\)/g
+const oBracketQ = /{'/g
+const cBracketQ = /'}/g
+const commaQ = /',/g
+const none = /None/g
+
+export interface PersonObject {
+    _id: string,
+    name: string,
+    related: Array<string>
+}
+
+export interface ItemObject {
+    _id: string
+    item: string
+    related: Array<string>
+    archMat: number
+    category: string
+    subcategory: string
+}
+
+export const parsePeople = (ppl:string):PersonObject[] => {
+    ppl = ppl.replace(obReg, '"')
+        .replace(singleQuote, '":')
+        .replace(spaceQ, ' "')
+        .replace(oBracketQ, '{"')
+        .replace(cBracketQ, '"}')
+        .replace(commaQ, '",')
+            // .replace(rParen, '"')
+    try {
+        let pArr: PersonObject[] = JSON.parse(ppl)
+        return pArr
+    } catch (e:any) {
+        // alert(e)
+        console.log(e?.message)
+        console.log(ppl)
+        return []
+    }
+    // return pArr
+}
+
+// export const parsePeople = (ppl:string) => {
+//     ppl = ppl.replace(obReg, '"').replace(rParen, '"').replace(singleQuote, '"')
+//     let pObj: PersonObject[] = JSON.parse(ppl)
+// }
+
+export const parseItem = (item:string): ItemObject[] => {
+    item = item.replace(obReg, '"')
+        .replace(singleQuote, '":')
+        .replace(spaceQ, ' "')
+        .replace(oBracketQ, '{"')
+        .replace(cBracketQ, '"}')
+        .replace(commaQ, '",')
+        .replace(none, 'null')
+    try {
+        let itemArr: ItemObject[] = JSON.parse(item)
+        return itemArr
+    } catch (e:any) {
+        // alert(e)
+        console.log(e?.message)
+        console.log(item)
+        return []
+    }
+}
+
+
 
 // const tobacco = [
 //     "tobacco_location",

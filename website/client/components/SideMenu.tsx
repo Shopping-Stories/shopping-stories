@@ -1,25 +1,29 @@
+import { PaperHeaderStyles } from 'styles/styles';
+import { NavLink } from '../types';
+
 import MuiNextLink from '@components/MuiNextLink';
 import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { Fragment } from 'react';
-import { PaperStyles } from 'styles/styles';
-import { NavLink } from '../types';
+import Stack from '@mui/material/Stack';
+// import MenuList from '@mui/material/MenuList';
+// import { Fragment } from 'react';
 
 const SideMenu = ({ links }: { links: NavLink[] }) => {
     return (
-        <Fragment>
+        // <Fragment>
             <Paper
                 sx={{
                     backgroundColor: `var(--secondary)`,
-                    ...PaperStyles,
+                    ...PaperHeaderStyles
+                    // ...PaperStyles,
+                    // ...PaperStylesSecondary
                 }}
             >
-                <MenuList>
+                <Stack direction={'row'}>
                     {links.map(({ title, path }, i) => (
                         // TODO: Make this not as jank, so that clicking the menu item will cause the href from muinextlink.
-                        <a href={path} key={`${title}-${i}aref`}>
+                        // <a href={path} key={`${title}-${i}aref`}>
                         <MenuItem key={`${title}-${i}`}>
                             <Typography
                                 variant="button"
@@ -38,11 +42,11 @@ const SideMenu = ({ links }: { links: NavLink[] }) => {
                                 </MuiNextLink>
                             </Typography>
                         </MenuItem>
-                        </a>
+                        // </a>
                     ))}
-                </MenuList>
+                </Stack>
             </Paper>
-        </Fragment>
+        //</Fragment>
     );
 };
 
