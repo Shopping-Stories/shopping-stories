@@ -128,8 +128,6 @@ const EntryGraphView = ({
     }, [queries])
     // console.log(entries)
     // console.log("Query Result:", error ? error : data?.entries);
-    // TODO: "fetching" component
-    // TODO: figure refetch logic
     return (
         <>
             {queries.some(q => q.isFetching || q.isLoading)

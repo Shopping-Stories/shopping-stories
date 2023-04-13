@@ -236,12 +236,12 @@ const AdminDashboardPage: NextPage = () => {
                                 onChange={handleChange}
                                 centered
                             >
-                                <Tab sx={{padding: 0, margin: 0, marginRight: "0.5vw"}} label={<Typography fontSize={"1.1vh"} color="primary.contrastText">Change Name</Typography>} {...a11yProps(0)} />
+                                <Tab sx={{padding: 0, margin: 0, marginRight: "0.5vw"}} label={<Typography fontSize={"1.1vh"} color="primary.main">Change Name</Typography>} {...a11yProps(0)} />
                                 <Tab sx={{padding: 0, margin: 0, marginRight: "0.5vw"}}
-                                    label={<Typography color="primary.contrastText" fontSize={"1.1vh"}>Change Password</Typography>}
+                                    label={<Typography color="primary.main" fontSize={"1.1vh"}>Change Password</Typography>}
                                     {...a11yProps(1)}
                                 />
-                                <Tab sx={{padding: 0, margin: 0}} label={<Typography fontSize={"1.1vh"} color="primary.contrastText">Change Email</Typography>} {...a11yProps(2)} />
+                                <Tab sx={{padding: 0, margin: 0}} label={<Typography fontSize={"1.1vh"} color="primary.main">Change Email</Typography>} {...a11yProps(2)} />
                             </Tabs>
                             <TabPanel value={tabIndex} index={0}>
                                 <Paper sx={{ p: '1rem' }}>
@@ -265,7 +265,10 @@ const AdminDashboardPage: NextPage = () => {
                                             variant="contained"
                                             type="submit"
                                         >
-                                            <Typography variant='inherit' color='secondary.contrastText'>
+                                            <Typography 
+                                                variant='inherit' 
+                                                color='secondary.contrastText'
+                                            >
                                                 Change Name(s)
                                             </Typography>
                                         </LoadingButton>
@@ -306,7 +309,10 @@ const AdminDashboardPage: NextPage = () => {
                                                 variant="contained"
                                                 type="submit"
                                             >
-                                                <Typography variant='inherit' color='secondary.contrastText'>
+                                                <Typography 
+                                                    variant='inherit' 
+                                                    color='secondary.contrastText'
+                                                >
                                                     Change Password
                                                 </Typography>
                                             </LoadingButton>
@@ -334,7 +340,10 @@ const AdminDashboardPage: NextPage = () => {
                                                 variant="contained"
                                                 type="submit"
                                             >
-                                                <Typography variant='inherit' color='secondary.contrastText'>
+                                                <Typography 
+                                                    variant='inherit' 
+                                                    color='secondary.contrastText'
+                                                >
                                                     Change Email
                                                 </Typography>
                                             </LoadingButton>
@@ -357,7 +366,10 @@ const AdminDashboardPage: NextPage = () => {
                                                 variant="contained"
                                                 type="submit"
                                             >
-                                                <Typography variant='inherit' color='secondary.contrastText'>
+                                                <Typography 
+                                                    variant='inherit' 
+                                                    color='secondary.contrastText'
+                                                >
                                                     Confirm Change
                                                 </Typography>
                                             </LoadingButton>
