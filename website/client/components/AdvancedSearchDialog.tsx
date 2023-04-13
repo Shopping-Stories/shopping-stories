@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Formik, Form } from 'formik';
 import {advancedSearchSchema} from "../formikSchemas";
 import {
+    // useSearch,
     // SearchAction,
     useSearchDispatch
 } from "@components/./context/SearchContext";
@@ -43,8 +44,13 @@ interface EntryDialogProps {
 const AdvancedSearchDialog = ({ setAdvancedOpen, open, fuzzy, setFuzzy, toGraph, setAdvSubmitted}: EntryDialogProps) => {
     // console.log(dialogType, entry)
     // const [fuzzy, setFuzzy] = useState<boolean>(false)
+    // const {search} = useSearch()
     const initFormValues: Partial<AdvancedSearchOptions> = useMemo(()=>{
-        return {}
+        // const comp = decodeURI(search)
+        // console.log(comp)
+        return {
+            // search: search
+        }
     }, [])
     const setSearch = useSearchDispatch()
     const handleSubmit = async (search: Partial<AdvancedSearchOptions>) => {
