@@ -81,15 +81,15 @@ export default function VerticalTabs({
     const [modalIsOpen7, setModalIsOpen7] = useState(false);
     const [modalIsOpen8, setModalIsOpen8] = useState(false);
 
-    const [selectedImage, setSelectedImage] = useState(null);
-
-    const handleImageClick = (imageUrl: any) => {
-        setSelectedImage(imageUrl);
-    };
-
-    const handleModalClose = () => {
-        setSelectedImage(null);
-    };
+    // const [selectedImage, setSelectedImage] = useState(null);
+    //
+    // const handleImageClick = (imageUrl: any) => {
+    //     setSelectedImage(imageUrl);
+    // };
+    //
+    // const handleModalClose = () => {
+    //     setSelectedImage(null);
+    // };
 
     interface sfile {
         file: string

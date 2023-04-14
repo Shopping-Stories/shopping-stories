@@ -8,10 +8,14 @@ import Paper from '@mui/material/Paper';
 import { PaperStylesSecondary } from 'styles/styles';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import React, { useState, useEffect } from "react";
+import React, { useState,
+    // useEffect
+} from "react";
 
 const UpdateItemsPeoplePage: NextPage = () => {
-    const { groups, loading } = useAuth('/', [Roles.Admin]);
+    const { groups,
+        // loading
+    } = useAuth('/', [Roles.Admin]);
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
 

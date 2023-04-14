@@ -1,5 +1,7 @@
 import { NextPage } from 'next';
-import useAuth, { isInGroup } from '@hooks/useAuth.hook';
+import useAuth, {
+    // isInGroup
+} from '@hooks/useAuth.hook';
 import { Roles } from 'config/constants.config';
 import ColorBackground from '@components/ColorBackground';
 import DashboardPageSkeleton from '@components/DashboardPageSkeleton';
@@ -8,15 +10,22 @@ import Paper from '@mui/material/Paper';
 import { PaperStylesSecondary } from 'styles/styles';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import React, { useState, useEffect } from "react";
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import React, {
+    useState,
+    // useEffect
+} from "react";
+import { Formik, Form,
+    // Field, ErrorMessage
+} from 'formik';
 import TextField from '@mui/material/TextField';
 
 
 const ManagePeoplePage: NextPage = () => {
-    const { groups, loading } = useAuth('/', [Roles.Admin]);
-    const isAdmin = isInGroup(Roles.Admin, groups);
-    const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
+    const { groups,
+        // loading
+    } = useAuth('/', [Roles.Admin]);
+    // const isAdmin = isInGroup(Roles.Admin, groups);
+    // const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
 
     const [successMessage, setSuccessMessage] = useState("");
 
