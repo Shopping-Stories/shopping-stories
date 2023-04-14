@@ -864,10 +864,11 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
                             nodeLabel={(node) =>
                                 (node?.label && !nodeLabelsVisible) ? node.label.toString() : ""
                             }
-                            linkLabel={l=>graph.nodeDict
-                                ? `${graph.nodeDict[typeof l.source === 'object' ? l.source.id : l.source].label} - ${graph?.nodeDict[typeof l.target === 'object' ? l.target.id : l.target].label}`
-                                : l.id as string
-                            }
+                            linkLabel={l=> l.label !== undefined ? l.label as string : l.id as string}
+                            // linkLabel={l=>graph.nodeDict
+                            //     ? `${graph.nodeDict[typeof l.source === 'object' ? l.source.id : l.source].label} - ${graph?.nodeDict[typeof l.target === 'object' ? l.target.id : l.target].label}`
+                            //     : l.id as string
+                            // }
                             nodeRelSize={relSize}
                             // nodeCanvasObjectMode={()=>'after'}
                             nodeCanvasObject={(node, ctx, globalScale) => paintNodes(node, ctx, globalScale)}
