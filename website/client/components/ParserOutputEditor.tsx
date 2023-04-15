@@ -40,6 +40,7 @@ const getData = async (url: string): Promise<S3ParserOutput> => {
         arr = qres[arr]
         // console.log(arr)
         for (entry in arr) {
+            arr[entry].final = arr[entry].Final
             dat.push(arr[entry]);
         }
     }

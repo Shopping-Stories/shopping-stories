@@ -236,6 +236,7 @@ export interface ParserOutput {
     tobacco_marks?: Array<TobaccoMark>
     tobacco_entries?: Array<TobaccoEntry>
     final?: string
+    Final?: string
 }
 export type ParserOutputKey = keyof ParserOutput
 
