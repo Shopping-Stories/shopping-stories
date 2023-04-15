@@ -25,6 +25,9 @@ const adminLinks: NavLink[] = [
     { title: `manage users`, path: `/dashboard/users` },
     { title: `manage people`, path: `/dashboard/people` },
     { title: `manage items`, path: `/dashboard/items` },
+    { title: `combine people`, path: `/dashboard/managepeople` },
+    { title: `combine items`, path: `/dashboard/manageitems` },
+    { title: `upload items and people`, path: `/dashboard/updateitemspeople` },
 ];
 
 interface DashBoardPageSkeletonProps {

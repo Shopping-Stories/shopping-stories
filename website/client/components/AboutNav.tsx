@@ -81,15 +81,15 @@ export default function VerticalTabs({
     const [modalIsOpen7, setModalIsOpen7] = useState(false);
     const [modalIsOpen8, setModalIsOpen8] = useState(false);
 
-    const [selectedImage, setSelectedImage] = useState(null);
-
-    const handleImageClick = (imageUrl: any) => {
-        setSelectedImage(imageUrl);
-    };
-
-    const handleModalClose = () => {
-        setSelectedImage(null);
-    };
+    // const [selectedImage, setSelectedImage] = useState(null);
+    //
+    // const handleImageClick = (imageUrl: any) => {
+    //     setSelectedImage(imageUrl);
+    // };
+    //
+    // const handleModalClose = () => {
+    //     setSelectedImage(null);
+    // };
 
     interface sfile {
         file: string
@@ -1362,7 +1362,7 @@ export default function VerticalTabs({
                                                     <Card>
                                                         <CardContent>
                                                             <List>
-                                                            {docs?.Contents?.filter(doc => doc.Key !== "Documentation/").map((doc: document, index) => (
+                                                            {docs?.Contents?.filter(doc => doc.Key !== "Documentation/" && doc.Key !== "Documentation/peopleIndex.xlsx" && doc.Key !== "Documentation/itemIndex.xlsx").map((doc: document, index) => (
                                                                 <React.Fragment key={index}>
                                                                 <ListItem
                                                                     sx={{

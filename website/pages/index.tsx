@@ -10,6 +10,7 @@ import Stack from "@mui/material/Stack";
 import MuiNextLink from "@components/MuiNextLink";
 import { LinkColor } from "../styles/styles";
 import Divider from "@mui/material/Divider";
+import Button from "@mui/material/Button";
 // import SignInPage from './auth/signin';
 // import Container from "@mui/material/Container";
 // import Box from "@mui/material/Box";
@@ -95,18 +96,20 @@ const Home: NextPage = () => {
                                 variant={'h6'}
                                 href="/entries"
                             >
-                                Continue As Guest
+                              <Button variant={'contained'} sx={{color: "secondary.contrastText"}}>Continue As Guest</Button>
                             </MuiNextLink>
+                          
                             <MuiNextLink sx={{...LinkColor, ...homeFont}} variant={'h6'} href="/auth/signin">
-                                Sign In
+                              <Button variant={'contained'} sx={{color: "secondary.contrastText"}}>Sign In</Button>
                             </MuiNextLink>
+                          
                             {/*<Divider flexItem orientation={'vertical'}/>*/}
                             <MuiNextLink sx={{...LinkColor, ...homeFont}}  variant={'h6'} href="/auth/signup">
-                                Sign Up
+                              <Button variant={'contained'} sx={{color: "secondary.contrastText"}}>Sign Up</Button>
                             </MuiNextLink>
                             {/*<Divider flexItem orientation={'vertical'}/>*/}
                             <MuiNextLink sx={{...LinkColor, ...homeFont}}  variant={'h6'} href="/auth/forgot-password">
-                                Forgot Password
+                              <Button variant={'contained'} sx={{color: "secondary.contrastText"}}>Forgot Password</Button>
                             </MuiNextLink>
                         </Stack>
                     }

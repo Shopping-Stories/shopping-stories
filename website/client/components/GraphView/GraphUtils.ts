@@ -1,47 +1,23 @@
 // import { GKey, NodeInfo } from "@components/GraphView/GraphTypes";
 import { PaletteMode } from "@mui/material";
-
+import {
+    LinkColors,
+    SvgIcons, NodeIcons,
+    NodeTypes, GraphTypeKey, NodeTypeKey, LinkTypeKey,
+    EntryInfo, EntryKey, EntryScalarInfo, LedgerKeys, EntryObjects, Pool
+} from "@components/GraphView/GraphTypes";
 import { Currency, Entry, Ledger } from "../../../new_types/api_types";
+import { NodeObject } from "react-force-graph-2d";
 // import { NodeInfo } from "@components/GraphView/GraphTypes";
-export interface NodeTypes {
-    person: EntryKey
-    item: EntryKey
-    personAccount: EntryKey
-    store:  EntryKey
-    help:  EntryKey
-    mention: EntryKey
-}
 
-export interface LinkTypes {
-    item_personAccount: EntryKey
-    item_person: EntryKey
-    item_store: EntryKey
-    item_mention: EntryKey
-    person_personAccount: EntryKey,
-    // personAccount_personAccount: EntryKey,
-    // person_person: EntryKey,
-    mention_personAccount: EntryKey
-}
-
-export type NodeTypeKey = keyof NodeTypes
-export type LinkTypeKey = keyof LinkTypes
-export type GraphTypeKey = NodeTypeKey | LinkTypeKey
-
-type NodeIcons = { [key in NodeTypeKey] : string }
-type LinkTypeDict = { [key in LinkTypeKey] : "inherit" | "disabled" | "action" | "primary" | "secondary" | "error" | "info" | "success" | "warning" }
-
-interface SvgIcons {
-    light: NodeIcons
-    dark: NodeIcons
-}
-
-export const linkColors: LinkTypeDict = {
+export const linkColors: LinkColors = {
     item_personAccount: "success",
     item_person: "success",
     item_store: "warning",
     item_mention: "info",
     person_personAccount: "error",
-    // personAccount_personAccount: "error",
+    person_person: 'error',
+    personAccount_personAccount: "error",
     mention_personAccount: "secondary"
 }
 
@@ -64,8 +40,16 @@ const svgIconMap: SvgIcons = {
     }
 }
 
+export const initPool: Pool = {
+    person: new Set<string>(),
+    item: new Set<string>(),
+    personAccount: new Set<string>(),
+    store:  new Set<string>(),
+    help:  new Set<string>(),
+    mention: new Set<string>(),
+}
 
-const getNodeSrc = (t:string, mode: PaletteMode) => {
+const getNodeIconSrc = (t:string, mode: PaletteMode) => {
     if (!mode || !svgIconMap[mode as keyof SvgIcons][t as keyof NodeIcons]){
         return svgIconMap.light.help
     }
@@ -74,11 +58,9 @@ const getNodeSrc = (t:string, mode: PaletteMode) => {
 
 export const setNodeSVGIcon = (t: string, mode: PaletteMode) => {
     const img = new Image()
-    img.src = getNodeSrc(t, mode)
+    img.src = getNodeIconSrc(t, mode)
     return img
 };
-
-type EntryKey = keyof Entry;
 
 const nodeTypeMap: NodeTypes = {
     item: "item",
@@ -100,8 +82,6 @@ export const getNodeType = (nodeType:string):EntryKey => {
 //
 // }
 
-type LedgerKeys = Pick<Entry, "ledger"| "date"| "date_year"| "month"| "Day"| "liber_book">
-
 export const getNodeKeys = (nodeType:string): EntryKey[] => {
     if (nodeType === "adfas") console.log(nodeType)
     return ledgerKeys;
@@ -116,6 +96,10 @@ export const getInfoKeys = (graphType: GraphTypeKey):EntryKey[] =>  {
         case "item_store":
             return item_store
         case "person_personAccount":
+            return person_personAccount
+        case "person_person":
+            return person_personAccount
+        case "personAccount_personAccount":
             return person_personAccount
         case "mention_personAccount":
             return base
@@ -144,12 +128,6 @@ const item_store = [...base, ...item, ...personAcct]
 const person_personAccount = [...base, ...person, ...personAcct]
 
 const entryComplex = new Set<EntryKey>(["currency" , "ledger" , "sterling" , "mentions" , "people" ,"context" ,"phrases"])
-type EntryNonInfo = Pick<Entry,
-    "itemID" | "amount_is_combo" | "price_is_combo" |
-    "commodity_totaling_contextless" | "currency_totaling_contextless" |
-    "peopleID" | "accountHolderID"
-    // | "_id"
-    >
 // itemID: "Item ID",
 // amount_is_combo: boolean,
 // price_is_combo: boolean,
@@ -159,29 +137,6 @@ type EntryNonInfo = Pick<Entry,
 // peopleID: "",
 // accountHolderID: string,
 // _id: string,
-export type EntryScalarInfo = Omit<Entry,
-    "currency" | "ledger" | "sterling" | "mentions" | "people" |"context" |"phrases" | keyof EntryNonInfo
-    >
-// type FullEntryInfo = Currency | Ledger | EntryScalarInfo
-
-interface EntryObjects {
-    ledger?: Ledger,
-    currency?: Currency,
-    sterling?: Currency,
-}
-
-export interface EntryInfo extends EntryScalarInfo{
-    ledger?: Partial<Ledger>
-    currency?: Partial<Currency>,
-    sterling?: Partial<Currency>,
-    people?: Entry["peopleID"],
-    mentions?: Entry["mentions"],
-    context?: Entry["context"],
-    phrases?: Entry["phrases"],
-    scalars?: EntryScalarInfo,
-    text_as_parsed?: Entry['text_as_parsed'],
-    original_entry?:Entry['original_entry'],
-}
 
 export const makeEntryInfo = (e:Entry, t:(NodeTypeKey | LinkTypeKey)):EntryInfo => {
     let keys: EntryKey[] = getInfoKeys(t)
@@ -253,11 +208,11 @@ export const displayNames = {
     // _id: string,
 }
 
-const itemPersonAccount = new Set<NodeTypeKey>(["item", "personAccount"])
-const itemPerson = new Set<NodeTypeKey>(["item", "person"])
-const itemStore = new Set<NodeTypeKey>(["item", "store"])
-const personPersonAccount = new Set<NodeTypeKey>(["person", "personAccount"])
-const mentionPersonAccount = new Set<NodeTypeKey>(["mention", "personAccount"])
+// const itemPersonAccount = new Set<NodeTypeKey>(["item", "personAccount"])
+// const itemPerson = new Set<NodeTypeKey>(["item", "person"])
+// const itemStore = new Set<NodeTypeKey>(["item", "store"])
+// const personPersonAccount = new Set<NodeTypeKey>(["person", "personAccount"])
+// const mentionPersonAccount = new Set<NodeTypeKey>(["mention", "personAccount"])
 // const itemMention = new Set<NodeTypeKey>(["mention", "personAccount"])
 
 /**
@@ -267,15 +222,20 @@ const mentionPersonAccount = new Set<NodeTypeKey>(["mention", "personAccount"])
  * @param y type of node b
  * @returns a triple where the third element is the link type constructed from the node types
  */
-// returns a triple where the third element is the link type constructed from the node types
 export const makeLinkType = (x: NodeTypeKey, y: NodeTypeKey):[NodeTypeKey, NodeTypeKey, LinkTypeKey] =>  {
-    if (itemPersonAccount.has(x) && itemPersonAccount.has(y)) return [x, y, "item_personAccount"]
-    if (itemPerson.has(x) && itemPerson.has(y)) return [x, y, "item_person"]
-    if (itemStore.has(x) && itemStore.has(y)) return [x, y, "item_store"]
-    if (personPersonAccount.has(x) && personPersonAccount.has(y)) return [x, y,  "person_personAccount"]
-    if (mentionPersonAccount.has(x) && mentionPersonAccount.has(y)) return [x, y,  "mention_personAccount"]
-    // else linkType = "mention_personAccount"
-    return [x, y, "item_mention"]
+    if (x === y && (x === 'store' || x === 'help' || x === 'mention' || x === 'item')){
+        return [x, y, "item_mention"]
+    }
+    let arr: [NodeTypeKey, NodeTypeKey] = [x, y]
+    arr.sort()
+    return [arr[0], arr[1], `${arr[0]}_${arr[1]}` as LinkTypeKey]
+    // if (itemPersonAccount.has(x) && itemPersonAccount.has(y)) return [x, y, "item_personAccount"]
+    // if (itemPerson.has(x) && itemPerson.has(y)) return [x, y, "item_person"]
+    // if (itemStore.has(x) && itemStore.has(y)) return [x, y, "item_store"]
+    // if (personPersonAccount.has(x) && personPersonAccount.has(y)) return [x, y,  "person_personAccount"]
+    // if (mentionPersonAccount.has(x) && mentionPersonAccount.has(y)) return [x, y,  "mention_personAccount"]
+    // // else linkType = "mention_personAccount"
+    // return [x, y, "item_mention"]
 }
 
 /**
@@ -283,7 +243,7 @@ export const makeLinkType = (x: NodeTypeKey, y: NodeTypeKey):[NodeTypeKey, NodeT
  *
  * @param x id of node a
  * @param y id of node b
- * @returns snake case name from two sorted node ids
+ * @returns snake_case name from sorting two node ids
  */
 export const makeLinkID = (x:string, y:string):string[] => {
     let arr = [x,y].sort()
@@ -341,6 +301,21 @@ export const initFilter = {
     dateRange: undefined,
     search: undefined
 }
+
+export const comparator = (a:NodeObject, b:NodeObject) => {
+    if (a.nodeType === "store") return -1
+    if (!a.nodeType) return -1
+    if (!b.nodeType) return 1
+    return a.nodeType + a.label < b.nodeType + b.label ? -1 : 1
+}
+
+export const formatLabel = (str:string):string => {
+    str = str.replace(/\b[a-z]/g, function(letter:string) { return letter.toUpperCase(); });
+    str = str.replace(/'(S) /g, function(letter):string { return letter.toLowerCase(); });
+    return str;
+}
+
+export const mdy = (m?:string,d?:string,y?:string) => `${m}/${d}/${y}`
 
 // export const setLinkSVGIcon = (t: string) => {
 //     // const nodeIcons = {

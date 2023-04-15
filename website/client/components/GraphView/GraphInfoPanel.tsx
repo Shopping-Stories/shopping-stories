@@ -19,7 +19,8 @@ import {
 // import { GraphInfoPanelProps } from "@components/GraphView/GraphGui";
 import EntryInfoItem from "@components/GraphView/EntryInfoItem";
 import { ListSubheader } from "@mui/material";
-import { EntryInfo } from "@components/GraphView/util";
+import { EntryInfo } from "@components/GraphView/GraphTypes";
+// import Typography from "@mui/material/Typography";
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -74,8 +75,18 @@ const GraphInfoPanel = ({ name, info, entityType, handleEntryAction }: GraphInfo
                         {/*<Typography variant={""}>Selection Info</Typography>*/}
                         <ListItem>
                             <ListItemText
-                                primary={`Name: ${name}`}
-                                secondary={`Entity: ${entityType}`}
+                                // primary={`Name: ${name}`}
+                                // primary={`Name: ${name}`}
+                                // primary={entityType === 'node'
+                                //     ? <Typography variant={'h5'}>{name}</Typography>
+                                //     : name?.replace('-', '\n-\n')
+                                //         .split('\n')
+                                //         .map(s=><Typography key={s} variant={'h5'}>{s}</Typography>)}
+                                // secondary={`Entity: ${entityType}`}
+                                // secondary={<Typography variant={'h6'} fontWeight={'medium'}>{entityType}</Typography>}
+                                // disableTypography
+                                primary={name}
+                                secondary={entityType}
                                 primaryTypographyProps={{variant: "h5", }}
                                 secondaryTypographyProps={{variant: "h6", }}
                             />
