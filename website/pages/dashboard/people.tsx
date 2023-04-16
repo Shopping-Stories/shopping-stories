@@ -53,7 +53,7 @@ import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValida
 import AddCircle from '@mui/icons-material/AddCircle';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
-// import DialogContentText from '@mui/material/DialogContentText';
+import RemoveCircle from "@mui/icons-material/RemoveCircle";
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -64,6 +64,7 @@ import EditPersonDialog from "@components/EditPersonDialog";
 import { parsePeople, PersonObject, toTitleCase } from "../../client/entryUtils";
 import { useSearchDispatch } from "@components/context/SearchContext";
 import { useRouter } from "next/router";
+import Divider from "@mui/material/Divider";
 
 // interface SelectedRowParams {
 //     id: GridRowId;
@@ -74,6 +75,16 @@ interface PeopleMap {
     [key: string]: PersonObject
 }
 
+interface RelationState {
+    open: boolean
+    mutation: string
+}
+
+interface EditModalState {
+    open:boolean
+    mode:string
+}
+
 const ManageMarksPage: NextPage = () => {
     const { groups, loading } = useAuth('/', [Roles.Admin, Roles.Moderator]);
     const isAdmin = isInGroup(Roles.Admin, groups);
@@ -82,11 +93,13 @@ const ManageMarksPage: NextPage = () => {
     const [selectedRow, setSelectedRow] =
         useState<GridRowId>("");
     
-    const [relationOpen, setRelationOpen] = useState<boolean>(false)
-    const [editOpen, setEditOpen] = useState<boolean>(false)
     
+    const [relationOpen, setRelationOpen] = useState<RelationState>({open:false, mutation:'closed'})
+    const [editOpen, setEditOpen] = useState<EditModalState>({open:false, mode:'closed'})
+    const [confirm, setConfirm] = useState<boolean>(false)
     const searchDispacth = useSearchDispatch()
     const router = useRouter()
+    
     
     const doSearch = useCallback(async () => {
         const req = `https://api.preprod.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams({person:search}).toString()}`
@@ -157,7 +170,7 @@ const ManageMarksPage: NextPage = () => {
         // const field = event.currentTarget.dataset.field!;
         console.log(id)
         setSelectedRow(id);
-    }, [selectedRow, setSelectedRow]);
+    }, [setSelectedRow]);
     
     const queryClient = useQueryClient()
     
@@ -181,9 +194,9 @@ const ManageMarksPage: NextPage = () => {
     });
     
     const addMutation = useMutation({
-        mutationFn: (people:[string, string]) => {
-            const [p1, p2] = people
-            let saveUrl = `https://api.preprod.shoppingstories.org/add_people_relationship/?` + new URLSearchParams({
+        mutationFn: (people:[string, string, string]) => {
+            const [p1, p2, mutation] = people
+            let saveUrl = `https://api.preprod.shoppingstories.org/${mutation}_people_relationship/?` + new URLSearchParams({
                 person1_name: p1,
                 person2_name: p2
             }).toString();
@@ -199,8 +212,8 @@ const ManageMarksPage: NextPage = () => {
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
     })
     
-    const addRelationship = useCallback((p1:string, p2:string) => {
-        addMutation.mutate([p1, p2])
+    const addRelationship = useCallback((p1:string, p2:string, mutation:string) => {
+        addMutation.mutate([p1, p2, mutation])
     }, [addMutation])
     
     const editMutation = useMutation({
@@ -237,6 +250,21 @@ const ManageMarksPage: NextPage = () => {
         // }
         // fetch(saveUrl, req)//.then(p => {console.log(p)})
     }, [editMutation])
+    
+    const deleteMutation = useMutation({
+        mutationFn: (id:string) => {
+            let saveUrl = `https://api.preprod.shoppingstories.org/delete_person/?` + new URLSearchParams({ person_id: id }).toString();
+            return fetch(saveUrl).then(p => {
+                console.log(p)
+            })
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
+    })
+    
+    const deletePerson = useCallback((id:string) => {
+        deleteMutation.mutate(id)
+        setConfirm(false)
+    }, [deleteMutation])
     
     const getEntryResults = useCallback( async ()=>{
         if (!selectedRow || selectedRow === "") return
@@ -320,8 +348,55 @@ const ManageMarksPage: NextPage = () => {
                                                 View Entries
                                             </Button>
                                             <Button
-                                                onClick={() => setRelationOpen(true)}
+                                                onClick={()=> setEditOpen({open:true, mode:'edit'})}
+                                                disabled={!selectedRow}
+                                                hidden={!isAdminOrModerator}
                                                 variant="contained"
+                                                color={"warning"}
+                                            >
+                                                <Typography fontWeight={"500"}>
+                                                    Edit
+                                                </Typography>
+                                            </Button>
+                                            { !confirm &&
+                                                <Button
+                                                    onClick={()=> setConfirm(true)}
+                                                    disabled={!selectedRow}
+                                                    hidden={!isAdminOrModerator}
+                                                    variant="contained"
+                                                    color={"error"}
+                                                >
+                                                    <Typography fontWeight={"500"}>
+                                                        Delete
+                                                    </Typography>
+                                                </Button>
+                                            }
+                                            { confirm &&
+                                                <Button
+                                                    sx={{ ml: 1 }}
+                                                    onClick={() => deletePerson(selectedRow as string)}
+                                                    variant={"contained"}
+                                                    color={'error'}
+                                                >
+                                                    Confirm ?
+                                                </Button>
+                                            }
+                                            <Divider flexItem orientation={'vertical'}/>
+                                            <Button
+                                                onClick={()=>setEditOpen({open:true, mode:'view'})}
+                                                disabled={!selectedRow}
+                                                hidden={!isAdminOrModerator}
+                                                variant="contained"
+                                                color={"primary"}
+                                            >
+                                                <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                    View Relationships
+                                                </Typography>
+                                            </Button>
+                                            <Button
+                                                onClick={() => setRelationOpen({open:true, mutation:"add"})}
+                                                variant="contained"
+                                                color={'success'}
                                                 startIcon={<AddCircle sx={{color: "secondary.contrastText"}} />}
                                                 hidden={!isAdminOrModerator}
                                             >
@@ -330,14 +405,14 @@ const ManageMarksPage: NextPage = () => {
                                                 </Typography>
                                             </Button>
                                             <Button
-                                                onClick={()=> setEditOpen(selectedRow !== '')}
-                                                disabled={!selectedRow}
-                                                hidden={!isAdminOrModerator}
+                                                onClick={() => setRelationOpen({open:true, mutation:"remove"})}
                                                 variant="contained"
-                                                color={"warning"}
+                                                color={"error"}
+                                                startIcon={<RemoveCircle sx={{color: "secondary.contrastText"}} />}
+                                                hidden={!isAdminOrModerator}
                                             >
-                                                <Typography fontWeight={"500"}>
-                                                    Edit
+                                                <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                    Remove Relationship
                                                 </Typography>
                                             </Button>
                                         </>)
@@ -368,14 +443,15 @@ const ManageMarksPage: NextPage = () => {
                 </Box>
             </DashboardPageSkeleton>
             <AddRelationshipDialog
-                open={relationOpen}
+                open={relationOpen.open && relationOpen.mutation !== 'closed'}
                 setOpen={setRelationOpen}
                 handleSubmit={addRelationship}
                 person1={selectedRow as string}
+                mutation={relationOpen.mutation}
             />
             <EditPersonDialog
                 handleSubmit={editPerson}
-                open={editOpen}
+                open={editOpen.open && editOpen.mode !== 'closed'}
                 setOpen={setEditOpen}
                 person={selectedRow !== "" && !!people.pplMap[selectedRow] ? people.pplMap[selectedRow] : undefined}
                 relations={selectedRow.toString().trim() !== "" && !!people.pplMap[selectedRow] && !!people.pplMap[selectedRow].related
@@ -384,6 +460,7 @@ const ManageMarksPage: NextPage = () => {
                     : {}
             }
                 id={selectedRow as string}
+                mode={editOpen.mode}
             />
         </ColorBackground>
     );

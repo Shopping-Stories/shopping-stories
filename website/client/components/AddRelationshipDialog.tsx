@@ -13,15 +13,19 @@ import Divider from "@mui/material/Divider";
 // import FormControlLabel from "@mui/material/FormControlLabel";
 // import Switch from "@mui/material/Switch";
 // import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-
+interface RelationState {
+    open: boolean
+    mutation: string
+}
 interface RelationShipProps {
     open: boolean,
-    setOpen: (open:boolean) => void
-    handleSubmit: (p1:string, p2:string) => void
+    setOpen: (state:RelationState) => void
+    handleSubmit: (p1:string, p2:string, mutation:string) => void
     person1?: string
     person2?: string
     id1?: string
     id2?: string
+    mutation:string
 }
 
 interface RelationShipForm {
@@ -29,7 +33,7 @@ interface RelationShipForm {
     person2:string
 }
 
-const AddRelationshipDialog = ({open, setOpen, handleSubmit, person1, person2}: RelationShipProps) => {
+const AddRelationshipDialog = ({open, setOpen, handleSubmit, person1, person2, mutation}: RelationShipProps) => {
     
     const initValues: RelationShipForm = useMemo(() => {
         let vals:RelationShipForm = {person1: '', person2: ''}
@@ -44,11 +48,11 @@ const AddRelationshipDialog = ({open, setOpen, handleSubmit, person1, person2}: 
     
     const submit = async (p1:string, p2:string) => {
         if (p1 === '' || p2 === '') return
-        handleSubmit(p1,  p2)
+        handleSubmit(p1,  p2, mutation)
     }
     
     const handleClose = () => {
-        setOpen(false)
+        setOpen({open:false, mutation:"closed"})
     }
     
     return (
@@ -57,7 +61,7 @@ const AddRelationshipDialog = ({open, setOpen, handleSubmit, person1, person2}: 
         >
             <Grid container alignItems={'center'}>
                 <Grid item xs={6}>
-                    <DialogTitle>New Relationship</DialogTitle>
+                    <DialogTitle>{mutation.charAt(0).toUpperCase() + mutation.slice(1)} Relationship</DialogTitle>
                 </Grid>
                 <Grid item xs={6}>
                     <DialogActions>
@@ -72,7 +76,7 @@ const AddRelationshipDialog = ({open, setOpen, handleSubmit, person1, person2}: 
                         <Button
                             variant={'contained'}
                             color={'error'}
-                            onClick={()=>setOpen(false)}
+                            onClick={()=>handleClose()}
                         >
                             Cancel
                         </Button>
