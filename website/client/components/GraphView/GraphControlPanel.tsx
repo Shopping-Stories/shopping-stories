@@ -57,8 +57,10 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
         let dateRange = undefined
         if (dates[0] !== dates[range[0]-1] || dates[dates.length-1] !== dates[range[1]-1]) {
             dateRange = { start: dates[range[0] - 1], end: dates[range[1] - 1] }
+        } else {
+            dateRange = { start: dates[0], end: dates[dates.length-1] }
         }
-        console.log(dateRange)
+        // console.log(dateRange)
         if (e.target.checked && dateRange) {
             makePredicates("date", undefined, e.target.checked, dateRange)
         }
