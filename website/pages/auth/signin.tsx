@@ -111,7 +111,9 @@ const SignInPage: NextPage = () => {
                     variant="contained"
                     type="submit"
                 >
-                    Sign In
+                    <Typography fontWeight={500} color="secondary.contrastText">
+                        Sign In
+                    </Typography>
                 </LoadingButton>
                 <Container>
                     <MuiNextLink sx={LinkColor} href="/auth/signup">

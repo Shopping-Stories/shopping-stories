@@ -15,9 +15,9 @@ import { SearchType } from 'client/types';
 import { Entry} from "new_types/api_types";
 import { Roles } from 'config/constants.config';
 import { PaperStyles } from 'styles/styles';
-import { useEntryDispatch } from "@components/context/EntryContext";
+import { useEntryDispatch } from "@components/./context/EntryContext";
 import AdvancedSearchDialog from "@components/AdvancedSearchDialog";
-import { useSearch, useSearchDispatch, SearchAction } from "@components/context/SearchContext";
+import { useSearch, useSearchDispatch, SearchAction } from "@components/./context/SearchContext";
 
 import Divider from "@mui/material/Divider";
 import Switch from "@mui/material/Switch";
@@ -39,7 +39,7 @@ const getType = (fz:boolean, adv:boolean): SearchAction["type"] => {
 }
 
 const EntriesPage: NextPage = () => {
-    const { groups } = useAuth();
+    const { groups, isLoggedIn } = useAuth();
     const router = useRouter();
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isModerator = isInGroup(Roles.Moderator, groups);
@@ -72,9 +72,9 @@ const EntriesPage: NextPage = () => {
             : `https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
         const res = await fetch(req);
         let toret: EntryQueryResult = JSON.parse(await res.text());
-        console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
-        console.log(req)
-        console.log(toret);
+        // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
+        // console.log(req)
+        // console.log(toret);
         return toret;
     },[search, fuzzy, advanced])
     
@@ -245,6 +245,7 @@ const EntriesPage: NextPage = () => {
                                         fullWidth
                                         loading={search !== '' && isLoading}
                                         variant="contained"
+                                        disabled={searchForm.values.search.trim() === ''}
                                         // type={'submit'}
                                         color={"secondary"}
                                         onClick={()=>toGraph(searchForm.values.search)}
@@ -260,6 +261,7 @@ const EntriesPage: NextPage = () => {
                         </Grid>
                             <Grid item xs={12}>
                                 <EntryPaginationTable
+                                    isLoggedIn={isLoggedIn}
                                     entries={data?.entries ?? []}
                                     isAdmin={isAdmin}
                                     isAdminOrModerator={isAdminOrModerator}

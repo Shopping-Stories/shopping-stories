@@ -279,7 +279,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     sx={{ padding: "0.3vh", marginTop: mtop2, height: "57px", width: "10vw", border: "2px solid", color: "#8f8f8f"}}
                     variant="outlined"
                     >
-                        <Typography fontFamily={["Arial"]} sx={{color: "primary.contrastText", fontWeight: "bold"}} >Edit tobacco entries</Typography>
+                        <Typography fontFamily={["Arial"]} sx={{color: "primary.contrastText", fontWeight: "500"}} >Edit tobacco entries</Typography>
                         
                     </Button>
                 )
@@ -354,6 +354,28 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                             key={origKeys[a]}
                             onChange={(event) => onRowValueChange(origKeys[a], event)}
                             sx={{ padding: "0.3vh", marginTop: mtop, width: "20vw" }}
+                        />
+                    )
+                }
+                else if (origKeys[a] == "farthings") {
+                    out.push(
+                        <TextField
+                            label={"Penny 12ths"}
+                            value={row?.original![origKeys[a]]}
+                            onChange={(event) => onRowValueChange(origKeys[a], event)}
+                            key={origKeys[a]}
+                            sx={{ padding: "0.3vh", marginTop: mtop, width: "10vw" }}
+                        />
+                    )
+                }
+                else if (origKeys[a] == "farthings_ster") {
+                    out.push(
+                        <TextField
+                            label={"Penny 12ths Sterling"}
+                            value={row?.original![origKeys[a]] ?? ""}
+                            onChange={(event) => onRowValueChange(origKeys[a], event)}
+                            key={origKeys[a]}
+                            sx={{ padding: "0.3vh", marginTop: mtop, width: "10vw" }}
                         />
                     )
                 }
