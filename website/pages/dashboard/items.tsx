@@ -404,6 +404,7 @@ const ManageItemsPage: NextPage = () => {
                                       onChange={handleChange}
                                       onBlur={handleBlur}
                                       defaultValue={values.item}
+                                      sx={{marginBottom: "1vh"}}
                                   />
                                   <TextField
                                       fullWidth
@@ -412,6 +413,7 @@ const ManageItemsPage: NextPage = () => {
                                       onChange={handleChange}
                                       onBlur={handleBlur}
                                       defaultValue={values.archMat}
+                                      sx={{marginBottom: "1vh"}}
                                   />
                                   <TextField
                                       fullWidth
@@ -420,6 +422,7 @@ const ManageItemsPage: NextPage = () => {
                                       onChange={handleChange}
                                       onBlur={handleBlur}
                                       defaultValue={values.category}
+                                      sx={{marginBottom: "1vh"}}
                                   />
                                   <TextField
                                       fullWidth
@@ -428,6 +431,7 @@ const ManageItemsPage: NextPage = () => {
                                       onChange={handleChange}
                                       onBlur={handleBlur}
                                       defaultValue={values.subcategory}
+                                      sx={{marginBottom: "1vh"}}
                                   />
                               </Grid>
                               <Grid item xs={12}>

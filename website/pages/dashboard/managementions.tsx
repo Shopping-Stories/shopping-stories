@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAuth from "@hooks/useAuth.hook";
 import { Roles } from "../../config/constants.config";
 import * as Yup from 'yup'
+import { Box } from "@mui/material";
 
 interface MentionForm {
     old_mention: string,
@@ -77,17 +78,26 @@ const ManageMentions = () => {
             <Header />
             <DashboardPageSkeleton groups={groups}>
                 <Paper sx={PaperStylesSecondary}>
+                    <Typography
+                        sx={{ textAlign: 'center', marginBottom: "1.5vh"}}
+                        variant="h4"
+                        mb={2}
+                    >
+                        Manage Mentions
+                    </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sx={{ width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
                             <Paper sx={{flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
                                 <Stack sx={{ borderBottom: 1, borderColor: 'divider', p: 1, }}>
                                     <Typography
                                         sx={{ textAlign: 'center' }}
-                                        variant="h4"
+                                        variant="h5"
                                         mb={2}
                                     >
-                                        Manage Mentions
+                                        Find and Replace Mentions
                                     </Typography>
+                                    <Paper sx={{padding: "1vh"}}>
+                                    <Box sx={{padding: "1vh"}}>
                                     <Formik
                                         initialValues={initVals}
                                         validationSchema={MentionSchema}
@@ -133,6 +143,8 @@ const ManageMentions = () => {
                                         </Form>
                                     )}
                                     </Formik>
+                                    </Box>
+                                    </Paper>
                                 </Stack>
                             </Paper>
                         </Grid>

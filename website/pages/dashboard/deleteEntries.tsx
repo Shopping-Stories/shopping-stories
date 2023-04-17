@@ -80,16 +80,17 @@ const DeleteEntries = () => {
             <Header />
             <DashboardPageSkeleton groups={groups}>
                 <Paper sx={PaperStylesSecondary}>
+                    <Typography
+                        sx={{ textAlign: 'center' }}
+                        variant="h4"
+                    >
+                        Delete Entries
+                    </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sx={{ width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
-                            <Paper sx={{flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
+                            <Paper sx={{flexDirection: 'column', display: 'flex', alignItems: 'stretch', padding: "1vh"}}>
                                 <Stack sx={{ borderBottom: 1, borderColor: 'divider', p: 1, }}>
-                                    <Typography
-                                        sx={{ textAlign: 'center' }}
-                                        variant="h4"
-                                    >
-                                        Delete Entries
-                                    </Typography>
+                                    
                                     <Formik
                                         initialValues={initVals}
                                         validationSchema={deleteSchema}

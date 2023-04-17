@@ -326,7 +326,9 @@ const ManageMarksPage: NextPage = () => {
                                         fullWidth
                                         type="submit"
                                     >
-                                        Search
+                                        <Typography color="secondary.contrastText">
+                                            Search
+                                        </Typography>
                                     </LoadingButton>
                                 </Stack>
                             </form>
