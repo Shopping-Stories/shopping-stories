@@ -347,9 +347,14 @@ const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element 
     }, [entries])
     
     // Callback to build the filter and its exclusion conditions
-    const makePredicates:filterHandler = useCallback((field, t, check, dateRange)=>{
-        // console.log(field, t, check, dateRange)
-        if (!filter || !(check || t || dateRange)) {
+    const makePredicates:filterHandler = useCallback((
+        field,
+        t,
+        check,
+        dateRange
+    )=>{
+        if (!filter || !(field || check || t || dateRange)) {
+            console.log(field, t, check, dateRange)
             // console.log("filter, check, t, dateRange", filter, check, t, dateRange)
             setFilter(initFilter);
             return
