@@ -62,9 +62,9 @@ interface ItemMap {
 
 interface EditItemForm {
     item: string,
-    // archMat: number
-    // category: string
-    // subcategory: string
+    archMat: number
+    category: string
+    subcategory: string
 }
 
 const ManageItemsPage: NextPage = () => {
@@ -77,7 +77,7 @@ const ManageItemsPage: NextPage = () => {
         useState<GridRowId>("");
     // const [relationOpen, setRelationOpen] = useState<boolean>(false)
     const [editOpen, setEditOpen] = useState<boolean>(false)
-    
+    const [confirm, setConfirm] = useState<boolean>(false)
     const searchDispacth = useSearchDispatch()
     const router = useRouter()
     
@@ -102,14 +102,16 @@ const ManageItemsPage: NextPage = () => {
     });
     
     const doSearch = useCallback(async () => {
-        const req = `https://api.preprod.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams({person:search}).toString()}`
+        const req = `https://api.preprod.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams(
+            searchForm.values.search === '' ? {person:search} : {item:search}
+        ).toString()}`
         const res = await fetch(req);
         let toret: {entries: Entry[]} = JSON.parse(await res.text());
         // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
         // console.log(req)
         // console.log(toret);
         return toret;
-    },[search])
+    },[search, searchForm.values.search])
     
     const {data, isLoading} = uq({
         queryKey: ["entries", search],
@@ -185,6 +187,21 @@ const ManageItemsPage: NextPage = () => {
         // fetch(saveUrl, req)//.then(p => {console.log(p)})
     }, [editMutation])
     
+    const deleteMutation = useMutation({
+        mutationFn: (id:string) => {
+            let saveUrl = `https://api.preprod.shoppingstories.org/delete_item/?` + new URLSearchParams({ item_id: id }).toString();
+            return fetch(saveUrl).then(p => {
+                console.log(p)
+            })
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
+    })
+    
+    const deleteItem = useCallback((id:string) => {
+        deleteMutation.mutate(id)
+        setConfirm(false)
+    }, [deleteMutation])
+    
     const cols: GridColDef[] = [
         // {...GRID_CHECKBOX_SELECTION_COL_DEF, width:100},
         {field: 'Item', headerName: 'Item', flex:1, hideable:false},
@@ -195,12 +212,12 @@ const ManageItemsPage: NextPage = () => {
     ]
     
     const initVals:EditItemForm = useMemo(()=> {
-        if (!selectedRow) return {item:''}
+        if (!selectedRow) return {item:'', archMat:0, category:'', subcategory:''}
         const vals:EditItemForm = {
             item: items.itemMap[selectedRow].item,
-            // archMat: items.itemMap[selectedRows].archMat,
-            // category: items.itemMap[selectedRows].category,
-            // subcategory: items.itemMap[selectedRows].subcategory,
+            archMat: items.itemMap[selectedRow].archMat,
+            category: items.itemMap[selectedRow].category,
+            subcategory: items.itemMap[selectedRow].subcategory,
         }
         return vals
     }, [selectedRow, items.itemMap])
@@ -256,7 +273,9 @@ const ManageItemsPage: NextPage = () => {
                                         fullWidth
                                         type="submit"
                                     >
-                                        Search
+                                            <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                Search
+                                            </Typography>
                                     </LoadingButton>
                                 </Stack>
                             </form>
@@ -311,6 +330,29 @@ const ManageItemsPage: NextPage = () => {
                                                         Edit
                                                     </Typography>
                                                 </Button>
+                                                { !confirm &&
+                                                  <Button
+                                                    onClick={()=> setConfirm(true)}
+                                                    disabled={!selectedRow}
+                                                    hidden={!isAdminOrModerator}
+                                                    variant="contained"
+                                                    color={"error"}
+                                                  >
+                                                    <Typography fontWeight={"500"}>
+                                                      Delete
+                                                    </Typography>
+                                                  </Button>
+                                                }
+                                                { confirm &&
+                                                  <Button
+                                                    sx={{ ml: 1 }}
+                                                    onClick={() => deleteItem(selectedRow as string)}
+                                                    variant={"contained"}
+                                                    color={'error'}
+                                                  >
+                                                    Confirm ?
+                                                  </Button>
+                                                }
                                             </>)
                                         }
                                     </Stack>
@@ -353,7 +395,7 @@ const ManageItemsPage: NextPage = () => {
                           handleBlur,
                       }) => (
                       <Form>
-                          <Grid>
+                          <Grid container mt={1}>
                               <Grid item xs={12}>
                                   <TextField
                                       fullWidth
@@ -362,57 +404,61 @@ const ManageItemsPage: NextPage = () => {
                                       onChange={handleChange}
                                       onBlur={handleBlur}
                                       defaultValue={values.item}
+                                      sx={{marginBottom: "1vh"}}
                                   />
-                                  {/*<TextField*/}
-                                  {/*    fullWidth*/}
-                                  {/*    name={'archMat'}*/}
-                                  {/*    label={'ArchMat'}*/}
-                                  {/*    onChange={handleChange}*/}
-                                  {/*    onBlur={handleBlur}*/}
-                                  {/*    defaultValue={values.name}*/}
-                                  {/*/>*/}
-                                  {/*<TextField*/}
-                                  {/*    fullWidth*/}
-                                  {/*    name={'category'}*/}
-                                  {/*    label={'Category'}*/}
-                                  {/*    onChange={handleChange}*/}
-                                  {/*    onBlur={handleBlur}*/}
-                                  {/*    defaultValue={values.name}*/}
-                                  {/*/>*/}
-                                  {/*<TextField*/}
-                                  {/*    fullWidth*/}
-                                  {/*    name={'subcategory'}*/}
-                                  {/*    label={'Subcategory'}*/}
-                                  {/*    onChange={handleChange}*/}
-                                  {/*    onBlur={handleBlur}*/}
-                                  {/*    defaultValue={values.name}*/}
-                                  {/*/>*/}
+                                  <TextField
+                                      fullWidth
+                                      name={'archMat'}
+                                      label={'ArchMat'}
+                                      onChange={handleChange}
+                                      onBlur={handleBlur}
+                                      defaultValue={values.archMat}
+                                      sx={{marginBottom: "1vh"}}
+                                  />
+                                  <TextField
+                                      fullWidth
+                                      name={'category'}
+                                      label={'Category'}
+                                      onChange={handleChange}
+                                      onBlur={handleBlur}
+                                      defaultValue={values.category}
+                                      sx={{marginBottom: "1vh"}}
+                                  />
+                                  <TextField
+                                      fullWidth
+                                      name={'subcategory'}
+                                      label={'Subcategory'}
+                                      onChange={handleChange}
+                                      onBlur={handleBlur}
+                                      defaultValue={values.subcategory}
+                                      sx={{marginBottom: "1vh"}}
+                                  />
+                              </Grid>
+                              <Grid item xs={12}>
+                                  <DialogActions>
+                                      {/*<Stack direction={'row'} spacing={2}>*/}
+                                      <Button
+                                          type={"submit"}
+                                          variant={'contained'}
+                                          color={'success'}
+                                      >
+                                          Submit
+                                      </Button>
+                                      <Button
+                                          variant={'contained'}
+                                          color={'error'}
+                                          onClick={()=>setEditOpen(false)}
+                                      >
+                                          Cancel
+                                      </Button>
+                                      {/*</Stack>*/}
+                                  </DialogActions>
                               </Grid>
                           </Grid>
                       </Form>
                     )}
                     </Formik>
                 </DialogContent>
-                <Grid item xs={12}>
-                    <DialogActions>
-                        {/*<Stack direction={'row'} spacing={2}>*/}
-                        <Button
-                            type={"submit"}
-                            variant={'contained'}
-                            color={'success'}
-                        >
-                            Submit
-                        </Button>
-                        <Button
-                            variant={'contained'}
-                            color={'error'}
-                            onClick={()=>setEditOpen(false)}
-                        >
-                            Cancel
-                        </Button>
-                        {/*</Stack>*/}
-                    </DialogActions>
-                </Grid>
             </Dialog>
         </ColorBackground>
     );

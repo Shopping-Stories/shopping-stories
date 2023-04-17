@@ -19,6 +19,7 @@ import { Formik, Form,
     // ErrorMessage
 } from 'formik';
 import TextField from '@mui/material/TextField';
+import { Grid } from '@mui/material';
 
 
 const ManageItemsPage: NextPage = () => {
@@ -75,7 +76,9 @@ const ManageItemsPage: NextPage = () => {
                         Combine Items
                     </Typography>
                 </div>
-                <Paper sx={{ p: '1rem' }}>
+                <Grid container spacing={2}>
+                        <Grid item xs={12} sx={{ width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
+                <Paper sx={{ p: '1rem', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
                 <Formik
                     initialValues={{ item1: '', item2: '', newItem: '' }}
                     onSubmit={(values, { setSubmitting }) => {
@@ -85,37 +88,45 @@ const ManageItemsPage: NextPage = () => {
                     >
                     {({ values, isSubmitting, handleChange }) => (
                         <Form>
-                        <div style={{ marginBottom: "1rem" }}>
-                            <TextField
-                            type="text"
-                            name="item1"
-                            label="Item one"
-                            variant="outlined"
-                            value={values.item1}
-                            onChange={handleChange}
-                            />
-                        </div>
-                        <div style={{ marginBottom: "1rem" }}>
-                            <TextField
-                            type="text"
-                            name="item2"
-                            label="Item two"
-                            variant="outlined"
-                            value={values.item2}
-                            onChange={handleChange}
-                            />
-                        </div>
-                        <div style={{ marginBottom: "1rem" }}>
-                            <TextField
-                            type="text"
-                            name="newItem"
-                            label="Combined item"
-                            variant="outlined"
-                            value={values.newItem}
-                            onChange={handleChange}
-                            />
-                        </div>
-                        <Button type="submit" disabled={isSubmitting} variant="contained" sx={{ width: "16vw", marginBottom: "1vh"}}>
+                            <Grid container>
+                                <Grid item xs={6}>
+                                <TextField
+                                fullWidth
+                                type="text"
+                                name="item1"
+                                label="Item one"
+                                variant="outlined"
+                                value={values.item1}
+                                onChange={handleChange}
+                                />
+                                </Grid>
+                                <Grid item xs={6}>
+                                <TextField
+                                fullWidth
+                                type="text"
+                                name="item2"
+                                label="Item two"
+                                variant="outlined"
+                                value={values.item2}
+                                onChange={handleChange}
+                                />
+                                </Grid>
+                                
+                            </Grid>
+                            <Grid container sx={{paddingTop: "0.5vh"}}>
+                            <Grid item xs={6}>
+                                <TextField
+                                fullWidth
+                                type="text"
+                                name="newItem"
+                                label="Combined item"
+                                variant="outlined"
+                                value={values.newItem}
+                                onChange={handleChange}
+                                />
+                            </Grid>
+                            </Grid>
+                        <Button type="submit" disabled={isSubmitting} variant="contained" sx={{ width: "16vw", marginTop: "1vh"}}>
                             <Typography fontSize={"1.5vh"} color="secondary.contrastText">
                             Combine Items
                             </Typography>
@@ -136,6 +147,8 @@ const ManageItemsPage: NextPage = () => {
                     </Button>
                 </form> */}
                 </Paper>
+                </Grid>
+                </Grid>
                 {/* <p>Person 1 name:</p>
                 <p>Person 2 name:</p>
                 <p>New name:</p>

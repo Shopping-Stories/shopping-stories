@@ -18,6 +18,7 @@ import { Formik, Form,
     // Field, ErrorMessage
 } from 'formik';
 import TextField from '@mui/material/TextField';
+import { Grid } from '@mui/material';
 
 
 const ManagePeoplePage: NextPage = () => {
@@ -73,6 +74,8 @@ const ManagePeoplePage: NextPage = () => {
                         Combine People
                     </Typography>
                 </div>
+                <Grid container spacing={2}>
+                <Grid item xs={12} sx={{ width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
                 <Paper sx={{ p: '1rem' }}>
                 <Formik
                     initialValues={{ name1: '', name2: '', name3: '' }}
@@ -83,8 +86,10 @@ const ManagePeoplePage: NextPage = () => {
                     >
                     {({ values, isSubmitting, handleChange }) => (
                         <Form>
-                        <div style={{ marginBottom: "1rem" }}>
+                            <Grid container>
+                            <Grid item xs={6}>
                             <TextField
+                            fullWidth
                             type="text"
                             name="name1"
                             label="Name one"
@@ -92,9 +97,10 @@ const ManagePeoplePage: NextPage = () => {
                             value={values.name1}
                             onChange={handleChange}
                             />
-                        </div>
-                        <div style={{ marginBottom: "1rem" }}>
+                            </Grid>
+                            <Grid item xs={6}>
                             <TextField
+                            fullWidth
                             type="text"
                             name="name2"
                             label="Name two"
@@ -102,18 +108,24 @@ const ManagePeoplePage: NextPage = () => {
                             value={values.name2}
                             onChange={handleChange}
                             />
-                        </div>
-                        <div style={{ marginBottom: "1rem" }}>
-                            <TextField
-                            type="text"
-                            name="name3"
-                            label="Combined name"
-                            variant="outlined"
-                            value={values.name3}
-                            onChange={handleChange}
-                            />
-                        </div>
-                        <Button type="submit" disabled={isSubmitting} variant="contained" sx={{ width: "16vw", marginBottom: "1vh"}}>
+                            </Grid>
+                            </Grid>
+                            <Grid container>
+                                <Grid item xs={6}>
+                                <TextField
+                                sx={{marginTop: "0.5vh"}}
+                                fullWidth
+                                type="text"
+                                name="name3"
+                                label="Combined name"
+                                variant="outlined"
+                                value={values.name3}
+                                onChange={handleChange}
+                                />
+                                </Grid>
+                            </Grid>
+                        
+                        <Button type="submit" disabled={isSubmitting} variant="contained" sx={{ width: "16vw", marginTop: "1vh"}}>
                             <Typography fontSize={"1.5vh"} color="secondary.contrastText">
                             Combine People
                             </Typography>
@@ -134,6 +146,8 @@ const ManagePeoplePage: NextPage = () => {
                     </Button>
                 </form> */}
                 </Paper>
+                </Grid>
+                </Grid>
                 {/* <p>Person 1 name:</p>
                 <p>Person 2 name:</p>
                 <p>New name:</p>

@@ -279,7 +279,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     sx={{ padding: "0.3vh", marginTop: mtop2, height: "57px", width: "10vw", border: "2px solid", color: "#8f8f8f"}}
                     variant="outlined"
                     >
-                        <Typography fontFamily={["Arial"]} sx={{color: "primary.contrastText", fontWeight: "bold"}} >Edit tobacco entries</Typography>
+                        <Typography fontFamily={["Arial"]} sx={{color: "primary.contrastText", fontWeight: "500"}} >Edit tobacco entries</Typography>
                         
                     </Button>
                 )
