@@ -15,6 +15,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Typography from "@mui/material/Typography";
 // import Stack from "@mui/material/Stack";
 // import FormControlLabel from "@mui/material/FormControlLabel";
 // import Switch from "@mui/material/Switch";
@@ -23,12 +24,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 // import FormControl from "@mui/material/FormControl";
 // import InputLabel from "@mui/material/InputLabel";
 
+interface EditModalState {
+    open:boolean
+    mode:string
+}
+
 interface EditPersonProps {
     open: boolean,
-    setOpen: (open:boolean) => void
+    setOpen: (state:EditModalState) => void
     handleSubmit: (id:string, name:string) => void
     person?: PersonObject
     relations: {[key:string] : PersonObject}
+    mode:string
     id: string
 }
 
@@ -37,7 +44,7 @@ interface EditPersonForm {
     related?:string[]
 }
 
-const EditPersonDialog = ({open, setOpen, handleSubmit, person, id, relations}: EditPersonProps) => {
+const EditPersonDialog = ({open, setOpen, handleSubmit, person, id, relations, mode}: EditPersonProps) => {
     // console.log(relations)
     const initValues: EditPersonForm = useMemo(() => {
         if (!(person && person.name && person._id))
@@ -67,10 +74,10 @@ const EditPersonDialog = ({open, setOpen, handleSubmit, person, id, relations}: 
     }
     
     const handleClose = () => {
-        setOpen(false)
+        setOpen({open:false, mode:'closed'})
     }
     
-    return (
+    if (mode === 'edit') return (
         <Dialog
             open={open}
         >
@@ -91,11 +98,10 @@ const EditPersonDialog = ({open, setOpen, handleSubmit, person, id, relations}: 
                         <Button
                             variant={'contained'}
                             color={'error'}
-                            onClick={()=>setOpen(false)}
+                            onClick={()=>handleClose()}
                         >
                             Cancel
                         </Button>
-                        {/*</Stack>*/}
                     </DialogActions>
                 </Grid>
                 {/*<Grid item xs={12}><Divider /></Grid>*/}
@@ -192,7 +198,41 @@ const EditPersonDialog = ({open, setOpen, handleSubmit, person, id, relations}: 
             </DialogContent>
         </Dialog>
     )
-    
+    else return (
+            <Dialog
+                open={open}
+            >
+                <Grid container alignItems={'center'} mt={1}>
+                    <Grid item xs={6}>
+                        <DialogTitle>View Relationships</DialogTitle>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <DialogActions>
+                            <Button
+                                variant={'contained'}
+                                color={'error'}
+                                onClick={()=>handleClose()}
+                            >
+                                Close
+                            </Button>
+                        </DialogActions>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12}><Divider/></Grid>
+                <DialogContent>
+                    <Grid item xs={12} container spacing={1}>
+                        {/*<FormControl>*/}
+                        {/*    <FormGroup row>*/}
+                        {relations && Object.entries(relations).map((p, i)=>(
+                            <Grid item xs={12} key={p[0]}>
+                                <Typography>{`${i+1}.\t${p[1].name}`}</Typography>
+                            </Grid>))}
+                        {/*    </FormGroup>*/}
+                        {/*</FormControl>*/}
+                    </Grid>
+                </DialogContent>
+            </Dialog>
+        )
 }
 
 export default EditPersonDialog

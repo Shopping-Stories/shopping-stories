@@ -236,12 +236,12 @@ const AdminDashboardPage: NextPage = () => {
                                 onChange={handleChange}
                                 centered
                             >
-                                <Tab sx={{padding: 0, margin: 0, marginRight: "0.5vw"}} label={<Typography fontSize={"1.1vh"} color="primary.main">Change Name</Typography>} {...a11yProps(0)} />
+                                <Tab sx={{padding: 0, margin: 0, marginRight: "0.5vw"}} label={<Typography fontSize={"1.1vh"} color="primary.contrastText">Change Name</Typography>} {...a11yProps(0)} />
                                 <Tab sx={{padding: 0, margin: 0, marginRight: "0.5vw"}}
-                                    label={<Typography color="primary.main" fontSize={"1.1vh"}>Change Password</Typography>}
+                                    label={<Typography color="primary.contrastText" fontSize={"1.1vh"}>Change Password</Typography>}
                                     {...a11yProps(1)}
                                 />
-                                <Tab sx={{padding: 0, margin: 0}} label={<Typography fontSize={"1.1vh"} color="primary.main">Change Email</Typography>} {...a11yProps(2)} />
+                                <Tab sx={{padding: 0, margin: 0}} label={<Typography fontSize={"1.1vh"} color="primary.contrastText">Change Email</Typography>} {...a11yProps(2)} />
                             </Tabs>
                             <TabPanel value={tabIndex} index={0}>
                                 <Paper sx={{ p: '1rem' }}>
