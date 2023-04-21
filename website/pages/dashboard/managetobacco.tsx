@@ -16,6 +16,7 @@ import useAuth from "@hooks/useAuth.hook";
 import { Roles } from "../../config/constants.config";
 import * as Yup from 'yup'
 import Divider from "@mui/material/Divider";
+import { Box } from "@mui/material";
 
 interface TobaccoForm {
     old_mark_number: string,
@@ -89,84 +90,95 @@ const ManageTobacco = () => {
             <Header />
             <DashboardPageSkeleton groups={groups}>
                 <Paper sx={PaperStylesSecondary}>
+                    <Typography
+                        sx={{ textAlign: 'center', marginBottom: "1.5vh"}}
+                        variant="h4"
+                        mb={2}
+                    >
+                        Manage Tobacco Marks
+                    </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sx={{ width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
                             <Paper sx={{flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
                                 <Stack sx={{ borderBottom: 1, borderColor: 'divider', p: 1, }}>
                                     <Typography
                                         sx={{ textAlign: 'center' }}
-                                        variant="h4"
+                                        variant="h5"
                                         mb={2}
                                     >
-                                        Manage Tobacco
+                                        Find and Replace Tobacco Marks
                                     </Typography>
-                                    <Formik
-                                        initialValues={initVals}
-                                        validationSchema={tobaccoSchema}
-                                        onSubmit={(v)=>editTobacco(v.old_mark_number, v.new_mark_number, v.old_mark_text, v.new_mark_text)}
-                                    >{({
-                                           values,
-                                           // errors,
-                                           handleChange,
-                                           handleBlur,
-                                       }) => (
-                                        <Form>
-                                            <Grid container spacing={1}>
-                                                <Grid item xs={12}><Divider flexItem>Mark Number</Divider></Grid>
-                                                <Grid item xs={6}>
-                                                    <TextField
-                                                        fullWidth
-                                                        name={'old_mark_number'}
-                                                        label={'Old Mark Number'}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        defaultValue={values.old_mark_number}
-                                                    />
+                                    <Paper sx={{padding: "1vh"}}>
+                                        <Box sx={{padding: "1vh"}}>
+                                        <Formik
+                                            initialValues={initVals}
+                                            validationSchema={tobaccoSchema}
+                                            onSubmit={(v)=>editTobacco(v.old_mark_number, v.new_mark_number, v.old_mark_text, v.new_mark_text)}
+                                        >{({
+                                            values,
+                                            // errors,
+                                            handleChange,
+                                            handleBlur,
+                                        }) => (
+                                            <Form>
+                                                <Grid container spacing={1}>
+                                                    <Grid item xs={12}><Divider flexItem>Mark Number</Divider></Grid>
+                                                    <Grid item xs={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            name={'old_mark_number'}
+                                                            label={'Old Mark Number'}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            defaultValue={values.old_mark_number}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            name={'new_mark_number'}
+                                                            label={'New Mark Number'}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            defaultValue={values.new_mark_number}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} mt={2}><Divider flexItem>Mark Text</Divider></Grid>
+                                                    <Grid item xs={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            name={'old_mark_text'}
+                                                            label={'Old Mark Text'}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            defaultValue={values.old_mark_text}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={6}>
+                                                        <TextField
+                                                            fullWidth
+                                                            name={'new_mark_text'}
+                                                            label={'New Mark Text'}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            defaultValue={values.new_mark_text}
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} mt={2}>
+                                                        <Button
+                                                            type={"submit"}
+                                                            variant={'contained'}
+                                                            color={'success'}
+                                                        >
+                                                            Submit
+                                                        </Button>
+                                                    </Grid>
                                                 </Grid>
-                                                <Grid item xs={6}>
-                                                    <TextField
-                                                        fullWidth
-                                                        name={'new_mark_number'}
-                                                        label={'New Mark Number'}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        defaultValue={values.new_mark_number}
-                                                    />
-                                                </Grid>
-                                                <Grid item xs={12} mt={2}><Divider flexItem>Mark Text</Divider></Grid>
-                                                <Grid item xs={6}>
-                                                    <TextField
-                                                        fullWidth
-                                                        name={'old_mark_text'}
-                                                        label={'Old Mark Text'}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        defaultValue={values.old_mark_text}
-                                                    />
-                                                </Grid>
-                                                <Grid item xs={6}>
-                                                    <TextField
-                                                        fullWidth
-                                                        name={'new_mark_text'}
-                                                        label={'New Mark Text'}
-                                                        onChange={handleChange}
-                                                        onBlur={handleBlur}
-                                                        defaultValue={values.new_mark_text}
-                                                    />
-                                                </Grid>
-                                                <Grid item xs={12} mt={2}>
-                                                    <Button
-                                                        type={"submit"}
-                                                        variant={'contained'}
-                                                        color={'success'}
-                                                    >
-                                                        Submit
-                                                    </Button>
-                                                </Grid>
-                                            </Grid>
-                                        </Form>
-                                    )}
-                                    </Formik>
+                                            </Form>
+                                        )}
+                                        </Formik>
+                                        </Box>
+                                    </Paper>
                                 </Stack>
                             </Paper>
                         </Grid>

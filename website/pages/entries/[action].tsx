@@ -327,6 +327,12 @@ const EntryPage = () => {
                                     <Typography sx={{marginLeft: tabSize}}>{entry.Final}</Typography>
                                 </Box> : []
                             }
+                            {entry.final != undefined ?
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Comments: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.final}</Typography>
+                                </Box> : []
+                            }
                         </Paper>
                         
                         {((entry.tobacco_entries != undefined) && (entry.tobacco_entries.length > 0)) || ((entry.tobacco_marks != undefined) && (entry.tobacco_marks.length > 0)) || (entry.tobacco_location != undefined) || (entry.tobacco_amount_off != undefined) ?

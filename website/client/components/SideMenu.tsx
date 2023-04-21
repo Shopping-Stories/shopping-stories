@@ -25,8 +25,8 @@ const SideMenu = ({ links }: { links: NavLink[] }) => {
                     {links.map(({ title, path }, i) => (
                         // TODO: Make this not as jank, so that clicking the menu item will cause the href from muinextlink.
                         // <a href={path} key={`${title}-${i}aref`}>
-                        <Grid item xs={3} key={`${title}-${i}`}>
-                        <MenuItem >
+                        <Grid item xs={2} key={`${title}-${i}`}>
+                        <MenuItem>
                             <Typography
                                 variant="button"
                                 color={"secondary.contrastText"}
@@ -34,6 +34,7 @@ const SideMenu = ({ links }: { links: NavLink[] }) => {
                                 sx={{
                                     padding: '1%',
                                     textTransform: `uppercase`,
+                                    textDecoration: 'underline'
                                 }}
                             >
                                 <MuiNextLink
