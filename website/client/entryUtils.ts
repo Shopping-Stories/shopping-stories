@@ -229,7 +229,7 @@ export const noDisplay = [
     "type",
     "liber_book",
     "phrases",
-    "mentions"
+    "mentions",
 ] as Array<ExcludedParsedField>
 
 export const excludedParsedFields = new Set<ParserOutputKey>(noDisplay)
@@ -268,6 +268,8 @@ export const entryInfoFields = [
     "Date Year",
     "_Month",
     "Day",
+    "final",
+    "Final"
     // "amount_is_combo",
     // "text_as_parsed",
     // "original_entry",
@@ -287,6 +289,10 @@ const parseFieldName = (k:string):string => {
             return 'Ledger Year'
         case 'reel':
             return 'Citation'
+        case 'final':
+            return 'Comment 1'
+        case 'Final':
+            return 'Comment 2'
         default:
             return toDisplayCase(k)
     }
