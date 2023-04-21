@@ -98,8 +98,14 @@ const ManageItemsPage: NextPage = () => {
         validationSchema: searchSchema,
         onSubmit: (values) => {
             setSearch(values.search);
+            setSelectedRow("")
         },
     });
+    
+    const resetSearch = () => {
+        setSearch('john')
+        setSelectedRow('')
+    }
     
     const doSearch = useCallback(async () => {
         const req = `https://api.preprod.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams(
@@ -113,7 +119,7 @@ const ManageItemsPage: NextPage = () => {
         return toret;
     },[search, searchForm.values.search])
     
-    const {data, isLoading} = uq({
+    const {data, isFetching} = uq({
         queryKey: ["entries", search],
         queryFn: doSearch,
         // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
@@ -125,6 +131,7 @@ const ManageItemsPage: NextPage = () => {
         const {entries} = data
         let itemMap: ItemMap = {}
         for (const e of entries){
+            console.log(e)
             if (e.item_obj && e.item_obj !== ""){
                 let item = parseItem(e.item_obj)
                 if (item.length){
@@ -185,6 +192,7 @@ const ManageItemsPage: NextPage = () => {
         //     body: reqBody
         // }
         // fetch(saveUrl, req)//.then(p => {console.log(p)})
+        setEditOpen(false)
     }, [editMutation])
     
     const deleteMutation = useMutation({
@@ -200,6 +208,7 @@ const ManageItemsPage: NextPage = () => {
     const deleteItem = useCallback((id:string) => {
         deleteMutation.mutate(id)
         setConfirm(false)
+        setEditOpen(false)
     }, [deleteMutation])
     
     const cols: GridColDef[] = [
@@ -212,7 +221,7 @@ const ManageItemsPage: NextPage = () => {
     ]
     
     const initVals:EditItemForm = useMemo(()=> {
-        if (!selectedRow) return {item:'', archMat:0, category:'', subcategory:''}
+        if (selectedRow === "" || isNaN(selectedRow as number)) return {item:'', archMat:0, category:'', subcategory:''}
         const vals:EditItemForm = {
             item: items.itemMap[selectedRow].item,
             archMat: items.itemMap[selectedRow].archMat,
@@ -266,17 +275,26 @@ const ManageItemsPage: NextPage = () => {
                                         variant={'filled'}
                                         formikForm={searchForm}
                                     />
-        
-                                    <LoadingButton
-                                        loading={isLoading}
-                                        variant="contained"
-                                        fullWidth
-                                        type="submit"
-                                    >
-                                            <Typography fontWeight={"500"} color="secondary.contrastText">
-                                                Search
-                                            </Typography>
-                                    </LoadingButton>
+                                    <Stack direction={'row'} spacing={1}>
+                                        <LoadingButton
+                                            loading={isFetching}//{isLoading}
+                                            variant="contained"
+                                            type="submit"
+                                            fullWidth
+                                        >
+                                                <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                    Search
+                                                </Typography>
+                                        </LoadingButton>
+                                        <LoadingButton
+                                            onClick={resetSearch}
+                                            variant={"contained"}
+                                            color={'secondary'}
+                                            fullWidth
+                                        >
+                                            Reset Results
+                                        </LoadingButton>
+                                    </Stack>
                                 </Stack>
                             </form>
                         </Grid>
@@ -312,7 +330,7 @@ const ManageItemsPage: NextPage = () => {
                                                 {/*</Button>*/}
                                                 <Button
                                                     onClick={entriesRedirect}
-                                                    disabled={!selectedRow}
+                                                    disabled={!selectedRow || selectedRow === ""}
                                                     hidden={!isAdminOrModerator}
                                                     variant="contained"
                                                     color={"secondary"}
@@ -321,7 +339,7 @@ const ManageItemsPage: NextPage = () => {
                                                 </Button>
                                                 <Button
                                                     onClick={()=> setEditOpen(selectedRow !== '')}
-                                                    disabled={!selectedRow}
+                                                    disabled={!selectedRow || selectedRow === ""}
                                                     hidden={!isAdminOrModerator}
                                                     variant="contained"
                                                     color={"warning"}
@@ -333,7 +351,7 @@ const ManageItemsPage: NextPage = () => {
                                                 { !confirm &&
                                                   <Button
                                                     onClick={()=> setConfirm(true)}
-                                                    disabled={!selectedRow}
+                                                    disabled={!selectedRow || selectedRow === ""}
                                                     hidden={!isAdminOrModerator}
                                                     variant="contained"
                                                     color={"error"}

@@ -301,12 +301,13 @@ export const parsedFieldNames = Object.fromEntries(
 // const r = /(ObjectId\(')|('\))|('),|{(')|(')}|\s(')|('):/g
 // const sq = /'/g
 const singleQuote = /':/g
-const spaceQ = /\s'/g
+const spaceQ = /,\s'/g
 const obReg = /ObjectId\('|'\)/g
 // const rParen = /'\)/g
-const oBracketQ = /{'/g
+const oBracketQ = /\{'/g
 const cBracketQ = /'}/g
 const commaQ = /',/g
+const colon = /: '/g
 const none = /None/g
 
 export interface PersonObject {
@@ -327,10 +328,11 @@ export interface ItemObject {
 export const parsePeople = (ppl:string):PersonObject[] => {
     ppl = ppl.replace(obReg, '"')
         .replace(singleQuote, '":')
-        .replace(spaceQ, ' "')
+        .replace(spaceQ, ', "')
         .replace(oBracketQ, '{"')
         .replace(cBracketQ, '"}')
         .replace(commaQ, '",')
+        .replace(colon, ': "')
             // .replace(rParen, '"')
     try {
         let pArr: PersonObject[] = JSON.parse(ppl)
@@ -352,10 +354,11 @@ export const parsePeople = (ppl:string):PersonObject[] => {
 export const parseItem = (item:string): ItemObject[] => {
     item = item.replace(obReg, '"')
         .replace(singleQuote, '":')
-        .replace(spaceQ, ' "')
+        .replace(spaceQ, ',"')
         .replace(oBracketQ, '{"')
         .replace(cBracketQ, '"}')
         .replace(commaQ, '",')
+        .replace(colon, ': "')
         .replace(none, 'null')
     try {
         let itemArr: ItemObject[] = JSON.parse(item)
