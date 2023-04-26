@@ -60,7 +60,8 @@ const Home: NextPage = () => {
                             backgroundColor: `var(--secondary-bg-translucent)`,
                             margin: '3rem',
                             padding: '1rem',
-                            borderRadius: '20px'
+                            borderRadius: '20px',
+                            marginTop: '8rem'
                         }}
                     >
                     <Typography
