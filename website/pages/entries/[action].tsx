@@ -47,7 +47,7 @@ const EntryPage = () => {
     const disabled = action === "View" || !isAdminOrModerator
     const queryClient = useQueryClient()
     const [confirm, setConfirm] = useState<boolean>(false)
-    // console.log(action, entry)
+    console.log(action, entry)
     // const [open, setOpen] = useState<boolean>(!!action)
     const notCreate = action !== 'Create'
     const initFormValues: Partial<ParserOutput> = useMemo(()=>{
@@ -86,7 +86,7 @@ const EntryPage = () => {
             pennies_ster: notCreate ? entry?.sterling?.pennies ?? 0 : 0,
             
             // ledger Info
-            folio_page: notCreate ? entry?.ledger?.folio_page ? Number(entry.ledger.folio_page) : 0 : 0,
+            folio_page: notCreate ? entry?.ledger?.folio_page ? entry.ledger.folio_page : '' : '',
             entry_id: notCreate ? entry?.ledger?.entry_id ?? '' : '',
             folio_year: notCreate ? entry?.ledger?.folio_year ?? '' : '',
             folio_reference: notCreate ? entry?.folio_reference ?? '' : '',
@@ -259,7 +259,7 @@ const EntryPage = () => {
                             {entry["date_year"] != undefined ?
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Date: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{entry.month != undefined ? months[parseInt(entry.month!) - 1] + " " : ""}{entry.Day != undefined ? entry.Day + " " : ""}{entry["date_year"]}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{(entry?.month !== undefined ? entry.month !== "" ? months[parseInt(entry.month) - 1] + " " : "" : "")}{entry.Day != undefined ? entry.Day + " " : ""}{entry["date_year"]}</Typography>
                                 </Box> : []
                             }
                             {(( entry?.currency?.pounds !== undefined) || (entry?.sterling?.pounds !== undefined)) ?
