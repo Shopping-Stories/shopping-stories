@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from 'next/router';
 import { Formik, FieldArray, Field, Form, getIn } from 'formik';
 import { useMutation, useQueryClient} from "@tanstack/react-query";
@@ -205,7 +205,11 @@ const EntryPage = () => {
             handleActionChange("Edit")
         }
     }
-    if (action !== 'Create' && !entry._id) router.back()
+    useEffect(() => {
+        if (action !== 'Create' && !entry._id){
+            router.back()
+        }
+    }, [entry, action, router])
     // const handleClose = () => {
     //     setDialog(undefined);
     // };
@@ -321,6 +325,12 @@ const EntryPage = () => {
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Comments: </Typography>
                                     <Typography sx={{marginLeft: tabSize}}>{entry.Final}</Typography>
+                                </Box> : []
+                            }
+                            {entry.final != undefined ?
+                                <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
+                                    <Typography>Comments: </Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{entry.final}</Typography>
                                 </Box> : []
                             }
                         </Paper>

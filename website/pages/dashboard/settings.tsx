@@ -265,7 +265,10 @@ const AdminDashboardPage: NextPage = () => {
                                             variant="contained"
                                             type="submit"
                                         >
-                                            <Typography variant='inherit' color='secondary.contrastText'>
+                                            <Typography 
+                                                variant='inherit' 
+                                                color='secondary.contrastText'
+                                            >
                                                 Change Name(s)
                                             </Typography>
                                         </LoadingButton>
@@ -306,7 +309,10 @@ const AdminDashboardPage: NextPage = () => {
                                                 variant="contained"
                                                 type="submit"
                                             >
-                                                <Typography variant='inherit' color='secondary.contrastText'>
+                                                <Typography 
+                                                    variant='inherit' 
+                                                    color='secondary.contrastText'
+                                                >
                                                     Change Password
                                                 </Typography>
                                             </LoadingButton>
@@ -334,7 +340,10 @@ const AdminDashboardPage: NextPage = () => {
                                                 variant="contained"
                                                 type="submit"
                                             >
-                                                <Typography variant='inherit' color='secondary.contrastText'>
+                                                <Typography 
+                                                    variant='inherit' 
+                                                    color='secondary.contrastText'
+                                                >
                                                     Change Email
                                                 </Typography>
                                             </LoadingButton>
@@ -357,7 +366,10 @@ const AdminDashboardPage: NextPage = () => {
                                                 variant="contained"
                                                 type="submit"
                                             >
-                                                <Typography variant='inherit' color='secondary.contrastText'>
+                                                <Typography 
+                                                    variant='inherit' 
+                                                    color='secondary.contrastText'
+                                                >
                                                     Confirm Change
                                                 </Typography>
                                             </LoadingButton>
