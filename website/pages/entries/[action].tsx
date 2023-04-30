@@ -180,7 +180,7 @@ const EntryPage = () => {
                     "Content-Type": "application/json"
                 }
             }
-            return fetch(saveUrl, req).then(() => router.push('/entries'))
+            return fetch(saveUrl, req).then(() => router.back())
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
     })
