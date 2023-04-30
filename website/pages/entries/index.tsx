@@ -2,7 +2,12 @@ import { useState, useCallback } from "react";
 import { NextPage } from 'next';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+    useQuery,
+    useMutation,
+    useQueryClient,
+    // QueryClientProvider
+} from "@tanstack/react-query";
 
 import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
@@ -282,7 +287,7 @@ const EntriesPage: NextPage = () => {
             />
         </ColorBackground>
 
-        // {/*</QueryClientProvider>*/}
+        // </QueryClientProvider>
     );
 };
 
