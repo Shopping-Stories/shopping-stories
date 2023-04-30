@@ -72,6 +72,7 @@ const ManageItemsPage: NextPage = () => {
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
     
+    // const [search, setSearch] = useState<string>('john');
     const [search, setSearch] = useState<string>('john');
     const [selectedRow, setSelectedRow] =
         useState<GridRowId>("");
@@ -131,7 +132,7 @@ const ManageItemsPage: NextPage = () => {
         const {entries} = data
         let itemMap: ItemMap = {}
         for (const e of entries){
-            console.log(e)
+            // console.log(e)
             if (e.item_obj && e.item_obj !== ""){
                 let item = parseItem(e.item_obj)
                 if (item.length){
@@ -159,11 +160,28 @@ const ManageItemsPage: NextPage = () => {
         return { rows: rows, itemMap: itemMap}
     }, [data])
     
+    const initVals:EditItemForm = useMemo(()=> {
+        if (!selectedRow || selectedRow === "") return {item:'', archMat:0, category:'', subcategory:''}
+        const vals:EditItemForm = {
+            item: items.itemMap[selectedRow].item,
+            archMat: items.itemMap[selectedRow].archMat,
+            category: items.itemMap[selectedRow].category,
+            subcategory: items.itemMap[selectedRow].subcategory,
+        }
+        console.log(vals)
+        return vals
+    }, [selectedRow, items.itemMap])
+    
     const editMutation = useMutation({
-        mutationFn: (itemKey:[string, string]) => {
-            const [id, item] = itemKey
+        mutationFn: (itemKey:[string, string, number, string, string]) => {
+            const [id, item, arch, cat, subcat] = itemKey
             let saveUrl = `https://api.preprod.shoppingstories.org/edit_item/?` + new URLSearchParams({ item_id: id }).toString();
-            let reqBody = JSON.stringify({ item: item })
+            let reqBody = JSON.stringify({
+                item: item,
+                archMat: arch,
+                category: cat,
+                subcategory: subcat
+            })
             let req = {
                 method: "POST",
                 headers: {
@@ -179,8 +197,8 @@ const ManageItemsPage: NextPage = () => {
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
     })
     
-    const editItem = useCallback((id:string, name:string) => {
-        editMutation.mutate([id, name])
+    const editItem = useCallback((id:string, name:string, archMat:number, category:string, subcategory:string) => {
+        editMutation.mutate([id, name, archMat, category, subcategory])
         // let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
         // let reqBody = JSON.stringify({name: name})
         // let req = {
@@ -219,17 +237,6 @@ const ManageItemsPage: NextPage = () => {
         {field: 'Category', headerName: 'Category', flex:1},
         {field: 'Subcategory', headerName: 'SubCategory', flex:1}
     ]
-    
-    const initVals:EditItemForm = useMemo(()=> {
-        if (selectedRow === "" || isNaN(selectedRow as number)) return {item:'', archMat:0, category:'', subcategory:''}
-        const vals:EditItemForm = {
-            item: items.itemMap[selectedRow].item,
-            archMat: items.itemMap[selectedRow].archMat,
-            category: items.itemMap[selectedRow].category,
-            subcategory: items.itemMap[selectedRow].subcategory,
-        }
-        return vals
-    }, [selectedRow, items.itemMap])
     
     const getEntryResults = useCallback( async ()=>{
         if (!selectedRow || selectedRow === "") return
@@ -404,7 +411,10 @@ const ManageItemsPage: NextPage = () => {
                 <DialogContent>
                     <Formik
                         initialValues={initVals}
-                        onSubmit={(v)=>editItem(selectedRow as string, v.item)}
+                        onSubmit={(v)=>editItem(
+                            selectedRow as string,
+                            v.item, v.archMat, v.category, v.subcategory
+                        )}
                     >{({
                           values,
                           // touched,
@@ -421,7 +431,7 @@ const ManageItemsPage: NextPage = () => {
                                       label={'Name'}
                                       onChange={handleChange}
                                       onBlur={handleBlur}
-                                      defaultValue={values.item}
+                                      value={values.item}
                                       sx={{marginBottom: "1vh"}}
                                   />
                                   <TextField
@@ -430,7 +440,7 @@ const ManageItemsPage: NextPage = () => {
                                       label={'ArchMat'}
                                       onChange={handleChange}
                                       onBlur={handleBlur}
-                                      defaultValue={values.archMat}
+                                      value={values.archMat}
                                       sx={{marginBottom: "1vh"}}
                                   />
                                   <TextField
@@ -439,7 +449,7 @@ const ManageItemsPage: NextPage = () => {
                                       label={'Category'}
                                       onChange={handleChange}
                                       onBlur={handleBlur}
-                                      defaultValue={values.category}
+                                      value={values.category}
                                       sx={{marginBottom: "1vh"}}
                                   />
                                   <TextField
@@ -448,7 +458,7 @@ const ManageItemsPage: NextPage = () => {
                                       label={'Subcategory'}
                                       onChange={handleChange}
                                       onBlur={handleBlur}
-                                      defaultValue={values.subcategory}
+                                      value={values.subcategory}
                                       sx={{marginBottom: "1vh"}}
                                   />
                               </Grid>

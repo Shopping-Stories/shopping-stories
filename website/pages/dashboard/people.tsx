@@ -230,6 +230,7 @@ const ManageMarksPage: NextPage = () => {
                 },
                 body: reqBody
             }
+            console.log(req)
             return fetch(saveUrl, req).then(p => {
                 console.log(p)
             })
