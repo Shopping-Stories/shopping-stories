@@ -94,7 +94,7 @@ const ManageItemsPage: NextPage = () => {
                                 fullWidth
                                 type="text"
                                 name="item1"
-                                label="Item one"
+                                label="Primary item"
                                 variant="outlined"
                                 value={values.item1}
                                 onChange={handleChange}
@@ -105,7 +105,7 @@ const ManageItemsPage: NextPage = () => {
                                 fullWidth
                                 type="text"
                                 name="item2"
-                                label="Item two"
+                                label="Secondary item"
                                 variant="outlined"
                                 value={values.item2}
                                 onChange={handleChange}

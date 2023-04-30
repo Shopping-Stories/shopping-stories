@@ -92,7 +92,7 @@ const ManagePeoplePage: NextPage = () => {
                             fullWidth
                             type="text"
                             name="name1"
-                            label="Name one"
+                            label="Primary name"
                             variant="outlined"
                             value={values.name1}
                             onChange={handleChange}
@@ -103,7 +103,7 @@ const ManagePeoplePage: NextPage = () => {
                             fullWidth
                             type="text"
                             name="name2"
-                            label="Name two"
+                            label="Secondary name"
                             variant="outlined"
                             value={values.name2}
                             onChange={handleChange}
