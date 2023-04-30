@@ -3,6 +3,13 @@ export const PaperStyles = {
     padding: '1rem',
 };
 
+export const PaperHeaderStyles = {
+    marginLeft: '3rem',
+    marginRight: '3rem',
+    marginTop: '3rem',
+    padding: '1rem'
+}
+
 export const PaperStylesSecondary = {
     backgroundColor: `var(--secondary-bg)`,
     margin: '3rem',

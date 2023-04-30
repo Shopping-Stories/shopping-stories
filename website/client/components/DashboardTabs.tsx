@@ -1,7 +1,10 @@
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { NextRouter, useRouter } from 'next/router';
-import { Fragment, useState } from 'react';
+import {
+    // Fragment,
+    useState
+} from 'react';
 import { NavLink } from '../types';
 
 interface LinkTabProps {
@@ -44,7 +47,7 @@ const DashBoardTabs = ({
     };
 
     return (
-        <Fragment>
+        // <Fragment>
             <Tabs
                 aria-label="DashBoard Navigation Tabs"
                 scrollButtons
@@ -64,7 +67,7 @@ const DashBoardTabs = ({
                     />
                 ))}
             </Tabs>
-        </Fragment>
+        // </Fragment>
     );
 };
 

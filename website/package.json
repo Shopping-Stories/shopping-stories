@@ -65,7 +65,7 @@
         "pino": "^7.0.0-rc.3",
         "react": "17.0.2",
         "react-dom": "17.0.2",
-        "react-force-graph-2d": "^1.23.11",
+        "react-force-graph-2d": "^1.24.2",
         "react-is": "^17.0.2",
         "react-modal": "^3.16.1",
         "reflect-metadata": "^0.1.13",

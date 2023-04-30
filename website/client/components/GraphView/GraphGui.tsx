@@ -15,14 +15,19 @@ import {
     makeLinkType,
     makeEntryInfo,
     makeLinkID,
-    GraphTypeKey,
-    NodeTypeKey,
-    LinkTypeKey,
-    EntryInfo
-} from "@components/GraphView/util";
+    formatLabel,
+    mdy, comparator
+} from "@components/GraphView/GraphUtils";
+import {
+    NodeDict, LinkDict,
+    GraphKey, GraphKeys, GraphTypeKey, NodeTypeKey,
+    GraphProperties, NodeProperties, LinkProperties,
+    GraphPredicates,
+    EntryInfo, InfoItems,
+    filterHandler, nodeHandler,
+} from "@components/GraphView/GraphTypes";
 import GraphInfoPanel from "@components/GraphView/GraphInfoPanel";
 import GraphControlPanel from "@components/GraphView/GraphControlPanel";
-import { GraphGuiProps } from "../../../pages/entries/graphview/[search]";
 import { useColorMode } from "../../ThemeMode";
 import {useTheme} from "@mui/material";
 
@@ -45,27 +50,17 @@ import Toolbar from '@mui/material/Toolbar';
 // import ListItemText from '@mui/material/ListItemText';
 // import Container from "@mui/material/Container";
 
-const comparator = (a:NodeObject, b:NodeObject) => {
-    if (a.nodeType === "store") return -1
-    if (!a.nodeType) return -1
-    if (!b.nodeType) return 1
-    return a.nodeType + a.label < b.nodeType + b.label ? -1 : 1
+export interface GraphGuiProps {
+    entries: Array<Entry>,
+    extendFetch:  (newSearch: string) => void
+    newFetch: (newSearch: string) => void
 }
 
-const format = (str:string):string => {
-    str = str.replace(/\b[a-z]/g, function(letter:string) { return letter.toUpperCase(); });
-    str = str.replace(/'(S) /g, function(letter):string { return letter.toLowerCase(); });
-    return str;
-}
-
-const mdy = (m?:string,d?:string,y?:string) => `${m}/${d}/${y}`
-
-const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
+const GraphGui = ({entries, extendFetch, newFetch}: GraphGuiProps): JSX.Element => {
     const graphRef = useRef<ForceGraphMethods|undefined>();
     const [filter, setFilter] = useState<GraphPredicates | undefined>(initFilter)
     const [nodeLabelsVisible, setNodeLabelsVisible] =  useState<boolean>(false)
-    // const [edgeLabelsVisible, setEdgeLabelsVIsible] = useState<boolean>(false)
-    const [focusedItems, setFocusedItems] = useState<Set<string | number>>(new Set())
+    const [focusedItems, setFocusedItems] = useState<Set<GraphKey>>(new Set())
     const [scrolledItem, setScrolledItem] = useState<string | number>('')
     const [graphPanelInfo, setGraphPanelInfo] = useState<InfoItems>();
     const [contextMenu, setContextMenu] = useState<{
@@ -90,34 +85,41 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             item_person: palette.success.main,
             item_store: palette.warning.main,
             person_personAccount: palette.info.main,
+            person_person: palette.info.main,
+            personAccount_personAccount: palette.info.main,
             mention_personAccount: palette.error.main,
+            mention_person: palette.error.main,
             item_mention: palette.secondary.main
         }
     }, [palette])
     
     const entryDispatch = useEntryDispatch()
-    const router = useRouter()
-    
-    const graphItem = useGraphItem()
     const graphItemDispatch = useGraphItemDispatch()
+    const graphItem = useGraphItem()
+    
+    const router = useRouter()
     
     // Sets the overall structure and properties for actual graph later on
     // Used for resetting the graph from filters
-    const graphDict: GraphProps = useMemo(() => {
-        // if (!entries) return {nodes:[], links:[]}
-        // console.log(entries)
-        let graphProps: GraphProps = {nodeProps:{}, linkProps:{}}
-        let nodeProps = graphProps.nodeProps
-        let linkProps = graphProps.linkProps
-        let entryIndex = 0 // The index of the current entry in the entries prop
+    const graphDict: GraphProperties = useMemo(() => {
+
+        let graphProps: GraphProperties = {nodeProperties:{}, linkProperties:{}}
+        let nodeProps = graphProps.nodeProperties
+        let linkProps = graphProps.linkProperties
+        
+        // Maps entries to nodes during processing
+        let entriesToNodes: {[index: number] : Set<string>} = {}
+        
+        // The index of the current entry in the entries prop
+        let entryIndex = 0
         
         // Makes a node if it does not already exist then associates the current entryIndex to it
         const makeNode = (t:NodeTypeKey | "type", nodeID:string) => {
             if (!nodeProps[nodeID]) {
-                nodeProps[nodeID] = {
+                let node = {
                     id: nodeID,
                     nodeType: t === "type" ? "item" : t,
-                    label: t !== "type" ? entries[entryIndex][getNodeType(t)] : entries[entryIndex].type,
+                    label: entries[entryIndex][t !== "type" ? getNodeType(t) : t], //: entries[entryIndex].type,
                     entries: new Set<number>(),
                     entryKeys: getNodeKeys(t),
                     linkKeys: new Set<string>(),
@@ -126,18 +128,50 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                     darkIcon: setNodeSVGIcon(t, "dark"),
                     lightIcon: setNodeSVGIcon(t, "light")
                 };
+                nodeProps[nodeID] = node
+            }
+            let nt = nodeProps[nodeID].nodeType
+            if ((nt === 'item') && (t === 'person' || t === 'personAccount')){
+                // console.log(t, nt)
+                nodeProps[nodeID].nodeType = t
+                nodeProps[nodeID].label = entries[entryIndex][getNodeType(t)]
+            }
+            if (!entriesToNodes[entryIndex]){
+                entriesToNodes[entryIndex] = new Set<string>()
             }
             nodeProps[nodeID].entries.add(entryIndex)
+            entriesToNodes[entryIndex].add(nodeID)
+            // if (!indexPool[entryIndex]){
+            //     indexPool[entryIndex] = {...initPool}
+            // }
+            // indexPool[entryIndex][nodeProps[nodeID].nodeType].add(nodeID)
+
+        }
+    
+        const addNeighbors = (node:string, neighbors:Set<string>) => {
+            if (!nodeProps || !nodeProps[node]) return
+            if (!nodeProps[node].neiKeys) {
+                nodeProps[node].neiKeys = new Set<string>();
+            }
+        
+            for (let neighbor of neighbors) {
+            
+                if (!nodeProps[node].neiKeys.has(neighbor)) {
+                    nodeProps[node].neiKeys.add(neighbor);
+                }
+                if (!nodeProps[neighbor].neiKeys.has(node)) {
+                    nodeProps[neighbor].neiKeys.add(node);
+                }
+                // makeLink(node, nodeProps[neighbor].id)
+            }
         }
     
         // Makes a link if it does not already exist then associates the current entryIndex to it
         // The size 'entries' prop is essentially the weight of the link
-        const makeLink = (v1:string, v2:string) => {
-            // v1 = format(v1)
-            // v2 = format(v2)
+        const makeLink = (v1:string, v2:string, index:number) => {
             let [source, target, linkID] = makeLinkID(v1, v2)
+            let t = makeLinkType(nodeProps[v1].nodeType, nodeProps[v2].nodeType)[2]
             if (!linkProps || !linkProps[linkID]) {
-                let t = makeLinkType(nodeProps[v1].nodeType, nodeProps[v2].nodeType)[2]
                 linkProps[linkID] = {
                     id: linkID,
                     source: source,
@@ -151,36 +185,43 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 nodeProps[v1].linkKeys.add(linkID)
                 nodeProps[v2].linkKeys.add(linkID)
             }
-            linkProps[linkID].entries.add(entryIndex)
-        }
-        
-        const addNeighbors = (node:string, neighbors:Set<string>) => {
-            if (!nodeProps || !nodeProps[node]) return
-            if (!nodeProps[node].neiKeys) {
-                nodeProps[node].neiKeys = new Set<string>();
+            let lt = linkProps[linkID].linkType
+            if (t.slice(0,6) === 'person' && lt !== t){
+                linkProps[linkID].linkType = t
+                linkProps[linkID].color = linkColors[t]
+                // console.log(t.slice(0,6))
             }
-            
-            for (let n of neighbors) {
-                
-                if (!nodeProps[node].neiKeys.has(n)) {
-                    nodeProps[node].neiKeys.add(n);
+            linkProps[linkID].entries.add(index)
+        }
+    
+        const makeLinks = () => {
+            for (let [i, nodes] of Object.entries(entriesToNodes)){
+                let index = Number(i)
+                for (let node of nodes.values()){
+                    for (let neighbor of nodeProps[node].neiKeys.values()){
+                        if (nodeProps[neighbor].entries.has(index)){
+                            makeLink(node, neighbor, index)
+                        }
+                    }
                 }
-                if (!nodeProps[n].neiKeys.has(node)) {
-                    nodeProps[n].neiKeys.add(node);
-                }
-                makeLink(node, nodeProps[n].id)
             }
         }
         
         const processEntry = (e: Entry) => {
             let toItem = new Set<string>()
             let toAccount = new Set<string>()
-            // let matcher = e.peopleID?.match(/'([^']+)'/)
-            // let personID = matcher ? matcher[1] : null
-            // console.log(personID)
+            // if (e.peopleID){
+            //     let matches = e.peopleID.matchAll(/'(.*?)'/g)
+            //     let ppl: string[] = []
+            //     for (let m of matches){
+            //         ppl.push(m[1])
+            //     }
+            //
+            //     console.log(ppl)
+            // }
             if (!e._id) return
             if (e.store) {
-                let store = format(e.store)
+                let store = formatLabel(e.store)
                 makeNode("store", store)
                 toItem.add(store)
             }
@@ -194,13 +235,14 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             //     }
             // }
             if (e.itemID){
-                let itemID = format(e.itemID)
+                // console.log(e.item)
+                let itemID = formatLabel(e.itemID)
                 if (e.item) makeNode("item", itemID)
-                else makeNode("type", itemID)
+                else if (e.type) makeNode("type", itemID)
             }
             // if (e.accountHolderID) {
             if (e.account_name) {
-                let account_name = format(e.account_name)
+                let account_name = formatLabel(e.account_name)
                 // if (nodeProps[account_name] && nodeProps[account_name].nodeType === 'person'){
                 //     nodeProps[account_name].nodeType = 'personAccount'
                 //     for (let link in nodeProps[account_name].)
@@ -210,7 +252,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             }
             if (e.people){
                 for (let p of e.people){
-                    p = format(p)
+                    p = formatLabel(p)
                     if (nodeProps[p] && nodeProps[p].nodeType === 'personAccount'){
                         // console.log(p, nodeProps[p].id)
                         makeNode("personAccount", p)
@@ -228,7 +270,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             // if (e.peopleID && e.people){}
             if (e.mentions) {
                 for (let mention of e.mentions) {
-                    mention = format(mention)
+                    mention = formatLabel(mention)
                     // if (!nodeProps[mention]){
                         // console.log(mention)
                     makeNode("mention", mention)
@@ -243,11 +285,11 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             //     toAccount.add(personID)
             // }
             if (e.itemID){
-                addNeighbors(format(e.itemID), toItem)
+                addNeighbors(formatLabel(e.itemID), toItem)
             }
             // if (e.accountHolderID){
             if (e.account_name) {
-                addNeighbors(format(e.account_name), toAccount)
+                addNeighbors(formatLabel(e.account_name), toAccount)
             }
             // if (personID) {
             //     addNeighbors(personID, toAccount)
@@ -273,14 +315,15 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             //     entrySet.add(entry._id);
             // }
         }
-        console.log(graphProps)
+        makeLinks()
+        // console.log(graphProps)
         return graphProps
     }, [entries, linkColors])
     
+    // All unique dates found in entries
     const dates = useMemo<string[]>(()=> {
         let dates = new Set<string>()
         for (let entry of entries){
-            
             if (!!entry){
                 let {month, Day, date_year} = entry
                 if (month && Day && date_year) {
@@ -304,9 +347,16 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         return dArr
     }, [entries])
     
-    const makePredicates:filterHandler = useCallback((field, t, check, dateRange)=>{
-        // console.log(field, t, check, dateRange)
-        if (!filter) {
+    // Callback to build the filter and its exclusion conditions
+    const makePredicates:filterHandler = useCallback((
+        field,
+        t,
+        check,
+        dateRange
+    )=>{
+        console.log(field, t, check, dateRange)
+        if (!filter || !(field || check || t || dateRange)) {
+            // console.log("filter, check, t, dateRange", filter, check, t, dateRange)
             setFilter(initFilter);
             return
         }
@@ -335,13 +385,15 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         setFilter(newFilter)
     },[filter])
     
+    // Where the filter is matched against the all initial graph elements
+    // to produce a set of valid elements to display
     const filteredKeys = useMemo<GraphKeys>(()=>{
-        const {nodeProps, linkProps} = graphDict
+        const {nodeProperties, linkProperties} = graphDict
         
         if (!filter) {
             return {
-                nodes: new Set<GraphKey>(Object.keys(nodeProps)),
-                links: new Set<GraphKey>(Object.keys(linkProps)),
+                nodes: new Set<GraphKey>(Object.keys(nodeProperties)),
+                links: new Set<GraphKey>(Object.keys(linkProperties)),
                 newEntries: new Set<number>(entries.map((_,i)=>i))
             }
         }
@@ -359,28 +411,12 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             let ne = new Set<number>(entries.map((_,i)=>i))
             // console.log("ne", ne)
             return {
-                nodes: new Set<GraphKey>(Object.keys(nodeProps)),
-                links: new Set<GraphKey>(Object.keys(linkProps)),
+                nodes: new Set<GraphKey>(Object.keys(nodeProperties)),
+                links: new Set<GraphKey>(Object.keys(linkProperties)),
                 newEntries: ne
             }
         }
-        
-        const nodePredicates = (node: NodeProps) => {
-            return !nodeTypes ||
-                (!!nodeTypes[node.nodeType] &&
-                    nodeTypes[node.nodeType] === true
-                )
-        }
-        
-        const linkPredicates = (link: LinkProps) => {
-            // if (!linkTypes) return true
-            // if the node isn't in the map then it was filtered out
-            // console.log(link.source, link.target)
-            return nodes.has(link.source) && nodes.has(link.target) &&
-                Array.from(link.entries).some(e=>newEntries.has(e));
-            
-        }
-        
+    
         const datePredicates = (e: number, start: Date, end:Date) => {
             // return (!dateRange) ||
             // if (!dateRange || !dateRange.start || !dateRange.end) {
@@ -403,22 +439,28 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                 return ret;
             }
             return false
-            // let start = new Date(dateRange.start)
-            // let end = new Date(dateRange.end)
-            // let dr = Array.from(link.entries)
-            //     .map((ek: number) => {
-            //         // console.log(ek)
-            //         return entries[ek];
-            //     })
-            //     .some((e) => {
-            //         const {month, Day, date_year} = e
-            //         // else if (e.date && !dateBool) {
-            //         //     date = new Date(e.date)
-            //         // }
-            //     });
-            // // console.log(dr)
-            // return dr
         }
+        
+        // Determines whether a node's type matches the filter condition
+        const nodePredicates = (node: NodeProperties) => {
+            return !nodeTypes ||
+                (!!nodeTypes[node.nodeType] &&
+                    nodeTypes[node.nodeType] === true
+                )
+        }
+        
+        // If the node isn't in the map then it was filtered out.
+        // Links are weighted by number of associated edges;
+        // a link is filtered iff:
+        //      all its entries are filtered out (by date)
+        //      or
+        //      both its incident nodes are filtered
+        const linkPredicates = (link: LinkProperties) => {
+            // if (!linkTypes) return true
+            return nodes.has(link.source) && nodes.has(link.target) &&
+                Array.from(link.entries).some(e=>newEntries.has(e));
+        }
+        
         let nodes = new Set<GraphKey>()
         let links = new Set<GraphKey>()
         let newEntries = new Set<number>()
@@ -434,14 +476,12 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             newEntries = new Set<number>(entries.map((_,i)=>i))
         }
         
-        
-        // console.log(newEntries)
-        Object.keys(nodeProps).forEach(k => {
-            if (nodePredicates(nodeProps[k])) nodes.add(k)
+        Object.keys(nodeProperties).forEach(k => {
+            if (nodePredicates(nodeProperties[k])) nodes.add(k)
         })
-        // console.log(nodes)
-        Object.keys(linkProps).forEach(k => {
-            let lp = linkPredicates(linkProps[k])
+        
+        Object.keys(linkProperties).forEach(k => {
+            let lp = linkPredicates(linkProperties[k])
             // console.log(lp)
             if (lp) links.add(k)
         })
@@ -449,14 +489,20 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         return {nodes: nodes, links: links, newEntries: newEntries}
     }, [filter, graphDict, entries])
     
+    // The actual graph structure passed to react-force-graph component.
+    // Separate from the graphDict structure.
+    // Purpose:
+    // - Abiility to freely mutate because it is wholly derived from the graphDict
+    // - More lightweight construction process than rebuilding the GraphDict for every interaction
     const graph: GraphData = useMemo(() =>{
-        const {nodeProps, linkProps} = graphDict
+        const {nodeProperties, linkProperties} = graphDict
         
         let nodeDict: NodeDict = {}
         let nodes: NodeObject[] = []
         
-        for (let [k, v] of Object.entries(nodeProps)) {
+        for (let [k, v] of Object.entries(nodeProperties)) {
             if (filteredKeys.nodes.has(k)) {
+                // console.log(v.nodeType)
                 let node: NodeObject = {
                     id: k,
                     nodeType: v.nodeType,
@@ -467,18 +513,20 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                     linkDict: {},
                     value: 5
                 }
-                node.lightIcon = nodeProps[node.id].lightIcon
-                node.darkIcon = nodeProps[node.id].darkIcon;
+                node.lightIcon = nodeProperties[node.id].lightIcon
+                node.darkIcon = nodeProperties[node.id].darkIcon;
                 nodes.push(node);
                 nodeDict[k] = node
             }
         }
-        nodes.sort(comparator)
         let linkDict: LinkDict = {}
         let links: LinkObject[] = []
         
-        for (let [k, l] of Object.entries(linkProps)) {
+        for (let [k, l] of Object.entries(linkProperties)) {
             const {source, target, linkType} = l
+            if (source === "Cash Account" || target === "Cash Account") {
+                // console.log(linkType)
+            }
             if (filteredKeys.links.has(k)) {
                 let link: LinkObject = {
                     id: k,
@@ -498,18 +546,18 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         }
         
         for (let node of nodes){
-            for (let nei of nodeProps[node.id].neiKeys){
+            for (let nei of nodeProperties[node.id].neiKeys){
                 // if (filteredKeys.nodes.has(nei))
                 node.neighbors[nei] = nodeDict[nei]
             }
             
             // console.log(nodeProps[node.id].linkKeys)
-            for (let l of nodeProps[node.id].linkKeys){
+            for (let l of nodeProperties[node.id].linkKeys){
                 // if (filteredKeys.links.has(l))
                 node.linkDict[l] = linkDict[l]
             }
         }
-        
+        nodes.sort(comparator)
         for (let n of nodes) {
             n.linkDict = Object.fromEntries(Object.entries(n.linkDict).filter(e => filteredKeys.links.has(e[0])))
             n.neighbors = Object.fromEntries(Object.entries(n.neighbors).filter(e => filteredKeys.nodes.has(e[0])))
@@ -519,6 +567,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         return {nodes: nodes, links:links, nodeDict:nodeDict, linkDict:linkDict}
     }, [ graphDict, filteredKeys])
     
+    // Builds the props for the right-hand info panel.
+    // Sets the element to autoscroll on the left-hand panel
     const toggleInfo = useCallback((node:NodeObject, link?:LinkObject)=>{
         let info:EntryInfo[] = []
         // let entryProps = getNodeKeys(node.nodeType)
@@ -527,7 +577,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         let id: string | number = ''
         if (node && !link) {
             name = node.label
-            eType = `${node.nodeType} node`
+            eType = `${node.nodeType !== 'personAccount' ? node.nodeType : 'account'}-node`
             id = node.id
             for (let e of node.entries){
                 if (filteredKeys.newEntries.has(e))
@@ -549,25 +599,15 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         }
         // console.log(info)
     }, [entries, filteredKeys])
-    // console.log(scrolledItem)
-    const handleEntryAction = useCallback((id:string | undefined, action:string) => {
-        // const path = `/entries/${action}`;
-        if (id) {
-            entryDispatch({
-                type: 'CREATE',
-                payload: entries.filter(e => e._id === id)[0]
-            })
-            router.push(`/entries/${action}`)
-        }
-    }, [entries, entryDispatch, router])
     
+    // Toggles the permanent visibility of node labels.
+    // These lables are different from the default hover-label and are made in the render callback
     const toggleNodeLabels = useCallback((visible: boolean) => {
         setNodeLabelsVisible(visible)
     }, [])
-    // const toggleEdgeLabels = useCallback((visible: boolean) => {
-    //     setEdgeLabelsVIsible(visible)
-    // }, [])
     
+    // Centers and zooms to specified node on the visualization.
+    // Calls toggleInfo to set it in the right panel
     const handleNodeZoom:nodeHandler = useCallback((node )=> {
         if (graphRef.current) {
             // graphRef.current?.pauseAnimation()
@@ -580,9 +620,11 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         toggleInfo(node)
     },[graphRef, toggleInfo]);
     
+    // Same as handleNodeZoom, but for links.
+    // Some checks and calculations are needed to find its center on the graph
     const handleLinkZoom = useCallback((link:LinkObject) => {
         if (typeof link.source !== "object" || typeof link.target !== "object") return
-        
+        console.log(link.linkType)
         let ux = link.source.x
         let uy = link.source.y
         
@@ -603,56 +645,28 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         toggleInfo(link.source as NodeObject, link)
     }, [graphRef, toggleInfo])
     
-    const focusOn = useCallback((elements) => {
+    
+    // Turns on highlight for set of elements
+    const focusOn = useCallback((elements: Set<GraphKey>) => {
         setFocusedItems(elements)
     }, [])
     
-    const focusOff = useCallback((empty) => {
+    // Turns off highlight for set of elements
+    const focusOff = useCallback((empty: Set<GraphKey>) => {
         setFocusedItems(empty)
     }, [])
     
+    // Positions visualization right click menu
     const handleNodeRightClick = useCallback( (node: NodeObject, event: MouseEvent) => {
         event.preventDefault()
         // setFocusedItems(new Set([node.id]))
-        setContextMenu(
-            contextMenu === null
-                ? {
-                    mouseX: event.clientX + 2,
-                    mouseY: event.clientY - 6,
-                    id: node.id
-                }
-                :
-                null,
+        setContextMenu(contextMenu === null
+            ? { mouseX: event.clientX + 2, mouseY: event.clientY - 6, id: node.id }
+            : null,
         );
     }, [contextMenu])
     
-    const fetchEntries = useCallback(() => {
-        // let id = Array.from(focusedItems)[0]
-        let id = contextMenu?.id
-        // setRightClicked(id)
-        if (id) {
-            console.log("id", id)
-            graphItemDispatch({type:'CREATE', payload: id})
-            fetchMore(graphDict.nodeProps[id].label);
-            // graphRef.current?.resumeAnimation()
-            // setFocusedItems(new Set([id]))
-            // setTimeout(()=>focusOn([...graphDict.nodeProps[rightClicked].neiKeys.values(), rightClicked]), 2000)
-            // setTimeout(() => handleNodeZoom(graph.nodes.filter((v) => v.id === rightClicked)[0],), 2000,);
-        }
-        handleClose()
-    }, [contextMenu?.id, fetchMore, graphDict.nodeProps, graphItemDispatch])
-    
-    // const toEntryView = useCallback((action: string = 'view', id: string) => {
-    //     const path = `/entries/${action}`;
-    //     if (payload && action && action !== "Create" ){
-    //         entryDispatch({
-    //             type: "CREATE",
-    //             payload: payload
-    //         })
-    //     }
-    //     router.push(path);
-    // }, [entryDispatch, router])
-    
+    // Closes the right clickMenu
     const handleClose = () => {
         setContextMenu(null);
         // setFocusedItems(new Set())
@@ -660,18 +674,71 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         // graphRef.current?.resumeAnimation()
     };
     
+    // Expands graph;
+    // Callback to add entries related to right-clicked node
+    // The node is put into context for later use.
+    const fetchMoreEntries = useCallback(() => {
+        // let id = Array.from(focusedItems)[0]
+        let id = contextMenu?.id
+        // setRightClicked(id)
+        if (id) {
+            console.log("id", id)
+            graphItemDispatch({type:'CREATE', payload: id})
+            extendFetch(graphDict.nodeProperties[id].label);
+            // graphRef.current?.resumeAnimation()
+            // setFocusedItems(new Set([id]))
+            // setTimeout(()=>focusOn([...graphDict.nodeProps[rightClicked].neiKeys.values(), rightClicked]), 2000)
+            // setTimeout(() => handleNodeZoom(graph.nodes.filter((v) => v.id === rightClicked)[0],), 2000,);
+        }
+        handleClose()
+    }, [contextMenu?.id, extendFetch, graphDict.nodeProperties, graphItemDispatch])
+    
+    // Replaces graph;
+    // Callback to replace current entries with just those related to right-clicked node.
+    // The node is put into context for later use.
+    const fetchNewEntries = useCallback(() => {
+        let id = contextMenu?.id
+        // setRightClicked(id)
+        if (id) {
+            console.log("id", id)
+            graphItemDispatch({type:'CREATE', payload: id})
+            newFetch(graphDict.nodeProperties[id].label);
+            // graphRef.current?.resumeAnimation()
+            // setFocusedItems(new Set([id]))
+            // setTimeout(()=>focusOn([...graphDict.nodeProps[rightClicked].neiKeys.values(), rightClicked]), 2000)
+            // setTimeout(() => handleNodeZoom(graph.nodes.filter((v) => v.id === rightClicked)[0],), 2000,);
+        }
+        handleClose()
+    }, [contextMenu?.id, newFetch, graphDict.nodeProperties, graphItemDispatch])
+    
+    // Callback to navigate to Entry View page from entry clicked in right panel
+    const handleEntryAction = useCallback((id:string | undefined, action:string) => {
+        // const path = `/entries/${action}`;
+        if (id) {
+            entryDispatch({
+                type: 'CREATE',
+                payload: entries.filter(e => e._id === id)[0]
+            })
+            router.push(`/entries/${action}`)
+        }
+    }, [entries, entryDispatch, router])
+    
+    // Callback to zoom and center on a node that was the subject of a righclick menu action.
+    // Unsets the context after zooming
     const engineStopCB = useCallback(() =>{
         console.log("engine stop", graphItem)
-        if (graphItem !== '' && graph.nodeDict)
+        if ((graphItem !== '') && graph.nodeDict && graph.nodeDict[graphItem])
             handleNodeZoom(graph.nodeDict[graphItem])
         graphItemDispatch({type:'CREATE', payload: ''})
     }, [graphItem,graphItemDispatch, handleNodeZoom, graph.nodeDict])
     
-    // Post-mount effects
+    // Sets the default info to display on the right panel
     useEffect(()=>{
         if (graph)
             toggleInfo(graph.nodes[0])
     }, [graph, toggleInfo])
+    
+    // See window.eventlistener
     useLayoutEffect(() => {
         // let offset = offsetRef?.current?.clientHeight ? offsetRef.current.clientHeight : 0
         // let offset = mixins.toolbar.minHeight ? offsetRef?.current?.clientHeight : 0
@@ -685,6 +752,11 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         setGraphWidth(window.innerWidth * (7/12))
         // console.log(graphWidth, graphHeight)
     },[])
+    
+    // Makes the width of the visualization responsive for reszing.
+    // The 7/12 value corresponds to the space it is given in its parent Grid.
+    // the 64 value is the smallest height of an MUI toolbar;
+    // the toolbar's height is floored at 64 px for all displays, but is otherwise 5vh.
     window.addEventListener('resize', () => {
         // let offset = mixins.toolbar.minHeight ? offsetRef?.current?.clientHeight : 0
         // let ch = graphGridRef?.current?.clientHeight ? graphGridRef?.current?.clientHeight : 0
@@ -698,6 +770,10 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         setGraphWidth(window.innerWidth * (7/12))
         // console.log(graphWidth, graphHeight)
     })
+    
+    // This adds additional forces to the visualization elements.
+    // There are several options,
+    // but the main use is to ensure that the nodes are properly spaced according to their icon size.
     useEffect(() => {
         if (graphRef.current) {
             const fg = graphRef.current;
@@ -718,7 +794,10 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
         }
     }, [graph])
     
-    // Main render callback
+    // Main render callback;
+    // Sets the node icon images, size, and color.
+    // Sets the toggled label if checked.
+    // This function is called every frame, so it is important to optimize it.
     const paintNodes = useCallback((node:NodeObject, ctx:CanvasRenderingContext2D, globalScale)=> {
         // let node = node//nodeMap[node.id]
         if (!node || node.x === undefined || node.y === undefined) {
@@ -742,9 +821,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             
         }
         if (nodeLabelsVisible){
-            const label = node.label;
             const fontSize = 12/globalScale
-            const textWidth = ctx.measureText(label).width;
+            const textWidth = ctx.measureText(node.label).width;
             const txtBox = [textWidth, fontSize]//.map(n => n + fontSize * 0.2); // some padding
             ctx.font = `${fontSize}px Sans-Serif`;
             ctx.fillStyle = mode === "light" ? 'white' : 'black';
@@ -754,7 +832,7 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             ctx.textBaseline = 'middle';
             ctx.fillStyle = mode !== "light" ? 'white' : 'black';
             // ctx.fillStyle = node.color;
-            ctx.fillText(label, node.x, node.y + (node.value + txtBox[1]), textWidth);
+            ctx.fillText(node.label, node.x, node.y + (node.value + txtBox[1]), textWidth);
             // node.txtBox = txtBox
         }
     },[focusedItems, palette, mode, nodeLabelsVisible])
@@ -792,6 +870,11 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
                             nodeLabel={(node) =>
                                 (node?.label && !nodeLabelsVisible) ? node.label.toString() : ""
                             }
+                            linkLabel={l=> l.label !== undefined ? l.label as string : l.id as string}
+                            // linkLabel={l=>graph.nodeDict
+                            //     ? `${graph.nodeDict[typeof l.source === 'object' ? l.source.id : l.source].label} - ${graph?.nodeDict[typeof l.target === 'object' ? l.target.id : l.target].label}`
+                            //     : l.id as string
+                            // }
                             nodeRelSize={relSize}
                             // nodeCanvasObjectMode={()=>'after'}
                             nodeCanvasObject={(node, ctx, globalScale) => paintNodes(node, ctx, globalScale)}
@@ -853,7 +936,8 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
             }
             marginThreshold={0}
         >
-            <MenuItem onClick={fetchEntries}>Add Related Nodes</MenuItem>
+            <MenuItem onClick={fetchMoreEntries}>Add Related Nodes</MenuItem>
+            <MenuItem onClick={fetchNewEntries}>New search from this Node</MenuItem>
             {/*<MenuItem onClick={handleClose}>Copy</MenuItem>*/}
             {/*<MenuItem onClick={handleClose}>Print</MenuItem>*/}
             {/*<MenuItem onClick={handleClose}>Highlight</MenuItem>*/}
@@ -862,144 +946,3 @@ const GraphGui = ({entries, fetchMore}: GraphGuiProps): JSX.Element => {
     </>);
 };
 export default GraphGui;
-
-type NodeDict = { [key: string]: NodeObject }
-type LinkDict = { [key: string]: LinkObject }
-declare module "react-force-graph-2d" {
-    interface NodeObject {
-        id: string | number;
-        x?: number;
-        y?: number;
-        fx?: number;
-        fy?: number;
-        // other properties you want to access from `NodeObject` here
-        label: string;
-        // other properties you want to add to the object here
-        neighbors: NodeDict;
-        value: number
-        linkDict: LinkDict;
-        entries: Set<number>;
-        entryKeys: (keyof Entry)[]
-        nodeType: NodeTypeKey;
-        lightIcon?: HTMLImageElement;
-        darkIcon?: HTMLImageElement;
-        // listIcon?: HTMLImageElement;
-        color?: string
-    }
-    interface LinkObject {
-        id: string | number;
-        source: string | number | NodeObject;
-        target: string | number | NodeObject;
-        entries: Set<number>;
-        entryKeys: (keyof Entry)[]
-        linkType: LinkTypeKey;
-        label?: string;
-        color?: string
-        // canvasIcon?: HTMLImageElement;
-    }
-    interface GraphData {
-        nodes: NodeObject[],
-        links: LinkObject[],
-        nodeDict?: NodeDict,
-        linkDict?: LinkDict
-    }
-}
-
-type NodePicks = Pick<NodeObject, "label"| "entries"| "entryKeys"| "nodeType"| "color" | "darkIcon" | "lightIcon">
-type LinkPicks = Pick<LinkObject, | "entries" | "entryKeys" | "linkType" | "label" | "color">
-interface NodeProps extends NodePicks {
-    id: string;
-    neiKeys: Set<string>
-    linkKeys: Set<string>
-}
-interface LinkProps extends LinkPicks {
-    id: string;
-    source: string;
-    target: string;
-}
-
-interface GraphProps {
-    nodeProps: {
-        [key:string] : NodeProps
-    };
-    linkProps: {
-        [key:string] : LinkProps
-    };
-}
-
-//Graph types that must be declared in this file
-type GraphKey = keyof NodeObject | LinkObject | string | number
-
-export interface NodeListProps {
-    gData: GraphData
-    handleClickZoom: nodeHandler
-    toggleInfo: itemHandler
-    focusOn: focusHandler
-    focusOff: focusHandler
-    scrolledItem: string | number
-}
-export interface NodeListItemProps {
-    node: NodeObject
-    handleClickZoom: nodeHandler
-    toggleInfo: itemHandler
-    focusOn: focusHandler
-    focusOff: focusHandler
-    scrolledItem: string | number
-    // focused: boolean
-}
-export interface LinkListItemProps {
-    link:LinkObject;
-    node: NodeObject
-    parent: NodeObject
-    handleClickZoom: nodeHandler
-    toggleInfo: itemHandler
-    focusOn: focusHandler
-    focusOff: focusHandler
-    focused: boolean
-}
-
-interface GraphKeys {
-    nodes:  Set<GraphKey>
-    links: Set<GraphKey>
-    newEntries: Set<number>
-}
-
-type NodeTypePredicates = {
-    [key in NodeTypeKey]? : boolean
-}
-
-type LinkTypePredicates = {
-    [key in LinkTypeKey]?: boolean
-}
-
-interface DateRange {
-    start: Date | undefined,
-    end: Date | undefined
-}
-
-// type Marks = Array<{ value:number, label:string }>
-export interface GraphPredicates {
-    nodeTypes?: NodeTypePredicates;
-    linkTypes?: LinkTypePredicates;
-    dateRange?: DateRange
-    search: string | undefined
-}
-
-export interface GraphControlPanelProps {
-    makePredicates: filterHandler
-    toggleNodeLabels: (visible: boolean) => void
-    nodeLabels: boolean
-    filter?: GraphPredicates
-    dates: Array<Date>
-}
-
-interface InfoItems {
-    name: string | undefined;
-    info?: EntryInfo[]
-    entityType: string | undefined
-}
-
-type focusHandler = (elements:Set<GraphKey>) => void ;
-type nodeHandler = (node:NodeObject) => void;
-type itemHandler = (node:NodeObject, link?:LinkObject) => void
-type filterHandler = (field:string, t?:string, check?:boolean, dateRange?:DateRange) => void;
