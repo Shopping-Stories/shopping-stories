@@ -113,7 +113,7 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
                         color={'primary'}
                         variant={'contained'}
                         // fullWidth
-                        onClick={()=>router.replace("/entries/")}
+                        onClick={()=>router.back()}
                     >
                         <Typography color={"secondary.contrastText"}>
                         Return to Search
