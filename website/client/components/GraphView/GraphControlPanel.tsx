@@ -20,7 +20,7 @@ import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOver";
 // import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Grid from "@mui/material/Grid";
 import Switch from "@mui/material/Switch";
-import { ToggleButton } from "@mui/material";
+import { FormControl, FormControlLabel, ToggleButton } from "@mui/material";
 import { filterHandler, GraphPredicates } from "@components/GraphView/GraphTypes";
 
 // import FormGroup from "@mui/material/FormGroup";
@@ -219,10 +219,11 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
                                                 valueLabelDisplay="auto"
                                                 valueLabelFormat={x=> dates ? dates[x-1].toLocaleString().split(', ')[0] : x}
                                             />
-                                            <Switch
-                                                checked={checked}
-                                                onChange={handleCheck}
-                                            />
+                                            <FormControlLabel control={<Switch
+                                                    checked={checked}
+                                                    onChange={handleCheck}
+                                                />}
+                                                label="Filter by Date"/>
                                         </>
                                         : <Typography sx={{ ml: 1 }}>N/A</Typography>
                                 }
