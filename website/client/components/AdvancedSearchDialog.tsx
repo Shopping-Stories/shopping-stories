@@ -58,7 +58,7 @@ const AdvancedSearchDialog = ({ setAdvancedOpen, open, fuzzy, setFuzzy, toGraph,
         setAdvSubmitted(true)
         setSearch({
             type: fuzzy ? "FUZZY_ADVANCED" : "ADVANCED",
-            payload: new URLSearchParams(Object.entries(search).map(e => e)).toString()
+            payload: new URLSearchParams(Object.entries(search).map(e => [e[0], encodeURIComponent(e[1])])).toString()
         })
     }
     
