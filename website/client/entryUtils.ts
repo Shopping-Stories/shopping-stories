@@ -121,8 +121,9 @@ export const entryToRow = (entry: Entry) => {
     // console.log(sterling)
     let q = !!entry.Quantity
     let c = !!entry.Commodity
+    let formatDate = (entry?.Day ?? "") + " " + (entry?.month !== undefined ? entry.month !== "" ? months[parseInt(entry.month) - 1] : "" : "") + " " + entry?.date_year
     const complex = [
-        ['Date', (entry?.Day ?? "") + " " + (entry?.month == undefined ? "" : months[parseInt(entry?.month) - 1]) + " " + entry?.date_year],
+        ['Date', new Date(formatDate)],
         ['Page', entry?.ledger?.folio_page],
         ['Item', toTitleCase((entry?.item ?? ""))],
         ['Qty/Cmdty', q && c ? `${entry.Quantity} (pounds) ${entry.Commodity}` : q ? entry.Quantity : c ? entry.Commodity : ''],

@@ -22,6 +22,8 @@ import {
     GridToolbarExport,
     GridToolbarDensitySelector,
     GridColumnVisibilityModel,
+    gridStringOrNumberComparator,
+    gridDateComparator,
     // GridToolbar,
     // GridColumnMenu,
     // GridToolbarExport,
@@ -137,23 +139,27 @@ const EntryPaginationTable = ({
         colNames.map(n => [n, visibleFields.has(n)])
     )
     
-    const cols: GridColDef[] = useMemo(()=> (
-        colNames.map(str => (complexFields.has(str) || splitFields.has(str) ?
-        {
+    const cols: GridColDef[] = useMemo(()=> {
+        let ret = colNames.map(str => (complexFields.has(str) || splitFields.has(str) ? {
             // hideable: !hiddenCols[str],
             field: str,
             headerName: str,
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
             disableExport: !splitFields.has(str),
-            filterable: visibleFields.has(str)
+            filterable: visibleFields.has(str),
+            type: str !== 'Date' ? 'string' : 'date',
+            sortComparator: str !== 'Date' ? gridStringOrNumberComparator : gridDateComparator,
         } : {
             // hideable: !hiddenCols[str],
             field: str,
             headerName: fieldNames[str as IncludedField],
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
-            filterable: visibleFields.has(str)
-        }
-    ))), [])
+            filterable: visibleFields.has(str),
+            type: str !== 'Date' ? 'string' : 'date',
+            sortComparator: str !== 'Date' ? gridStringOrNumberComparator : gridDateComparator,
+        }))
+        return ret
+    }, [])
     
     
     const handleCellFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
