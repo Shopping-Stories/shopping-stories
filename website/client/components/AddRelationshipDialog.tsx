@@ -37,10 +37,10 @@ const AddRelationshipDialog = ({open, setOpen, handleSubmit, person1, person2, m
     
     const initValues: RelationShipForm = useMemo(() => {
         let vals:RelationShipForm = {person1: '', person2: ''}
-        if (person1) {
+        if (person1 && person1 !== "")  {
             vals.person1 = person1
         }
-        if (person2){
+        if (person2 && person2 !== ""){
             vals.person2 = person2
         }
         return vals

@@ -111,11 +111,11 @@ const ManageMarksPage: NextPage = () => {
         return toret;
     },[search])
     
-    const {data, isLoading} = uq({
+    const {data, isFetching} = uq({
         queryKey: ["entries", search],
         queryFn: doSearch,
         // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
-        enabled: search !== '',
+        // enabled: search !== '',
     })
     
     const cols: GridColDef[] = [
@@ -190,6 +190,7 @@ const ManageMarksPage: NextPage = () => {
         validationSchema: searchSchema,
         onSubmit: (values) => {
             setSearch(values.search);
+            setSelectedRow("")
         },
     });
     
@@ -229,6 +230,7 @@ const ManageMarksPage: NextPage = () => {
                 },
                 body: reqBody
             }
+            console.log(req)
             return fetch(saveUrl, req).then(p => {
                 console.log(p)
             })
@@ -249,6 +251,7 @@ const ManageMarksPage: NextPage = () => {
         //     body: reqBody
         // }
         // fetch(saveUrl, req)//.then(p => {console.log(p)})
+        setEditOpen({open:false, mode:'closed'})
     }, [editMutation])
     
     const deleteMutation = useMutation({
@@ -264,10 +267,11 @@ const ManageMarksPage: NextPage = () => {
     const deletePerson = useCallback((id:string) => {
         deleteMutation.mutate(id)
         setConfirm(false)
+        setEditOpen({open:false, mode:'closed'})
     }, [deleteMutation])
     
     const getEntryResults = useCallback( async ()=>{
-        if (!selectedRow || selectedRow === "") return
+        if (selectedRow === "" || isNaN(selectedRow as number))  return
         let person = people.pplMap[selectedRow].name
         if (!person) return
         searchDispacth({
@@ -278,6 +282,11 @@ const ManageMarksPage: NextPage = () => {
     
     const entriesRedirect = () => {
         getEntryResults().then(() => router.push('/entries'))
+    }
+    
+    const resetSearch = () => {
+        setSearch('john')
+        setSelectedRow('')
     }
     
     if (loading) {
@@ -319,17 +328,26 @@ const ManageMarksPage: NextPage = () => {
                                         label="Search"
                                         formikForm={searchForm}
                                     />
-                            
-                                    <LoadingButton
-                                        loading={isLoading}
-                                        variant="contained"
-                                        fullWidth
-                                        type="submit"
-                                    >
-                                        <Typography color="secondary.contrastText">
-                                            Search
-                                        </Typography>
-                                    </LoadingButton>
+                                    <Stack direction={'row'} spacing={1}>
+                                        <LoadingButton
+                                            loading={isFetching}//{isLoading}
+                                            variant="contained"
+                                            fullWidth
+                                            type="submit"
+                                        >
+                                            <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                Search
+                                            </Typography>
+                                        </LoadingButton>
+                                        <LoadingButton
+                                            onClick={resetSearch}
+                                            variant={"contained"}
+                                            color={'secondary'}
+                                            fullWidth
+                                        >
+                                            Reset Results
+                                        </LoadingButton>
+                                    </Stack>
                                 </Stack>
                             </form>
                         {/*</Paper>*/}
@@ -342,7 +360,7 @@ const ManageMarksPage: NextPage = () => {
                                         (<>
                                             <Button
                                                 onClick={entriesRedirect}
-                                                disabled={!selectedRow}
+                                                disabled={!selectedRow || selectedRow === ""}
                                                 hidden={!isAdminOrModerator}
                                                 variant="contained"
                                                 color={"secondary"}
@@ -351,7 +369,7 @@ const ManageMarksPage: NextPage = () => {
                                             </Button>
                                             <Button
                                                 onClick={()=> setEditOpen({open:true, mode:'edit'})}
-                                                disabled={!selectedRow}
+                                                disabled={!selectedRow || selectedRow === ""}
                                                 hidden={!isAdminOrModerator}
                                                 variant="contained"
                                                 color={"warning"}
@@ -363,7 +381,7 @@ const ManageMarksPage: NextPage = () => {
                                             { !confirm &&
                                                 <Button
                                                     onClick={()=> setConfirm(true)}
-                                                    disabled={!selectedRow}
+                                                    disabled={!selectedRow || selectedRow === ""}
                                                     hidden={!isAdminOrModerator}
                                                     variant="contained"
                                                     color={"error"}
@@ -386,7 +404,7 @@ const ManageMarksPage: NextPage = () => {
                                             <Divider flexItem orientation={'vertical'}/>
                                             <Button
                                                 onClick={()=>setEditOpen({open:true, mode:'view'})}
-                                                disabled={!selectedRow}
+                                                disabled={!selectedRow || selectedRow === ""}
                                                 hidden={!isAdminOrModerator}
                                                 variant="contained"
                                                 color={"primary"}

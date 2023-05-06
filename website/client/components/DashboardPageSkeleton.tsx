@@ -5,11 +5,11 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { NavLink } from 'client/types';
 import { Roles } from 'config/constants.config';
 import { isEqual, uniqWith } from 'lodash';
-// import { useRouter } from 'next/router';
-// import DashBoardTabs from '@components/DashboardTabs';
-// import Paper from '@mui/material/Paper';
+import { useRouter } from 'next/router';
+import DashBoardTabs from '@components/DashboardTabs';
+import Paper from '@mui/material/Paper';
 // import { Fragment } from 'react';
-// import { PaperStyles } from 'styles/styles';
+import { PaperStyles } from 'styles/styles';
 
 const sideLinks: NavLink[] = [
     {title: 'Account Settings', path: '/dashboard/settings'}
@@ -39,7 +39,7 @@ interface DashBoardPageSkeletonProps {
 }
 
 const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
-    // const router = useRouter();
+    const router = useRouter();
     const isSmallerThanMd = useMediaQuery((theme: any) =>
         theme.breakpoints.down('md'),
     );
@@ -51,38 +51,38 @@ const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
         ? uniqWith([...sideLinks, ...adminLinks], isEqual)
         : sideLinks;
 
-    // const currentPageIndex = links.findIndex(
-    //     (link) => link.path === router.route,
-    // );
+    const currentPageIndex = links.findIndex(
+        (link) => link.path === router.route,
+    );
 
     return (
         // <Fragment>
             <Grid container>
                 {isNotAdminOrModerator
                     ? null
-                    // : isSmallerThanMd ? (
-                    // <Grid item xs={12}>
-                    //     <Paper
-                    //         sx={{
-                    //             backgroundColor: 'var(--secondary)',
-                    //             ...PaperStyles,
-                    //         }}
-                    //     >
-                    //         <DashBoardTabs
-                    //             pageIndex={currentPageIndex}
-                    //             links={links}
-                    //         />
-                    //     </Paper>
-                    // </Grid>
-                    // )
-                        : (
+                    : isSmallerThanMd ? (
                     <Grid item xs={12}>
+                        <Paper
+                            sx={{
+                                backgroundColor: 'var(--secondary)',
+                                ...PaperStyles,
+                            }}
+                        >
+                            <DashBoardTabs
+                                pageIndex={currentPageIndex}
+                                links={links}
+                            />
+                        </Paper>
+                    </Grid>
+                    )
+                        : (
+                    <Grid item xs={4}>
                         <SideMenu links={links} />
                     </Grid>
                 )}
                 <Grid
                     item
-                    xs={isSmallerThanMd || isNotAdminOrModerator ? 12 : 12}
+                    xs={isSmallerThanMd || isNotAdminOrModerator ? 12 : 8}
                 >
                     {props.children}
                 </Grid>

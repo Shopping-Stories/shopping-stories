@@ -80,7 +80,7 @@ const EntriesPage: NextPage = () => {
     
     // const queryClient = useQueryClient()
     
-    const {data, isLoading} = useQuery({
+    const {data, isFetching} = useQuery({
         queryKey: ["entries", search, fuzzy, advanced],
         queryFn: doSearch,
         // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
@@ -209,7 +209,7 @@ const EntriesPage: NextPage = () => {
                                     {/*<ButtonGroup variant="contained" fullWidth>*/}
                                         <LoadingButton
                                             fullWidth
-                                            loading={search !== '' && isLoading}
+                                            loading={search !== '' && isFetching}
                                             variant="contained"
                                             type="submit"
                                             color={"secondary"}
@@ -220,7 +220,7 @@ const EntriesPage: NextPage = () => {
                                         </LoadingButton>
                                     {/*    <LoadingButton*/}
                                     {/*        fullWidth*/}
-                                    {/*        loading={search !== '' && isLoading}*/}
+                                    {/*        loading={search !== '' && isFetching}*/}
                                     {/*        // variant="contained"*/}
                                     {/*        type="submit"*/}
                                     {/*        onClick={()=>setFuzzy(true)}*/}
@@ -232,7 +232,7 @@ const EntriesPage: NextPage = () => {
                                     <Divider flexItem orientation={"vertical"}/>
                                     <LoadingButton
                                         fullWidth
-                                        loading={search !== '' && isLoading}
+                                        loading={search !== '' && isFetching}
                                         variant="contained"
                                         color={"secondary"}
                                         type="submit"
@@ -243,7 +243,7 @@ const EntriesPage: NextPage = () => {
                                     <Divider flexItem orientation={"vertical"}/>
                                     <LoadingButton
                                         fullWidth
-                                        loading={search !== '' && isLoading}
+                                        loading={search !== '' && isFetching}
                                         variant="contained"
                                         disabled={searchForm.values.search.trim() === ''}
                                         // type={'submit'}
