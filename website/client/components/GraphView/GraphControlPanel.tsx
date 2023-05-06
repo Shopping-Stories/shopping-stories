@@ -9,7 +9,7 @@ import Slider from "@mui/material/Slider";
 import  Chip from "@mui/material/Chip";
 import  Breadcrumbs  from "@mui/material/Breadcrumbs";
 import Stack from "@mui/material/Stack";
-
+import router from "next/router";
 import Divider from '@mui/material/Divider';
 import PersonIcon from "@mui/icons-material/Person";
 import StorefrontIcon from "@mui/icons-material/Storefront";
@@ -20,8 +20,9 @@ import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOver";
 // import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Grid from "@mui/material/Grid";
 import Switch from "@mui/material/Switch";
-import { FormControl, FormControlLabel, ToggleButton } from "@mui/material";
+import { FormControlLabel, ToggleButton } from "@mui/material";
 import { filterHandler, GraphPredicates } from "@components/GraphView/GraphTypes";
+import Button from "@mui/material/Button";
 
 // import FormGroup from "@mui/material/FormGroup";
 // import Button from "@mui/material/Button";
@@ -103,15 +104,32 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
                     // alignItems: 'flex-start',
                     flexWrap: 'wrap',
                     flexGrow: 1,
-                    width: "50vw",
+                    width: "55vw",
                     borderTop: (theme) => `1px solid ${theme.palette.divider}`
                 }}
             >
+                <Grid item xs={1}>
+                    <Button
+                        color={'primary'}
+                        variant={'contained'}
+                        // fullWidth
+                        onClick={()=>router.back()}
+                    >
+                        <Typography color={"secondary.contrastText"}>
+                        Return to Search
+                        </Typography>
+                    </Button>
+                </Grid>
                 <Grid
+                    ml={2}
                     item
                     xs={3}
+                    sx={{
+                        borderLeft : (theme) => `1px solid ${theme.palette.divider}`,
+                        alignItems: 'center'
+                    }}
                 >
-                    <Typography gutterBottom mt={1}>Node Filters</Typography>
+                    <Typography gutterBottom mt={1} ml={1}>Node Filters</Typography>
                     {/*<Stack direction={"row"}>*/}
                     <Grid container spacing={1}>
                         <Grid item xs={2}>
@@ -219,11 +237,15 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
                                                 valueLabelDisplay="auto"
                                                 valueLabelFormat={x=> dates ? dates[x-1].toLocaleString().split(', ')[0] : x}
                                             />
-                                            <FormControlLabel control={<Switch
-                                                    checked={checked}
-                                                    onChange={handleCheck}
-                                                />}
-                                                label="Filter by Date"/>
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={checked}
+                                                        onChange={handleCheck}
+                                                    />
+                                                }
+                                                label="Toggle Filter"
+                                            />
                                         </>
                                         : <Typography sx={{ ml: 1 }}>N/A</Typography>
                                 }
@@ -239,7 +261,7 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
                     {/*</Box>*/}
                     {/*</Grid>*/}
                 </Grid>
-                <Grid item xs={3}
+                <Grid item xs={1}
                       sx={{
                           borderLeft : (theme) => `1px solid ${theme.palette.divider}`,
                           alignItems: 'center',
