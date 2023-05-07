@@ -73,8 +73,8 @@ const EntriesPage: NextPage = () => {
     
     const doSearch = useCallback(async () => {
         const req = advanced
-            ? `https://api.preprod.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
-            : `https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
+            ? `https://api.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
+            : `https://api.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
         const res = await fetch(req);
         let toret: EntryQueryResult = JSON.parse(await res.text());
         // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
@@ -108,7 +108,7 @@ const EntriesPage: NextPage = () => {
         mutationFn: (id: string) => {
             // const id = payload._id
             // if (!id) return
-            let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
+            let saveUrl = `https://api.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
             let req = {
                 method: "POST",
                 headers: {
@@ -129,7 +129,7 @@ const EntriesPage: NextPage = () => {
             if (!id) return
             mutation.mutate(id)
             return
-            // let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
+            // let saveUrl = `https://api.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
             // let req = {
             //     method: "POST",
             //     headers: {

@@ -24,7 +24,7 @@ interface URLTable {
 
 const URLTable = (props: URLTable) => {
     const handleClick = props.handleClick;
-    const url = "https://api.preprod.shoppingstories.org/get_ready_URLs";
+    const url = "https://api.shoppingstories.org/get_ready_URLs";
 
     const { loading } = useAuth();
     // const isAdmin = isInGroup(Roles.Admin, groups);

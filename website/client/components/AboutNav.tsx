@@ -115,7 +115,7 @@ export default function VerticalTabs({
         console.log(JSON.stringify(toUp["files"][0]));
         // console.log(toUp.file);
         // console.log(JSON.stringify(toUp.files[0]));
-        const upload_url = "https://api.preprod.shoppingstories.org:443/upload_document/";
+        const upload_url = "https://api.shoppingstories.org:443/upload_document/";
         const res = await fetch(upload_url, {
             method: "POST",
             headers: {
@@ -178,7 +178,7 @@ export default function VerticalTabs({
 
     const handleDelete = async (name: string) => {
 
-        const delUrl = "https://api.preprod.shoppingstories.org:443/delete_document/" + name;
+        const delUrl = "https://api.shoppingstories.org:443/delete_document/" + name;
         // let toDel: fileName = {name: fileName}
         
         const res = await fetch(delUrl, {
@@ -200,7 +200,7 @@ export default function VerticalTabs({
     }
 
     const getDocs = async () => {
-        const getUrl = "https://api.preprod.shoppingstories.org:443/list_all_documents"
+        const getUrl = "https://api.shoppingstories.org:443/list_all_documents"
 
         const res = await fetch(getUrl);
 
@@ -218,7 +218,7 @@ export default function VerticalTabs({
 
     
     const getDoc = async (name: string) => {
-        const getUrl = "https://api.preprod.shoppingstories.org:443/get_document/" + name;
+        const getUrl = "https://api.shoppingstories.org:443/get_document/" + name;
         
         const res = await fetch(getUrl);
         const blob = await res.blob();

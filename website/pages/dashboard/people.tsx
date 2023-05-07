@@ -102,7 +102,7 @@ const ManageMarksPage: NextPage = () => {
     
     
     const doSearch = useCallback(async () => {
-        const req = `https://api.preprod.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams({person:search}).toString()}`
+        const req = `https://api.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams({person:search}).toString()}`
         const res = await fetch(req);
         let toret: {entries: Entry[]} = JSON.parse(await res.text());
         // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
@@ -197,7 +197,7 @@ const ManageMarksPage: NextPage = () => {
     const addMutation = useMutation({
         mutationFn: (people:[string, string, string]) => {
             const [p1, p2, mutation] = people
-            let saveUrl = `https://api.preprod.shoppingstories.org/${mutation}_people_relationship/?` + new URLSearchParams({
+            let saveUrl = `https://api.shoppingstories.org/${mutation}_people_relationship/?` + new URLSearchParams({
                 person1_name: p1,
                 person2_name: p2
             }).toString();
@@ -220,7 +220,7 @@ const ManageMarksPage: NextPage = () => {
     const editMutation = useMutation({
         mutationFn: (person:[string, string]) => {
             const [id, name] = person
-            let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({ person_id: id }).toString();
+            let saveUrl = `https://api.shoppingstories.org/edit_person/?` + new URLSearchParams({ person_id: id }).toString();
             let reqBody = JSON.stringify({ name: name })
             let req = {
                 method: "POST",
@@ -240,7 +240,7 @@ const ManageMarksPage: NextPage = () => {
     
     const editPerson = useCallback((id:string, name:string) => {
         editMutation.mutate([id, name])
-        // let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
+        // let saveUrl = `https://api.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
         // let reqBody = JSON.stringify({name: name})
         // let req = {
         //     method: "POST",
@@ -256,7 +256,7 @@ const ManageMarksPage: NextPage = () => {
     
     const deleteMutation = useMutation({
         mutationFn: (id:string) => {
-            let saveUrl = `https://api.preprod.shoppingstories.org/delete_person/?` + new URLSearchParams({ person_id: id }).toString();
+            let saveUrl = `https://api.shoppingstories.org/delete_person/?` + new URLSearchParams({ person_id: id }).toString();
             return fetch(saveUrl).then(p => {
                 console.log(p)
             })

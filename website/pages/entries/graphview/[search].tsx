@@ -56,15 +56,15 @@ const EntryGraphView = ({
     console.log(title)
     console.log(search, fuzzy, advanced)
     // const doSearch = async (arg:string = search): Promise<EntryQueryResult> => {
-    //     const res = await fetch("https://api.preprod.shoppingstories.org:443/search/" + arg);
+    //     const res = await fetch("https://api.shoppingstories.org:443/search/" + arg);
     //     // console.log(await res.text());
     //     // let toret: EntryQueryResult = JSON.parse(await res.text());
     //     return JSON.parse(await res.text());
     // };
     const doSearch = useCallback(async (search:string, fuzzy:boolean, advanced:boolean) => {
         const req = advanced
-            ? `https://api.preprod.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
-            : `https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
+            ? `https://api.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
+            : `https://api.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
         const res = await fetch(req);
         let toret: EntryQueryResult = JSON.parse(await res.text());
         // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)

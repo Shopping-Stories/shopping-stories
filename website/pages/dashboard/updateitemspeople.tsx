@@ -44,7 +44,7 @@ const UpdateItemsPeoplePage: NextPage = () => {
 
     const doUpload = async (toUp: fileUploads, msg: number) => {
         // console.log(JSON.stringify(toUp["files"][0]));
-        const upload_url = "https://api.preprod.shoppingstories.org:443/upload_document/";
+        const upload_url = "https://api.shoppingstories.org:443/upload_document/";
         const res = await fetch(upload_url, {
             method: "POST",
             headers: {

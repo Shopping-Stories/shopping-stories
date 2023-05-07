@@ -121,7 +121,7 @@ const EntryPage = () => {
     }, [notCreate, entry])
     
     const handleSubmit = async (newEntry: Partial<ParserOutput>, dType: string | undefined, id?: string) => {
-        let saveUrl = `https://api.preprod.shoppingstories.org/${dType?.toLowerCase()}_entry`;
+        let saveUrl = `https://api.shoppingstories.org/${dType?.toLowerCase()}_entry`;
         // console.log(saveUrl, newEntry)
         if (!dType) return
         let req = {}
@@ -174,7 +174,7 @@ const EntryPage = () => {
         mutationFn: (id: string) => {
             // const id = payload._id
             // if (!id) return
-            let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
+            let saveUrl = `https://api.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
             let req = {
                 method: "POST",
                 headers: {

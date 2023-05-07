@@ -109,7 +109,7 @@ const ManageItemsPage: NextPage = () => {
     }
     
     const doSearch = useCallback(async () => {
-        const req = `https://api.preprod.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams(
+        const req = `https://api.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams(
             searchForm.values.search === '' ? {person:search} : {item:search}
         ).toString()}`
         const res = await fetch(req);
@@ -175,7 +175,7 @@ const ManageItemsPage: NextPage = () => {
     const editMutation = useMutation({
         mutationFn: (itemKey:[string, string, number, string, string]) => {
             const [id, item, arch, cat, subcat] = itemKey
-            let saveUrl = `https://api.preprod.shoppingstories.org/edit_item/?` + new URLSearchParams({ item_id: id }).toString();
+            let saveUrl = `https://api.shoppingstories.org/edit_item/?` + new URLSearchParams({ item_id: id }).toString();
             let reqBody = JSON.stringify({
                 item: item,
                 archMat: arch,
@@ -199,7 +199,7 @@ const ManageItemsPage: NextPage = () => {
     
     const editItem = useCallback((id:string, name:string, archMat:number, category:string, subcategory:string) => {
         editMutation.mutate([id, name, archMat, category, subcategory])
-        // let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
+        // let saveUrl = `https://api.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
         // let reqBody = JSON.stringify({name: name})
         // let req = {
         //     method: "POST",
@@ -215,7 +215,7 @@ const ManageItemsPage: NextPage = () => {
     
     const deleteMutation = useMutation({
         mutationFn: (id:string) => {
-            let saveUrl = `https://api.preprod.shoppingstories.org/delete_item/?` + new URLSearchParams({ item_id: id }).toString();
+            let saveUrl = `https://api.shoppingstories.org/delete_item/?` + new URLSearchParams({ item_id: id }).toString();
             return fetch(saveUrl).then(p => {
                 console.log(p)
             })
