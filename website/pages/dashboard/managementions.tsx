@@ -40,7 +40,7 @@ const ManageMentions = () => {
     const replaceMentionMutation = useMutation({
         mutationFn: (mentionKey:[string, string]) => {
             const [prev, next] = mentionKey
-            let saveUrl = `https://api.preprod.shoppingstories.org/find_and_replace_mention/?` + new URLSearchParams({ old_mention:prev, new_mentions:next }).toString();
+            let saveUrl = `https://api.shoppingstories.org/find_and_replace_mention/?` + new URLSearchParams({ old_mention:prev, new_mentions:next }).toString();
             // let reqBody = JSON.stringify({ item: item })
             // let req = {
             //     method: "POST",
@@ -60,7 +60,7 @@ const ManageMentions = () => {
     const replaceMention = useCallback((prev:string, next:string) => {
         console.log(prev, next)
         replaceMentionMutation.mutate([prev, next])
-        // let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
+        // let saveUrl = `https://api.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
         // let reqBody = JSON.stringify({name: name})
         // let req = {
         //     method: "POST",

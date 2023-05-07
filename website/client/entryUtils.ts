@@ -121,8 +121,9 @@ export const entryToRow = (entry: Entry) => {
     // console.log(sterling)
     let q = !!entry.Quantity
     let c = !!entry.Commodity
+    let formatDate = (entry?.Day ?? "") + " " + (entry?.month !== undefined ? entry.month !== "" ? months[parseInt(entry.month) - 1] : "" : "") + " " + entry?.date_year
     const complex = [
-        ['Date', (entry?.Day ?? "") + " " + (entry?.month == undefined ? "" : months[parseInt(entry?.month) - 1]) + " " + entry?.date_year],
+        ['Date', new Date(formatDate)],
         ['Page', entry?.ledger?.folio_page],
         ['Item', toTitleCase((entry?.item ?? ""))],
         ['Qty/Cmdty', q && c ? `${entry.Quantity} (pounds) ${entry.Commodity}` : q ? entry.Quantity : c ? entry.Commodity : ''],
@@ -307,12 +308,13 @@ export const parsedFieldNames = Object.fromEntries(
 // const r = /(ObjectId\(')|('\))|('),|{(')|(')}|\s(')|('):/g
 // const sq = /'/g
 const singleQuote = /':/g
-const spaceQ = /\s'/g
+const spaceQ = /,\s'/g
 const obReg = /ObjectId\('|'\)/g
 // const rParen = /'\)/g
-const oBracketQ = /{'/g
+const oBracketQ = /\{'/g
 const cBracketQ = /'}/g
 const commaQ = /',/g
+const colon = /: '/g
 const none = /None/g
 
 export interface PersonObject {
@@ -333,10 +335,11 @@ export interface ItemObject {
 export const parsePeople = (ppl:string):PersonObject[] => {
     ppl = ppl.replace(obReg, '"')
         .replace(singleQuote, '":')
-        .replace(spaceQ, ' "')
+        .replace(spaceQ, ', "')
         .replace(oBracketQ, '{"')
         .replace(cBracketQ, '"}')
         .replace(commaQ, '",')
+        .replace(colon, ': "')
             // .replace(rParen, '"')
     try {
         let pArr: PersonObject[] = JSON.parse(ppl)
@@ -358,10 +361,11 @@ export const parsePeople = (ppl:string):PersonObject[] => {
 export const parseItem = (item:string): ItemObject[] => {
     item = item.replace(obReg, '"')
         .replace(singleQuote, '":')
-        .replace(spaceQ, ' "')
+        .replace(spaceQ, ',"')
         .replace(oBracketQ, '{"')
         .replace(cBracketQ, '"}')
         .replace(commaQ, '",')
+        .replace(colon, ': "')
         .replace(none, 'null')
     try {
         let itemArr: ItemObject[] = JSON.parse(item)

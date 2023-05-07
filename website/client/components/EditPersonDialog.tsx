@@ -81,32 +81,6 @@ const EditPersonDialog = ({open, setOpen, handleSubmit, person, id, relations, m
         <Dialog
             open={open}
         >
-            <Grid container alignItems={'center'} mt={1}>
-                <Grid item xs={6}>
-                    <DialogTitle>Edit Person</DialogTitle>
-                </Grid>
-                <Grid item xs={6}>
-                    <DialogActions>
-                        {/*<Stack direction={'row'} spacing={2}>*/}
-                        <Button
-                            type={"submit"}
-                            variant={'contained'}
-                            color={'success'}
-                        >
-                            Submit
-                        </Button>
-                        <Button
-                            variant={'contained'}
-                            color={'error'}
-                            onClick={()=>handleClose()}
-                        >
-                            Cancel
-                        </Button>
-                    </DialogActions>
-                </Grid>
-                {/*<Grid item xs={12}><Divider /></Grid>*/}
-            </Grid>
-            <Divider />
             <DialogContent>
                 <Formik
                     initialValues={initValues}
@@ -119,6 +93,32 @@ const EditPersonDialog = ({open, setOpen, handleSubmit, person, id, relations, m
                        handleBlur,
                    }) => (
                     <Form noValidate>
+                    <Grid container alignItems={'center'} mt={1}>
+                        <Grid item xs={6}>
+                            <DialogTitle>Edit Person</DialogTitle>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <DialogActions>
+                                {/*<Stack direction={'row'} spacing={2}>*/}
+                                <Button
+                                    type={"submit"}
+                                    variant={'contained'}
+                                    color={'success'}
+                                >
+                                    Submit
+                                </Button>
+                                <Button
+                                    variant={'contained'}
+                                    color={'error'}
+                                    onClick={()=>handleClose()}
+                                >
+                                    Cancel
+                                </Button>
+                            </DialogActions>
+                        </Grid>
+                        <Divider />
+                        <Grid item xs={12}>
+                            {/*<Grid item xs={12}><Divider /></Grid>*/}
                         <Grid container spacing={1}>
                             <Grid item xs={12}>
                                 <TextField
@@ -192,6 +192,8 @@ const EditPersonDialog = ({open, setOpen, handleSubmit, person, id, relations, m
                               }
                             </Grid>
                         </Grid>
+                        </Grid>
+                    </Grid>
                     </Form>
                 )}
                 </Formik>

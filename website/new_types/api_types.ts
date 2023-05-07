@@ -218,7 +218,7 @@ export interface ParserOutput {
     store?: string
     store_owner?: string
     folio_year?: string
-    folio_page?: number
+    folio_page?: string
     entry_id?: string
     "Date Year"?: string
     "_Month": string

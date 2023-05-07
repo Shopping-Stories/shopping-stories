@@ -72,6 +72,7 @@ const ManageItemsPage: NextPage = () => {
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
     
+    // const [search, setSearch] = useState<string>('john');
     const [search, setSearch] = useState<string>('john');
     const [selectedRow, setSelectedRow] =
         useState<GridRowId>("");
@@ -98,11 +99,17 @@ const ManageItemsPage: NextPage = () => {
         validationSchema: searchSchema,
         onSubmit: (values) => {
             setSearch(values.search);
+            setSelectedRow("")
         },
     });
     
+    const resetSearch = () => {
+        setSearch('john')
+        setSelectedRow('')
+    }
+    
     const doSearch = useCallback(async () => {
-        const req = `https://api.preprod.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams(
+        const req = `https://api.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams(
             searchForm.values.search === '' ? {person:search} : {item:search}
         ).toString()}`
         const res = await fetch(req);
@@ -113,7 +120,7 @@ const ManageItemsPage: NextPage = () => {
         return toret;
     },[search, searchForm.values.search])
     
-    const {data, isLoading} = uq({
+    const {data, isFetching} = uq({
         queryKey: ["entries", search],
         queryFn: doSearch,
         // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
@@ -125,6 +132,7 @@ const ManageItemsPage: NextPage = () => {
         const {entries} = data
         let itemMap: ItemMap = {}
         for (const e of entries){
+            // console.log(e)
             if (e.item_obj && e.item_obj !== ""){
                 let item = parseItem(e.item_obj)
                 if (item.length){
@@ -152,11 +160,28 @@ const ManageItemsPage: NextPage = () => {
         return { rows: rows, itemMap: itemMap}
     }, [data])
     
+    const initVals:EditItemForm = useMemo(()=> {
+        if (!selectedRow || selectedRow === "") return {item:'', archMat:0, category:'', subcategory:''}
+        const vals:EditItemForm = {
+            item: items.itemMap[selectedRow].item,
+            archMat: items.itemMap[selectedRow].archMat,
+            category: items.itemMap[selectedRow].category,
+            subcategory: items.itemMap[selectedRow].subcategory,
+        }
+        console.log(vals)
+        return vals
+    }, [selectedRow, items.itemMap])
+    
     const editMutation = useMutation({
-        mutationFn: (itemKey:[string, string]) => {
-            const [id, item] = itemKey
-            let saveUrl = `https://api.preprod.shoppingstories.org/edit_item/?` + new URLSearchParams({ item_id: id }).toString();
-            let reqBody = JSON.stringify({ item: item })
+        mutationFn: (itemKey:[string, string, number, string, string]) => {
+            const [id, item, arch, cat, subcat] = itemKey
+            let saveUrl = `https://api.shoppingstories.org/edit_item/?` + new URLSearchParams({ item_id: id }).toString();
+            let reqBody = JSON.stringify({
+                item: item,
+                archMat: arch,
+                category: cat,
+                subcategory: subcat
+            })
             let req = {
                 method: "POST",
                 headers: {
@@ -172,9 +197,9 @@ const ManageItemsPage: NextPage = () => {
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
     })
     
-    const editItem = useCallback((id:string, name:string) => {
-        editMutation.mutate([id, name])
-        // let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
+    const editItem = useCallback((id:string, name:string, archMat:number, category:string, subcategory:string) => {
+        editMutation.mutate([id, name, archMat, category, subcategory])
+        // let saveUrl = `https://api.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
         // let reqBody = JSON.stringify({name: name})
         // let req = {
         //     method: "POST",
@@ -185,11 +210,12 @@ const ManageItemsPage: NextPage = () => {
         //     body: reqBody
         // }
         // fetch(saveUrl, req)//.then(p => {console.log(p)})
+        setEditOpen(false)
     }, [editMutation])
     
     const deleteMutation = useMutation({
         mutationFn: (id:string) => {
-            let saveUrl = `https://api.preprod.shoppingstories.org/delete_item/?` + new URLSearchParams({ item_id: id }).toString();
+            let saveUrl = `https://api.shoppingstories.org/delete_item/?` + new URLSearchParams({ item_id: id }).toString();
             return fetch(saveUrl).then(p => {
                 console.log(p)
             })
@@ -200,6 +226,7 @@ const ManageItemsPage: NextPage = () => {
     const deleteItem = useCallback((id:string) => {
         deleteMutation.mutate(id)
         setConfirm(false)
+        setEditOpen(false)
     }, [deleteMutation])
     
     const cols: GridColDef[] = [
@@ -210,17 +237,6 @@ const ManageItemsPage: NextPage = () => {
         {field: 'Category', headerName: 'Category', flex:1},
         {field: 'Subcategory', headerName: 'SubCategory', flex:1}
     ]
-    
-    const initVals:EditItemForm = useMemo(()=> {
-        if (!selectedRow) return {item:'', archMat:0, category:'', subcategory:''}
-        const vals:EditItemForm = {
-            item: items.itemMap[selectedRow].item,
-            archMat: items.itemMap[selectedRow].archMat,
-            category: items.itemMap[selectedRow].category,
-            subcategory: items.itemMap[selectedRow].subcategory,
-        }
-        return vals
-    }, [selectedRow, items.itemMap])
     
     const getEntryResults = useCallback( async ()=>{
         if (!selectedRow || selectedRow === "") return
@@ -266,17 +282,26 @@ const ManageItemsPage: NextPage = () => {
                                         variant={'filled'}
                                         formikForm={searchForm}
                                     />
-        
-                                    <LoadingButton
-                                        loading={isLoading}
-                                        variant="contained"
-                                        fullWidth
-                                        type="submit"
-                                    >
-                                            <Typography fontWeight={"500"} color="secondary.contrastText">
-                                                Search
-                                            </Typography>
-                                    </LoadingButton>
+                                    <Stack direction={'row'} spacing={1}>
+                                        <LoadingButton
+                                            loading={isFetching}//{isLoading}
+                                            variant="contained"
+                                            type="submit"
+                                            fullWidth
+                                        >
+                                                <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                    Search
+                                                </Typography>
+                                        </LoadingButton>
+                                        <LoadingButton
+                                            onClick={resetSearch}
+                                            variant={"contained"}
+                                            color={'secondary'}
+                                            fullWidth
+                                        >
+                                            Reset Results
+                                        </LoadingButton>
+                                    </Stack>
                                 </Stack>
                             </form>
                         </Grid>
@@ -312,7 +337,7 @@ const ManageItemsPage: NextPage = () => {
                                                 {/*</Button>*/}
                                                 <Button
                                                     onClick={entriesRedirect}
-                                                    disabled={!selectedRow}
+                                                    disabled={!selectedRow || selectedRow === ""}
                                                     hidden={!isAdminOrModerator}
                                                     variant="contained"
                                                     color={"secondary"}
@@ -321,7 +346,7 @@ const ManageItemsPage: NextPage = () => {
                                                 </Button>
                                                 <Button
                                                     onClick={()=> setEditOpen(selectedRow !== '')}
-                                                    disabled={!selectedRow}
+                                                    disabled={!selectedRow || selectedRow === ""}
                                                     hidden={!isAdminOrModerator}
                                                     variant="contained"
                                                     color={"warning"}
@@ -333,7 +358,7 @@ const ManageItemsPage: NextPage = () => {
                                                 { !confirm &&
                                                   <Button
                                                     onClick={()=> setConfirm(true)}
-                                                    disabled={!selectedRow}
+                                                    disabled={!selectedRow || selectedRow === ""}
                                                     hidden={!isAdminOrModerator}
                                                     variant="contained"
                                                     color={"error"}
@@ -386,7 +411,10 @@ const ManageItemsPage: NextPage = () => {
                 <DialogContent>
                     <Formik
                         initialValues={initVals}
-                        onSubmit={(v)=>editItem(selectedRow as string, v.item)}
+                        onSubmit={(v)=>editItem(
+                            selectedRow as string,
+                            v.item, v.archMat, v.category, v.subcategory
+                        )}
                     >{({
                           values,
                           // touched,
@@ -403,7 +431,7 @@ const ManageItemsPage: NextPage = () => {
                                       label={'Name'}
                                       onChange={handleChange}
                                       onBlur={handleBlur}
-                                      defaultValue={values.item}
+                                      value={values.item}
                                       sx={{marginBottom: "1vh"}}
                                   />
                                   <TextField
@@ -412,7 +440,7 @@ const ManageItemsPage: NextPage = () => {
                                       label={'ArchMat'}
                                       onChange={handleChange}
                                       onBlur={handleBlur}
-                                      defaultValue={values.archMat}
+                                      value={values.archMat}
                                       sx={{marginBottom: "1vh"}}
                                   />
                                   <TextField
@@ -421,7 +449,7 @@ const ManageItemsPage: NextPage = () => {
                                       label={'Category'}
                                       onChange={handleChange}
                                       onBlur={handleBlur}
-                                      defaultValue={values.category}
+                                      value={values.category}
                                       sx={{marginBottom: "1vh"}}
                                   />
                                   <TextField
@@ -430,7 +458,7 @@ const ManageItemsPage: NextPage = () => {
                                       label={'Subcategory'}
                                       onChange={handleChange}
                                       onBlur={handleBlur}
-                                      defaultValue={values.subcategory}
+                                      value={values.subcategory}
                                       sx={{marginBottom: "1vh"}}
                                   />
                               </Grid>

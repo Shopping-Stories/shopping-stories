@@ -33,7 +33,7 @@ const ManageItemsPage: NextPage = () => {
     const [successMessage, setSuccessMessage] = useState("");
 
     const combineItems = async (item1: string, item2: string, newItem: string) => {
-        const combineUrl = `https://api.preprod.shoppingstories.org:443/combine_items/?primary_item=${item1}&secondary_item=${item2}&new_item_name=${newItem}`;
+        const combineUrl = `https://api.shoppingstories.org:443/combine_items/?primary_item=${encodeURIComponent(item1)}&secondary_item=${encodeURIComponent(item2)}&new_item_name=${encodeURIComponent(newItem)}`;
       
         if (item1 == "" || item2 == "" || newItem == "")
         {
@@ -94,7 +94,7 @@ const ManageItemsPage: NextPage = () => {
                                 fullWidth
                                 type="text"
                                 name="item1"
-                                label="Item one"
+                                label="Primary item"
                                 variant="outlined"
                                 value={values.item1}
                                 onChange={handleChange}
@@ -105,7 +105,7 @@ const ManageItemsPage: NextPage = () => {
                                 fullWidth
                                 type="text"
                                 name="item2"
-                                label="Item two"
+                                label="Secondary item"
                                 variant="outlined"
                                 value={values.item2}
                                 onChange={handleChange}

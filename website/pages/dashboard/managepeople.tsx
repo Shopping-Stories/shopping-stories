@@ -31,7 +31,7 @@ const ManagePeoplePage: NextPage = () => {
     const [successMessage, setSuccessMessage] = useState("");
 
     const combinePeople = async (name1: string, name2: string, newName: string) => {
-        const combineUrl = `https://api.preprod.shoppingstories.org:443/combine_people/?person1_name=${name1}&person2_name=${name2}&new_name=${newName}`;
+        const combineUrl = `https://api.shoppingstories.org:443/combine_people/?person1_name=${encodeURIComponent(name1)}&person2_name=${encodeURIComponent(name2)}&new_name=${encodeURIComponent(newName)}`;
       
         if (name1 == "" || name2 == "" || newName == "")
         {
@@ -92,7 +92,7 @@ const ManagePeoplePage: NextPage = () => {
                             fullWidth
                             type="text"
                             name="name1"
-                            label="Name one"
+                            label="Primary name"
                             variant="outlined"
                             value={values.name1}
                             onChange={handleChange}
@@ -103,7 +103,7 @@ const ManagePeoplePage: NextPage = () => {
                             fullWidth
                             type="text"
                             name="name2"
-                            label="Name two"
+                            label="Secondary name"
                             variant="outlined"
                             value={values.name2}
                             onChange={handleChange}

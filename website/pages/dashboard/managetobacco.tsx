@@ -47,7 +47,7 @@ const ManageTobacco = () => {
     const editTobaccoMutation = useMutation({
         mutationFn: (tobaccoKey:[string, string, string, string]) => {
             const [omn, nmn, omt, nmt] = tobaccoKey
-            let saveUrl = `https://api.preprod.shoppingstories.org/edit_tobacco_marks/?` + new URLSearchParams({
+            let saveUrl = `https://api.shoppingstories.org/edit_tobacco_marks/?` + new URLSearchParams({
                 old_mark_number: omn,
                 old_mark_text: omt,
                 new_mark_number: nmn,
@@ -72,7 +72,7 @@ const ManageTobacco = () => {
     const editTobacco = useCallback((omn:string, nmn:string, omt:string, nmt:string) => {
         console.log(omn, nmn, omt, nmt)
         editTobaccoMutation.mutate([omn, nmn, omt, nmt])
-        // let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
+        // let saveUrl = `https://api.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
         // let reqBody = JSON.stringify({name: name})
         // let req = {
         //     method: "POST",

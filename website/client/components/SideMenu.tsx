@@ -1,12 +1,12 @@
 import { PaperHeaderStyles } from 'styles/styles';
 import { NavLink } from '../types';
-import Grid from '@mui/material/Grid'
+// import Grid from '@mui/material/Grid'
 import MuiNextLink from '@components/MuiNextLink';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 // import Stack from '@mui/material/Stack';
-// import MenuList from '@mui/material/MenuList';
+import MenuList from '@mui/material/MenuList';
 // import { Fragment } from 'react';
 
 const SideMenu = ({ links }: { links: NavLink[] }) => {
@@ -20,13 +20,14 @@ const SideMenu = ({ links }: { links: NavLink[] }) => {
                     // ...PaperStylesSecondary
                 }}
             >
-                <Grid container>
+                {/*<Grid container>*/}
                 {/*<Stack direction={'row'}>*/}
+                    <MenuList>
                     {links.map(({ title, path }, i) => (
                         // TODO: Make this not as jank, so that clicking the menu item will cause the href from muinextlink.
                         // <a href={path} key={`${title}-${i}aref`}>
-                        <Grid item xs={2} key={`${title}-${i}`}>
-                        <MenuItem>
+                        // <Grid item xs={2} key={`${title}-${i}`}>
+                        <MenuItem key={`${title}-${i}`}>
                             <Typography
                                 variant="button"
                                 color={"secondary.contrastText"}
@@ -45,11 +46,12 @@ const SideMenu = ({ links }: { links: NavLink[] }) => {
                                 </MuiNextLink>
                             </Typography>
                         </MenuItem>
-                        </Grid>
-                        // </a>
+                        // </Grid>
+                         // </a>
                     ))}
                 {/*</Stack>*/}
-                </Grid>
+                </MenuList>
+                {/*</Grid>*/}
             </Paper>
         //</Fragment>
     );

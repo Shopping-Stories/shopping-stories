@@ -42,7 +42,7 @@ const DeleteEntries = () => {
     const deleteEntriesMutation = useMutation({
         mutationFn: (itemKey:[number, string, string]) => {
             const [r, fp, fy] = itemKey
-            let saveUrl = `https://api.preprod.shoppingstories.org/delete_entries_by_page/?` + new URLSearchParams({ reel:r.toString(), folio_page:fp, folio_year:fy }).toString();
+            let saveUrl = `https://api.shoppingstories.org/delete_entries_by_page/?` + new URLSearchParams({ reel:r.toString(), folio_page:fp, folio_year:fy }).toString();
             // let reqBody = JSON.stringify({ item: item })
             // let req = {
             //     method: "POST",
@@ -62,7 +62,7 @@ const DeleteEntries = () => {
     const deleteEntries = useCallback((reel: number, fp: string, fy: string) => {
         deleteEntriesMutation.mutate([reel, fp, fy])
         console.log(reel, fp, fy)
-        // let saveUrl = `https://api.preprod.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
+        // let saveUrl = `https://api.shoppingstories.org/edit_person/?` + new URLSearchParams({person_id: id}).toString();
         // let reqBody = JSON.stringify({name: name})
         // let req = {
         //     method: "POST",

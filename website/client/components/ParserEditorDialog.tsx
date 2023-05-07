@@ -184,7 +184,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
             }
             // Handles editing numbers
             else if (ParserNumberKeys.has(key)) {
-                // console.log("Number key detected");
+                console.log("Number key detected");
                 let val = parseInt(event.target.value);
                 (row.original![key] as unknown as number) = val
                 if (Object.keys(oldKeyNewKeyMap).includes(key as string)) {
@@ -196,11 +196,13 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                             
                         }
                         else {
+                            console.log("else case");
                             (row[oldCurrNewCurrMap[key] as rowTypeKey] as number) = val
                         }
                     }
                     else {
                         (row[oldCurrNewCurrMap[key] as rowTypeKey] as number) = val
+                        console.log(row[oldCurrNewCurrMap[key] as rowTypeKey])
                     }
                 }
             }
@@ -361,7 +363,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     out.push(
                         <TextField
                             label={"Penny 12ths"}
-                            value={row?.original![origKeys[a]]}
+                            defaultValue={row?.original![origKeys[a]]}
                             onChange={(event) => onRowValueChange(origKeys[a], event)}
                             key={origKeys[a]}
                             sx={{ padding: "0.3vh", marginTop: mtop, width: "10vw" }}
@@ -372,7 +374,7 @@ const ParserEditorDialog = (props: ParserEditorDialog) => {
                     out.push(
                         <TextField
                             label={"Penny 12ths Sterling"}
-                            value={row?.original![origKeys[a]] ?? ""}
+                            defaultValue={row?.original![origKeys[a]]}
                             onChange={(event) => onRowValueChange(origKeys[a], event)}
                             key={origKeys[a]}
                             sx={{ padding: "0.3vh", marginTop: mtop, width: "10vw" }}

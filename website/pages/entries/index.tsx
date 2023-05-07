@@ -2,7 +2,12 @@ import { useState, useCallback } from "react";
 import { NextPage } from 'next';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+    useQuery,
+    useMutation,
+    useQueryClient,
+    // QueryClientProvider
+} from "@tanstack/react-query";
 
 import ColorBackground from '@components/ColorBackground';
 import Header from '@components/Header';
@@ -68,8 +73,8 @@ const EntriesPage: NextPage = () => {
     
     const doSearch = useCallback(async () => {
         const req = advanced
-            ? `https://api.preprod.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
-            : `https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
+            ? `https://api.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
+            : `https://api.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
         const res = await fetch(req);
         let toret: EntryQueryResult = JSON.parse(await res.text());
         // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
@@ -80,7 +85,7 @@ const EntriesPage: NextPage = () => {
     
     // const queryClient = useQueryClient()
     
-    const {data, isLoading} = useQuery({
+    const {data, isFetching} = useQuery({
         queryKey: ["entries", search, fuzzy, advanced],
         queryFn: doSearch,
         // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
@@ -103,7 +108,7 @@ const EntriesPage: NextPage = () => {
         mutationFn: (id: string) => {
             // const id = payload._id
             // if (!id) return
-            let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
+            let saveUrl = `https://api.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
             let req = {
                 method: "POST",
                 headers: {
@@ -124,7 +129,7 @@ const EntriesPage: NextPage = () => {
             if (!id) return
             mutation.mutate(id)
             return
-            // let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
+            // let saveUrl = `https://api.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
             // let req = {
             //     method: "POST",
             //     headers: {
@@ -209,7 +214,7 @@ const EntriesPage: NextPage = () => {
                                     {/*<ButtonGroup variant="contained" fullWidth>*/}
                                         <LoadingButton
                                             fullWidth
-                                            loading={search !== '' && isLoading}
+                                            loading={search !== '' && isFetching}
                                             variant="contained"
                                             type="submit"
                                             color={"secondary"}
@@ -220,7 +225,7 @@ const EntriesPage: NextPage = () => {
                                         </LoadingButton>
                                     {/*    <LoadingButton*/}
                                     {/*        fullWidth*/}
-                                    {/*        loading={search !== '' && isLoading}*/}
+                                    {/*        loading={search !== '' && isFetching}*/}
                                     {/*        // variant="contained"*/}
                                     {/*        type="submit"*/}
                                     {/*        onClick={()=>setFuzzy(true)}*/}
@@ -232,7 +237,7 @@ const EntriesPage: NextPage = () => {
                                     <Divider flexItem orientation={"vertical"}/>
                                     <LoadingButton
                                         fullWidth
-                                        loading={search !== '' && isLoading}
+                                        loading={search !== '' && isFetching}
                                         variant="contained"
                                         color={"secondary"}
                                         type="submit"
@@ -243,7 +248,7 @@ const EntriesPage: NextPage = () => {
                                     <Divider flexItem orientation={"vertical"}/>
                                     <LoadingButton
                                         fullWidth
-                                        loading={search !== '' && isLoading}
+                                        loading={search !== '' && isFetching}
                                         variant="contained"
                                         disabled={searchForm.values.search.trim() === ''}
                                         // type={'submit'}
@@ -282,7 +287,7 @@ const EntriesPage: NextPage = () => {
             />
         </ColorBackground>
 
-        // {/*</QueryClientProvider>*/}
+        // </QueryClientProvider>
     );
 };
 

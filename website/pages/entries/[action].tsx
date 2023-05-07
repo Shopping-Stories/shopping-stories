@@ -47,7 +47,7 @@ const EntryPage = () => {
     const disabled = action === "View" || !isAdminOrModerator
     const queryClient = useQueryClient()
     const [confirm, setConfirm] = useState<boolean>(false)
-    // console.log(action, entry)
+    console.log(action, entry)
     // const [open, setOpen] = useState<boolean>(!!action)
     const notCreate = action !== 'Create'
     const initFormValues: Partial<ParserOutput> = useMemo(()=>{
@@ -84,9 +84,11 @@ const EntryPage = () => {
             pounds_ster: notCreate ? entry?.sterling?.pounds ?? 0 : 0,
             shillings_ster: notCreate ? entry?.sterling?.shillings ?? 0 : 0,
             pennies_ster: notCreate ? entry?.sterling?.pennies ?? 0 : 0,
+            farthings_ster: notCreate ? entry?.sterling?.farthings ?? 0 : 0,
+            farthings: notCreate ? entry?.currency?.farthings ?? 0 : 0,
             
             // ledger Info
-            folio_page: notCreate ? entry?.ledger?.folio_page ? Number(entry.ledger.folio_page) : 0 : 0,
+            folio_page: notCreate ? entry?.ledger?.folio_page ? entry.ledger.folio_page : '' : '',
             entry_id: notCreate ? entry?.ledger?.entry_id ?? '' : '',
             folio_year: notCreate ? entry?.ledger?.folio_year ?? '' : '',
             folio_reference: notCreate ? entry?.folio_reference ?? '' : '',
@@ -119,7 +121,7 @@ const EntryPage = () => {
     }, [notCreate, entry])
     
     const handleSubmit = async (newEntry: Partial<ParserOutput>, dType: string | undefined, id?: string) => {
-        let saveUrl = `https://api.preprod.shoppingstories.org/${dType?.toLowerCase()}_entry`;
+        let saveUrl = `https://api.shoppingstories.org/${dType?.toLowerCase()}_entry`;
         // console.log(saveUrl, newEntry)
         if (!dType) return
         let req = {}
@@ -172,7 +174,7 @@ const EntryPage = () => {
         mutationFn: (id: string) => {
             // const id = payload._id
             // if (!id) return
-            let saveUrl = `https://api.preprod.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
+            let saveUrl = `https://api.shoppingstories.org/delete_entry/?` + new URLSearchParams({entry_id: id}).toString();
             let req = {
                 method: "POST",
                 headers: {
@@ -180,7 +182,7 @@ const EntryPage = () => {
                     "Content-Type": "application/json"
                 }
             }
-            return fetch(saveUrl, req).then(() => router.push('/entries'))
+            return fetch(saveUrl, req).then(() => router.back())
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["entries"] })
     })
@@ -259,7 +261,7 @@ const EntryPage = () => {
                             {entry["date_year"] != undefined ?
                                 <Box width={boxWidth} sx={{marginLeft: boxMargin}}>
                                     <Typography>Date: </Typography>
-                                    <Typography sx={{marginLeft: tabSize}}>{entry.month != undefined ? months[parseInt(entry.month!) - 1] + " " : ""}{entry.Day != undefined ? entry.Day + " " : ""}{entry["date_year"]}</Typography>
+                                    <Typography sx={{marginLeft: tabSize}}>{(entry?.month !== undefined ? entry.month !== "" ? months[parseInt(entry.month) - 1] + " " : "" : "")}{entry.Day != undefined ? entry.Day + " " : ""}{entry["date_year"]}</Typography>
                                 </Box> : []
                             }
                             {(( entry?.currency?.pounds !== undefined) || (entry?.sterling?.pounds !== undefined)) ?
@@ -498,8 +500,8 @@ const EntryPage = () => {
                                                 touched[k as keyof typeof values] &&
                                                 !!errors[k as keyof typeof values]
                                             }
-                                            value={values[k as keyof typeof values]}
-                                            // defaultValue={values[k as keyof typeof values]}
+                                            // value={values[k as keyof typeof values]}
+                                            defaultValue={values[k as keyof typeof values]}
                                         />
                                     </Grid>
                                 ))}
@@ -529,8 +531,8 @@ const EntryPage = () => {
                                                 touched[k as keyof typeof values] &&
                                                 !!errors[k as keyof typeof values]
                                             }
-                                            value={values[k as keyof typeof values]}
-                                            // defaultValue={values[k as keyof typeof values]}
+                                            // value={values[k as keyof typeof values]}
+                                            defaultValue={values[k as keyof typeof values]}
                                         />
                                     </Grid>
                                 ))}
@@ -559,11 +561,43 @@ const EntryPage = () => {
                                         }
                                         onChange={handleChange}
                                         variant="outlined"
-                                        value={values[k as keyof typeof values]}
-                                        // defaultValue={values[k as keyof typeof values]}
+                                        // value={values[k as keyof typeof values]}
+                                        defaultValue={values[k as keyof typeof values]}
                                     />
                                 </Grid>
                             ))}
+                            <Grid item xs={4} key={"farthings"}>
+                                    <Field
+                                        as={TextField}
+                                        name={"farthings"}
+                                        autoFocus
+                                        margin="dense"
+                                        disabled={disabled}
+                                        label={"Penny 12ths"}
+                                        fullWidth
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        variant="outlined"
+                                        // value={values["farthings" as keyof typeof values]}
+                                        defaultValue={values["farthings" as keyof typeof values]}
+                                    />
+                            </Grid>
+                            <Grid item xs={4} key={"farthings_ster"}>
+                                <Field
+                                    as={TextField}
+                                    name={"farthings_ster"}
+                                    autoFocus
+                                    margin="dense"
+                                    disabled={disabled}
+                                    label={"Penny 12ths Sterling"}
+                                    fullWidth
+                                    onBlur={handleBlur}
+                                    onChange={handleChange}
+                                    variant="outlined"
+                                    // value={values["farthings_ster" as keyof typeof values]}
+                                    defaultValue={values["farthings_ster" as keyof typeof values]}
+                                />
+                            </Grid>
                         </Grid>
                         </FormGroup>
                         <br/>
@@ -591,8 +625,8 @@ const EntryPage = () => {
                                                touched[k as keyof typeof values] &&
                                                !!errors[k as keyof typeof values]
                                            }
-                                           value={values[k as keyof typeof values]}
-                                           // defaultValue={values[k as keyof typeof values]}
+                                        //    value={values[k as keyof typeof values]}
+                                           defaultValue={values[k as keyof typeof values]}
                                         />
                                     </Grid>
                                 ))}
@@ -621,8 +655,8 @@ const EntryPage = () => {
                                            }
                                            onChange={handleChange}
                                            variant="outlined"
-                                           value={values[k as keyof typeof values]}
-                                           // defaultValue={values[k as keyof typeof values]}
+                                        //    value={values[k as keyof typeof values]}
+                                           defaultValue={values[k as keyof typeof values]}
                                         />
                                     </Grid>
                                 ))}
@@ -797,9 +831,9 @@ const EntryPage = () => {
                                             label={"Gross Weight"}
                                             // fullWidth
                                             // variant="outlined"
-                                            value={t.gross_weight}
+                                            // value={t.gross_weight}
                                             onChange={handleChange}
-                                            //defaultValue={t.gross_weight}
+                                            defaultValue={t.gross_weight}
                                         />
                                         <Field as={TextField}
                                             name={`tobacco_entries.${k}.tare_weight`}
@@ -809,9 +843,9 @@ const EntryPage = () => {
                                             label={"Tare Weight"}
                                             // fullWidth
                                             // variant="outlined"
-                                            value={t.tare_weight}
+                                            // value={t.tare_weight}
                                             onChange={handleChange}
-                                            //defaultValue={t.tare_weight}
+                                            defaultValue={t.tare_weight}
                                         />
                                         <Field as={TextField}
                                             name={`tobacco_entries.${k}.weight`}
@@ -821,9 +855,9 @@ const EntryPage = () => {
                                             label={"Weight"}
                                             // fullWidth
                                             // variant="outlined"
-                                            value={t.weight}
+                                            // value={t.weight}
                                             onChange={handleChange}
-                                            //defaultValue={t.weight}
+                                            defaultValue={t.weight}
                                         />
                                         { !disabled &&
                                             <IconButton
@@ -878,9 +912,9 @@ const EntryPage = () => {
                                             label={"Mark Number"}
                                             // fullWidth
                                             // variant="outlined"
-                                            value={t.mark_number}
+                                            // value={t.mark_number}
                                             onChange={handleChange}
-                                            // defaultValue={t.mark_number}
+                                            defaultValue={t.mark_number}
                                         />
                                         <Field as={TextField}
                                             name={`tobacco_marks.${k}.mark_text`}
@@ -890,9 +924,9 @@ const EntryPage = () => {
                                             label={"Mark Text"}
                                             // fullWidth
                                             // variant="outlined"
-                                            value={t.mark_text}
+                                            // value={t.mark_text}
                                             onChange={handleChange}
-                                            // defaultValue={t.mark_text}
+                                            defaultValue={t.mark_text}
                                         />
                                         { !disabled &&
                                           <IconButton
