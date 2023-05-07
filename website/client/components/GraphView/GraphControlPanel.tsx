@@ -244,7 +244,7 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
                                                         onChange={handleCheck}
                                                     />
                                                 }
-                                                label="Toggle Filter"
+                                                label="Filter On"
                                             />
                                         </>
                                         : <Typography sx={{ ml: 1 }}>N/A</Typography>
