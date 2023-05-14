@@ -6,6 +6,7 @@ import {
     // EntryKey, EntryStringArrayKey, EntryObjKey, EntryBooleanKey,
     // EntryKeys, EntryStringArrayKeys, EntryObjKeys, EntryBooleanKeys
 } from "new_types/api_types";
+// import useAuth from "@hooks/useAuth.hook";
 import Button from "@mui/material/Button";
 import AddCircle from "@mui/icons-material/AddCircle";
 import DownloadIcon from '@mui/icons-material/Download';
@@ -14,9 +15,18 @@ import {
     GridRowsProp,
     DataGrid,
     GridRowId,
-    GridToolbar,
-    // GridToolbarExport,
+    GridToolbarProps,
+    GridToolbarContainer,
+    GridToolbarColumnsButton,
+    GridToolbarFilterButton,
+    GridToolbarExport,
+    GridToolbarDensitySelector,
     GridColumnVisibilityModel,
+    gridStringOrNumberComparator,
+    gridDateComparator,
+    // GridToolbar,
+    // GridColumnMenu,
+    // GridToolbarExport,
 } from "@mui/x-data-grid";
 import Stack from "@mui/material/Stack";
 import {
@@ -24,8 +34,8 @@ import {
     complexFields,
     entryToRow,
     fieldNames,
-    hiddenFields,
-    IncludedField, splitFields
+    hiddenFields, simpleFields, visibleFields,
+    IncludedField, splitFields, //HiddenField
 } from "../entryUtils";
 import { Typography } from '@mui/material';
 
@@ -35,6 +45,7 @@ interface SelectedRowParams {
 }
 
 interface EntryPaginationTable {
+    isLoggedIn: boolean
     isAdmin: boolean;
     isAdminOrModerator: boolean;
     handleEntryAction: (action: string, payload: Entry | undefined) => void
@@ -45,13 +56,40 @@ const ImportIcon = () => {
     return <DownloadIcon color={'secondary'}/>
 }
 
+// This is neceesary to make CustomToolBar work
+// https://github.com/mui/material-ui/issues/35287#issuecomment-1337250566
+declare global {
+    namespace React {
+        interface DOMAttributes<T> {
+            onResize?: ReactEventHandler<T> | undefined;
+            onResizeCapture?: ReactEventHandler<T> | undefined;
+            nonce?: string | undefined;
+        }
+    }
+}
+type LoggedInState = { isLoggedIn: boolean }
+// const CustomToolbar = ()=> {
+const CustomToolbar = (props: GridToolbarProps & LoggedInState) => {
+    // const {isLoggedIn} = useAuth()
+    const {isLoggedIn, csvOptions} = props
+    return (
+        <GridToolbarContainer>
+            <GridToolbarColumnsButton />
+            <GridToolbarFilterButton />
+            <GridToolbarDensitySelector />
+            {isLoggedIn && <GridToolbarExport csvOptions={csvOptions}/>}
+        </GridToolbarContainer>
+    );
+}
+
 const EntryPaginationTable = ({
     isAdminOrModerator,
+    isLoggedIn,
     handleEntryAction,
     entries
 }: EntryPaginationTable) => {
-
     // const router = useRouter();
+    const [confirm, setConfirm] = useState<boolean>(false)
     const [selectedRow, setSelectedRow] =
         useState<SelectedRowParams| null>(null);
     
@@ -95,23 +133,34 @@ const EntryPaginationTable = ({
             // }
         }) || [];
     }, [entries])
+
+    const hiddenCols: GridColumnVisibilityModel = Object.fromEntries(
+        // [...hiddenFields.values(), ...splitFields.values()].map(n => [n, false])
+        colNames.map(n => [n, visibleFields.has(n)])
+    )
     
-    const cols: GridColDef[] = useMemo(()=> (
-        colNames.map(str => (complexFields.has(str) || splitFields.has(str)? {
+    const cols: GridColDef[] = useMemo(()=> {
+        let ret = colNames.map(str => (complexFields.has(str) || splitFields.has(str) ? {
+            // hideable: !hiddenCols[str],
             field: str,
             headerName: str,
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
-            disableExport: !splitFields.has(str)
-        } :  {
+            disableExport: !splitFields.has(str),
+            filterable: visibleFields.has(str),
+            type: str !== 'Date' ? 'string' : 'date',
+            sortComparator: str !== 'Date' ? gridStringOrNumberComparator : gridDateComparator,
+        } : {
+            // hideable: !hiddenCols[str],
             field: str,
             headerName: fieldNames[str as IncludedField],
             flex: flexOneFields.has(str) ? 1 : flexHalfFields.has(str) ? .2 : .5,
-        }
-    ))), [])
+            filterable: visibleFields.has(str),
+            type: str !== 'Date' ? 'string' : 'date',
+            sortComparator: str !== 'Date' ? gridStringOrNumberComparator : gridDateComparator,
+        }))
+        return ret
+    }, [])
     
-    const hiddenCols: GridColumnVisibilityModel = Object.fromEntries(
-        [...hiddenFields.values(), ...splitFields.values()].map(n => [n, false])
-    )
     
     const handleCellFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
         const row = event.currentTarget.parentElement;
@@ -128,6 +177,7 @@ const EntryPaginationTable = ({
         else{
             handleEntryAction(action, undefined)
         }
+        if (action === 'Delete') setConfirm(false)
     },[entryMap, selectedRow, handleEntryAction])
     
     // console.log('rows',rows)
@@ -170,21 +220,38 @@ const EntryPaginationTable = ({
                                     color={"warning"}
                                 >
                                     <Typography fontWeight={"500"}>
-                                        edit
+                                        Edit
                                     </Typography>
                                 </Button>
-                    
-                                <Button
+                                {
+                                    !confirm &&
+                                    <Button
+                                    // onClick={()=> handleACtionClick("Delete")}
+                                      onClick={()=>setConfirm(true)}
+                                    disabled={!selectedRow}
+                                    hidden={!isAdminOrModerator}
+                                    variant="contained"
+                                    color={"error"}
+                                    >
+                                    <Typography fontWeight={"500"}>
+                                      Delete
+                                    </Typography>
+                                    </Button>
+                                }
+                                {
+                                    confirm &&
+                                    <Button
                                     onClick={()=> handleACtionClick("Delete")}
                                     disabled={!selectedRow}
                                     hidden={!isAdminOrModerator}
                                     variant="contained"
                                     color={"error"}
-                                >
+                                    >
                                     <Typography fontWeight={"500"}>
-                                        Delete
+                                      Confirm Delete?
                                     </Typography>
-                                </Button>
+                                    </Button>
+                                }
                             </>)
                         }
                     </Stack>
@@ -194,28 +261,36 @@ const EntryPaginationTable = ({
                         rows={rows}
                         columns={cols}
                         // columns={columns}
-                        initialState={{columns: {columnVisibilityModel: hiddenCols}}}
-                        // columnVisibilityModel={hiddenCols}
+                        // initialState={{columns: {columnVisibilityModel: hiddenCols}}}
+                        columnVisibilityModel={hiddenCols}
                         autoPageSize
                         getRowId={(row) => row.id}
                         // isRowSelectable={(params) => params && isAdminOrModerator && editable}
                         // disableRowSelectionOnClick
                         // rowsPerPageOptions={[5, 10, 20]}
                         pagination
+                        disableColumnSelector={true}
+                        initialState={{columns: {columnVisibilityModel: hiddenCols}}}
                         components={{
-                            Toolbar: GridToolbar,
-                            // Toolbar:  GridToolbarExport,
+                            // ColumnMenu: GridColumnMenu,
+                            // Toolbar: GridToolbar,
+                            Toolbar: CustomToolbar,
                             ExportIcon: ImportIcon
                         }}
                         componentsProps={{
                             cell: { onFocus: handleCellFocus },
                             toolbar: {
+                                isLoggedIn: isLoggedIn,
                                 csvOptions: {
-                                // fields: [...visibleFields.values(), ...hiddenFields.values()]
-                                    allColumns: true
+                                    fields: [
+                                        ...simpleFields.values(),
+                                        ...hiddenFields.values(),
+                                        ...splitFields.values()
+                                    ],
+                                    // allColumns: true
                                 },
                                 
-                            },
+                            }
                         }}
                     />
             </Paper>
@@ -225,21 +300,25 @@ const EntryPaginationTable = ({
 
 export default EntryPaginationTable;
 
+// These control the column spacing
 const flexOneFields = new Set<string>([
-    "Account Name",
+    "account_name",
     "Relevant Item",
-    "Item",
-    "Store Owner",
-    "Store"
+    "Date",
+    "item",
+    "store_owner",
+    "Store",
+    'Qty/Cmdty',
     // "Purchaser",
     // "Comments",
 ])
-
 const flexHalfFields = new Set<string>([
+    "Amount",
     "Reel",
     "EntryID",
     "Quantity",
     "Commodity",
+    // 'Currency', 'Sterling',
     "Page",
     "Colony",
     "$ Pounds",
@@ -250,7 +329,7 @@ const flexHalfFields = new Set<string>([
     '£ Shilling',
     '£ Pence',
     '£ Farthings',
-    "Dr/Cr"
+    "Dr/Cr",
 ])
 
 // const columnNames: string[] = [

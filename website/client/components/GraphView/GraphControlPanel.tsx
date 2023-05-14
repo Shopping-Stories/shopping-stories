@@ -6,11 +6,10 @@ import ShoppingBasketOutlinedIcon from "@mui/icons-material/ShoppingBasketOutlin
 import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import Slider from "@mui/material/Slider";
-import { GraphControlPanelProps } from "@components/GraphView/GraphGui";
 import  Chip from "@mui/material/Chip";
 import  Breadcrumbs  from "@mui/material/Breadcrumbs";
 import Stack from "@mui/material/Stack";
-
+import router from "next/router";
 import Divider from '@mui/material/Divider';
 import PersonIcon from "@mui/icons-material/Person";
 import StorefrontIcon from "@mui/icons-material/Storefront";
@@ -21,7 +20,9 @@ import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOver";
 // import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Grid from "@mui/material/Grid";
 import Switch from "@mui/material/Switch";
-import { ToggleButton } from "@mui/material";
+import { FormControlLabel, ToggleButton } from "@mui/material";
+import { filterHandler, GraphPredicates } from "@components/GraphView/GraphTypes";
+import Button from "@mui/material/Button";
 
 // import FormGroup from "@mui/material/FormGroup";
 // import Button from "@mui/material/Button";
@@ -37,6 +38,14 @@ import { ToggleButton } from "@mui/material";
 // import LegendToggleIcon from "@mui/icons-material/LegendToggle";
 // import Fab from "@mui/material/Fab";
 
+export interface GraphControlPanelProps {
+    makePredicates: filterHandler
+    toggleNodeLabels: (visible: boolean) => void
+    nodeLabels: boolean
+    filter?: GraphPredicates
+    dates: Array<Date>
+}
+
 const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}: GraphControlPanelProps) => {
     // const [open, setOpen] = useState(false);
     // const handleClick = () => {
@@ -46,13 +55,21 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
     const [checked, setChecked] = useState<boolean>(false)
     // const [labels, setLabels] = useState(()=> ['nodes', 'edges'])
     const handleCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.checked) {
-            makePredicates("date", undefined, e.target.checked,
-                { start: dates[range[0]-1], end: dates[range[1]-1] }
-            )
+        let dateRange = undefined
+        if (dates[0] !== dates[range[0]-1] || dates[dates.length-1] !== dates[range[1]-1]) {
+            dateRange = { start: dates[range[0] - 1], end: dates[range[1] - 1] }
+        } else {
+            dateRange = { start: dates[0], end: dates[dates.length-1] }
+        }
+        // console.log(dateRange)
+        if (e.target.checked && dateRange) {
+            makePredicates("date", undefined, e.target.checked, dateRange)
         }
         else {
-            makePredicates("date", undefined, e.target.checked, undefined)
+            if (dateRange){
+                // dateRange = { start: dates[range[0]-1], end: dates[range[1]-1] }
+                makePredicates("date", undefined, e.target.checked, undefined)
+            }
         }
         setChecked(e.target.checked)
     }
@@ -66,7 +83,7 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
     //     //     toggleNodeLabels(!nodeLabels)
     // }
     
-    const handleChange = (e:Event, newValue: number[]) => {
+    const handleRangeChange = (e:Event, newValue: number[]) => {
         if (!newValue.length)
             console.log(e?.target)
         if (checked)
@@ -87,15 +104,32 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
                     // alignItems: 'flex-start',
                     flexWrap: 'wrap',
                     flexGrow: 1,
-                    width: "50vw",
+                    width: "55vw",
                     borderTop: (theme) => `1px solid ${theme.palette.divider}`
                 }}
             >
+                <Grid item xs={1}>
+                    <Button
+                        color={'primary'}
+                        variant={'contained'}
+                        // fullWidth
+                        onClick={()=>router.back()}
+                    >
+                        <Typography color={"secondary.contrastText"}>
+                        Return to Search
+                        </Typography>
+                    </Button>
+                </Grid>
                 <Grid
+                    ml={2}
                     item
                     xs={3}
+                    sx={{
+                        borderLeft : (theme) => `1px solid ${theme.palette.divider}`,
+                        alignItems: 'center'
+                    }}
                 >
-                    <Typography gutterBottom mt={1}>Node Filters</Typography>
+                    <Typography gutterBottom mt={1} ml={1}>Node Filters</Typography>
                     {/*<Stack direction={"row"}>*/}
                     <Grid container spacing={1}>
                         <Grid item xs={2}>
@@ -199,13 +233,18 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
                                                 value={range}
                                                 min={1}
                                                 max={dates.length}
-                                                onChange={(e, v)=>handleChange(e, v as number[])}
+                                                onChange={(e, v)=>handleRangeChange(e, v as number[])}
                                                 valueLabelDisplay="auto"
                                                 valueLabelFormat={x=> dates ? dates[x-1].toLocaleString().split(', ')[0] : x}
                                             />
-                                            <Switch
-                                                checked={checked}
-                                                onChange={handleCheck}
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={checked}
+                                                        onChange={handleCheck}
+                                                    />
+                                                }
+                                                label="Filter On"
                                             />
                                         </>
                                         : <Typography sx={{ ml: 1 }}>N/A</Typography>
@@ -222,7 +261,7 @@ const GraphControlPanel = ({makePredicates, dates, nodeLabels, toggleNodeLabels}
                     {/*</Box>*/}
                     {/*</Grid>*/}
                 </Grid>
-                <Grid item xs={3}
+                <Grid item xs={1}
                       sx={{
                           borderLeft : (theme) => `1px solid ${theme.palette.divider}`,
                           alignItems: 'center',

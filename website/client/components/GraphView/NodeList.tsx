@@ -1,6 +1,6 @@
 import React, { useState, memo, useRef } from "react";
-import { NodeListItemProps, LinkListItemProps, NodeListProps } from "@components/GraphView/GraphGui";
-import { makeLinkID } from "@components/GraphView/util";
+// import { NodeListItemProps, LinkListItemProps, NodeListProps } from "@components/GraphView/GraphGui";
+import { makeLinkID } from "@components/GraphView/GraphUtils";
 
 import NodeIcon from '@components/GraphView/NodeIcon';
 import List from '@mui/material/List';
@@ -16,6 +16,8 @@ import Drawer from "@mui/material/Drawer";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
+import { GraphData, LinkObject, NodeObject } from "react-force-graph-2d";
+import { nodeHandler, itemHandler, focusHandler } from "@components/GraphView/GraphTypes";
 
 // import { useTheme } from "@mui/material";
 // import ListSubheader from "@mui/material/ListSubheader"
@@ -24,6 +26,33 @@ import Box from "@mui/material/Box";
 // import ListItemAvatar from '@mui/material/ListItemAvatar';
 // import Avatar from '@mui/material/Avatar';
 
+interface NodeListProps {
+    gData: GraphData
+    handleClickZoom: nodeHandler
+    toggleInfo: itemHandler
+    focusOn: focusHandler
+    focusOff: focusHandler
+    scrolledItem: string | number
+}
+interface NodeListItemProps {
+    node: NodeObject
+    handleClickZoom: nodeHandler
+    toggleInfo: itemHandler
+    focusOn: focusHandler
+    focusOff: focusHandler
+    scrolledItem: string | number
+    // focused: boolean
+}
+interface LinkListItemProps {
+    link:LinkObject;
+    node: NodeObject
+    parent: NodeObject
+    handleClickZoom: nodeHandler
+    toggleInfo: itemHandler
+    focusOn: focusHandler
+    focusOff: focusHandler
+    focused: boolean
+}
 
 const LinkListItem = ({ node, link, handleClickZoom, focusOn, focusOff, toggleInfo, parent, focused }: LinkListItemProps) => {
     const {
@@ -143,7 +172,7 @@ const NodeListItem = ({ node, handleClickZoom, focusOn, focusOff, toggleInfo, sc
     );
 };
 
-const NodeList = ({ gData, handleClickZoom, focusOn, focusOff, toggleInfo, scrolledItem}: NodeListProps): JSX.Element => {
+const NodeList = ({ gData, handleClickZoom, focusOn, focusOff, toggleInfo, scrolledItem}: NodeListProps) => {
     // console.log("nodelist render");
     return (
         <Drawer

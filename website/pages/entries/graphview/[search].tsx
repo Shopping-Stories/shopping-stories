@@ -42,11 +42,6 @@ interface GraphGuiPageProps {
     title: string
 }
 
-export interface GraphGuiProps {
-    entries: Array<Entry>,
-    fetchMore:  (newSearch: string) => void
-}
-
 type EntriesQueryKey = [string, string, boolean, boolean]//string[]
 type EntriesQueryOptions = UseQueryOptions<EntryQueryResult, Error, EntryQueryResult, EntriesQueryKey>[]
 
@@ -61,20 +56,20 @@ const EntryGraphView = ({
     console.log(title)
     console.log(search, fuzzy, advanced)
     // const doSearch = async (arg:string = search): Promise<EntryQueryResult> => {
-    //     const res = await fetch("https://api.preprod.shoppingstories.org:443/search/" + arg);
+    //     const res = await fetch("https://api.shoppingstories.org:443/search/" + arg);
     //     // console.log(await res.text());
     //     // let toret: EntryQueryResult = JSON.parse(await res.text());
     //     return JSON.parse(await res.text());
     // };
     const doSearch = useCallback(async (search:string, fuzzy:boolean, advanced:boolean) => {
         const req = advanced
-            ? `https://api.preprod.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
-            : `https://api.preprod.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
+            ? `https://api.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
+            : `https://api.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
         const res = await fetch(req);
         let toret: EntryQueryResult = JSON.parse(await res.text());
-        console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
-        console.log(req)
-        console.log(toret);
+        // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
+        // console.log(req)
+        // console.log(toret);
         return toret;
     },[])
     // const router = useRouter();
@@ -90,11 +85,11 @@ const EntryGraphView = ({
         // retryOnMount: false,
         refetchOnWindowFocus: false
     }])
-    const fetchMore = async (newSearch:string) => {
+    const extendQuery = async (newSearch:string) => {
         let newParams: EntriesQueryOptions = [
             ...params,
             {
-                queryKey: ["entries", newSearch, false, false],
+                queryKey: ["entries", newSearch, true, false],
                 queryFn: ({ queryKey }) => doSearch(queryKey[1], queryKey[2], queryKey[3]),
                 refetchInterval: false,
                 // retry: false,
@@ -102,6 +97,21 @@ const EntryGraphView = ({
                 refetchOnWindowFocus: false
             }
         
+        ]
+        setParams(newParams)
+    }
+    
+    const replaceQuery = async (newSearch:string) => {
+        let newParams: EntriesQueryOptions = [
+            {
+                queryKey: ["entries", newSearch, true, false],
+                queryFn: ({ queryKey }) => doSearch(queryKey[1], queryKey[2], queryKey[3]),
+                refetchInterval: false,
+                // retry: false,
+                // retryOnMount: false,
+                refetchOnWindowFocus: false
+            }
+    
         ]
         setParams(newParams)
     }
@@ -118,8 +128,6 @@ const EntryGraphView = ({
     }, [queries])
     // console.log(entries)
     // console.log("Query Result:", error ? error : data?.entries);
-    // TODO: "fetching" component
-    // TODO: figure refetch logic
     return (
         <>
             {queries.some(q => q.isFetching || q.isLoading)
@@ -129,7 +137,8 @@ const EntryGraphView = ({
                 <ForceGraph
                     // entries={entries.length ? entries : test}
                     entries={entries}
-                    fetchMore={fetchMore}
+                    extendFetch={extendQuery}
+                    newFetch={replaceQuery}
                 />
             }
         </>
