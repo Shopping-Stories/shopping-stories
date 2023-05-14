@@ -59,8 +59,6 @@ const ManagePeoplePage: NextPage = () => {
         setSuccessMessage(text.message);
       }
       
-      
-
     return (
         <ColorBackground>
             <Header />

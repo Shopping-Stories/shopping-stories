@@ -19,9 +19,9 @@ import { useFormik } from 'formik';
 import { NextPage } from 'next';
 import {
     // FormEvent,
-    useCallback, useMemo, useState
+    useCallback, useEffect, useMemo, useState
 } from "react";
-import { PaperStylesSecondary } from 'styles/styles';
+import { PaperDashStyles } from "styles/styles";
 // import { useMutation } from 'urql';
 import { Entry } from "../../new_types/api_types";
 import { useMutation, useQueryClient, useQuery as uq } from "@tanstack/react-query";
@@ -56,13 +56,13 @@ import Button from '@mui/material/Button';
 import RemoveCircle from "@mui/icons-material/RemoveCircle";
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
+// import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import AddRelationshipDialog from "@components/AddRelationshipDialog";
 import EditPersonDialog from "@components/EditPersonDialog";
 import { parsePeople, PersonObject, toTitleCase } from "../../client/entryUtils";
-import { useSearchDispatch } from "@components/context/SearchContext";
+import { useSearch, useSearchDispatch } from "@components/context/SearchContext";
 import { useRouter } from "next/router";
 import Divider from "@mui/material/Divider";
 
@@ -89,20 +89,29 @@ const ManageMarksPage: NextPage = () => {
     const { groups, loading } = useAuth('/', [Roles.Admin, Roles.Moderator]);
     const isAdmin = isInGroup(Roles.Admin, groups);
     const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
-    const [search, setSearch] = useState<string>('john');
+    // const [search, setSearch] = useState<string>('john');
+    const {search} = useSearch()
+    const searchDispatch = useSearchDispatch()
+    
     const [selectedRow, setSelectedRow] =
         useState<GridRowId>("");
     
+    useEffect(()=>{
+        if (search === ''){
+            searchDispatch({
+                type: "FUZZY_ADVANCED",
+                payload:new URLSearchParams({person:"john"}).toString()
+            });
+        }
+    }, [searchDispatch])
     
     const [relationOpen, setRelationOpen] = useState<RelationState>({open:false, mutation:'closed'})
     const [editOpen, setEditOpen] = useState<EditModalState>({open:false, mode:'closed'})
     const [confirm, setConfirm] = useState<boolean>(false)
-    const searchDispacth = useSearchDispatch()
     const router = useRouter()
     
-    
     const doSearch = useCallback(async () => {
-        const req = `https://api.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams({person:search}).toString()}`
+        const req = `https://api.shoppingstories.org/itemsearch-fuzzy/?${search}`
         const res = await fetch(req);
         let toret: {entries: Entry[]} = JSON.parse(await res.text());
         // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
@@ -117,6 +126,20 @@ const ManageMarksPage: NextPage = () => {
         // initialData: () => queryClient.getQueryData(['entries', search, fuzzy, advanced]),
         // enabled: search !== '',
     })
+    
+    const searchForm = useFormik<SearchType>({
+        initialValues: {
+            search: search === '' ? 'john' : new URLSearchParams(search).get("person")?.toString() ?? "",
+        },
+        validationSchema: searchSchema,
+        onSubmit: (values) => {
+            searchDispatch({
+                type: "FUZZY_ADVANCED",
+                payload: new URLSearchParams({person:values.search}).toString()
+            })
+            setSelectedRow("")
+        },
+    });
     
     const cols: GridColDef[] = [
         // {...GRID_CHECKBOX_SELECTION_COL_DEF, width:100},
@@ -183,16 +206,32 @@ const ManageMarksPage: NextPage = () => {
     //     // }
     // },[selectedRows])
     
-    const searchForm = useFormik<SearchType>({
-        initialValues: {
-            search: '',
-        },
-        validationSchema: searchSchema,
-        onSubmit: (values) => {
-            setSearch(values.search);
-            setSelectedRow("")
-        },
-    });
+
+    
+    // const getEntryResults = useCallback( async ()=>{
+    //     if (selectedRow === "" || isNaN(selectedRow as number))  return
+    //     let person = people.pplMap[selectedRow].name
+    //     console.log(person)
+    //     if (!person) {return}
+    //     searchDispatch({
+    //         type: "FUZZY_ADVANCED",
+    //         payload: person
+    //     })
+    // }, [searchDispatch, selectedRow, people.pplMap])
+    
+    const entriesRedirect = useCallback(  ()=>{
+        console.log(selectedRow)
+        if (selectedRow === "" || !selectedRow)  return
+        let person = people.pplMap[selectedRow].name
+        console.log(person)
+        if (!person) {return}
+        searchDispatch({
+            type: "FUZZY_ADVANCED",
+            payload: new URLSearchParams({person:person}).toString()
+        })
+        router.push('/entries')
+        
+    },[searchDispatch, selectedRow, people.pplMap])
     
     const addMutation = useMutation({
         mutationFn: (people:[string, string, string]) => {
@@ -270,22 +309,13 @@ const ManageMarksPage: NextPage = () => {
         setEditOpen({open:false, mode:'closed'})
     }, [deleteMutation])
     
-    const getEntryResults = useCallback( async ()=>{
-        if (selectedRow === "" || isNaN(selectedRow as number))  return
-        let person = people.pplMap[selectedRow].name
-        if (!person) return
-        searchDispacth({
-            type: "FUZZY_ADVANCED",
-            payload: new URLSearchParams({person:person}).toString()
-        })
-    }, [searchDispacth, selectedRow, people.pplMap])
-    
-    const entriesRedirect = () => {
-        getEntryResults().then(() => router.push('/entries'))
-    }
+
     
     const resetSearch = () => {
-        setSearch('john')
+        searchDispatch({
+            type: "FUZZY_ADVANCED",
+            payload: new URLSearchParams({person:"john"}).toString()
+        });
         setSelectedRow('')
     }
     
@@ -297,170 +327,169 @@ const ManageMarksPage: NextPage = () => {
         <ColorBackground>
             <Header />
             <DashboardPageSkeleton groups={groups}>
-                <Box
-                    // sx={{height: '80vh'}}
-                >
+                {/*<Box sx={{height: '80vh'}}>*/}
                 <Paper sx={{
-                    ...PaperStylesSecondary,
+                    ...PaperDashStyles
+                    // ...PaperStylesSecondary,
                     // ...PaperStyles,
                     // backgroundColor: 'var(--secondary-bg)',
                     // , height:'80vh', width:'100%'
                 }}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                        {/*<Paper>*/}
-                            <form onSubmit={searchForm.handleSubmit}>
-                                <Stack spacing={2}>
-                                    <div>
-                                        <Typography
-                                            sx={{ textAlign: 'center' }}
-                                            variant="h4"
-                                        >
-                                            People
-                                        </Typography>
-                                    </div>
-                            
-                                    <TextFieldWithFormikValidation
-                                        variant={'filled'}
-                                        fullWidth
-                                        name="search"
-                                        fieldName="search"
-                                        label="Search"
-                                        formikForm={searchForm}
-                                    />
-                                    <Stack direction={'row'} spacing={1}>
-                                        <LoadingButton
-                                            loading={isFetching}//{isLoading}
-                                            variant="contained"
-                                            fullWidth
-                                            type="submit"
-                                        >
-                                            <Typography fontWeight={"500"} color="secondary.contrastText">
-                                                Search
+                            <Grid item xs={12}>
+                            {/*<Paper>*/}
+                                <form onSubmit={searchForm.handleSubmit}>
+                                    <Stack spacing={2}>
+                                        <div>
+                                            <Typography
+                                                sx={{ textAlign: 'center' }}
+                                                variant="h4"
+                                            >
+                                                People
                                             </Typography>
-                                        </LoadingButton>
-                                        <LoadingButton
-                                            onClick={resetSearch}
-                                            variant={"contained"}
-                                            color={'secondary'}
+                                        </div>
+                                
+                                        <TextFieldWithFormikValidation
+                                            variant={'filled'}
                                             fullWidth
-                                        >
-                                            Reset Results
-                                        </LoadingButton>
-                                    </Stack>
-                                </Stack>
-                            </form>
-                        {/*</Paper>*/}
-                        </Grid>
-                        <Grid item xs={12} sx={{height:"80vh", width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
-                            <Paper sx={{height: '100%',width: '100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
-                                <Stack sx={{ borderBottom: 1, borderColor: 'divider', p: 1, }}>
-                                <Stack spacing={1} direction='row'>
-                                    {isAdminOrModerator &&
-                                        (<>
-                                            <Button
-                                                onClick={entriesRedirect}
-                                                disabled={!selectedRow || selectedRow === ""}
-                                                hidden={!isAdminOrModerator}
+                                            name="search"
+                                            fieldName="search"
+                                            label="Search"
+                                            formikForm={searchForm}
+                                        />
+                                        <Stack direction={'row'} spacing={1}>
+                                            <LoadingButton
+                                                loading={isFetching}//{isLoading}
                                                 variant="contained"
-                                                color={"secondary"}
+                                                fullWidth
+                                                type="submit"
                                             >
-                                                View Entries
-                                            </Button>
-                                            <Button
-                                                onClick={()=> setEditOpen({open:true, mode:'edit'})}
-                                                disabled={!selectedRow || selectedRow === ""}
-                                                hidden={!isAdminOrModerator}
-                                                variant="contained"
-                                                color={"warning"}
-                                            >
-                                                <Typography fontWeight={"500"}>
-                                                    Edit
+                                                <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                    Search
                                                 </Typography>
-                                            </Button>
-                                            { !confirm &&
+                                            </LoadingButton>
+                                            <LoadingButton
+                                                onClick={resetSearch}
+                                                variant={"contained"}
+                                                color={'secondary'}
+                                                fullWidth
+                                            >
+                                                Reset Results
+                                            </LoadingButton>
+                                        </Stack>
+                                    </Stack>
+                                </form>
+                            {/*</Paper>*/}
+                            </Grid>
+                            <Grid item xs={12} sx={{height:"80vh", width:'100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
+                                <Paper sx={{height: '100%',width: '100%', flexDirection: 'column', display: 'flex', alignItems: 'stretch'}}>
+                                    <Stack sx={{ borderBottom: 1, borderColor: 'divider', p: 1, }}>
+                                    <Stack spacing={1} direction='row'>
+                                        {isAdminOrModerator &&
+                                            (<>
                                                 <Button
-                                                    onClick={()=> setConfirm(true)}
+                                                    onClick={entriesRedirect}
                                                     disabled={!selectedRow || selectedRow === ""}
                                                     hidden={!isAdminOrModerator}
                                                     variant="contained"
-                                                    color={"error"}
+                                                    color={"secondary"}
+                                                >
+                                                    View Entries
+                                                </Button>
+                                                <Button
+                                                    onClick={()=> setEditOpen({open:true, mode:'edit'})}
+                                                    disabled={!selectedRow || selectedRow === ""}
+                                                    hidden={!isAdminOrModerator}
+                                                    variant="contained"
+                                                    color={"warning"}
                                                 >
                                                     <Typography fontWeight={"500"}>
-                                                        Delete
+                                                        Edit
                                                     </Typography>
                                                 </Button>
-                                            }
-                                            { confirm &&
+                                                { !confirm &&
+                                                    <Button
+                                                        onClick={()=> setConfirm(true)}
+                                                        disabled={!selectedRow || selectedRow === ""}
+                                                        hidden={!isAdminOrModerator}
+                                                        variant="contained"
+                                                        color={"error"}
+                                                    >
+                                                        <Typography fontWeight={"500"}>
+                                                            Delete
+                                                        </Typography>
+                                                    </Button>
+                                                }
+                                                { confirm &&
+                                                    <Button
+                                                        sx={{ ml: 1 }}
+                                                        onClick={() => deletePerson(selectedRow as string)}
+                                                        variant={"contained"}
+                                                        color={'error'}
+                                                    >
+                                                        Confirm ?
+                                                    </Button>
+                                                }
+                                                <Divider flexItem orientation={'vertical'}/>
                                                 <Button
-                                                    sx={{ ml: 1 }}
-                                                    onClick={() => deletePerson(selectedRow as string)}
-                                                    variant={"contained"}
-                                                    color={'error'}
+                                                    onClick={()=>setEditOpen({open:true, mode:'view'})}
+                                                    disabled={!selectedRow || selectedRow === ""}
+                                                    hidden={!isAdminOrModerator}
+                                                    variant="contained"
+                                                    color={"primary"}
                                                 >
-                                                    Confirm ?
+                                                    <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                        View Relationships
+                                                    </Typography>
                                                 </Button>
-                                            }
-                                            <Divider flexItem orientation={'vertical'}/>
-                                            <Button
-                                                onClick={()=>setEditOpen({open:true, mode:'view'})}
-                                                disabled={!selectedRow || selectedRow === ""}
-                                                hidden={!isAdminOrModerator}
-                                                variant="contained"
-                                                color={"primary"}
-                                            >
-                                                <Typography fontWeight={"500"} color="secondary.contrastText">
-                                                    View Relationships
-                                                </Typography>
-                                            </Button>
-                                            <Button
-                                                onClick={() => setRelationOpen({open:true, mutation:"add"})}
-                                                variant="contained"
-                                                color={'success'}
-                                                startIcon={<AddCircle sx={{color: "secondary.contrastText"}} />}
-                                                hidden={!isAdminOrModerator}
-                                            >
-                                                <Typography fontWeight={"500"} color="secondary.contrastText">
-                                                    Add Relationship
-                                                </Typography>
-                                            </Button>
-                                            <Button
-                                                onClick={() => setRelationOpen({open:true, mutation:"remove"})}
-                                                variant="contained"
-                                                color={"error"}
-                                                startIcon={<RemoveCircle sx={{color: "secondary.contrastText"}} />}
-                                                hidden={!isAdminOrModerator}
-                                            >
-                                                <Typography fontWeight={"500"} color="secondary.contrastText">
-                                                    Remove Relationship
-                                                </Typography>
-                                            </Button>
-                                        </>)
-                                    }
-                                </Stack>
-                                </Stack>
-                                <DataGrid
-                                    // autoHeight
-                                    autoPageSize
-                                    pagination
-                                    columns={cols}
-                                    rows={people.rows}
-                                    // checkboxSelection
-                                    // isRowSelectable={p =>
-                                    //     !selectedRows || (Object.keys(selectedRows).length < 2 && !selectedRows[p.row.id])
-                                    // }
-                                    components={{
-                                        Toolbar: GridToolbarFilterButton
-                                    }}
-                                    componentsProps={{
-                                        cell: { onFocus: handleCellFocus },
-                                    }}
-                                />
-                            </Paper>
-                        </Grid>
-                </Grid>
+                                                <Button
+                                                    onClick={() => setRelationOpen({open:true, mutation:"add"})}
+                                                    variant="contained"
+                                                    color={'success'}
+                                                    startIcon={<AddCircle sx={{color: "secondary.contrastText"}} />}
+                                                    hidden={!isAdminOrModerator}
+                                                >
+                                                    <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                        Add Relationship
+                                                    </Typography>
+                                                </Button>
+                                                <Button
+                                                    onClick={() => setRelationOpen({open:true, mutation:"remove"})}
+                                                    variant="contained"
+                                                    color={"error"}
+                                                    startIcon={<RemoveCircle sx={{color: "secondary.contrastText"}} />}
+                                                    hidden={!isAdminOrModerator}
+                                                >
+                                                    <Typography fontWeight={"500"} color="secondary.contrastText">
+                                                        Remove Relationship
+                                                    </Typography>
+                                                </Button>
+                                            </>)
+                                        }
+                                    </Stack>
+                                    </Stack>
+                                    <DataGrid
+                                        // autoHeight
+                                        autoPageSize
+                                        pagination
+                                        columns={cols}
+                                        rows={people.rows}
+                                        // checkboxSelection
+                                        // isRowSelectable={p =>
+                                        //     !selectedRows || (Object.keys(selectedRows).length < 2 && !selectedRows[p.row.id])
+                                        // }
+                                        components={{
+                                            Toolbar: GridToolbarFilterButton
+                                        }}
+                                        componentsProps={{
+                                            cell: { onFocus: handleCellFocus },
+                                        }}
+                                    />
+                                </Paper>
+                            </Grid>
+                    </Grid>
                 </Paper>
-                </Box>
+                {/*</Box>*/}
             </DashboardPageSkeleton>
             <AddRelationshipDialog
                 open={relationOpen.open && relationOpen.mutation !== 'closed'}

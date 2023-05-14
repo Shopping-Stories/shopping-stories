@@ -10,11 +10,26 @@ export const PaperHeaderStyles = {
     padding: '1rem'
 }
 
+export const PaperSideMenuStyles = {
+    marginLeft: '1rem',
+    marginRight: '1rem',
+    marginTop: '3rem',
+}
+
+export const PaperDashStyles = {
+    backgroundColor: `var(--secondary-bg)`,
+    marginLeft: '1rem',
+    marginRight: '1rem',
+    marginTop: '3rem',
+    padding: '2rem',
+}
+
 export const PaperStylesSecondary = {
     backgroundColor: `var(--secondary-bg)`,
-    margin: '3rem',
+    margin: '1rem',
     padding: '2rem',
 };
+
 
 export const ButtonStyles = {
     '&.MuiButton-root': {

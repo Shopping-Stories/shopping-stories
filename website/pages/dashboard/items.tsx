@@ -12,14 +12,14 @@ import { SearchType } from 'client/types';
 import { Roles } from 'config/constants.config';
 import { useFormik, Formik, Form } from 'formik';
 import { NextPage } from 'next';
-import { useCallback, useMemo, useState } from "react";
-import { PaperStylesSecondary } from 'styles/styles';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { PaperDashStyles } from "styles/styles";
 import Grid from "@mui/material/Grid";
 import { DataGrid, GridColDef, GridRowId, GridRowsProp, GridToolbarFilterButton } from "@mui/x-data-grid";
 import { useQuery as uq, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Entry } from "../../new_types/api_types";
 import { ItemObject, parseItem, toTitleCase } from "../../client/entryUtils";
-import { useSearchDispatch } from "@components/context/SearchContext";
+import { useSearch, useSearchDispatch } from "@components/context/SearchContext";
 import { useRouter } from 'next/router';
 import TextFieldWithFormikValidation from '@components/TextFieldWithFormikValidation';
 // import {
@@ -73,13 +73,14 @@ const ManageItemsPage: NextPage = () => {
     const isAdminOrModerator = isInGroup(Roles.Moderator, groups) || isAdmin;
     
     // const [search, setSearch] = useState<string>('john');
-    const [search, setSearch] = useState<string>('john');
+    // const [search, setSearch] = useState<string>('john');
+    const {search} = useSearch()
+    const searchDispatch = useSearchDispatch()
     const [selectedRow, setSelectedRow] =
         useState<GridRowId>("");
     // const [relationOpen, setRelationOpen] = useState<boolean>(false)
     const [editOpen, setEditOpen] = useState<boolean>(false)
     const [confirm, setConfirm] = useState<boolean>(false)
-    const searchDispacth = useSearchDispatch()
     const router = useRouter()
     
     const handleCellFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
@@ -90,28 +91,43 @@ const ManageItemsPage: NextPage = () => {
         setSelectedRow(id);
     }, [setSelectedRow]);
     
+    useEffect(()=>{
+        if (search === ''){
+            searchDispatch({type: "FUZZY_ADVANCED", payload:new URLSearchParams({person:"john"}).toString()});
+        }
+    }, [searchDispatch])
+    
     const queryClient = useQueryClient()
     
     const searchForm = useFormik<SearchType>({
         initialValues: {
-            search: '',
+            search: search === '' ? 'john'
+                : new URLSearchParams(search).get("person")?.toString()
+                ?? new URLSearchParams(search).get("item")?.toString()
+                ?? ""
         },
         validationSchema: searchSchema,
         onSubmit: (values) => {
-            setSearch(values.search);
+            searchDispatch({
+                type: "FUZZY_ADVANCED",
+                payload: new URLSearchParams({item:values.search}).toString()
+            });
+            // setSearch(values.search);
             setSelectedRow("")
         },
     });
     
     const resetSearch = () => {
-        setSearch('john')
+        searchDispatch({
+            type: "FUZZY_ADVANCED",
+            payload: new URLSearchParams({person:"john"}).toString()
+        });
         setSelectedRow('')
     }
     
     const doSearch = useCallback(async () => {
-        const req = `https://api.shoppingstories.org/itemsearch-fuzzy/?${new URLSearchParams(
-            searchForm.values.search === '' ? {person:search} : {item:search}
-        ).toString()}`
+        const req = `https://api.shoppingstories.org/itemsearch-fuzzy/?${search}`
+        console.log(req)
         const res = await fetch(req);
         let toret: {entries: Entry[]} = JSON.parse(await res.text());
         // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
@@ -162,11 +178,13 @@ const ManageItemsPage: NextPage = () => {
     
     const initVals:EditItemForm = useMemo(()=> {
         if (!selectedRow || selectedRow === "") return {item:'', archMat:0, category:'', subcategory:''}
+        let item = items.itemMap[selectedRow]
+        if (!item) return {item:'', archMat:0, category:'', subcategory:''}
         const vals:EditItemForm = {
-            item: items.itemMap[selectedRow].item,
-            archMat: items.itemMap[selectedRow].archMat,
-            category: items.itemMap[selectedRow].category,
-            subcategory: items.itemMap[selectedRow].subcategory,
+            item: item.item,
+            archMat: item.archMat,
+            category: item.category,
+            subcategory: item.subcategory,
         }
         console.log(vals)
         return vals
@@ -238,19 +256,28 @@ const ManageItemsPage: NextPage = () => {
         {field: 'Subcategory', headerName: 'SubCategory', flex:1}
     ]
     
-    const getEntryResults = useCallback( async ()=>{
-        if (!selectedRow || selectedRow === "") return
+    // const getEntryResults = useCallback( async ()=>{
+    //     if (!selectedRow || selectedRow === "") return
+    //     let item = items.itemMap[selectedRow].item
+    //     if (!item) return
+    //     searchDispatch({
+    //         type: "FUZZY_ADVANCED",
+    //         payload: new URLSearchParams({item:item}).toString()
+    //     })
+    // }, [searchDispatch, selectedRow, items.itemMap])
+    
+    const entriesRedirect = useCallback(  ()=>{
+        if (selectedRow === "" || !selectedRow ) return
         let item = items.itemMap[selectedRow].item
-        if (!item) return
-        searchDispacth({
+        if (!item) {return}
+        searchDispatch({
             type: "FUZZY_ADVANCED",
             payload: new URLSearchParams({item:item}).toString()
         })
-    }, [searchDispacth, selectedRow, items.itemMap])
-    
-    const entriesRedirect = () => {
-        getEntryResults().then(()=>router.push('/entries'))
-    }
+        router.push('/entries')
+    }, [searchDispatch, selectedRow, items.itemMap, router])
+        // getEntryResults().then(()=>router.push('/entries'))
+    // }
     
     if (loading) {
         return <LoadingPage />;
@@ -260,7 +287,7 @@ const ManageItemsPage: NextPage = () => {
         <ColorBackground>
             <Header />
             <DashboardPageSkeleton groups={groups}>
-                <Paper sx={PaperStylesSecondary}>
+                <Paper sx={PaperDashStyles}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <form onSubmit={searchForm.handleSubmit}>
