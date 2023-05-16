@@ -1,4 +1,4 @@
-import { PaperHeaderStyles } from 'styles/styles';
+import { PaperSideMenuStyles } from "styles/styles";
 import { NavLink } from '../types';
 // import Grid from '@mui/material/Grid'
 import MuiNextLink from '@components/MuiNextLink';
@@ -15,7 +15,8 @@ const SideMenu = ({ links }: { links: NavLink[] }) => {
             <Paper
                 sx={{
                     backgroundColor: `var(--secondary)`,
-                    ...PaperHeaderStyles
+                    ...PaperSideMenuStyles
+                    // ...PaperHeaderStyles
                     // ...PaperStyles,
                     // ...PaperStylesSecondary
                 }}

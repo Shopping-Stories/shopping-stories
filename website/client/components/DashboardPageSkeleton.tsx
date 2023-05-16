@@ -25,7 +25,7 @@ const adminLinks: NavLink[] = [
     { title: `manage users`, path: `/dashboard/users` },
     { title: 'delete entries', path: '/dashboard/deleteEntries'},
     { title: 'tobacco marks', path: '/dashboard/managetobacco'},
-    {title: 'manage mentions', path: '/dashboard/managementions'},
+    { title: 'manage mentions', path: '/dashboard/managementions'},
     { title: `manage items`, path: `/dashboard/items` },
     { title: `combine items`, path: `/dashboard/manageitems` },
     { title: `upload items and people`, path: `/dashboard/updateitemspeople` },
@@ -74,15 +74,14 @@ const DashboardPageSkeleton = (props: DashBoardPageSkeletonProps) => {
                             />
                         </Paper>
                     </Grid>
-                    )
-                        : (
-                    <Grid item xs={4}>
+                    ) : (
+                    <Grid item xs={3}>
                         <SideMenu links={links} />
                     </Grid>
                 )}
                 <Grid
                     item
-                    xs={isSmallerThanMd || isNotAdminOrModerator ? 12 : 8}
+                    xs={isSmallerThanMd || isNotAdminOrModerator ? 12 : 9}
                 >
                     {props.children}
                 </Grid>

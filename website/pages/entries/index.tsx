@@ -69,12 +69,13 @@ const EntriesPage: NextPage = () => {
         },
     });
     
-    // console.log(search)
+    // console.log(search, fuzzy, advanced)
     
     const doSearch = useCallback(async () => {
         const req = advanced
             ? `https://api.shoppingstories.org/itemsearch${fuzzy ? '-fuzzy' : ""}/?${search}`
             : `https://api.shoppingstories.org/${fuzzy ? "fuzzy" : ""}search/${search}`
+        console.log(req)
         const res = await fetch(req);
         let toret: EntryQueryResult = JSON.parse(await res.text());
         // console.log("Search Options: ", search, "fuzzy-", fuzzy, "advanced-", advanced)
